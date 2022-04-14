@@ -1,0 +1,8 @@
+.vscode
+.git
+.gitignore
+copilot
+docker-compose*
+Dockerfile*
+README.md
+node_modules
