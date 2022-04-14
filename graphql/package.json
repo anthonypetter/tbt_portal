@@ -4,8 +4,11 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
+    "build": "npm run generate:prisma && tsc -project tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx ts-node src/index.ts"
+    "start": "node build/src/index.js",
+    "dev": "npx ts-node src/index.ts",
+    "generate:prisma": "prisma generate"
   },
   "keywords": [],
   "author": "",
