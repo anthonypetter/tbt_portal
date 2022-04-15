@@ -11,6 +11,6 @@
 
 To run the application locally, you'll need to run both the apollo server backend and the NextJS frontend.
 
-1. First, follow the instructions found in the [graphql README](https://github.com/TutoredByTeachers/tbt-portal/graphql/README.md). Get apollo-server up and running.
+1. First, follow the instructions found in the [graphql README](https://github.com/TutoredByTeachers/tbt-portal/blob/main/graphql/README.md). Get apollo-server up and running.
 
-2. After you have apollo-server up, Follow the instructions in the [web README](https://github.com/TutoredByTeachers/tbt-portal/web/README.md) to get NextJS app running.
+2. After you have apollo-server up, Follow the instructions in the [web README](https://github.com/TutoredByTeachers/tbt-portal/blob/main/web/README.md) to get NextJS app running.
