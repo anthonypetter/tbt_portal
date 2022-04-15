@@ -9,9 +9,11 @@
     "start": "node build/src/server.js",
     "dev": "npx ts-node-dev src/server.ts",
     "generate:prisma": "prisma generate",
+    "studio": "prisma studio",
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
-    "db:seed": "npx ts-node prisma/seed.ts"
+    "db:seed": "npx ts-node prisma/seed.ts",
+    "db:setup": "npm run db:migrate && npm run db:seed"
   },
   "keywords": [],
   "author": "",
@@ -29,7 +31,8 @@
     "@prisma/client": "^3.12.0",
     "apollo-server": "^3.6.7",
     "graphql": "^16.3.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "uuid": "^8.3.2"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
