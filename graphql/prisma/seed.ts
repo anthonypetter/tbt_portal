@@ -8,7 +8,17 @@ async function main() {
     update: {},
     create: {
       email: "victor@tutored.live",
-      cognitoSub: "cognitoSub",
+      cognitoSub: "cognitoSub1",
+      createdAt: new Date(),
+    },
+  });
+
+  const rafik = await prisma.user.upsert({
+    where: { email: "rafik@tutored.live" },
+    update: {},
+    create: {
+      email: "rafik@tutored.live",
+      cognitoSub: "cognitoSub2",
       createdAt: new Date(),
     },
   });
