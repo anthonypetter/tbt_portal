@@ -22,6 +22,8 @@ async function main() {
       createdAt: new Date(),
     },
   });
+
+  console.log("Finished seeding.");
 }
 
 main()
