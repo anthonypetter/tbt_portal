@@ -10,64 +10,74 @@ import {
 import { SearchIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
 import { Routes } from "@lib/routes";
-import { FaSignal, FaRegBuilding, FaGraduationCap } from "react-icons/fa";
+import { FaRegBuilding, FaGraduationCap } from "react-icons/fa";
 import { SiGoogleclassroom } from "react-icons/si";
 import { MdWorkspacesOutline } from "react-icons/md";
 import { FiUsers } from "react-icons/fi";
 import { BiVideoRecording } from "react-icons/bi";
+import { RiSignalTowerFill } from "react-icons/ri";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
-const navigation = [
-  { name: "Home", href: Routes.home.href(), icon: HomeIcon, current: true },
-  {
-    name: "Live View",
-    href: Routes.liveView.href(),
-    icon: FaSignal,
-    current: false,
-  },
-  {
-    name: "My Schedule",
-    href: Routes.mySchedule.href(),
-    icon: CalendarIcon,
-    current: false,
-  },
-  {
-    name: "Organizations",
-    href: Routes.organizations.href(),
-    icon: FaRegBuilding,
-    current: false,
-  },
-  {
-    name: "Engagements",
-    href: Routes.engagements.href(),
-    icon: MdWorkspacesOutline,
-    current: false,
-  },
-  {
-    name: "Classrooms",
-    href: Routes.classrooms.href(),
-    icon: SiGoogleclassroom,
-    current: false,
-  },
-  {
-    name: "Users",
-    href: Routes.users.href(),
-    icon: FiUsers,
-    current: false,
-  },
-  {
-    name: "Teachers",
-    href: Routes.teachers.href(),
-    icon: FaGraduationCap,
-    current: false,
-  },
-  {
-    name: "Recordings",
-    href: Routes.recordings.href(),
-    icon: BiVideoRecording,
-    current: false,
-  },
-];
+function getNavigation(currentPathname: string) {
+  return [
+    {
+      name: "Home",
+      href: Routes.home.href(),
+      icon: HomeIcon,
+      current: Routes.home.path() === currentPathname,
+    },
+    {
+      name: "Live View",
+      href: Routes.liveView.href(),
+      icon: RiSignalTowerFill,
+      current: Routes.liveView.path() === currentPathname,
+    },
+    {
+      name: "My Schedule",
+      href: Routes.mySchedule.href(),
+      icon: CalendarIcon,
+      current: Routes.mySchedule.path() === currentPathname,
+    },
+    {
+      name: "Organizations",
+      href: Routes.organizations.href(),
+      icon: FaRegBuilding,
+      current: Routes.organizations.path() === currentPathname,
+    },
+    {
+      name: "Engagements",
+      href: Routes.engagements.href(),
+      icon: MdWorkspacesOutline,
+      current: Routes.engagements.path() === currentPathname,
+    },
+    {
+      name: "Classrooms",
+      href: Routes.classrooms.href(),
+      icon: SiGoogleclassroom,
+      current: Routes.classrooms.path() === currentPathname,
+    },
+    {
+      name: "Users",
+      href: Routes.users.href(),
+      icon: FiUsers,
+      current: Routes.users.path() === currentPathname,
+    },
+    {
+      name: "Teachers",
+      href: Routes.teachers.href(),
+      icon: FaGraduationCap,
+      current: Routes.teachers.path() === currentPathname,
+    },
+    {
+      name: "Recordings",
+      href: Routes.recordings.href(),
+      icon: BiVideoRecording,
+      current: Routes.recordings.path() === currentPathname,
+    },
+  ];
+}
+
 const userNavigation = [
   { name: "Your Profile", href: "#" },
   { name: "Settings", href: "#" },
@@ -80,6 +90,8 @@ type Props = {
 
 export function AppLayout({ children }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const router = useRouter();
+  const navigation = getNavigation(router.pathname);
 
   return (
     <>
