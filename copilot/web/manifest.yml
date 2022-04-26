@@ -1,9 +1,9 @@
-# The manifest for the "nextjs-web" service.
+# The manifest for the "web" service.
 # Read the full specification for the "Load Balanced Web Service" type at:
 #  https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/
 
 # Your service name will be used in naming your resources like log groups, ECS services, etc.
-name: nextjs-web
+name: web
 type: Load Balanced Web Service
 
 # Distribute traffic to your service.
