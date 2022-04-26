@@ -1,17 +1,18 @@
-# The manifest for the "apollo-server" service.
+# The manifest for the "graphql" service.
 # Read the full specification for the "Load Balanced Web Service" type at:
 #  https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/
 
 # Your service name will be used in naming your resources like log groups, ECS services, etc.
-name: apollo-server
+name: graphql
 type: Load Balanced Web Service
 
 # Distribute traffic to your service.
 http:
   # Requests to this path will be forwarded to your service.
   # To match all requests you can use the "/" path.
-  path: "/"
-  healthcheck: "/.well-known/apollo/server-health"
+  path: "graphql"
+  # You can specify a custom health check path. The default is "/".
+  healthcheck: /.well-known/apollo/server-health
 
 # Configuration for your containers and service.
 image:
@@ -31,9 +32,8 @@ exec: true # Enable running commands in your container.
 #variables:                    # Pass environment variables as key value pairs.
 #  LOG_LEVEL: info
 
-#secrets:                      # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
-#  GITHUB_TOKEN: GITHUB_TOKEN  # The key is the name of the environment variable, the value is the name of the SSM parameter.
-
+secrets: # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
+  DATABASE_URL: /copilot/portal/dev/secrets/DATABASE_URL
 # You can override any of the values defined above by environment.
 #environments:
 #  test:
