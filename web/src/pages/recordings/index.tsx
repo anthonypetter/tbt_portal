@@ -1,8 +1,28 @@
 import { Header } from "components/Header";
-import type { NextPage } from "next";
+import type { NextPage, GetServerSidePropsContext } from "next";
+import { getAuth } from "@utils/auth";
+import { AppLayout } from "components/AppLayout";
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const auth = await getAuth(context);
+
+  if (!auth.isAuthenticated) {
+    return { redirect: auth.redirect };
+  }
+
+  return {
+    props: {
+      hello: "world",
+    },
+  };
+}
 
 const Recordings: NextPage = () => {
-  return <Header>Recordings</Header>;
+  return (
+    <AppLayout>
+      <Header>Recordings</Header>
+    </AppLayout>
+  );
 };
 
 export default Recordings;

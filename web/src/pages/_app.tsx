@@ -1,12 +1,15 @@
 import "tailwindcss/tailwind.css";
 import type { AppProps } from "next/app";
-import { AppLayout } from "components/AppLayout";
+import { AuthProvider } from "components/auth/AuthProvider";
+import { configureAmplify } from "@lib/amplify";
+
+configureAmplify();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <AppLayout>
+    <AuthProvider>
       <Component {...pageProps} />
-    </AppLayout>
+    </AuthProvider>
   );
 }
 
