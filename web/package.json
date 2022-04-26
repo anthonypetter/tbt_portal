@@ -9,9 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.6.0",
     "@headlessui/react": "^1.6.0",
     "@heroicons/react": "^1.0.6",
+    "aws-amplify": "^4.3.20",
     "clsx": "^1.1.1",
+    "graphql": "^16.4.0",
     "next": "12.1.4",
     "react": "18.0.0",
     "react-dom": "18.0.0",
