@@ -1,8 +1,8 @@
 import { Header } from "components/Header";
 import type { NextPage } from "next";
 
-const Home: NextPage = () => {
-  return <Header>Home</Header>;
+const Users: NextPage = () => {
+  return <Header>Users</Header>;
 };
 
-export default Home;
+export default Users;
