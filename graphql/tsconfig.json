@@ -39,7 +39,7 @@
     /* Additional Checks */
     // "noUnusedLocals": true,                      /* Report errors on unused locals. */
     // "noUnusedParameters": true,                  /* Report errors on unused parameters. */
-    // "noImplicitReturns": true,                   /* Report error when not all code paths in function return a value. */
+    "noImplicitReturns": true /* Report error when not all code paths in function return a value. */,
     // "noFallthroughCasesInSwitch": true,          /* Report errors for fallthrough cases in switch statement. */
     // "noUncheckedIndexedAccess": true,            /* Include 'undefined' in index signature results */
     // "noPropertyAccessFromIndexSignature": true,  /* Require undeclared properties from index signatures to use element accesses. */
@@ -52,7 +52,8 @@
       "@generated/*": ["./src/generated/*"],
       "@utils/*": ["./src/utils/*"],
       "@lib/*": ["./src/lib/*"],
-      "@domain/*": ["./src/domain/*"]
+      "@schema/*": ["./src/schema/*"],
+      "@services/*": ["./src/services/*"]
     },
     // "rootDirs": [],                              /* List of root folders whose combined content represents the structure of the project at runtime. */
     // "typeRoots": [],                             /* List of folders to include type definitions from. */
