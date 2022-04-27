@@ -7,19 +7,28 @@
     "build": "npm run generate:prisma && tsc -project tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node build/src/server.js",
-    "dev": "npx ts-node-dev src/server.ts",
+    "dev": "npx ts-node-dev -r tsconfig-paths/register src/server.ts",
     "generate:prisma": "prisma generate",
     "studio": "prisma studio",
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
     "db:seed": "npx ts-node prisma/seed.ts",
-    "db:setup": "npm run db:migrate && npm run db:seed"
+    "db:setup": "npm run db:migrate && npm run db:seed",
+    "generate:schema": "graphql-codegen --config codegen.yml",
+    "lint": "eslint . --ext .ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@graphql-codegen/cli": "2.6.2",
+    "@graphql-codegen/typescript": "2.4.8",
+    "@graphql-codegen/typescript-resolvers": "2.6.1",
     "@types/lodash": "^4.14.181",
+    "@typescript-eslint/eslint-plugin": "^5.21.0",
+    "@typescript-eslint/parser": "^5.21.0",
+    "eslint": "^8.14.0",
+    "eslint-config-prettier": "^8.5.0",
     "prettier": "2.6.2",
     "prisma": "^3.12.0",
     "ts-node": "^10.7.0",
@@ -28,8 +37,10 @@
     "typescript": "^4.6.3"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.78.0",
     "@prisma/client": "^3.12.0",
     "apollo-server": "^3.6.7",
+    "aws-lambda": "^1.0.7",
     "graphql": "^16.3.0",
     "lodash": "^4.17.21",
     "uuid": "^8.3.2"
