@@ -9,8 +9,26 @@ generator client {
 }
 
 model User {
-  id                       Int                       @id @default(autoincrement())
-  email                    String                    @unique
-  createdAt                DateTime                  @default(now())
-  cognitoSub               String                    @unique
+  id                          Int                       @id @default(autoincrement())
+  email                       String                    @unique
+  createdAt                   DateTime                  @default(now())
+  cognitoSub                  String                    @unique
+  isGlobalAdmin               Boolean                   @default(false)
+  memberships                 OrganizationMembership[]
+}
+
+model Organization {
+  id                          Int                       @id @default(autoincrement())
+  createdAt                   DateTime                  @default(now())
+  name                        String
+  memberships                 OrganizationMembership[]
+}
+
+model OrganizationMembership {
+  createdAt                   DateTime                 @default(now())
+  organizationId              Int
+  userId                      Int
+  user                        User                     @relation(fields: [userId], references: [id])
+  organization                Organization             @relation(fields: [organizationId], references: [id])
+  @@id([userId, organizationId])
 }
