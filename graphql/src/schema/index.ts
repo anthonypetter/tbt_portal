@@ -15,5 +15,3 @@ export const typeDefs = gql`
 `;
 
 export const resolvers = merge({}, UserResolvers);
-
-console.log(resolvers);
