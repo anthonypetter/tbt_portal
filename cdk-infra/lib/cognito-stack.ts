@@ -1,14 +1,34 @@
-import * as cognito from "aws-cdk-lib/aws-cognito";
-import * as cdk from "aws-cdk-lib";
+import {
+  App,
+  Stack,
+  StackProps,
+  RemovalPolicy,
+  Duration,
+  CfnOutput,
+} from "aws-cdk-lib";
+import {
+  UserPool,
+  AccountRecovery,
+  ClientAttributes,
+} from "aws-cdk-lib/aws-cognito";
+import { AssetCode, Function, Runtime, Code } from "aws-cdk-lib/aws-lambda";
+import * as path from "path";
+export class CognitoStack extends Stack {
+  public readonly userPool: UserPool;
 
-export class CognitoStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    const preSignup = new Function(this, "preSignupFn", {
+      code: Code.fromAsset(path.join(__dirname, "../../lambdas/build")),
+      handler: "preSignUp.handler",
+      runtime: Runtime.NODEJS_14_X,
+    });
+
     const USER_POOL_NAME = "tbt-portal-pool";
-    const userPool = new cognito.UserPool(this, "userpool", {
+    const userPool = new UserPool(this, "userpool", {
       userPoolName: USER_POOL_NAME,
-      selfSignUpEnabled: true,
+      selfSignUpEnabled: false,
       signInAliases: {
         email: true,
       },
@@ -20,10 +40,6 @@ export class CognitoStack extends cdk.Stack {
           mutable: true,
           required: true,
         },
-        fullname: {
-          mutable: true,
-          required: true,
-        },
       },
       passwordPolicy: {
         minLength: 6,
@@ -32,27 +48,31 @@ export class CognitoStack extends cdk.Stack {
         requireUppercase: false,
         requireSymbols: false,
       },
-      accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
-      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      accountRecovery: AccountRecovery.EMAIL_ONLY,
+      removalPolicy: RemovalPolicy.RETAIN,
+      lambdaTriggers: {
+        preSignup,
+      },
     });
 
     const userPoolClient = userPool.addClient("UserPoolClient", {
       userPoolClientName: "tbt-web",
-      refreshTokenValidity: cdk.Duration.days(14),
-      readAttributes: new cognito.ClientAttributes().withStandardAttributes({
+      refreshTokenValidity: Duration.days(14),
+      readAttributes: new ClientAttributes().withStandardAttributes({
         email: true,
-        fullname: true,
         emailVerified: true,
       }),
     });
 
     // Outputs
-    new cdk.CfnOutput(this, "UserPoolName", { value: USER_POOL_NAME });
-    new cdk.CfnOutput(this, "UserPoolID", {
+    new CfnOutput(this, "UserPoolName", { value: USER_POOL_NAME });
+    new CfnOutput(this, "UserPoolID", {
       value: userPool.userPoolId,
     });
-    new cdk.CfnOutput(this, "UserPoolClientID", {
+    new CfnOutput(this, "UserPoolClientID", {
       value: userPoolClient.userPoolClientId,
     });
+
+    this.userPool = userPool;
   }
 }
