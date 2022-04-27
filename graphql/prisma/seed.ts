@@ -8,18 +8,9 @@ async function main() {
     update: {},
     create: {
       email: "victor@tutored.live",
-      cognitoSub: "cognitoSub1",
+      cognitoSub: "d3a77801-7d1d-41cb-8a54-097e588a3c2a",
       createdAt: new Date(),
-    },
-  });
-
-  const rafik = await prisma.user.upsert({
-    where: { email: "rafik@tutored.live" },
-    update: {},
-    create: {
-      email: "rafik@tutored.live",
-      cognitoSub: "cognitoSub2",
-      createdAt: new Date(),
+      isGlobalAdmin: true,
     },
   });
 
