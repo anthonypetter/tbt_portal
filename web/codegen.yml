@@ -1,0 +1,9 @@
+overwrite: true
+schema: ${NEXT_PUBLIC_API_URL}
+documents: "src/**/!(*.d).{ts,tsx}"
+generates:
+  src/generated/graphql.tsx:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"
