@@ -1,10 +1,10 @@
 import { Header } from "components/Header";
 import type { NextPage, GetServerSidePropsContext } from "next";
-import { getAuth } from "@utils/auth";
+import { getServerSideAuth } from "@utils/auth/server-side-auth";
 import { AppLayout } from "components/AppLayout";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const auth = await getAuth(context);
+  const auth = await getServerSideAuth(context);
 
   if (!auth.isAuthenticated) {
     return { redirect: auth.redirect };
