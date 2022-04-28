@@ -1,8 +1,8 @@
 import { withSSRContext } from "aws-amplify";
 import type { GetServerSidePropsContext } from "next";
-import { Routes } from "./routes";
+import { Routes } from "../routes";
 
-type AuthState =
+type ServerSideAuthState =
   | { isAuthenticated: true; token: string }
   | {
       isAuthenticated: false;
@@ -12,9 +12,15 @@ type AuthState =
       };
     };
 
-export async function getAuth(
+/**
+ * Server side cognito authentication
+ *
+ * @param context GetServerSidePropsContext
+ * @returns Serverside authentication state
+ */
+export async function getServerSideAuth(
   context: GetServerSidePropsContext
-): Promise<AuthState> {
+): Promise<ServerSideAuthState> {
   const { Auth } = withSSRContext(context);
 
   try {
