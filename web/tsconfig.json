@@ -19,7 +19,7 @@
       /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
       "@utils/*": ["./utils/*"],
       "@lib/*": ["./lib/*"],
-      "@generated/*": ["./generated/*"]
+      "@generated/*": ["./__generated__/*"]
     }
   },
   "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx"],

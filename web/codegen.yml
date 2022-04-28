@@ -1,8 +1,8 @@
 overwrite: true
-schema: ${NEXT_PUBLIC_API_URL}
+schema: "../graphql/graphql.schema.json"
 documents: "src/**/!(*.d).{ts,tsx}"
 generates:
-  src/generated/graphql.tsx:
+  src/__generated__/graphql.ts:
     plugins:
       - "typescript"
       - "typescript-operations"
