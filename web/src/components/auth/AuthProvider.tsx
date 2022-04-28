@@ -121,10 +121,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setAuthState(unauthenticated());
         return { success: false, message: "User not found." };
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
       setAuthState(unauthenticated());
-      return { success: false, message: "Incorrect email or password" };
+
+      if (error instanceof Error) {
+        const message = error.message;
+        return { success: false, message: message };
+      } else {
+        return { success: false, message: "Login failed." };
+      }
     }
   }, []);
 
