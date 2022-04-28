@@ -10,8 +10,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     return { redirect: auth.redirect };
   }
 
-  console.log("authtoken", auth.token);
-
   return {
     props: {
       hello: "world",
