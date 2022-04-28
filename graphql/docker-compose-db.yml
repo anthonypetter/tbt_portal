@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: tbt
+      POSTGRES_PASSWORD: tbt
+      POSTGRES_DB: tbt
+    ports:
+      - 5432:5432 # expose port for Prisma Studio
