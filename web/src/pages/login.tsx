@@ -8,21 +8,33 @@ import { FaLock, FaLockOpen } from "react-icons/fa";
 import { Spinner } from "components/Spinner";
 import { assertUnreachable } from "@utils/types";
 import Image from "next/image";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { ErrorBox } from "components/ErrorBox";
+
+type LoginInputs = {
+  email: string;
+  password: string;
+};
 
 type IconT = "locked" | "unlocked" | "loading";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [icon, setIcon] = useState<IconT>("locked");
   const router = useRouter();
   const auth = useAuth();
 
-  //TODO: replace with proper form handling/validation (probably react-hook-form)
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const [loginFailure, setLoginFailure] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginInputs>();
+
+  const onSubmit: SubmitHandler<LoginInputs> = async ({ email, password }) => {
     try {
       setIcon("loading");
+      setLoginFailure(null);
       const result = await auth.login(email, password);
 
       if (result?.success) {
@@ -30,14 +42,13 @@ export default function Login() {
         router.push(Routes.home.href());
       } else {
         setIcon("locked");
-        alert(`Sign in failed: ${result?.message}`);
+        setLoginFailure(result.message);
       }
     } catch {
       setIcon("locked");
-      //TODO: replace
-      alert("login failed");
+      setLoginFailure("Login attempt failed.");
     }
-  }
+  };
 
   return (
     <>
@@ -66,7 +77,7 @@ export default function Login() {
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
               <div>
                 <label
                   htmlFor="email"
@@ -76,15 +87,19 @@ export default function Login() {
                 </label>
                 <div className="mt-1">
                   <input
-                    id="email"
-                    name="email"
+                    {...register("email", {
+                      required: {
+                        value: true,
+                        message: "Email is required.",
+                      },
+                    })}
                     type="email"
                     autoComplete="email"
-                    required
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                   />
+                  {errors.email?.message && (
+                    <RequiredField msg={errors.email?.message} />
+                  )}
                 </div>
               </div>
 
@@ -97,15 +112,19 @@ export default function Login() {
                 </label>
                 <div className="mt-1">
                   <input
-                    id="password"
-                    name="password"
+                    {...register("password", {
+                      required: {
+                        value: true,
+                        message: "Password is required.",
+                      },
+                    })}
                     type="password"
                     autoComplete="current-password"
-                    required
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
                   />
+                  {errors.password?.message && (
+                    <RequiredField msg={errors.password?.message} />
+                  )}
                 </div>
               </div>
 
@@ -134,6 +153,8 @@ export default function Login() {
                   </a>
                 </div>
               </div>
+
+              {loginFailure && <ErrorBox errorMsg={loginFailure} />}
 
               <div>
                 <Button
@@ -177,4 +198,8 @@ function SignInIcon({ icon }: { icon: IconT }) {
     default:
       return assertUnreachable(icon, "IconT");
   }
+}
+
+function RequiredField({ msg }: { msg: string }) {
+  return <span className="text-sm text-red-500">{msg}</span>;
 }
