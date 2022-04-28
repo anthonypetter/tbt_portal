@@ -17,6 +17,8 @@ export async function getContext({ req }: ExpressContext): Promise<Context> {
     throw new AuthenticationError("User not found.");
   }
 
+  console.log(`[Auth]: '${authedUser.email}' authenticated.`);
+
   /**
    * Intentionally leaving prisma off context. (for now)
    * Idea is that all db access should go through a "service" layer.
