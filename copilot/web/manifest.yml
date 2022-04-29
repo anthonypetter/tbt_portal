@@ -10,9 +10,9 @@ type: Load Balanced Web Service
 http:
   # Requests to this path will be forwarded to your service.
   # To match all requests you can use the "/" path.
-  path: "/api/health-check"
+  path: "/"
   # You can specify a custom health check path. The default is "/".
-  # healthcheck: '/'
+  healthcheck: "/api/health-check"
 
 # Configuration for your containers and service.
 image:
