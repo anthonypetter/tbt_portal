@@ -90,7 +90,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-export function AppLayout({ children }: Props) {
+export function AuthedLayout({ children }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const router = useRouter();
   const navigation = getNavigation(router.pathname);
