@@ -1,4 +1,4 @@
-import { prisma } from "@lib/prisma-client";
+import { prisma } from "../../lib/prisma-client";
 import { User } from "@prisma/client";
 
 export const UserService = {
