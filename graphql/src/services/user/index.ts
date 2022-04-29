@@ -11,4 +11,9 @@ export const UserService = {
 
     return user;
   },
+
+  async getUsers(take: number): Promise<User[]> {
+    const users = await prisma.user.findMany({ take });
+    return users;
+  },
 };
