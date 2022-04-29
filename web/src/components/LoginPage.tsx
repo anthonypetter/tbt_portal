@@ -164,7 +164,7 @@ export function LoginPage() {
                   {icon === "locked" ? (
                     <>
                       <SignInIcon icon={icon} />
-                      <span className="ml-1">Sign in</span>
+                      <span className="ml-2">Sign in</span>
                     </>
                   ) : (
                     <SignInIcon icon={icon} />

@@ -5,5 +5,7 @@ type Props = {
 };
 
 export function Header({ children }: Props) {
-  return <h1 className="text-2xl font-semibold text-gray-900">{children}</h1>;
+  return (
+    <h1 className="text-2xl font-semibold text-gray-900 mb-6">{children}</h1>
+  );
 }

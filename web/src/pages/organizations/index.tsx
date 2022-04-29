@@ -1,6 +1,6 @@
 import { Header } from "components/Header";
 import type { NextPage, GetServerSidePropsContext } from "next";
-import { AppLayout } from "components/AppLayout";
+import { AuthedLayout } from "components/AuthedLayout";
 import { getServerSideAuth } from "@utils/auth/server-side-auth";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -23,9 +23,9 @@ type Props = {
 
 const Organizations: NextPage<Props> = () => {
   return (
-    <AppLayout>
+    <AuthedLayout>
       <Header>Organizations</Header>
-    </AppLayout>
+    </AuthedLayout>
   );
 };
 
