@@ -4,8 +4,8 @@ import {
 } from "@aws-sdk/client-cognito-identity-provider";
 import { CognitoRegion } from "../config";
 import { AuthenticationError } from "apollo-server";
-import { fromJust } from "@utils/types";
-import { UserService } from "@services/user";
+import { fromJust } from "../utils/types";
+import { UserService } from "../services/user";
 import find from "lodash/find";
 
 const cognitoClient = new CognitoIdentityProvider({

@@ -1,7 +1,7 @@
 import { User } from "@prisma/client";
-import { UserService } from "@services/user";
+import { UserService } from "./services/user";
 import { ExpressContext } from "apollo-server-express";
-import { getUser } from "@lib/cognito";
+import { getUser } from "./lib/cognito";
 import { AuthenticationError } from "apollo-server";
 
 export type Context = {
