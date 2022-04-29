@@ -13,6 +13,12 @@ export type Scalars = {
   Float: number;
 };
 
+export enum AccountStatus {
+  Active = 'ACTIVE',
+  Disabled = 'DISABLED',
+  Pending = 'PENDING'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   _empty?: Maybe<Scalars['String']>;
@@ -22,12 +28,21 @@ export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']>;
   currentUser?: Maybe<User>;
+  users: Array<User>;
 };
 
 export type User = {
   __typename?: 'User';
+  accountStatus: AccountStatus;
   email: Scalars['String'];
+  role: UserRole;
 };
+
+export enum UserRole {
+  Admin = 'ADMIN',
+  MentorTeacher = 'MENTOR_TEACHER',
+  TutorTeacher = 'TUTOR_TEACHER'
+}
 
 
 
@@ -98,11 +113,13 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  AccountStatus: AccountStatus;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   User: ResolverTypeWrapper<User>;
+  UserRole: UserRole;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -121,10 +138,13 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  accountStatus?: Resolver<ResolversTypes['AccountStatus'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  role?: Resolver<ResolversTypes['UserRole'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
