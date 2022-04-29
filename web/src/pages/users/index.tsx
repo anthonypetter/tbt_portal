@@ -1,7 +1,7 @@
-import { Header } from "components/Header";
 import type { NextPage, GetServerSidePropsContext } from "next";
 import { getServerSideAuth } from "@utils/auth/server-side-auth";
-import { AppLayout } from "components/AppLayout";
+import { AuthedLayout } from "components/AuthedLayout";
+import { UsersPage } from "components/UsersPage";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const auth = await getServerSideAuth(context);
@@ -18,10 +18,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 const Users: NextPage = () => {
+  const mockUsers = [
+    { email: " victor@tutored.live", role: "Administrator", status: "Active" },
+  ];
+
   return (
-    <AppLayout>
-      <Header>Users</Header>
-    </AppLayout>
+    <AuthedLayout>
+      <UsersPage users={mockUsers} />
+    </AuthedLayout>
   );
 };
 
