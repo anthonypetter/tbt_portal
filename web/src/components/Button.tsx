@@ -3,7 +3,7 @@ import React from "react";
 import { assertUnreachable } from "utils/types";
 import Link from "next/link";
 
-type ThemeT = "primary" | "success" | "danger";
+type ThemeT = "primary" | "secondary" | "tertiary" | "success" | "danger";
 
 interface Props {
   children: React.ReactNode;
@@ -82,6 +82,21 @@ function getColors(theme: ThemeT) {
         focus: "focus:ring-blue-500",
         border: "border border-transparent",
         text: "text-white text-sm font-medium",
+      };
+    case "secondary":
+      return {
+        colors: "bg-blue-100 hover:bg-blue-200",
+        focus: "focus:ring-blue-500",
+        border: "border border-transparent",
+        text: "text-blue-700 text-sm font-medium",
+      };
+
+    case "tertiary":
+      return {
+        colors: "bg-white hover:bg-gray-50",
+        focus: "focus:ring-blue-500",
+        border: "border border-gray-300",
+        text: "text-gray-700 text-base font-medium sm:text-sm",
       };
 
     case "success":
