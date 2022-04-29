@@ -8,12 +8,26 @@ generator client {
   binaryTargets = ["native", "linux-musl"]
 }
 
+enum UserRole {
+  ADMIN
+  MENTOR_TEACHER
+  TUTOR_TEACHER
+}
+
+enum AccountStatus {
+  PENDING
+  ACTIVE
+  DISABLED
+}
+
 model User {
   id                          Int                       @id @default(autoincrement())
   email                       String                    @unique
   createdAt                   DateTime                  @default(now())
   cognitoSub                  String                    @unique
-  isGlobalAdmin               Boolean                   @default(false)
+  
+  role                        UserRole                  @default(TUTOR_TEACHER)
+  accountStatus               AccountStatus             @default(PENDING)
   memberships                 OrganizationMembership[]
 }
 

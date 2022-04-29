@@ -10,7 +10,8 @@ async function main() {
       email: "victor@tutored.live",
       cognitoSub: "d3a77801-7d1d-41cb-8a54-097e588a3c2a",
       createdAt: new Date(),
-      isGlobalAdmin: true,
+      role: "ADMIN",
+      accountStatus: "ACTIVE",
     },
   });
 

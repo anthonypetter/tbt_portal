@@ -6,8 +6,22 @@ import { Context } from "../../context";
  */
 
 export const typeDefs = gql`
+  enum UserRole {
+    ADMIN
+    MENTOR_TEACHER
+    TUTOR_TEACHER
+  }
+
+  enum AccountStatus {
+    ACTIVE
+    PENDING
+    DISABLED
+  }
+
   type User {
     email: String!
+    role: UserRole!
+    accountStatus: AccountStatus!
   }
 
   type Query {
