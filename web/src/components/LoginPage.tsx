@@ -154,7 +154,7 @@ export function LoginPage() {
                 </div>
               </div>
 
-              {loginFailure && <ErrorBox errorMsg={loginFailure} />}
+              {loginFailure && <ErrorBox msg={loginFailure} />}
 
               <div>
                 <Button
