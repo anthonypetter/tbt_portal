@@ -4,6 +4,7 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -19,9 +20,21 @@ export enum AccountStatus {
   Pending = 'PENDING'
 }
 
+export type InviteUserResonse = {
+  __typename?: 'InviteUserResonse';
+  inviteSent: Scalars['Boolean'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   _empty?: Maybe<Scalars['String']>;
+  inviteUser: InviteUserResonse;
+};
+
+
+export type MutationInviteUserArgs = {
+  email: Scalars['String'];
+  role: UserRole;
 };
 
 export type Query = {
@@ -115,6 +128,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   AccountStatus: AccountStatus;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  InviteUserResonse: ResolverTypeWrapper<InviteUserResonse>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
@@ -125,14 +139,21 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
+  InviteUserResonse: InviteUserResonse;
   Mutation: {};
   Query: {};
   String: Scalars['String'];
   User: User;
 };
 
+export type InviteUserResonseResolvers<ContextType = any, ParentType extends ResolversParentTypes['InviteUserResonse'] = ResolversParentTypes['InviteUserResonse']> = {
+  inviteSent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  inviteUser?: Resolver<ResolversTypes['InviteUserResonse'], ParentType, ContextType, RequireFields<MutationInviteUserArgs, 'email' | 'role'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -149,6 +170,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 };
 
 export type Resolvers<ContextType = any> = {
+  InviteUserResonse?: InviteUserResonseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
