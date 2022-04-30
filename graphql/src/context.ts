@@ -1,5 +1,6 @@
 import { User } from "@prisma/client";
 import { UserService } from "./services/user";
+import { AuthorizationService } from "./services/authorization";
 import { ExpressContext } from "apollo-server-express";
 import { getUser } from "./lib/cognito";
 import { AuthenticationError } from "apollo-server";
@@ -7,6 +8,7 @@ import { AuthenticationError } from "apollo-server";
 export type Context = {
   authedUser: User;
   UserService: typeof UserService;
+  AuthorizationService: typeof AuthorizationService;
 };
 
 export async function getContext({ req }: ExpressContext): Promise<Context> {
@@ -25,8 +27,8 @@ export async function getContext({ req }: ExpressContext): Promise<Context> {
    */
 
   return {
-    // prisma
     authedUser,
     UserService,
+    AuthorizationService,
   };
 }
