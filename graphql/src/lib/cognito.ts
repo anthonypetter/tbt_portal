@@ -2,14 +2,17 @@ import {
   CognitoIdentityProvider,
   GetUserCommandOutput,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { CognitoRegion } from "../config";
+import { COGNITO_USER_POOL_ID, COGNITO_REGION } from "../config";
 import { AuthenticationError } from "apollo-server";
 import { fromJust } from "../utils/types";
 import { UserService } from "../services/user";
 import find from "lodash/find";
+import { ValidationError } from "../utils/errors";
+
+type CognitoSub = string;
 
 const cognitoClient = new CognitoIdentityProvider({
-  region: CognitoRegion,
+  region: COGNITO_REGION,
 });
 
 /**
@@ -44,6 +47,48 @@ export async function getUser(authHeader: string | undefined) {
   return user;
 }
 
+/**
+ * creates a cognito user. Account status defaults to pending.
+ * @param email user's email
+ * @returns Cognito sub id
+ */
+
+export async function createCognitoUser(email: string): Promise<CognitoSub> {
+  try {
+    const { User: mUser } = await cognitoClient.adminCreateUser({
+      DesiredDeliveryMediums: ["EMAIL"],
+      UserPoolId: COGNITO_USER_POOL_ID,
+      Username: email,
+      UserAttributes: [
+        {
+          Name: "email",
+          Value: email,
+        },
+        {
+          Name: "email_verified",
+          Value: "true",
+        },
+      ],
+    });
+
+    const { Attributes: mAttrs } = fromJust(mUser, "adminCreateUser User");
+    const Attributes = fromJust(mAttrs, "adminCreateUser User.Attributes");
+    const mSub = Attributes.find(({ Name }) => Name === "sub");
+    return fromJust(mSub?.Value, "adminCreateUser new user sub value");
+  } catch (error) {
+    if (error instanceof Error && error.name === "UsernameExistsException") {
+      console.error("adminCreateUser", error);
+      throw new ValidationError(error.message, "email already exists.");
+    }
+    throw error;
+  }
+}
+
+/**
+ * Gets a cognito user from a token
+ * @param token cognito access token
+ * @returns CognitoUser
+ */
 async function getCognitoUserFromToken(
   token: string
 ): Promise<GetUserCommandOutput> {
