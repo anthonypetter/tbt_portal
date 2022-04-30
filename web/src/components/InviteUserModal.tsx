@@ -74,7 +74,7 @@ enum UserRole {
 function InviteUserForm() {
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<UserRole | null>(null);
-  const [inviteFailure, setInviteFailure] = useState<string | null>("null");
+  const [inviteFailure, setInviteFailure] = useState<string | null>(null);
 
   return (
     <form className="space-y-6" onSubmit={() => console.log("submit!!")}>

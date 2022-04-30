@@ -1,18 +1,14 @@
 import { useMemo, useState } from "react";
-// import { User } from "@generated/graphql";
-import { Column } from "react-table";
+import { Column, Cell } from "react-table";
 import { Table } from "components/Table";
 import { Button } from "./Button";
 import { InviteUserModal } from "./InviteUserModal";
-
-type User = {
-  email: string;
-  role: string;
-  status: string;
-};
+import { GetUsersQuery, UserRole } from "@generated/graphql";
+import { AccountStatusBadge } from "components/AccountStatusBadge";
+import { assertUnreachable } from "@utils/types";
 
 type Props = {
-  users: User[];
+  users: NonNullable<GetUsersQuery["users"]>;
 };
 
 export function UsersPage({ users }: Props) {
@@ -41,10 +37,10 @@ export function UsersPage({ users }: Props) {
 type UserTableData = {
   email: string;
   role: string;
-  status: string;
+  accountStatus: string;
 };
 
-function usePrepUserData(users: User[]): {
+function usePrepUserData(users: NonNullable<GetUsersQuery["users"]>): {
   data: UserTableData[];
   columns: Column<UserTableData>[];
 } {
@@ -60,20 +56,46 @@ function usePrepUserData(users: User[]): {
       },
       {
         Header: "Status",
-        accessor: "status",
+        accessor: "accountStatus",
+        Cell: ({ row }: Cell<UserTableData>) => {
+          return (
+            <AccountStatusBadge accountStatus={row.values.accountStatus} />
+          );
+        },
       },
     ];
   }, []);
 
+  const emails = users.map((u) => u.email).join();
+
   const data = useMemo(() => {
-    return users.map((user, i) => {
+    return users.map((user) => {
       return {
         email: user.email,
-        role: user.role,
-        status: user.status,
+        role: getTextForRole(user.role),
+        accountStatus: user.accountStatus,
       };
     });
-  }, [users.length]); //TODO: not right.
+    // Used concatenated emails as a way to determine if users
+    // dependency has changed. (instead of stringifying an array of objects)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [emails]);
 
   return { data, columns };
+}
+
+function getTextForRole(role: UserRole): string {
+  switch (role) {
+    case UserRole.Admin:
+      return "Admin";
+
+    case UserRole.MentorTeacher:
+      return "Mentor Teacher";
+
+    case UserRole.TutorTeacher:
+      return "Tutor Teacher";
+
+    default:
+      return assertUnreachable(role, "role");
+  }
 }
