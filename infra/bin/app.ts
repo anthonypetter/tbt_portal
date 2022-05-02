@@ -19,6 +19,7 @@ export class PortalApp extends Stack {
 
     const cognito = new CognitoStack(app, "PortalCognito", {
       env: devEnv,
+      url: "",
     });
 
     new GraphQLServerStack(app, "GraphQlServerStack", {
