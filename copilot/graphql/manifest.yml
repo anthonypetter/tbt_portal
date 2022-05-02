@@ -32,9 +32,9 @@ exec: true # Enable running commands in your container.
 #variables:                    # Pass environment variables as key value pairs.
 #  LOG_LEVEL: info
 
-secrets: # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
-  DATABASE_URL: /copilot/portal/dev/secrets/DATABASE_URL
 # You can override any of the values defined above by environment.
-#environments:
-#  test:
-#    count: 2               # Number of tasks to run for the "test" environment.
+environments:
+  staging:
+    secrets:
+      DOPPLER_TOKEN: /copilot/portal/staging/secrets/DOPPLER_TOKEN
+      DATABASE_URL: /copilot/portal/staging/secrets/DATABASE_URL
