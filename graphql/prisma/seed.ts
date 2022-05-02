@@ -8,7 +8,7 @@ async function main() {
     update: {},
     create: {
       email: "victor@tutored.live",
-      cognitoSub: "d3a77801-7d1d-41cb-8a54-097e588a3c2a",
+      cognitoSub: "07155a34-6b7a-410d-9140-2af0b1877104",
       createdAt: new Date(),
       role: "ADMIN",
       accountStatus: "ACTIVE",
