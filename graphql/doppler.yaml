@@ -1,0 +1,3 @@
+setup:
+  project: portal-graphql
+  config: dev_local

@@ -1,0 +1,3 @@
+setup:
+  project: portal-web
+  config: dev_local
