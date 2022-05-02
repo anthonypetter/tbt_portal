@@ -71,14 +71,14 @@ export async function createCognitoUser(email: string): Promise<CognitoSub> {
       ],
     });
 
-    const { Attributes: mAttrs } = fromJust(mUser, "adminCreateUser User");
-    const Attributes = fromJust(mAttrs, "adminCreateUser User.Attributes");
+    const { Attributes: mAttrs } = fromJust(mUser, "CognitoUser");
+    const Attributes = fromJust(mAttrs, "CognitoUser.Attributes");
     const mSub = Attributes.find(({ Name }) => Name === "sub");
-    return fromJust(mSub?.Value, "adminCreateUser new user sub value");
+    return fromJust(mSub?.Value, "CognitoUser Sub Value");
   } catch (error) {
     if (error instanceof Error && error.name === "UsernameExistsException") {
       console.error("adminCreateUser", error);
-      throw new ValidationError(error.message, "email already exists.");
+      throw new ValidationError(error.message);
     }
     throw error;
   }
