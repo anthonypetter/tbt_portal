@@ -54,7 +54,7 @@ export function LoginPage() {
     <>
       <Head>
         <title>Log in</title>
-        <meta name="description" content="Log in to CourseUp!" />
+        <meta name="description" content="Log in to Tutored By Teachers!" />
       </Head>
 
       <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
