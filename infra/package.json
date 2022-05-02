@@ -1,8 +1,8 @@
 {
-  "name": "cdk-infra",
+  "name": "infra",
   "version": "0.1.0",
   "bin": {
-    "cdk-infra": "bin/cdk-infra.js"
+    "infra": "bin/app.js"
   },
   "scripts": {
     "build": "tsc",
