@@ -3,21 +3,28 @@ import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
 
-type Option = {
-  id: string | number;
-  name: string;
-};
+type Option<O> = O & { id: string; name: string };
 
-type Props = {
+type Props<O> = {
   labelText: string;
-  options: Option[];
+  options: Option<O>[];
+  onSelect: (option: Option<O>) => void;
 };
 
-export function SelectMenu({ labelText, options }: Props) {
+export function SelectMenu<O>({
+  labelText,
+  options,
+  onSelect: onSelectProp,
+}: Props<O>) {
   const [selected, setSelected] = useState(options[0]);
 
+  const onSelect = (option: Option<O>) => {
+    setSelected(option);
+    onSelectProp(option);
+  };
+
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox value={selected} onChange={onSelect}>
       {({ open }) => (
         <>
           <Listbox.Label className="block text-sm font-medium text-gray-700">
