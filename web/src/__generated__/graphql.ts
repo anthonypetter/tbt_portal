@@ -21,9 +21,21 @@ export enum AccountStatus {
   Pending = 'PENDING'
 }
 
+export type InviteUserResonse = {
+  __typename?: 'InviteUserResonse';
+  inviteSent: Scalars['Boolean'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   _empty?: Maybe<Scalars['String']>;
+  inviteUser: InviteUserResonse;
+};
+
+
+export type MutationInviteUserArgs = {
+  email: Scalars['String'];
+  role: UserRole;
 };
 
 export type Query = {
@@ -46,21 +58,116 @@ export enum UserRole {
   TutorTeacher = 'TUTOR_TEACHER'
 }
 
+export type InviteUserMutationVariables = Exact<{
+  email: Scalars['String'];
+  role: UserRole;
+}>;
+
+
+export type InviteUserMutation = { __typename?: 'Mutation', inviteUser: { __typename?: 'InviteUserResonse', inviteSent: boolean } };
+
+export type UsersFragment = { __typename?: 'Query', users: Array<{ __typename?: 'User', email: string, role: UserRole, accountStatus: AccountStatus }> };
+
+export type GetUsersTestQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUsersTestQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', email: string, role: UserRole, accountStatus: AccountStatus }> };
+
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', email: string } | null };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', email: string, accountStatus: AccountStatus, role: UserRole } | null };
 
-export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetUsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', email: string, role: UserRole, accountStatus: AccountStatus }> };
+export type UsersPageQueryVariables = Exact<{ [key: string]: never; }>;
 
 
+export type UsersPageQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', email: string, role: UserRole, accountStatus: AccountStatus }> };
+
+export const UsersFragmentDoc = gql`
+    fragment Users on Query {
+  users {
+    email
+    role
+    accountStatus
+  }
+}
+    `;
+export const InviteUserDocument = gql`
+    mutation InviteUser($email: String!, $role: UserRole!) {
+  inviteUser(email: $email, role: $role) {
+    inviteSent
+  }
+}
+    `;
+export type InviteUserMutationFn = Apollo.MutationFunction<InviteUserMutation, InviteUserMutationVariables>;
+
+/**
+ * __useInviteUserMutation__
+ *
+ * To run a mutation, you first call `useInviteUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useInviteUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [inviteUserMutation, { data, loading, error }] = useInviteUserMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *      role: // value for 'role'
+ *   },
+ * });
+ */
+export function useInviteUserMutation(baseOptions?: Apollo.MutationHookOptions<InviteUserMutation, InviteUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<InviteUserMutation, InviteUserMutationVariables>(InviteUserDocument, options);
+      }
+export type InviteUserMutationHookResult = ReturnType<typeof useInviteUserMutation>;
+export type InviteUserMutationResult = Apollo.MutationResult<InviteUserMutation>;
+export type InviteUserMutationOptions = Apollo.BaseMutationOptions<InviteUserMutation, InviteUserMutationVariables>;
+export const GetUsersTestDocument = gql`
+    query GetUsersTest {
+  users {
+    email
+    role
+    accountStatus
+  }
+}
+    `;
+
+/**
+ * __useGetUsersTestQuery__
+ *
+ * To run a query within a React component, call `useGetUsersTestQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUsersTestQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUsersTestQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetUsersTestQuery(baseOptions?: Apollo.QueryHookOptions<GetUsersTestQuery, GetUsersTestQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUsersTestQuery, GetUsersTestQueryVariables>(GetUsersTestDocument, options);
+      }
+export function useGetUsersTestLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUsersTestQuery, GetUsersTestQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUsersTestQuery, GetUsersTestQueryVariables>(GetUsersTestDocument, options);
+        }
+export type GetUsersTestQueryHookResult = ReturnType<typeof useGetUsersTestQuery>;
+export type GetUsersTestLazyQueryHookResult = ReturnType<typeof useGetUsersTestLazyQuery>;
+export type GetUsersTestQueryResult = Apollo.QueryResult<GetUsersTestQuery, GetUsersTestQueryVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {
     email
+    accountStatus
+    role
   }
 }
     `;
@@ -91,39 +198,35 @@ export function useCurrentUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type CurrentUserQueryHookResult = ReturnType<typeof useCurrentUserQuery>;
 export type CurrentUserLazyQueryHookResult = ReturnType<typeof useCurrentUserLazyQuery>;
 export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
-export const GetUsersDocument = gql`
-    query GetUsers {
-  users {
-    email
-    role
-    accountStatus
-  }
+export const UsersPageDocument = gql`
+    query UsersPage {
+  ...Users
 }
-    `;
+    ${UsersFragmentDoc}`;
 
 /**
- * __useGetUsersQuery__
+ * __useUsersPageQuery__
  *
- * To run a query within a React component, call `useGetUsersQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useUsersPageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUsersPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetUsersQuery({
+ * const { data, loading, error } = useUsersPageQuery({
  *   variables: {
  *   },
  * });
  */
-export function useGetUsersQuery(baseOptions?: Apollo.QueryHookOptions<GetUsersQuery, GetUsersQueryVariables>) {
+export function useUsersPageQuery(baseOptions?: Apollo.QueryHookOptions<UsersPageQuery, UsersPageQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUsersQuery, GetUsersQueryVariables>(GetUsersDocument, options);
+        return Apollo.useQuery<UsersPageQuery, UsersPageQueryVariables>(UsersPageDocument, options);
       }
-export function useGetUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUsersQuery, GetUsersQueryVariables>) {
+export function useUsersPageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UsersPageQuery, UsersPageQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUsersQuery, GetUsersQueryVariables>(GetUsersDocument, options);
+          return Apollo.useLazyQuery<UsersPageQuery, UsersPageQueryVariables>(UsersPageDocument, options);
         }
-export type GetUsersQueryHookResult = ReturnType<typeof useGetUsersQuery>;
-export type GetUsersLazyQueryHookResult = ReturnType<typeof useGetUsersLazyQuery>;
-export type GetUsersQueryResult = Apollo.QueryResult<GetUsersQuery, GetUsersQueryVariables>;
+export type UsersPageQueryHookResult = ReturnType<typeof useUsersPageQuery>;
+export type UsersPageLazyQueryHookResult = ReturnType<typeof useUsersPageLazyQuery>;
+export type UsersPageQueryResult = Apollo.QueryResult<UsersPageQuery, UsersPageQueryVariables>;

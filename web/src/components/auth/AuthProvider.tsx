@@ -1,14 +1,21 @@
-import { useContext, useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { Auth } from "@aws-amplify/auth";
-import { getSession } from "@lib/apollo-client";
-import { ApolloProvider } from "@apollo/client";
+import { getSession, Session } from "@lib/apollo-client";
+import { ApolloProvider, gql, ApolloQueryResult } from "@apollo/client";
 import { fromJust } from "@utils/types";
 import { useRouter } from "next/router";
-import { Routes } from "@utils/routes";
-import { gql, ApolloQueryResult } from "@apollo/client";
+import { getUnauthenticatedRoutes, Routes } from "@utils/routes";
 import { CurrentUserQuery, User } from "@generated/graphql";
 import { AuthContext, LoginStatus } from "./AuthContext";
 import { useInterval } from "@utils/useInterval";
+import { Spinner } from "components/Spinner";
+import { Layout } from "components/Layout";
 
 const REFRESH_INTERVAL = 30 * 60 * 1000; //refresh every half hour
 
@@ -18,6 +25,8 @@ const REFRESH_INTERVAL = 30 * 60 * 1000; //refresh every half hour
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const [didPasswordChangeComplete, setDidPasswordChangeComplete] =
+    useState(false);
 
   const [authState, setAuthState] = useState<{
     user: User | null;
@@ -89,7 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     setAuthStatus();
-  }, []);
+  }, [didPasswordChangeComplete]);
 
   /**
    * login
@@ -156,26 +165,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [router]);
 
+  const onPasswordChange = useCallback(async () => {
+    setDidPasswordChangeComplete(true);
+  }, []);
+
   const context = useMemo(
     () => ({
       user: authState.user,
       login,
       signOut,
       isAuthenticating: authState.isAuthenticating,
+      onPasswordChange,
     }),
-    [authState.user, login, signOut, authState.isAuthenticating]
+    [
+      authState.user,
+      login,
+      signOut,
+      authState.isAuthenticating,
+      onPasswordChange,
+    ]
   );
 
   const session = authState.token ? getSession(authState.token) : null;
 
   return (
     <AuthContext.Provider value={context}>
-      {session ? (
-        <ApolloProvider client={session.client}>{children}</ApolloProvider>
-      ) : (
+      {getUnauthenticatedRoutes()
+        .map((r) => r.path())
+        .includes(router.pathname) ? (
         <>{children}</>
+      ) : (
+        <ApolloWrapper session={session}>{children}</ApolloWrapper>
       )}
     </AuthContext.Provider>
+  );
+}
+
+function ApolloWrapper({
+  session,
+  children,
+}: {
+  session: Session | null;
+  children: React.ReactNode;
+}) {
+  return session ? (
+    <ApolloProvider client={session.client}>{children}</ApolloProvider>
+  ) : (
+    <Layout>
+      <div className="flex h-screen justify-center">
+        <Spinner color="border-blue-700" />
+      </div>
+    </Layout>
   );
 }
 

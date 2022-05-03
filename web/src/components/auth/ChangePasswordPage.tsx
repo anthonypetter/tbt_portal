@@ -9,6 +9,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { ErrorBox } from "components/ErrorBox";
 import { ButtonAndIcon, HeaderAndLogo, UnauthCenterLayout } from "./LoginPage";
 import { RequiredField } from "./RequiredField";
+import { useAuth } from "./AuthProvider";
 
 type PasswordChangeInputs = {
   password: string;
@@ -24,6 +25,7 @@ type Props = {
 export function ChangePasswordPage({ cognitoUser }: Props) {
   const [status, setStatus] = useState<Status>("idle");
   const router = useRouter();
+  const auth = useAuth();
 
   const [changePasswordFailure, setChangePasswordFailure] = useState<
     string | null
@@ -46,6 +48,7 @@ export function ChangePasswordPage({ cognitoUser }: Props) {
         throw new Error("Passwords do not match!");
       }
       await Auth.completeNewPassword(cognitoUser, confirmPassword);
+      auth.onPasswordChange();
       setStatus("success");
       router.push(Routes.home.href());
     } catch (error: unknown) {

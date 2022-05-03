@@ -26,7 +26,7 @@ export function AccountStatusBadge({ accountStatus }: Props) {
 
     case AccountStatus.Pending: {
       return (
-        <Badge className="text-black bg-gray-100">
+        <Badge className="text-yellow-800 bg-yellow-100">
           {getText(accountStatus)}
         </Badge>
       );

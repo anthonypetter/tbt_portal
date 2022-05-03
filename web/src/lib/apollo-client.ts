@@ -7,7 +7,7 @@ import {
 } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 
-type Session = {
+export type Session = {
   client: ApolloClient<NormalizedCacheObject>;
   token: string;
 };
