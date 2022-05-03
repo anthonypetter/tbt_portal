@@ -13,6 +13,7 @@ http:
   path: "graphql"
   # You can specify a custom health check path. The default is "/".
   healthcheck: /.well-known/apollo/server-health
+  alias: api.tutored-stage.live
 
 # Configuration for your containers and service.
 image:
