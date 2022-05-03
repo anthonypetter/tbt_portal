@@ -4,6 +4,7 @@ import { AuthProvider } from "components/auth/AuthProvider";
 import { configureAmplify } from "@lib/amplify";
 import { Layout } from "components/Layout";
 import Head from "next/head";
+import { Toaster } from "react-hot-toast";
 
 configureAmplify();
 
@@ -16,6 +17,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
       <AuthProvider>
         <Layout>
+          <Toaster position="top-right" />
           <Component {...pageProps} />
         </Layout>
       </AuthProvider>
