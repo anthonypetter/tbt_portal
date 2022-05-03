@@ -55,10 +55,10 @@ function getNavigation(currentPathname: string) {
       current: Routes.engagements.path() === currentPathname,
     },
     {
-      name: "Classrooms",
-      href: Routes.classrooms.href(),
+      name: "Cohorts",
+      href: Routes.cohorts.href(),
       icon: SiGoogleclassroom,
-      current: Routes.classrooms.path() === currentPathname,
+      current: Routes.cohorts.path() === currentPathname,
     },
     {
       name: "Users",
