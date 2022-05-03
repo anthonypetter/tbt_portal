@@ -57,7 +57,7 @@ export class CognitoStack extends Stack {
         emailSubject: `Welcome to Tutored By Teachers!`,
         emailBody: `
           <p>Welcome!</p>
-          <p>Congratulations, you've been invited to join the Tutored By Teachers Portal! We are excited to be partnering with you!</p>
+          <p>Congratulations, you've been invited to join the Tutored By Teachers Portal! We are excited to have you on board!</p>
           <p>We've created an account for you and have given you a temporary password.</p>
           <br>
           <p><b>Username:</b> {username}</p>
