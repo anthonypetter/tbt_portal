@@ -40,3 +40,7 @@ export const Routes = {
     path: () => "/recordings",
   },
 };
+
+export function getUnauthenticatedRoutes() {
+  return [Routes.login];
+}
