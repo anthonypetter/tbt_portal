@@ -3,16 +3,32 @@ import { Column, Cell } from "react-table";
 import { Table } from "components/Table";
 import { Button } from "./Button";
 import { InviteUserModal } from "./InviteUserModal";
-import { GetUsersQuery, UserRole } from "@generated/graphql";
+import { UsersPageQuery, UserRole } from "@generated/graphql";
 import { AccountStatusBadge } from "components/AccountStatusBadge";
+import { gql } from "@apollo/client";
 import { assertUnreachable } from "@utils/types";
+import { triggerSuccessToast } from "./Toast";
 
 type Props = {
-  users: NonNullable<GetUsersQuery["users"]>;
+  users: NonNullable<UsersPageQuery["users"]>;
+  refetchUsers: () => void;
 };
 
-export function UsersPage({ users }: Props) {
-  const { columns, data } = usePrepUserData(users);
+UsersPage.fragments = {
+  users: gql`
+    fragment Users on Query {
+      users {
+        email
+        role
+        accountStatus
+      }
+    }
+  `,
+};
+
+export function UsersPage({ users, refetchUsers }: Props) {
+  const { columns, data: tableData } = usePrepUserData(users);
+
   const [showInviteModal, setShowInviteModal] = useState(false);
 
   return (
@@ -23,12 +39,17 @@ export function UsersPage({ users }: Props) {
         <Button onClick={() => setShowInviteModal(true)}>Invite User</Button>
       </div>
       <div className="mb-4 lg:mb-0">
-        <Table columns={columns} data={data} />
+        <Table columns={columns} data={tableData} />
       </div>
 
       <InviteUserModal
         show={showInviteModal}
         onCancel={() => setShowInviteModal(false)}
+        onSuccess={() => {
+          refetchUsers();
+          setShowInviteModal(false);
+          triggerSuccessToast({ message: "User successfully invited!" });
+        }}
       />
     </>
   );
@@ -40,7 +61,7 @@ type UserTableData = {
   accountStatus: string;
 };
 
-function usePrepUserData(users: NonNullable<GetUsersQuery["users"]>): {
+function usePrepUserData(users: NonNullable<UsersPageQuery["users"]>): {
   data: UserTableData[];
   columns: Column<UserTableData>[];
 } {
