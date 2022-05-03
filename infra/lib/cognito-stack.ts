@@ -11,11 +11,13 @@ import {
   AccountRecovery,
   ClientAttributes,
 } from "aws-cdk-lib/aws-cognito";
-import { AssetCode, Function, Runtime, Code } from "aws-cdk-lib/aws-lambda";
+import { Function, Runtime, Code } from "aws-cdk-lib/aws-lambda";
 import * as path from "path";
+import { CdkStage } from "../bin/app";
 
 interface CognitoStackProps extends StackProps {
-  url: string;
+  domain: string;
+  stage: CdkStage;
 }
 
 export class CognitoStack extends Stack {
@@ -24,13 +26,7 @@ export class CognitoStack extends Stack {
   constructor(scope: App, id: string, props: CognitoStackProps) {
     super(scope, id, props);
 
-    const preSignup = new Function(this, "preSignupFn", {
-      code: Code.fromAsset(path.join(__dirname, "../../lambdas/build")),
-      handler: "preSignUp.handler",
-      runtime: Runtime.NODEJS_14_X,
-    });
-
-    const USER_POOL_NAME = "tbt-portal-pool";
+    const USER_POOL_NAME = `portal-pool-${props.stage}`;
     const userPool = new UserPool(this, "userpool", {
       userPoolName: USER_POOL_NAME,
       selfSignUpEnabled: false,
@@ -56,9 +52,7 @@ export class CognitoStack extends Stack {
       },
       accountRecovery: AccountRecovery.EMAIL_ONLY,
       removalPolicy: RemovalPolicy.RETAIN,
-      lambdaTriggers: {
-        preSignup,
-      },
+
       userInvitation: {
         emailSubject: `Welcome to Tutored By Teachers!`,
         emailBody: `
@@ -66,11 +60,11 @@ export class CognitoStack extends Stack {
           <p>Congratulations, you've been invited to join the Tutored By Teachers Portal! We are excited to be partnering with you!</p>
           <p>We've created an account for you and have given you a temporary password.</p>
           <br>
-          <p><b>Email:</b> {email}</p>
+          <p><b>Username:</b> {username}</p>
           <p><b>Temporary password:</b> {####}</p>
           <br>
           <p>Please use your temporary password to log in to your account. Once you log in, you'll get a chance to change your password.</p>
-          <a href="https://${props.url}/auth/accept-invitation" target="_blank" rel="noopener noreferrer">Go to My Account</a>
+          <a href="https://${props.domain}/login" target="_blank" rel="noopener noreferrer">Login</a>
           <p>If you have any questions, feel free to contact us at support@tutored.live</p>
           <br>
           <p>Our team is looking forward to working with you!</p>
@@ -82,7 +76,7 @@ export class CognitoStack extends Stack {
     });
 
     const userPoolClient = userPool.addClient("UserPoolClient", {
-      userPoolClientName: "tbt-web",
+      userPoolClientName: "portal-web",
       refreshTokenValidity: Duration.days(14),
       readAttributes: new ClientAttributes().withStandardAttributes({
         email: true,
