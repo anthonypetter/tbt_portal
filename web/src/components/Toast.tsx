@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { assertUnreachable } from "@utils/types";
 import { toast } from "react-hot-toast";
 
@@ -70,4 +71,15 @@ export function triggerSuccessToast({
     () => <Toast message={message} sub={sub} textColor={textColor} />,
     { style }
   );
+}
+
+export function useErrorToast(error?: Error) {
+  useEffect(() => {
+    if (error) {
+      triggerErrorToast({
+        message: "Looks like something went wrong.",
+        sub: "We weren't able to refresh the users. We're on it.",
+      });
+    }
+  }, [error]);
 }
