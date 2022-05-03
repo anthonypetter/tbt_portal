@@ -17,12 +17,12 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   };
 }
 
-const Classrooms: NextPage = () => {
+const Cohorts: NextPage = () => {
   return (
     <AuthedLayout>
-      <Header>Classrooms</Header>
+      <Header>Cohorts</Header>
     </AuthedLayout>
   );
 };
 
-export default Classrooms;
+export default Cohorts;

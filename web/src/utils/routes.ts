@@ -23,9 +23,9 @@ export const Routes = {
     href: () => "/engagements",
     path: () => "/engagements",
   },
-  classrooms: {
-    href: () => "/classrooms",
-    path: () => "/classrooms",
+  cohorts: {
+    href: () => "/cohorts",
+    path: () => "/cohorts",
   },
   users: {
     href: () => "/users",
