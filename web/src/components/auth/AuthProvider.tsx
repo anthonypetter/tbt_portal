@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { Routes } from "@utils/routes";
 import { gql, ApolloQueryResult } from "@apollo/client";
 import { CurrentUserQuery, User } from "@generated/graphql";
-import { AuthContext } from "./AuthContext";
+import { AuthContext, LoginStatus } from "./AuthContext";
 import { useInterval } from "@utils/useInterval";
 
 const REFRESH_INTERVAL = 30 * 60 * 1000; //refresh every half hour
@@ -99,12 +99,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const cognitoUser = await Auth.signIn(email, password);
       if (cognitoUser.challengeName === "NEW_PASSWORD_REQUIRED") {
-        // TODO: navigate to new password page.
-        // const newPassword = "password";
-        // const newUser = await Auth.completeNewPassword(
-        //   cognitoUser,
-        //   newPassword
-        // );
+        return {
+          cognitoUser: cognitoUser,
+          status: LoginStatus.ChangePassword,
+          message: "Login successful. Password change required.",
+        };
       }
 
       const token = cognitoUser.signInUserSession
@@ -112,25 +111,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .getJwtToken();
 
       const user = await fetchUser(token);
-      console.log("login: fetched user", user);
 
       if (user) {
         setAuthState({ user, token: token, isAuthenticating: false });
-        return { success: true, message: "Login successful" };
+        return {
+          cognitoUser,
+          status: LoginStatus.Success,
+          message: "Login successful",
+        };
       } else {
         setAuthState(unauthenticated());
-        return { success: false, message: "User not found." };
+        return {
+          cognitoUser,
+          status: LoginStatus.Failure,
+          message: "User not found.",
+        };
       }
     } catch (error: unknown) {
       console.error(error);
       setAuthState(unauthenticated());
 
-      if (error instanceof Error) {
-        const message = error.message;
-        return { success: false, message: message };
-      } else {
-        return { success: false, message: "Login failed." };
-      }
+      return {
+        cognitoUser: null,
+        status: LoginStatus.Failure,
+        message: error instanceof Error ? error.message : "Login failed.",
+      };
     }
   }, []);
 
@@ -179,7 +184,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
  */
 
 function unauthenticated() {
-  return { user: null, token: null, isAuthenticating: false };
+  return {
+    cognitoUser: null,
+    user: null,
+    token: null,
+    isAuthenticating: false,
+  };
 }
 
 async function getRefreshTokenCallback(
@@ -229,6 +239,8 @@ export const GET_CURRENT_USER = gql`
   query CurrentUser {
     currentUser {
       email
+      accountStatus
+      role
     }
   }
 `;

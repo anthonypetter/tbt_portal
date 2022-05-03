@@ -1,10 +1,9 @@
 import type { NextPage, GetServerSidePropsContext } from "next";
 import { getServerSideAuth } from "@utils/auth/server-side-auth";
-import { LoginPage } from "components/LoginPage";
+import { LoginPage } from "components/auth/LoginPage";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const auth = await getServerSideAuth(context);
-  console.log("auth", auth);
 
   if (auth.isAuthenticated) {
     console.log(
