@@ -44,6 +44,10 @@ export async function getUser(authHeader: string | undefined) {
     fromJust(mCognitoSub, "cognitoSub value")
   );
 
+  if (user) {
+    await UserService.activateUser(user);
+  }
+
   return user;
 }
 

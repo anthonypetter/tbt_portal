@@ -23,6 +23,9 @@ RUN npm run build
 FROM node:16-alpine AS runner
 WORKDIR /app
 
+# Install Doppler (see https://docs.doppler.com/docs/cli)
+RUN (curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh || wget -t 3 -qO- https://cli.doppler.com/install.sh) | sh -s -- --verify-signature
+
 ENV NODE_ENV production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NEXT_TELEMETRY_DISABLED 1
