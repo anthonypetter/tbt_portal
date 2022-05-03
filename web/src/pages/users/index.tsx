@@ -1,20 +1,19 @@
+import { useState } from "react";
 import type { NextPage, GetServerSidePropsContext } from "next";
 import { getServerSideAuth } from "@utils/auth/server-side-auth";
 import { AuthedLayout } from "components/AuthedLayout";
 import { UsersPage } from "components/UsersPage";
-import { gql, ApolloQueryResult } from "@apollo/client";
+import { gql, ApolloQueryResult, useQuery } from "@apollo/client";
 import { getSession } from "@lib/apollo-client";
 import { processResult } from "@utils/apollo";
-import { GetUsersQuery } from "@generated/graphql";
+import { UsersPageQuery, useUsersPageQuery } from "@generated/graphql";
+import { triggerErrorToast } from "components/Toast";
 
 const GET_USERS = gql`
-  query GetUsers {
-    users {
-      email
-      role
-      accountStatus
-    }
+  query UsersPage {
+    ...Users
   }
+  ${UsersPage.fragments.users}
 `;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -26,7 +25,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const { client } = getSession(auth.token);
 
-  const usersResult: ApolloQueryResult<GetUsersQuery> = await client.query({
+  const usersResult: ApolloQueryResult<UsersPageQuery> = await client.query({
     query: GET_USERS,
   });
 
@@ -40,13 +39,33 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 type Props = {
-  users: NonNullable<GetUsersQuery["users"]>;
+  users: NonNullable<UsersPageQuery["users"]>;
 };
 
-const Users: NextPage<Props> = ({ users }: Props) => {
+const Users: NextPage<Props> = (props: Props) => {
+  const [users, setUsers] = useState(props.users);
+
+  const { refetch } = useUsersPageQuery({
+    fetchPolicy: "no-cache",
+    skip: true,
+    onCompleted: (data) => {
+      if (data.users) {
+        setUsers(data.users);
+      }
+    },
+    onError: (error) => {
+      console.error(error);
+
+      triggerErrorToast({
+        message: "Looks like something went wrong.",
+        sub: "We weren't able to refresh the users. We're on it.",
+      });
+    },
+  });
+
   return (
     <AuthedLayout>
-      <UsersPage users={users} />
+      <UsersPage users={users} refetchUsers={refetch} />
     </AuthedLayout>
   );
 };

@@ -1,31 +1,84 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { UserIcon } from "@heroicons/react/outline";
 import { Button } from "./Button";
 import { Spinner } from "./Spinner";
 import { Modal } from "./Modal";
 import { SelectMenu } from "./SelectMenu";
 import { ErrorBox } from "components/ErrorBox";
+import { gql } from "@apollo/client";
+import { UserRole, useInviteUserMutation } from "@generated/graphql";
+import { fromJust } from "@utils/types";
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const INVITE_USER = gql`
+  mutation InviteUser($email: String!, $role: UserRole!) {
+    inviteUser(email: $email, role: $role) {
+      inviteSent
+    }
+  }
+`;
 
 export function InviteUserModal({
   show,
-  onCancel,
+  onCancel: onCancelProp,
+  onSuccess,
 }: {
   show: boolean;
   onCancel: () => void;
+  onSuccess: () => void;
 }) {
   const [inviting, setInviting] = useState(false);
-  const [error, setError] = useState(null);
   const cancelButtonRef = useRef(null);
+  const [inviteUser] = useInviteUserMutation();
+  const [inviteFailure, setInviteFailure] = useState<string | null>(null);
+  const [email, setEmail] = useState<string>("");
+  const [role, setRole] = useState<UserRole | null>(null);
 
-  //TODO: replace me
-  const onInvite = () => {
-    console.log("INVITE!!!!");
+  useEffect(() => {
+    if (show) {
+      setInviting(false);
+      setInviteFailure(null);
+    }
+  }, [show]);
+
+  const onInviteUser = async () => {
     setInviting(true);
+
+    try {
+      const { data } = await inviteUser({
+        variables: { email, role: fromJust(role, "role") },
+      });
+
+      if (!data?.inviteUser.inviteSent) {
+        setInviting(false);
+        throw new Error("Something went wrong with the invite.");
+      }
+
+      setInviting(false);
+      onSuccess();
+    } catch (error: unknown) {
+      console.error(error);
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Something went wrong with the invite.";
+
+      setInviting(false);
+      setInviteFailure(message);
+    }
+  };
+
+  const onCancel = () => {
+    onCancelProp();
   };
 
   const body = (
     <div className="py-3">
-      <InviteUserForm />
+      <div className="mb-4">
+        <InviteUserForm email={email} setEmail={setEmail} setRole={setRole} />
+      </div>
+      {inviteFailure && <ErrorBox />}
     </div>
   );
 
@@ -47,7 +100,8 @@ export function InviteUserModal({
           <Button
             theme="primary"
             className="px-4 w-full sm:ml-3 sm:w-20"
-            onClick={onInvite}
+            onClick={onInviteUser}
+            disabled={!email || !role}
           >
             {inviting ? <Spinner /> : "Invite"}
           </Button>
@@ -65,19 +119,26 @@ export function InviteUserModal({
   );
 }
 
-enum UserRole {
-  Admin = "ADMIN",
-  MentorTeacher = "MENTOR_TEACHER",
-  TutorTeacher = "TUTOR_TEACHER",
-}
+type Props = {
+  email: string;
+  setEmail: (email: string) => void;
+  setRole: (role: UserRole | null) => void;
+};
 
-function InviteUserForm() {
-  const [email, setEmail] = useState<string>("");
-  const [role, setRole] = useState<UserRole | null>(null);
-  const [inviteFailure, setInviteFailure] = useState<string | null>(null);
+function InviteUserForm({ email, setEmail, setRole }: Props) {
+  //TODO: Add email format validation
+  const options = useMemo(
+    () => [
+      { id: "NONE_SELECTED", name: "Select an option", role: null },
+      { id: "1", name: "Administrator", role: UserRole.Admin },
+      { id: "2", name: "Mentor Teacher", role: UserRole.MentorTeacher },
+      { id: "3", name: "Tutor Teacher", role: UserRole.TutorTeacher },
+    ],
+    []
+  );
 
   return (
-    <form className="space-y-6" onSubmit={() => console.log("submit!!")}>
+    <div>
       <div>
         <label
           htmlFor="email"
@@ -106,18 +167,13 @@ function InviteUserForm() {
       <div className="mt-1">
         <SelectMenu
           labelText="Role"
-          options={[
-            { id: "1", name: "Administrator" },
-            { id: "2", name: "Mentor Teacher" },
-            { id: "3", name: "Tutor Teacher" },
-          ]}
+          options={options}
+          onSelect={(option) => setRole(option.role)}
         />
         <p className="mt-2 text-sm text-gray-500" id="email-description">
           {"The user will be given different permissions based on their role."}
         </p>
       </div>
-
-      {inviteFailure && <ErrorBox />}
-    </form>
+    </div>
   );
 }
