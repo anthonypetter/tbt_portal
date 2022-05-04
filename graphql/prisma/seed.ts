@@ -15,6 +15,18 @@ async function main() {
     },
   });
 
+  const rafik = await prisma.user.upsert({
+    where: { email: "rafik@tutored.live" },
+    update: {},
+    create: {
+      email: "rafik@tutored.live",
+      cognitoSub: "8b43e5b1-268f-4530-9b11-944e5578a369",
+      createdAt: new Date(),
+      role: "ADMIN",
+      accountStatus: "ACTIVE",
+    },
+  });
+
   console.log("Finished seeding.");
 }
 
