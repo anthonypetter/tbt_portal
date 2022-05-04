@@ -13,6 +13,7 @@ http:
   path: "/"
   # You can specify a custom health check path. The default is "/".
   healthcheck: "/api/health-check"
+  alias: tutored-stage.live
 
 # Configuration for your containers and service.
 image:
@@ -32,9 +33,8 @@ exec: true # Enable running commands in your container.
 #variables:                    # Pass environment variables as key value pairs.
 #  LOG_LEVEL: info
 
-#secrets:                      # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
-#  GITHUB_TOKEN: GITHUB_TOKEN  # The key is the name of the environment variable, the value is the name of the SSM parameter.
-
+secrets: # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
+  DOPPLER_TOKEN: /copilot/${COPILOT_APPLICATION_NAME}/${COPILOT_ENVIRONMENT_NAME}/secrets/DOPPLER_TOKEN_WEB
 # You can override any of the values defined above by environment.
 #environments:
 #  test:
