@@ -11,10 +11,10 @@ Parameters:
 
 Mappings:
   EnvMap:
+    dev:
+      CognitoArn: "arn:aws:cognito-idp:us-east-2:014491063547:userpool/us-east-2_n6llEq5E8"
     staging:
       CognitoArn: "arn:aws:cognito-idp:us-east-2:014491063547:userpool/us-east-2_E6Wwlj1cM"
-    production:
-      CognitoArn: "arn:aws:cognito-idp:us-east-2:014491063547:userpool/us-east-2_E6Wwlj1cM" # TODO: replace with prod pool
 
 Resources:
   CognitoAccessPolicy:
