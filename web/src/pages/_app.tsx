@@ -5,6 +5,7 @@ import { configureAmplify } from "@lib/amplify";
 import { Layout } from "components/Layout";
 import Head from "next/head";
 import { Toaster } from "react-hot-toast";
+import { ThemeProvider } from "components/ThemeProvider";
 
 configureAmplify();
 
@@ -16,10 +17,12 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
 
       <AuthProvider>
-        <Layout>
-          <Toaster position="top-right" />
-          <Component {...pageProps} />
-        </Layout>
+        <ThemeProvider>
+          <Layout>
+            <Toaster position="top-right" />
+            <Component {...pageProps} />
+          </Layout>
+        </ThemeProvider>
       </AuthProvider>
     </>
   );

@@ -21,6 +21,8 @@ import { useRouter } from "next/router";
 import { useAuth } from "./auth/AuthProvider";
 import Image from "next/image";
 import { UserCircleIcon } from "@heroicons/react/outline";
+import { useTheme } from "./ThemeProvider";
+import { RoleText } from "./RoleText";
 
 function getNavigation(currentPathname: string) {
   return [
@@ -81,6 +83,7 @@ function getNavigation(currentPathname: string) {
   ];
 }
 
+// TODO: update
 const userNavigation = [
   { name: "Your Profile", href: "#" },
   { name: "Settings", href: "#" },
@@ -94,6 +97,7 @@ export function AuthedLayout({ children }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const router = useRouter();
   const navigation = getNavigation(router.pathname);
+  const { sidebar } = useTheme();
 
   return (
     <>
@@ -124,7 +128,9 @@ export function AuthedLayout({ children }: Props) {
               leaveFrom="translate-x-0"
               leaveTo="-translate-x-full"
             >
-              <div className="relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-gray-700">
+              <div
+                className={`relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 ${sidebar.mainBackground}`}
+              >
                 <Transition.Child
                   as={Fragment}
                   enter="ease-in-out duration-300"
@@ -158,13 +164,18 @@ export function AuthedLayout({ children }: Props) {
                         <a
                           className={clsx(
                             item.current
-                              ? "bg-gray-800 text-white"
-                              : "text-gray-100 hover:bg-gray-600",
+                              ? `${sidebar.activeLinkBackground} ${sidebar.activeLinkText}`
+                              : `${sidebar.inactiveLinkText} ${sidebar.inactiveLinkBackgroundHover}`,
                             "group flex items-center px-2 py-2 text-base font-medium rounded-md"
                           )}
                         >
                           <item.icon
-                            className="mr-4 flex-shrink-0 h-6 w-6 text-gray-300"
+                            className={clsx(
+                              "mr-4 flex-shrink-0 h-6 w-6",
+                              item.current
+                                ? sidebar.activeIconColor
+                                : sidebar.inactiveIconColor
+                            )}
                             aria-hidden="true"
                           />
                           {item.name}
@@ -184,7 +195,9 @@ export function AuthedLayout({ children }: Props) {
         {/* Static sidebar for desktop */}
         <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
           {/* Sidebar component, swap this element with another sidebar if you like */}
-          <div className="flex flex-col flex-grow pt-5 bg-gray-700 overflow-y-auto">
+          <div
+            className={`flex flex-col flex-grow pt-5 ${sidebar.mainBackground} overflow-y-auto`}
+          >
             <div className="flex items-center flex-shrink-0 px-4">
               <CheckmarkTitle />
             </div>
@@ -195,13 +208,18 @@ export function AuthedLayout({ children }: Props) {
                     <a
                       className={clsx(
                         item.current
-                          ? "bg-gray-800 text-white"
-                          : "text-gray-100 hover:bg-gray-600",
+                          ? `${sidebar.activeLinkBackground} ${sidebar.activeLinkText}`
+                          : `${sidebar.inactiveLinkText} ${sidebar.inactiveLinkBackgroundHover}`,
                         "group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                       )}
                     >
                       <item.icon
-                        className="mr-3 flex-shrink-0 h-6 w-6 text-gray-300"
+                        className={clsx(
+                          "mr-3 flex-shrink-0 h-6 w-6",
+                          item.current
+                            ? sidebar.activeIconColor
+                            : sidebar.inactiveIconColor
+                        )}
                         aria-hidden="true"
                       />
                       {item.name}
@@ -289,36 +307,62 @@ function AvatarDropdown() {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-          {userNavigation.map((item) => (
-            <Menu.Item key={item.name}>
+        <Menu.Items className="divide-y divide-gray-200 origin-top-right absolute right-0 mt-2 w-100 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+          {auth.user && (
+            <div className="py-1">
+              <Menu.Item key="role">
+                <div className="px-4 py-2">
+                  <div className="flex items-center">
+                    <UserCircleIcon
+                      className="h-10 w-10 rounded-full mr-1"
+                      aria-hidden="true"
+                    />
+                    <div>
+                      <div className="text-xs text-gray-700 font-bold">
+                        {auth.user.email}
+                      </div>
+                      <RoleText
+                        role={auth.user.role}
+                        className="text-xs text-gray-700 font-light"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Menu.Item>
+            </div>
+          )}
+
+          <div className="py-1">
+            {userNavigation.map((item) => (
+              <Menu.Item key={item.name}>
+                {({ active }) => (
+                  <a
+                    href={item.href}
+                    className={clsx(
+                      active ? "bg-gray-100" : "",
+                      "block px-4 py-2 text-sm text-gray-700"
+                    )}
+                  >
+                    {item.name}
+                  </a>
+                )}
+              </Menu.Item>
+            ))}
+
+            <Menu.Item>
               {({ active }) => (
                 <a
-                  href={item.href}
+                  onClick={() => auth.signOut()}
                   className={clsx(
                     active ? "bg-gray-100" : "",
-                    "block px-4 py-2 text-sm text-gray-700"
+                    "block px-4 py-2 text-gray-700 text-sm cursor-pointer"
                   )}
                 >
-                  {item.name}
+                  Sign out
                 </a>
               )}
             </Menu.Item>
-          ))}
-
-          <Menu.Item>
-            {({ active }) => (
-              <a
-                onClick={() => auth.signOut()}
-                className={clsx(
-                  active ? "bg-gray-100" : "",
-                  "block px-4 py-2 text-gray-700 text-sm cursor-pointer"
-                )}
-              >
-                Sign out
-              </a>
-            )}
-          </Menu.Item>
+          </div>
         </Menu.Items>
       </Transition>
     </Menu>
@@ -329,15 +373,17 @@ function AvatarDropdown() {
 function CheckmarkTitle() {
   return (
     <>
-      <Image
-        width={40}
-        height={40}
-        src={"/tbt-checkmark.jpg"}
-        alt=""
-        className="rounded-md mx-auto border-2"
-        layout="fixed"
-      />
-      <h1 className="px-3 text-left text-white text-xs tracking-wider uppercase font-extrabold">
+      <div>
+        <Image
+          width={50}
+          height={50}
+          src={"/tbt-checkmark.jpg"}
+          alt=""
+          className="rounded-md mx-auto border-2"
+          layout="fixed"
+        />
+      </div>
+      <h1 className="px-3 text-left text-white text-sm tracking-wider uppercase font-extrabold">
         Tutored By Teachers
       </h1>
     </>
