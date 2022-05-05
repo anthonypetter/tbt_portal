@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "doppler run -- npx next dev",
-    "build": "doppler run -- npx next build",
+    "build": "npx next build",
     "start": "doppler run -- npx next start",
     "start:server": "doppler run -- node server.js",
     "lint": "next lint",
