@@ -23,64 +23,105 @@ import Image from "next/image";
 import { UserCircleIcon } from "@heroicons/react/outline";
 import { useTheme } from "./ThemeProvider";
 import { RoleText } from "./RoleText";
+import { UserRole } from "@generated/graphql";
+import { fromJust } from "@utils/types";
+import sortBy from "lodash/sortBy";
 
-function getNavigation(currentPathname: string) {
-  return [
+function getNavigation(role: UserRole, currentPathname: string) {
+  const commonLinks = [
     {
       name: "Home",
       href: Routes.home.href(),
       icon: HomeIcon,
       current: Routes.home.path() === currentPathname,
+      order: 10,
     },
-    {
-      name: "Live View",
-      href: Routes.liveView.href(),
-      icon: RiSignalTowerFill,
-      current: Routes.liveView.path() === currentPathname,
-    },
+  ];
+
+  const commonTeacherLinks = [
     {
       name: "My Schedule",
       href: Routes.mySchedule.href(),
       icon: CalendarIcon,
       current: Routes.mySchedule.path() === currentPathname,
+      order: 20,
+    },
+  ];
+
+  const adminOnlyLinks = [
+    {
+      name: "Live View",
+      href: Routes.liveView.href(),
+      icon: RiSignalTowerFill,
+      current: Routes.liveView.path() === currentPathname,
+      order: 30,
+    },
+    {
+      name: "Schedules",
+      href: Routes.mySchedule.href(),
+      icon: CalendarIcon,
+      current: Routes.mySchedule.path() === currentPathname,
+      order: 40,
     },
     {
       name: "Organizations",
       href: Routes.organizations.href(),
       icon: FaRegBuilding,
       current: Routes.organizations.path() === currentPathname,
+      order: 50,
     },
     {
       name: "Engagements",
       href: Routes.engagements.href(),
       icon: MdWorkspacesOutline,
       current: Routes.engagements.path() === currentPathname,
+      order: 60,
     },
     {
       name: "Cohorts",
       href: Routes.cohorts.href(),
       icon: SiGoogleclassroom,
       current: Routes.cohorts.path() === currentPathname,
+      order: 70,
     },
     {
       name: "Users",
       href: Routes.users.href(),
       icon: FiUsers,
       current: Routes.users.path() === currentPathname,
+      order: 80,
     },
     {
       name: "Teachers",
       href: Routes.teachers.href(),
       icon: FaGraduationCap,
       current: Routes.teachers.path() === currentPathname,
+      order: 90,
     },
     {
       name: "Recordings",
       href: Routes.recordings.href(),
       icon: BiVideoRecording,
       current: Routes.recordings.path() === currentPathname,
+      order: 100,
     },
   ];
+
+  switch (role) {
+    case UserRole.Admin:
+      return sortBy([...commonLinks, ...adminOnlyLinks], (n) => n.order);
+
+    case UserRole.MentorTeacher:
+      return [...commonLinks, ...commonTeacherLinks];
+
+    case UserRole.TutorTeacher:
+      return [...commonLinks, ...commonTeacherLinks];
+
+    default:
+      break;
+  }
+
+  return [];
 }
 
 // TODO: update
@@ -96,8 +137,11 @@ type Props = {
 export function AuthedLayout({ children }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const router = useRouter();
-  const navigation = getNavigation(router.pathname);
   const { sidebar } = useTheme();
+  const auth = useAuth();
+  const user = fromJust(auth.user, "auth.user");
+
+  const navigation = getNavigation(user.role, router.pathname);
 
   return (
     <>
