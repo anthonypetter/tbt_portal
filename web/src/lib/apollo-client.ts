@@ -30,7 +30,7 @@ export function getSession(token: string) {
    */
   if (!session?.client) {
     console.log(
-      "[ApolloClient 🚀]: No client found in cache. Creating new apollo client"
+      "[🚀 ApolloClient]: No client found in cache. Creating new apollo client"
     );
 
     // create new client
@@ -51,7 +51,7 @@ export function getSession(token: string) {
 
   if (session.token !== token) {
     console.log(
-      "[ApolloClient 🚀]: Session refresh. Spinning up client with new refreshed token."
+      "[🚀 ApolloClient]: Session refresh. Spinning up client with new refreshed token."
     );
 
     // create new client
@@ -65,7 +65,7 @@ export function getSession(token: string) {
     return newSession;
   }
 
-  console.log("[ApolloClient 🚀]: Returning previously cached client.");
+  console.log("[🚀 ApolloClient]: Returning previously cached client.");
   return session;
 }
 
