@@ -427,7 +427,7 @@ function CheckmarkTitle() {
           layout="fixed"
         />
       </div>
-      <h1 className="px-3 text-left text-white text-sm tracking-wider uppercase font-extrabold">
+      <h1 className="px-3 text-left text-white text-sm tracking-wider uppercase font-extrabold italic">
         Tutored By Teachers
       </h1>
     </>
