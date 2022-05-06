@@ -7,6 +7,7 @@ import { ErrorBox } from "components/ErrorBox";
 import { gql } from "@apollo/client";
 import { UserRole, useInviteUserMutation } from "@generated/graphql";
 import { fromJust } from "@utils/types";
+import { Input } from "components/Input";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const INVITE_USER = gql`
@@ -34,9 +35,16 @@ export function InviteUserModal({
   const [role, setRole] = useState<UserRole | null>(null);
 
   useEffect(() => {
-    if (show) {
+    // Resetting form here instead of on modal close to prevent user
+    // from seeing the form reset. It looks kinda ugly.
+    const resetForm = () => {
       setInviting(false);
       setInviteFailure(null);
+      setEmail("");
+      setRole(null);
+    };
+    if (show) {
+      resetForm();
     }
   }, [show]);
 
@@ -120,33 +128,19 @@ function InviteUserForm({ email, setEmail, setRole }: Props) {
   );
 
   return (
-    <div>
-      <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Email
-        </label>
-        <div className="mt-1">
-          <input
-            type="email"
-            name="email"
-            id="email"
-            className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-            placeholder="invitee@tutored.live"
-            aria-describedby="email-description"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <p className="mt-2 text-sm text-gray-500" id="email-description">
-          {"This will trigger an invitation email."}
-        </p>
-      </div>
+    <div className="space-y-4">
+      <Input
+        id="invite-user-email"
+        type="email"
+        label="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        description="This will trigger an invitation email."
+        placeholder="invitee@tutored.live"
+        required
+      />
 
-      <div className="mt-1">
+      <div>
         <SelectMenu
           labelText="Role"
           options={options}
