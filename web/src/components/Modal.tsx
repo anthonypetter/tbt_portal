@@ -127,12 +127,10 @@ type ModalButtonProps = {
   disabled?: boolean;
 };
 
-function ModalButtonForwardRef({
-  type,
-  onClick,
-  children,
-  disabled = false,
-}: ModalButtonProps) {
+function ModalButtonForwardRef(
+  { type, onClick, children, disabled = false }: ModalButtonProps,
+  ref: React.Ref<HTMLButtonElement>
+) {
   const { theme, positioning } = getButtonStyles(type);
 
   return (
@@ -141,6 +139,7 @@ function ModalButtonForwardRef({
       className={`px-4 w-full sm:min-w-[80px] sm:w-auto ${positioning}`}
       onClick={onClick}
       disabled={disabled}
+      ref={ref}
     >
       {children}
     </Button>
