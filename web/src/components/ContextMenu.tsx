@@ -23,7 +23,7 @@ export function ContextMenu({ onClickEdit, onClickDelete }: Props) {
                 )}
               >
                 <PencilAltIcon
-                  className="mr-3 w-5 h-5 text-gray-400 group-hover:text-gray-500"
+                  className="mr-3 w-4 h-4 text-gray-400 group-hover:text-gray-500"
                   aria-hidden="true"
                 />
                 Edit
@@ -41,7 +41,7 @@ export function ContextMenu({ onClickEdit, onClickDelete }: Props) {
               >
                 <TrashIcon
                   className={clsx(
-                    "mr-3 w-5 h-5 text-red-600 group-hover:text-white"
+                    "mr-3 w-4 h-4 text-red-600 group-hover:text-white"
                   )}
                   aria-hidden="true"
                 />
