@@ -1,9 +1,9 @@
 import { useRef, useState, useEffect, useMemo } from "react";
 import { UserIcon } from "@heroicons/react/outline";
-import { Button } from "./Button";
-import { Spinner } from "./Spinner";
-import { Modal } from "./Modal";
-import { SelectMenu } from "./SelectMenu";
+import { Button } from "../Button";
+import { Spinner } from "../Spinner";
+import { Modal } from "../Modal";
+import { SelectMenu } from "../SelectMenu";
 import { ErrorBox } from "components/ErrorBox";
 import { gql } from "@apollo/client";
 import { UserRole, useInviteUserMutation } from "@generated/graphql";
