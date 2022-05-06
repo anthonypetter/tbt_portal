@@ -3,7 +3,12 @@ import React from "react";
 import { assertUnreachable } from "utils/types";
 import Link from "next/link";
 
-type ThemeT = "primary" | "secondary" | "tertiary" | "success" | "danger";
+export type ThemeT =
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "success"
+  | "danger";
 
 interface Props {
   children: React.ReactNode;
