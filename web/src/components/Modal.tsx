@@ -1,28 +1,25 @@
 import React from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import clsx from "clsx";
-import { ErrorBox } from "./ErrorBox";
+import { Button, ThemeT } from "./Button";
+import { assertUnreachable } from "@utils/types";
 
 type Props = {
   show: boolean;
-  buttons: React.ReactNode;
+  children: React.ReactNode;
   onClose: () => void;
   icon: React.ReactNode;
   title: string;
-  body: React.ReactNode;
   initialFocus?: React.MutableRefObject<HTMLElement | null> | undefined;
-  error?: string | null;
 };
 
 export function Modal({
   show,
-  buttons,
   onClose,
   icon,
   title,
-  body,
+  children,
   initialFocus,
-  error,
 }: Props) {
   return (
     <Transition.Root show={show} as={React.Fragment}>
@@ -90,11 +87,7 @@ export function Modal({
                   </Dialog.Title>
                 </div>
               </div>
-              <div className="mt-2">{body}</div>
-              {error && <ErrorBox msg={error} />}
-              <div className="mt-5 sm:flex sm:flex-row-reverse sm:mt-4">
-                {buttons}
-              </div>
+              <div className="mt-2">{children}</div>
             </div>
           </Transition.Child>
         </div>
@@ -102,3 +95,63 @@ export function Modal({
     </Transition.Root>
   );
 }
+
+function ModalButtons({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">{children}</div>
+  );
+}
+
+type ModalButtonType = "confirm" | "cancel";
+
+function getButtonStyles(type: ModalButtonType): {
+  theme: ThemeT;
+  positioning: string;
+} {
+  switch (type) {
+    case "confirm":
+      return { theme: "primary", positioning: "sm:ml-3" };
+
+    case "cancel":
+      return { theme: "tertiary", positioning: "mt-3 sm:mt-0" };
+
+    default:
+      assertUnreachable(type, "ModalButtonType");
+  }
+}
+
+type ModalButtonProps = {
+  type: "confirm" | "cancel";
+  onClick: () => void;
+  children: React.ReactNode;
+  disabled?: boolean;
+};
+
+function ModalButtonForwardRef({
+  type,
+  onClick,
+  children,
+  disabled = false,
+}: ModalButtonProps) {
+  const { theme, positioning } = getButtonStyles(type);
+
+  return (
+    <Button
+      theme={theme}
+      className={`px-4 w-full sm:min-w-[80px] sm:w-auto ${positioning}`}
+      onClick={onClick}
+      disabled={disabled}
+    >
+      {children}
+    </Button>
+  );
+}
+
+ModalButtonForwardRef.displayName = "ModalButton";
+
+const ModalButton = React.forwardRef<HTMLButtonElement, ModalButtonProps>(
+  ModalButtonForwardRef
+);
+
+Modal.Buttons = ModalButtons;
+Modal.Button = ModalButton;
