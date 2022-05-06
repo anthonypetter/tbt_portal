@@ -54,7 +54,7 @@ function InputForwardRef(
           className="mt-2 text-sm text-gray-500"
           id={`${id}-input-description`}
         >
-          {"Organization name"}
+          {description}
         </p>
       )}
     </div>
