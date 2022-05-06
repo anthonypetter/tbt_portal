@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect, useMemo } from "react";
 import { UserIcon } from "@heroicons/react/outline";
-import { Button } from "../Button";
 import { Spinner } from "../Spinner";
 import { Modal } from "../Modal";
 import { SelectMenu } from "../SelectMenu";
@@ -20,7 +19,7 @@ const INVITE_USER = gql`
 
 export function InviteUserModal({
   show,
-  onCancel: onCancelProp,
+  onCancel,
   onSuccess,
 }: {
   show: boolean;
@@ -69,53 +68,36 @@ export function InviteUserModal({
     }
   };
 
-  const onCancel = () => {
-    onCancelProp();
-  };
-
-  const body = (
-    <div className="py-3">
-      <div className="mb-4">
-        <InviteUserForm email={email} setEmail={setEmail} setRole={setRole} />
-      </div>
-      {inviteFailure && <ErrorBox />}
-    </div>
-  );
-
-  const icon = (
-    <div className="flex flex-shrink-0 items-center justify-center mx-auto w-12 h-12 bg-green-100 rounded-full sm:mx-0 sm:w-10 sm:h-10">
-      {<UserIcon className="w-6 h-6 text-green-600" aria-hidden="true" />}
-    </div>
-  );
-
   return (
     <Modal
       show={show}
       onClose={onCancel}
-      icon={icon}
+      icon={
+        <div className="flex flex-shrink-0 items-center justify-center mx-auto w-12 h-12 bg-green-100 rounded-full sm:mx-0 sm:w-10 sm:h-10">
+          {<UserIcon className="w-6 h-6 text-green-600" aria-hidden="true" />}
+        </div>
+      }
       title="Invite a User"
-      body={body}
-      buttons={
-        <>
-          <Button
-            theme="primary"
-            className="px-4 w-full sm:ml-3 sm:w-20"
+    >
+      <div className="py-3">
+        <div className="mb-4">
+          <InviteUserForm email={email} setEmail={setEmail} setRole={setRole} />
+        </div>
+        {inviteFailure && <ErrorBox />}
+        <Modal.Buttons>
+          <Modal.Button
+            type="confirm"
             onClick={onInviteUser}
             disabled={!email || !role}
           >
             {inviting ? <Spinner /> : "Invite"}
-          </Button>
-          <Button
-            theme="tertiary"
-            className="mt-3 px-4 w-full sm:mt-0 sm:w-auto"
-            onClick={onCancel}
-            ref={cancelButtonRef}
-          >
+          </Modal.Button>
+          <Modal.Button type="cancel" onClick={onCancel} ref={cancelButtonRef}>
             Cancel
-          </Button>
-        </>
-      }
-    />
+          </Modal.Button>
+        </Modal.Buttons>
+      </div>
+    </Modal>
   );
 }
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "../Button";
-import { InviteUserModal } from "../InviteUserModal";
+import { InviteUserModal } from "./InviteUserModal";
 import { UsersPageQuery } from "@generated/graphql";
 import { gql } from "@apollo/client";
 import { triggerSuccessToast } from "../Toast";
