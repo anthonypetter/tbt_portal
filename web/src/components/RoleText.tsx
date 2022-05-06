@@ -7,11 +7,11 @@ type Props = {
 };
 
 export function RoleText({ role, className = "text-gray-700" }: Props) {
-  const roleText = getDisplayText(role);
+  const roleText = getTextForRole(role);
   return <span className={className}>{roleText}</span>;
 }
 
-function getDisplayText(role: UserRole) {
+export function getTextForRole(role: UserRole): string {
   switch (role) {
     case UserRole.Admin:
       return "Administrator";
@@ -23,6 +23,6 @@ function getDisplayText(role: UserRole) {
       return "Tutor Teacher";
 
     default:
-      assertUnreachable(role);
+      return assertUnreachable(role, "role");
   }
 }
