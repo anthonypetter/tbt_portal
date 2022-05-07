@@ -1,4 +1,4 @@
-import { PrismaClient, User } from "@prisma/client";
+import { Organization, PrismaClient, User } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -10,14 +10,17 @@ async function main() {
     throw new Error("Unexpected null/undefiend value for APP_ENV");
   }
 
-  const users = getUsers(env);
-
   await prisma.user.createMany({
-    data: users,
-    skipDuplicates: true,
+    data: getUsers(env),
   });
+  console.log("[🌱 Seed] - Users created.");
 
-  console.log("Finished seeding.");
+  await prisma.organization.createMany({
+    data: getOrgs(),
+  });
+  console.log("[🌱 Seed] - Organizations created.");
+
+  console.log("[🌱 Seed] - Finished seeding.");
 }
 
 main()
@@ -29,6 +32,9 @@ main()
     await prisma.$disconnect();
   });
 
+/**
+ * Users
+ */
 function getUsers(env: string): Omit<User, "id">[] {
   if (env === "dev") {
     return [
@@ -60,4 +66,31 @@ function getUsers(env: string): Omit<User, "id">[] {
   } else {
     return [];
   }
+}
+
+/**
+ * Orgs
+ */
+function getOrgs(): Omit<Organization, "id">[] {
+  return [
+    {
+      name: "El Paso Organization",
+      district: "El Paso ISD",
+      subDistrict: "El Paso ISD Socorro SD",
+      createdAt: new Date(),
+    },
+    {
+      name: "Short",
+      district: "ISD",
+      subDistrict: "SD",
+      createdAt: new Date(),
+    },
+    {
+      name: "An extremely long name for an organization.",
+      district: "Also a very long school district name",
+      subDistrict:
+        "A mightly long sub district name that is even longer than the district name used above.",
+      createdAt: new Date(),
+    },
+  ];
 }
