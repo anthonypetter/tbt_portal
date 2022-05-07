@@ -20,6 +20,19 @@ export enum AccountStatus {
   Pending = 'PENDING'
 }
 
+export type AddOrganizationInput = {
+  district?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
+  subDistrict?: InputMaybe<Scalars['String']>;
+};
+
+export type EditOrganizationInput = {
+  district?: InputMaybe<Scalars['String']>;
+  id: Scalars['ID'];
+  name?: InputMaybe<Scalars['String']>;
+  subDistrict?: InputMaybe<Scalars['String']>;
+};
+
 export type InviteUserResonse = {
   __typename?: 'InviteUserResonse';
   inviteSent: Scalars['Boolean'];
@@ -28,7 +41,25 @@ export type InviteUserResonse = {
 export type Mutation = {
   __typename?: 'Mutation';
   _empty?: Maybe<Scalars['String']>;
+  addOrganization: Organization;
+  deleteOrganization: Organization;
+  editOrganization: Organization;
   inviteUser: InviteUserResonse;
+};
+
+
+export type MutationAddOrganizationArgs = {
+  input: AddOrganizationInput;
+};
+
+
+export type MutationDeleteOrganizationArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationEditOrganizationArgs = {
+  input: EditOrganizationInput;
 };
 
 
@@ -37,10 +68,19 @@ export type MutationInviteUserArgs = {
   role: UserRole;
 };
 
+export type Organization = {
+  __typename?: 'Organization';
+  district?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  subDistrict?: Maybe<Scalars['String']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']>;
   currentUser?: Maybe<User>;
+  organizations: Array<Organization>;
   users: Array<User>;
 };
 
@@ -127,9 +167,13 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   AccountStatus: AccountStatus;
+  AddOrganizationInput: AddOrganizationInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  EditOrganizationInput: EditOrganizationInput;
+  ID: ResolverTypeWrapper<Scalars['ID']>;
   InviteUserResonse: ResolverTypeWrapper<InviteUserResonse>;
   Mutation: ResolverTypeWrapper<{}>;
+  Organization: ResolverTypeWrapper<Organization>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   User: ResolverTypeWrapper<User>;
@@ -138,9 +182,13 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  AddOrganizationInput: AddOrganizationInput;
   Boolean: Scalars['Boolean'];
+  EditOrganizationInput: EditOrganizationInput;
+  ID: Scalars['ID'];
   InviteUserResonse: InviteUserResonse;
   Mutation: {};
+  Organization: Organization;
   Query: {};
   String: Scalars['String'];
   User: User;
@@ -153,12 +201,24 @@ export type InviteUserResonseResolvers<ContextType = any, ParentType extends Res
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  addOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
+  deleteOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
+  editOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'input'>>;
   inviteUser?: Resolver<ResolversTypes['InviteUserResonse'], ParentType, ContextType, RequireFields<MutationInviteUserArgs, 'email' | 'role'>>;
+};
+
+export type OrganizationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Organization'] = ResolversParentTypes['Organization']> = {
+  district?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  subDistrict?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  organizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
   users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
 };
 
@@ -172,6 +232,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 export type Resolvers<ContextType = any> = {
   InviteUserResonse?: InviteUserResonseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  Organization?: OrganizationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
