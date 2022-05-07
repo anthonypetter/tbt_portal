@@ -8,6 +8,7 @@ import { gql } from "@apollo/client";
 import { UserRole, useInviteUserMutation } from "@generated/graphql";
 import { fromJust } from "@utils/types";
 import { Input } from "components/Input";
+import { useResetOnShow } from "@utils/useResetOnShow";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const INVITE_USER = gql`
@@ -34,19 +35,15 @@ export function InviteUserModal({
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<UserRole | null>(null);
 
-  useEffect(() => {
-    // Resetting form here instead of on modal close to prevent user
-    // from seeing the form reset. It looks kinda ugly.
-    const resetForm = () => {
-      setInviting(false);
-      setInviteFailure(null);
-      setEmail("");
-      setRole(null);
-    };
-    if (show) {
-      resetForm();
-    }
-  }, [show]);
+  // Resetting form here instead of on modal close to prevent user
+  // from seeing the form reset. It looks kinda ugly.
+
+  useResetOnShow(show, () => {
+    setInviting(false);
+    setInviteFailure(null);
+    setEmail("");
+    setRole(null);
+  });
 
   const onInviteUser = async () => {
     setInviting(true);

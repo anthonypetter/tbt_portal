@@ -29,11 +29,11 @@ ThemeContext.displayName = "ThemeContext";
  * ThemeProvider
  */
 
-type ThemeProvider = {
+type Props = {
   children: React.ReactNode;
 };
 
-export function ThemeProvider({ children }: ThemeProvider) {
+export function ThemeProvider({ children }: Props) {
   const { user } = useAuth();
 
   if (!user) {
