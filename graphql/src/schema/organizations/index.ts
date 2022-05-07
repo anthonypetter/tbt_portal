@@ -81,6 +81,12 @@ async function editOrganization(
   { authedUser, AuthorizationService, OrganizationService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
+  // We allow name to come in undefined (represents when the user is not trying to update the name field)
+  // But if name *does* come in, we don't allow it to be null.
+  // Not quite sure how to represent this in graphql schema yet.
+  if (input.name == null) {
+    throw new Error("Organization name cannot be null.");
+  }
 
   // If input fields come in undefined, they go to prisma undefined.
   // Prisma will ignore fields that are undefined and will not update them.
