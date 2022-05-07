@@ -35,6 +35,8 @@ model Organization {
   id                          Int                       @id @default(autoincrement())
   createdAt                   DateTime                  @default(now())
   name                        String
+  district                    String?
+  subDistrict                 String?
   memberships                 OrganizationMembership[]
 }
 
