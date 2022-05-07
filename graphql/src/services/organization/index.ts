@@ -35,7 +35,7 @@ export const OrganizationService = {
     subDistrict,
   }: {
     id: number;
-    name: string;
+    name?: string;
     district?: string | null;
     subDistrict?: string | null;
   }): Promise<Organization> {
