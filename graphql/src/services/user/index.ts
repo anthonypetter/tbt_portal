@@ -13,6 +13,7 @@ export const UserService = {
     return user;
   },
 
+  // TODO: Fix pagination
   async getUsers(take: number): Promise<User[]> {
     const users = await prisma.user.findMany({ take });
     return users;
