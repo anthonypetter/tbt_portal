@@ -4,6 +4,7 @@ import {
   MutationAddOrganizationArgs,
   MutationEditOrganizationArgs,
   MutationDeleteOrganizationArgs,
+  QueryOrganizationArgs,
 } from "../__generated__/graphql";
 import { parseId } from "../../utils/numbers";
 import { OrganizationService } from "../../services/organization";
@@ -35,6 +36,7 @@ export const typeDefs = gql`
 
   extend type Query {
     organizations: [Organization!]!
+    organization(id: ID!): Organization
   }
 
   extend type Mutation {
@@ -55,6 +57,15 @@ async function organizations(
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
   return OrganizationService.getOrgs(50);
+}
+
+async function organization(
+  _parent: undefined,
+  { id }: QueryOrganizationArgs,
+  { authedUser, AuthorizationService, OrganizationService }: Context
+) {
+  AuthorizationService.assertIsAdmin(authedUser);
+  return OrganizationService.getOrg(parseId(id));
 }
 
 /**
@@ -111,6 +122,7 @@ async function deleteOrganization(
 export const resolvers = {
   Query: {
     organizations,
+    organization,
   },
   Mutation: {
     addOrganization,
