@@ -110,12 +110,21 @@ export type AddOrganizationMutationVariables = Exact<{
 
 export type AddOrganizationMutation = { __typename?: 'Mutation', addOrganization: { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null } };
 
+export type NewOrgFragment = { __typename: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null };
+
 export type DeleteOrganizationMutationVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type DeleteOrganizationMutation = { __typename?: 'Mutation', deleteOrganization: { __typename?: 'Organization', id: string } };
+export type DeleteOrganizationMutation = { __typename?: 'Mutation', deleteOrganization: { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null } };
+
+export type EditOrganizationMutationVariables = Exact<{
+  input: EditOrganizationInput;
+}>;
+
+
+export type EditOrganizationMutation = { __typename?: 'Mutation', editOrganization: { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null } };
 
 export type OrganizationsFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null }> };
 
@@ -141,6 +150,15 @@ export type UsersPageQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type UsersPageQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', email: string, role: UserRole, accountStatus: AccountStatus }> };
 
+export const NewOrgFragmentDoc = gql`
+    fragment NewOrg on Organization {
+  id
+  name
+  district
+  subDistrict
+  __typename
+}
+    `;
 export const OrganizationsTableFragmentDoc = gql`
     fragment OrganizationsTable on Query {
   organizations {
@@ -241,6 +259,9 @@ export const DeleteOrganizationDocument = gql`
     mutation DeleteOrganization($id: ID!) {
   deleteOrganization(id: $id) {
     id
+    name
+    district
+    subDistrict
   }
 }
     `;
@@ -270,6 +291,42 @@ export function useDeleteOrganizationMutation(baseOptions?: Apollo.MutationHookO
 export type DeleteOrganizationMutationHookResult = ReturnType<typeof useDeleteOrganizationMutation>;
 export type DeleteOrganizationMutationResult = Apollo.MutationResult<DeleteOrganizationMutation>;
 export type DeleteOrganizationMutationOptions = Apollo.BaseMutationOptions<DeleteOrganizationMutation, DeleteOrganizationMutationVariables>;
+export const EditOrganizationDocument = gql`
+    mutation EditOrganization($input: EditOrganizationInput!) {
+  editOrganization(input: $input) {
+    id
+    name
+    district
+    subDistrict
+  }
+}
+    `;
+export type EditOrganizationMutationFn = Apollo.MutationFunction<EditOrganizationMutation, EditOrganizationMutationVariables>;
+
+/**
+ * __useEditOrganizationMutation__
+ *
+ * To run a mutation, you first call `useEditOrganizationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditOrganizationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editOrganizationMutation, { data, loading, error }] = useEditOrganizationMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useEditOrganizationMutation(baseOptions?: Apollo.MutationHookOptions<EditOrganizationMutation, EditOrganizationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditOrganizationMutation, EditOrganizationMutationVariables>(EditOrganizationDocument, options);
+      }
+export type EditOrganizationMutationHookResult = ReturnType<typeof useEditOrganizationMutation>;
+export type EditOrganizationMutationResult = Apollo.MutationResult<EditOrganizationMutation>;
+export type EditOrganizationMutationOptions = Apollo.BaseMutationOptions<EditOrganizationMutation, EditOrganizationMutationVariables>;
 export const InviteUserDocument = gql`
     mutation InviteUser($email: String!, $role: UserRole!) {
   inviteUser(email: $email, role: $role) {

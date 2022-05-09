@@ -5,6 +5,7 @@ import { gql } from "@apollo/client";
 import { OrganizationsPageQuery } from "@generated/graphql";
 import { ContextMenu } from "components/ContextMenu";
 import { DeleteOrganizationModal } from "./DeleteOrganizationModal";
+import { EditOrgModal } from "./EditOrgModal";
 
 OrganizationsTable.fragments = {
   organizations: gql`
@@ -29,14 +30,15 @@ export function OrganizationsTable({ organizations }: Props) {
     name: string;
   } | null>(null);
 
+  const [editModalOrg, setEditModalOrg] = useState<OrgTableData | null>(null);
+
   const contextMenu = useMemo(() => {
     return {
-      onClickDelete(id: string, name: string) {
-        setDeleteModaOrg({ id, name });
+      onClickDelete(org: OrgTableData) {
+        setDeleteModaOrg({ id: org.id, name: org.name });
       },
-      onClickEdit(id: string) {
-        // TODO
-        console.log("EDIT!!!!!", id);
+      onClickEdit(org: OrgTableData) {
+        setEditModalOrg(org);
       },
     };
   }, []);
@@ -56,11 +58,18 @@ export function OrganizationsTable({ organizations }: Props) {
         onCancel={() => setDeleteModaOrg(null)}
         onDelete={() => setDeleteModaOrg(null)}
       />
+
+      <EditOrgModal
+        show={editModalOrg !== null}
+        onCancel={() => setEditModalOrg(null)}
+        onSuccess={() => setEditModalOrg(null)}
+        organization={editModalOrg}
+      />
     </>
   );
 }
 
-type OrgTableData = {
+export type OrgTableData = {
   id: string;
   name: string;
   district?: string | null;
@@ -70,8 +79,8 @@ type OrgTableData = {
 function usePrepOrgData(
   organizations: NonNullable<OrganizationsPageQuery["organizations"]>,
   contextMenu: {
-    onClickEdit: (id: string) => void;
-    onClickDelete: (id: string, name: string) => void;
+    onClickEdit: (org: OrgTableData) => void;
+    onClickDelete: (org: OrgTableData) => void;
   }
 ): {
   data: OrgTableData[];
@@ -98,10 +107,8 @@ function usePrepOrgData(
           return (
             <div className="flex justify-end">
               <ContextMenu
-                onClickEdit={() => contextMenu.onClickEdit(row.values.id)}
-                onClickDelete={() =>
-                  contextMenu.onClickDelete(row.values.id, row.values.name)
-                }
+                onClickEdit={() => contextMenu.onClickEdit(row.original)}
+                onClickDelete={() => contextMenu.onClickDelete(row.original)}
               />
             </div>
           );
@@ -110,7 +117,7 @@ function usePrepOrgData(
     ];
   }, [contextMenu]);
 
-  const orgIds = organizations.map((u) => u.id).join();
+  const stringifiedOrgs = JSON.stringify(organizations);
 
   const data = useMemo(() => {
     return organizations.map((org) => {
@@ -121,10 +128,8 @@ function usePrepOrgData(
         subDistrict: org.subDistrict,
       };
     });
-    // Used concatenated emails as a way to determine if users
-    // dependency has changed. (instead of stringifying an array of objects)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orgIds]);
+  }, [stringifiedOrgs]);
 
   return { data, columns };
 }
