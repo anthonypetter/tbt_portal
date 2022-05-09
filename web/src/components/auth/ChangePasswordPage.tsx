@@ -24,7 +24,6 @@ type Props = {
 
 export function ChangePasswordPage({ cognitoUser }: Props) {
   const [status, setStatus] = useState<Status>("idle");
-  const router = useRouter();
   const auth = useAuth();
 
   const [changePasswordFailure, setChangePasswordFailure] = useState<
@@ -48,9 +47,8 @@ export function ChangePasswordPage({ cognitoUser }: Props) {
         throw new Error("Passwords do not match!");
       }
       await Auth.completeNewPassword(cognitoUser, confirmPassword);
-      auth.onPasswordChange();
       setStatus("success");
-      router.push(Routes.home.href());
+      auth.onCompleteNewPassword();
     } catch (error: unknown) {
       console.error(error);
       setStatus("idle");

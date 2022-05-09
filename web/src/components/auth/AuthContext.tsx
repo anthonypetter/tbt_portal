@@ -24,7 +24,7 @@ interface AuthContextT {
   user: User | null;
   login: (email: string, password: string) => Promise<LoginResult>;
   signOut: () => Promise<void>;
-  onPasswordChange: () => void;
+  onCompleteNewPassword: () => void;
 }
 
 export const AuthContext = createContext<AuthContextT | null>(null);
