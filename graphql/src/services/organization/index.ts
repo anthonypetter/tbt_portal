@@ -2,6 +2,13 @@ import { prisma } from "../../lib/prisma-client";
 import { Organization } from "@prisma/client";
 
 export const OrganizationService = {
+  async getOrg(id: number): Promise<Organization | null> {
+    const organization = await prisma.organization.findFirst({
+      where: { id },
+    });
+    return organization;
+  },
+
   // TODO: Fix pagination
   async getOrgs(take: number): Promise<Organization[]> {
     const organizations = await prisma.organization.findMany({ take });
