@@ -19,6 +19,10 @@ export const Routes = {
     href: () => "/organizations",
     path: () => "/organizations",
   },
+  organizationDetails: {
+    href: (id: string) => `/organizations/${id}`,
+    path: () => "/organizations",
+  },
   engagements: {
     href: () => "/engagements",
     path: () => "/engagements",

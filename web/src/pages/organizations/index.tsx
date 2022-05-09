@@ -29,6 +29,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   });
 
   const organizations = processResult(result, (r) => r.organizations);
+  console.log("server side orgs", organizations);
 
   return {
     props: { organizations },
@@ -51,6 +52,8 @@ const Organizations: NextPage<Props> = ({ organizations }) => {
       });
     },
   });
+
+  console.log("client-side orgs", data?.organizations);
 
   // To avoid loading flash, we'll preload the table using server-side fetched orgs.
   return (

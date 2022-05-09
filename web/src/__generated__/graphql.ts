@@ -81,8 +81,14 @@ export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']>;
   currentUser?: Maybe<User>;
+  organization?: Maybe<Organization>;
   organizations: Array<Organization>;
   users: Array<User>;
+};
+
+
+export type QueryOrganizationArgs = {
+  id: Scalars['ID'];
 };
 
 export type User = {
@@ -126,6 +132,8 @@ export type EditOrganizationMutationVariables = Exact<{
 
 export type EditOrganizationMutation = { __typename?: 'Mutation', editOrganization: { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null } };
 
+export type OrganizationDetailsFragment = { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null };
+
 export type OrganizationsFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null }> };
 
 export type OrganizationsTableFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null }> };
@@ -139,6 +147,13 @@ export type InviteUserMutationVariables = Exact<{
 export type InviteUserMutation = { __typename?: 'Mutation', inviteUser: { __typename?: 'InviteUserResonse', inviteSent: boolean } };
 
 export type UsersFragment = { __typename?: 'Query', users: Array<{ __typename?: 'User', email: string, role: UserRole, accountStatus: AccountStatus }> };
+
+export type OrganizationDetailPageQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type OrganizationDetailPageQuery = { __typename?: 'Query', organization?: { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null } | null };
 
 export type OrganizationsPageQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -157,6 +172,14 @@ export const NewOrgFragmentDoc = gql`
   district
   subDistrict
   __typename
+}
+    `;
+export const OrganizationDetailsFragmentDoc = gql`
+    fragment OrganizationDetails on Organization {
+  id
+  name
+  district
+  subDistrict
 }
     `;
 export const OrganizationsTableFragmentDoc = gql`
@@ -361,6 +384,41 @@ export function useInviteUserMutation(baseOptions?: Apollo.MutationHookOptions<I
 export type InviteUserMutationHookResult = ReturnType<typeof useInviteUserMutation>;
 export type InviteUserMutationResult = Apollo.MutationResult<InviteUserMutation>;
 export type InviteUserMutationOptions = Apollo.BaseMutationOptions<InviteUserMutation, InviteUserMutationVariables>;
+export const OrganizationDetailPageDocument = gql`
+    query OrganizationDetailPage($id: ID!) {
+  organization(id: $id) {
+    ...OrganizationDetails
+  }
+}
+    ${OrganizationDetailsFragmentDoc}`;
+
+/**
+ * __useOrganizationDetailPageQuery__
+ *
+ * To run a query within a React component, call `useOrganizationDetailPageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOrganizationDetailPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOrganizationDetailPageQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useOrganizationDetailPageQuery(baseOptions: Apollo.QueryHookOptions<OrganizationDetailPageQuery, OrganizationDetailPageQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<OrganizationDetailPageQuery, OrganizationDetailPageQueryVariables>(OrganizationDetailPageDocument, options);
+      }
+export function useOrganizationDetailPageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<OrganizationDetailPageQuery, OrganizationDetailPageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<OrganizationDetailPageQuery, OrganizationDetailPageQueryVariables>(OrganizationDetailPageDocument, options);
+        }
+export type OrganizationDetailPageQueryHookResult = ReturnType<typeof useOrganizationDetailPageQuery>;
+export type OrganizationDetailPageLazyQueryHookResult = ReturnType<typeof useOrganizationDetailPageLazyQuery>;
+export type OrganizationDetailPageQueryResult = Apollo.QueryResult<OrganizationDetailPageQuery, OrganizationDetailPageQueryVariables>;
 export const OrganizationsPageDocument = gql`
     query OrganizationsPage {
   ...Organizations
