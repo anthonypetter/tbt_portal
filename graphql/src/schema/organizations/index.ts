@@ -4,9 +4,9 @@ import {
   MutationAddOrganizationArgs,
   MutationEditOrganizationArgs,
   MutationDeleteOrganizationArgs,
-} from "@generated/graphql";
+} from "../__generated__/graphql";
 import { parseId } from "../../utils/numbers";
-import { OrganizationService } from "@services/organization";
+import { OrganizationService } from "../../services/organization";
 
 /**
  * Type Defs
