@@ -98,6 +98,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     setAuthStatus();
+  }, []);
+
+  /**
+   * onCompleteNewPassword
+   *
+   * When a user is first invited, they are provided a temporary
+   * password that they must change after their first login.
+   *
+   * `onCompleteNewPassword` is what gets called when that happens.
+   */
+
+  const onCompleteNewPassword = useCallback(async () => {
+    const cognitoUser = await Auth.currentAuthenticatedUser();
+    const token = cognitoUser.signInUserSession.getAccessToken().getJwtToken();
+    const user = await fetchUser(token);
+    setAuthState({ user, token: token, isAuthenticating: false });
+    setDidPasswordChangeComplete(true);
+  }, []);
+
+  useEffect(() => {
+    if (didPasswordChangeComplete) {
+      setDidPasswordChangeComplete(false);
+      router.push(Routes.home.href());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [didPasswordChangeComplete]);
 
   /**
@@ -165,24 +190,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [router]);
 
-  const onPasswordChange = useCallback(async () => {
-    setDidPasswordChangeComplete(true);
-  }, []);
-
   const context = useMemo(
     () => ({
       user: authState.user,
       login,
       signOut,
       isAuthenticating: authState.isAuthenticating,
-      onPasswordChange,
+      onCompleteNewPassword,
     }),
     [
       authState.user,
       login,
       signOut,
       authState.isAuthenticating,
-      onPasswordChange,
+      onCompleteNewPassword,
     ]
   );
 
