@@ -5,6 +5,9 @@ import { OrganizationsPageQuery } from "@generated/graphql";
 import { Button } from "components/Button";
 import { OrganizationsTable } from "./OrganizationsTable";
 import { AddOrgModal } from "./AddOrgModal";
+import { Breadcrumbs } from "components/Breadcrumbs";
+import { Routes } from "@utils/routes";
+import { HomeIcon } from "@heroicons/react/solid";
 
 OrganizationsPage.fragments = {
   organizations: gql`
@@ -24,6 +27,16 @@ export function OrganizationsPage({ organizations }: Props) {
 
   return (
     <div>
+      <Breadcrumbs
+        path={[
+          { name: "Home", href: Routes.home.href(), icon: HomeIcon },
+          {
+            name: "Organizations",
+            href: Routes.organizations.href(),
+            current: true,
+          },
+        ]}
+      />
       <Header>Organizations</Header>
 
       <div className="flex justify-end mb-6">
