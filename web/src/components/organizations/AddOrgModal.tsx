@@ -2,17 +2,13 @@ import { useRef, useState, useEffect } from "react";
 import { Spinner } from "../Spinner";
 import { Modal } from "../Modal";
 import { ErrorBox } from "components/ErrorBox";
-import { gql } from "@apollo/client";
-import {
-  useAddOrganizationMutation,
-  AddOrganizationMutation,
-} from "@generated/graphql";
+import { gql, useMutation } from "@apollo/client";
+import { AddOrganizationMutation } from "@generated/graphql";
 import { fromJust } from "@utils/types";
 import { FaRegBuilding } from "react-icons/fa";
 import { Input } from "components/Input";
 import { triggerSuccessToast } from "components/Toast";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ADD_ORGANIZATION = gql`
   mutation AddOrganization($input: AddOrganizationInput!) {
     addOrganization(input: $input) {
@@ -31,9 +27,7 @@ export function AddOrgModal({
 }: {
   show: boolean;
   onCancel: () => void;
-  onSuccess: (
-    org: NonNullable<AddOrganizationMutation["addOrganization"]>
-  ) => void;
+  onSuccess: () => void;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +42,33 @@ export function AddOrgModal({
     undefined
   );
 
-  const [addOrg] = useAddOrganizationMutation();
+  const [addOrg] = useMutation<AddOrganizationMutation>(ADD_ORGANIZATION, {
+    update(cache, { data }) {
+      if (!data?.addOrganization) {
+        return;
+      }
+
+      cache.modify({
+        fields: {
+          organizations(existingOrgs = []) {
+            const newOrgRef = cache.writeFragment({
+              data: data.addOrganization,
+              fragment: gql`
+                fragment NewOrg on Organization {
+                  id
+                  name
+                  district
+                  subDistrict
+                  __typename
+                }
+              `,
+            });
+            return [...existingOrgs, newOrgRef];
+          },
+        },
+      });
+    },
+  });
 
   useEffect(() => {
     const resetForm = () => {
@@ -81,7 +101,7 @@ export function AddOrgModal({
 
       setLoading(false);
       triggerSuccessToast({ message: "Organization successfully created!" });
-      onSuccess(data.addOrganization);
+      onSuccess();
     } catch (error: unknown) {
       console.error(error);
 

@@ -9,6 +9,7 @@ type Props = {
   type?: string;
   required?: boolean;
   description?: string;
+  placeholder?: string;
 };
 
 function InputForwardRef(
@@ -21,12 +22,14 @@ function InputForwardRef(
     type = "text",
     required = false,
     description,
+    placeholder: placeholderProp,
   }: Props,
   ref: React.Ref<HTMLInputElement>
 ) {
   const value = valueProp != null ? { value: valueProp } : {};
   const onChange = onChangeProp ? { onChange: onChangeProp } : {};
   const name = nameProp ? { name: nameProp } : {};
+  const placeholder = placeholderProp ? { placeholder: placeholderProp } : {};
 
   return (
     <div>
@@ -47,6 +50,7 @@ function InputForwardRef(
           {...name}
           {...value}
           {...onChange}
+          {...placeholder}
         />
       </div>
       {description && (

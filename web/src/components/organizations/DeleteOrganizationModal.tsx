@@ -1,16 +1,19 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState } from "react";
 import { DeleteModal } from "components/DeleteModal";
 import React from "react";
-import { gql } from "@apollo/client";
-import { useDeleteOrganizationMutation } from "@generated/graphql";
-import { triggerErrorToast, triggerSuccessToast } from "components/Toast";
+import { gql, useMutation } from "@apollo/client";
+import { DeleteOrganizationMutation } from "@generated/graphql";
+import { triggerSuccessToast } from "components/Toast";
 import { useResetOnShow } from "@utils/useResetOnShow";
+import { GET_ORGANIZATIONS_QUERY_NAME } from "pages/organizations";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const DELETE_ORG = gql`
   mutation DeleteOrganization($id: ID!) {
     deleteOrganization(id: $id) {
       id
+      name
+      district
+      subDistrict
     }
   }
 `;
@@ -19,7 +22,7 @@ type Props = {
   show: boolean;
   organizationId?: string;
   orgName?: string;
-  onDelete: (id: string) => void;
+  onDelete: () => void;
   onCancel: () => void;
 };
 
@@ -31,7 +34,15 @@ export function DeleteOrganizationModal({
   onCancel,
 }: Props) {
   const [deleteOrg, { error, loading, reset }] =
-    useDeleteOrganizationMutation();
+    useMutation<DeleteOrganizationMutation>(DELETE_ORG, {
+      refetchQueries: [GET_ORGANIZATIONS_QUERY_NAME],
+      onQueryUpdated(observableQuery) {
+        if (observableQuery.queryName === GET_ORGANIZATIONS_QUERY_NAME) {
+          observableQuery.refetch();
+        }
+      },
+    });
+
   const [orgName, setOrgName] = useState<string | undefined>(undefined);
 
   useResetOnShow(show, () => {
@@ -54,7 +65,7 @@ export function DeleteOrganizationModal({
       onDelete={async () => {
         if (organizationId) {
           await deleteOrg({ variables: { id: organizationId } });
-          onDelete(organizationId);
+          onDelete();
           triggerSuccessToast({ message: "Delete operation successful." });
         } else {
           console.error("Can't delete org without a valid organizationId.");
