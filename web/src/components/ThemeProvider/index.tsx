@@ -36,20 +36,15 @@ type Props = {
 export function ThemeProvider({ children }: Props) {
   const { user } = useAuth();
 
-  if (!user) {
-    console.log("[🎩 ThemeProvider]: No theme available.");
-    return <>{children}</>;
-  }
-
-  const theme = getTheme(user.role);
-  console.log("[🎩 ThemeProvider]: Theme for role found:", user.role);
+  const theme = getTheme(user?.role);
+  console.log("[🎩 ThemeProvider]: Theme found: ", user?.role ?? "Default");
 
   return (
     <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>
   );
 }
 
-function getTheme(role: UserRole): ThemeContextT {
+function getTheme(role: UserRole | undefined): ThemeContextT {
   switch (role) {
     case UserRole.Admin:
       return {
