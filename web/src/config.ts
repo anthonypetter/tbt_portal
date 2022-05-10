@@ -1,5 +1,5 @@
 export enum Env {
-  DEV = "dev",
+  DEV = "development",
   TEST = "test",
 }
 
@@ -18,8 +18,7 @@ function getEnv() {
     return Env.TEST;
   }
 
-  return process.env.NEXT_PUBLIC_ENV !== null &&
-    process.env.NEXT_PUBLIC_ENV !== undefined
-    ? process.env.NEXT_PUBLIC_ENV
+  return process.env.NODE_ENV !== null && process.env.NODE_ENV !== undefined
+    ? process.env.NODE_ENV
     : Env.DEV;
 }
