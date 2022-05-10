@@ -25,10 +25,15 @@ model User {
   email                       String                    @unique
   createdAt                   DateTime                  @default(now())
   cognitoSub                  String                    @unique
-  
+  fullName                    String?
+
   role                        UserRole                  @default(TUTOR_TEACHER)
   accountStatus               AccountStatus             @default(PENDING)
-  memberships                 OrganizationMembership[]
+  //top level assignments (mentor teachers, admins, etc)
+  engagementAssignments       EngagementStaffAssignments[]
+  
+  //direct cohort assignments
+  cohortAssignments           CohortStaffAssignments[]
 }
 
 model Organization {
@@ -39,14 +44,66 @@ model Organization {
   location                    String?
   district                    String?
   subDistrict                 String?
-  memberships                 OrganizationMembership[]
+
+  engagements                 Engagement[]
 }
 
-model OrganizationMembership {
-  createdAt                   DateTime                 @default(now())
+model Engagement {
+  id                          Int                       @id @default(autoincrement())
+  createdAt                   DateTime                  @default(now())
+  name                        String
+  startDate                   DateTime?                  
+  endDate                     DateTime?
+  staffAssignments            EngagementStaffAssignments[]
   organizationId              Int
+
+  organization                Organization              @relation(fields: [organizationId], references: [id])
+  cohorts                     Cohort[]
+}
+
+model EngagementStaffAssignments {
+  createdAt                   DateTime                  @default(now())
+  engagementId                Int
   userId                      Int
+  
   user                        User                     @relation(fields: [userId], references: [id])
-  organization                Organization             @relation(fields: [organizationId], references: [id])
-  @@id([userId, organizationId])
+  engagement                  Engagement               @relation(fields: [engagementId], references: [id])
+  @@id([userId, engagementId])
+}
+
+model Cohort {
+  id                          Int                       @id @default(autoincrement())
+  createdAt                   DateTime                  @default(now())
+  name                        String
+  engagementId                Int
+  grade                       String?
+  meetingRoom                 String?
+  hostKey                     String?
+  exempt                      Boolean                   @default(false)
+  startDate                   DateTime?                  
+  endDate                     DateTime?
+
+  engagement                  Engagement               @relation(fields: [engagementId], references: [id])
+  staffAssignments            CohortStaffAssignments[]
+  sessions                    CohortSession[]
+}
+
+model CohortStaffAssignments {
+  createdAt                   DateTime                  @default(now())
+  userId                      Int
+  cohortId                    Int
+  
+  user                        User                     @relation(fields: [userId], references: [id])
+  cohort                      Cohort                   @relation(fields: [cohortId], references: [id])
+  @@id([userId, cohortId])
+}
+
+
+model CohortSession {
+  id                          Int                       @id @default(autoincrement())
+  createdAt                   DateTime                  @default(now())
+  recording                   String?                   
+  cohortId                    Int
+  
+  cohort                      Cohort                    @relation(fields: [cohortId], references: [id])
 }
