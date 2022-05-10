@@ -71,8 +71,10 @@ export type MutationInviteUserArgs = {
 
 export type Organization = {
   __typename?: 'Organization';
+  description?: Maybe<Scalars['String']>;
   district?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
+  location?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   subDistrict?: Maybe<Scalars['String']>;
 };
@@ -132,11 +134,11 @@ export type EditOrganizationMutationVariables = Exact<{
 
 export type EditOrganizationMutation = { __typename?: 'Mutation', editOrganization: { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null } };
 
-export type OrganizationDetailsFragment = { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null };
+export type OrganizationDetailsFragment = { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null };
 
-export type OrganizationsFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null }> };
+export type OrganizationsFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null }> };
 
-export type OrganizationsTableFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null }> };
+export type OrganizationsTableFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null }> };
 
 export type InviteUserMutationVariables = Exact<{
   email: Scalars['String'];
@@ -153,12 +155,12 @@ export type OrganizationDetailPageQueryVariables = Exact<{
 }>;
 
 
-export type OrganizationDetailPageQuery = { __typename?: 'Query', organization?: { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null } | null };
+export type OrganizationDetailPageQuery = { __typename?: 'Query', organization?: { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null } | null };
 
 export type OrganizationsPageQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type OrganizationsPageQuery = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null }> };
+export type OrganizationsPageQuery = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null }> };
 
 export type UsersPageQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -180,6 +182,8 @@ export const OrganizationDetailsFragmentDoc = gql`
   name
   district
   subDistrict
+  location
+  description
 }
     `;
 export const OrganizationsTableFragmentDoc = gql`
@@ -189,6 +193,8 @@ export const OrganizationsTableFragmentDoc = gql`
     name
     district
     subDistrict
+    location
+    description
   }
 }
     `;

@@ -17,6 +17,8 @@ OrganizationsTable.fragments = {
         name
         district
         subDistrict
+        location
+        description
       }
     }
   `,

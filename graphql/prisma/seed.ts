@@ -75,18 +75,24 @@ function getOrgs(): Omit<Organization, "id">[] {
   return [
     {
       name: "El Paso Organization",
+      location: "Texas",
+      description: "Org for schools in El Paso, TX.",
       district: "El Paso ISD",
       subDistrict: "El Paso ISD Socorro SD",
       createdAt: new Date(),
     },
     {
       name: "Short",
+      location: "Florida",
+      description: "Org for schools in Miami, FL.",
       district: "ISD",
       subDistrict: "SD",
       createdAt: new Date(),
     },
     {
-      name: "An extremely long name for an organization.",
+      name: "An very long name for an organization.",
+      location: "Long Island",
+      description: "Test description",
       district: "Also a very long school district name",
       subDistrict:
         "A mightly long sub district name that is even longer than the district name used above.",

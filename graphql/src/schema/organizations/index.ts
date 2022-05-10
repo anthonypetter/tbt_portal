@@ -17,6 +17,8 @@ export const typeDefs = gql`
   type Organization {
     id: ID!
     name: String!
+    location: String
+    description: String
     district: String
     subDistrict: String
   }
