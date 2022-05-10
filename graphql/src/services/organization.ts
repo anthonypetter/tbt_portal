@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma-client";
+import { prisma } from "../lib/prisma-client";
 import { Organization } from "@prisma/client";
 
 export const OrganizationService = {
@@ -58,5 +58,14 @@ export const OrganizationService = {
       where: { id },
     });
     return organization;
+  },
+
+  async getEngagements(orgId: number) {
+    const engagements = await prisma.engagement.findMany({
+      take: 100,
+      where: { organizationId: orgId },
+    });
+
+    return engagements;
   },
 };

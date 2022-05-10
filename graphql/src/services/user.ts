@@ -1,6 +1,6 @@
-import { prisma } from "../../lib/prisma-client";
+import { prisma } from "../lib/prisma-client";
 import { AccountStatus, User, UserRole } from "@prisma/client";
-import { createCognitoUser } from "../../lib/cognito";
+import { createCognitoUser } from "../lib/cognito";
 
 export const UserService = {
   async getUserByCognitoSub(cognitoSub: string): Promise<User | null> {
