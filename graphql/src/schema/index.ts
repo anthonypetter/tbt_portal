@@ -5,12 +5,22 @@ import {
   typeDefs as OrganizationDefs,
   resolvers as OrganizationResolvers,
 } from "./organizations";
+import {
+  typeDefs as EngagementDefs,
+  resolvers as EngagementResolvers,
+} from "./engagements";
+import {
+  typeDefs as CohortDefs,
+  resolvers as CohortResolvers,
+} from "./cohorts";
 
 import merge from "lodash/merge";
 
 export const typeDefs = gql`
   ${UserDefs}
   ${OrganizationDefs}
+  ${EngagementDefs}
+  ${CohortDefs}
 
   type Query {
     _empty: String
@@ -20,4 +30,10 @@ export const typeDefs = gql`
   }
 `;
 
-export const resolvers = merge({}, UserResolvers, OrganizationResolvers);
+export const resolvers = merge(
+  {},
+  UserResolvers,
+  OrganizationResolvers,
+  EngagementResolvers,
+  CohortResolvers
+);

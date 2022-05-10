@@ -8,6 +8,7 @@ import {
 } from "../__generated__/graphql";
 import { parseId } from "../../utils/numbers";
 import { OrganizationService } from "../../services/organization";
+import { OrganizationResolver } from "./OrganizationResolver";
 
 /**
  * Type Defs
@@ -21,6 +22,7 @@ export const typeDefs = gql`
     description: String
     district: String
     subDistrict: String
+    engagements: [Engagement!]!
   }
 
   input AddOrganizationInput {
@@ -131,4 +133,5 @@ export const resolvers = {
     editOrganization,
     deleteOrganization,
   },
+  Organization: OrganizationResolver,
 };

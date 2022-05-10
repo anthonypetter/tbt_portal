@@ -26,11 +26,25 @@ export type AddOrganizationInput = {
   subDistrict?: InputMaybe<Scalars['String']>;
 };
 
+export type Cohort = {
+  __typename?: 'Cohort';
+  grade?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
+};
+
 export type EditOrganizationInput = {
   district?: InputMaybe<Scalars['String']>;
   id: Scalars['ID'];
   name?: InputMaybe<Scalars['String']>;
   subDistrict?: InputMaybe<Scalars['String']>;
+};
+
+export type Engagement = {
+  __typename?: 'Engagement';
+  cohorts: Array<Cohort>;
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
 };
 
 export type InviteUserResonse = {
@@ -72,6 +86,7 @@ export type Organization = {
   __typename?: 'Organization';
   description?: Maybe<Scalars['String']>;
   district?: Maybe<Scalars['String']>;
+  engagements: Array<Engagement>;
   id: Scalars['ID'];
   location?: Maybe<Scalars['String']>;
   name: Scalars['String'];
@@ -177,7 +192,9 @@ export type ResolversTypes = {
   AccountStatus: AccountStatus;
   AddOrganizationInput: AddOrganizationInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  Cohort: ResolverTypeWrapper<Cohort>;
   EditOrganizationInput: EditOrganizationInput;
+  Engagement: ResolverTypeWrapper<Engagement>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   InviteUserResonse: ResolverTypeWrapper<InviteUserResonse>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -192,7 +209,9 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   AddOrganizationInput: AddOrganizationInput;
   Boolean: Scalars['Boolean'];
+  Cohort: Cohort;
   EditOrganizationInput: EditOrganizationInput;
+  Engagement: Engagement;
   ID: Scalars['ID'];
   InviteUserResonse: InviteUserResonse;
   Mutation: {};
@@ -200,6 +219,20 @@ export type ResolversParentTypes = {
   Query: {};
   String: Scalars['String'];
   User: User;
+};
+
+export type CohortResolvers<ContextType = any, ParentType extends ResolversParentTypes['Cohort'] = ResolversParentTypes['Cohort']> = {
+  grade?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type EngagementResolvers<ContextType = any, ParentType extends ResolversParentTypes['Engagement'] = ResolversParentTypes['Engagement']> = {
+  cohorts?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type InviteUserResonseResolvers<ContextType = any, ParentType extends ResolversParentTypes['InviteUserResonse'] = ResolversParentTypes['InviteUserResonse']> = {
@@ -218,6 +251,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type OrganizationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Organization'] = ResolversParentTypes['Organization']> = {
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   district?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  engagements?: Resolver<Array<ResolversTypes['Engagement']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -241,6 +275,8 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 };
 
 export type Resolvers<ContextType = any> = {
+  Cohort?: CohortResolvers<ContextType>;
+  Engagement?: EngagementResolvers<ContextType>;
   InviteUserResonse?: InviteUserResonseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;
