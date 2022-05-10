@@ -70,8 +70,10 @@ export type MutationInviteUserArgs = {
 
 export type Organization = {
   __typename?: 'Organization';
+  description?: Maybe<Scalars['String']>;
   district?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
+  location?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   subDistrict?: Maybe<Scalars['String']>;
 };
@@ -214,8 +216,10 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type OrganizationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Organization'] = ResolversParentTypes['Organization']> = {
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   district?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   subDistrict?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
