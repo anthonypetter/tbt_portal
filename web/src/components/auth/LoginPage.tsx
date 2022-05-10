@@ -14,6 +14,7 @@ import { LoginStatus } from "./AuthContext";
 import { ChangePasswordPage } from "./ChangePasswordPage";
 import { CognitoUser } from "@aws-amplify/auth";
 import { RequiredField } from "./RequiredField";
+import { Container } from "components/Container";
 
 type LoginInputs = {
   email: string;
@@ -86,7 +87,7 @@ export function LoginPage() {
           <HeaderAndLogo text="Sign in to your account" />
 
           <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-            <Container>
+            <Container padding="lg">
               <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
                 <div>
                   <label
@@ -226,14 +227,6 @@ export function HeaderAndLogo({ text }: { text: string }) {
       <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
         {text}
       </h2>
-    </div>
-  );
-}
-
-export function Container({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-      {children}
     </div>
   );
 }
