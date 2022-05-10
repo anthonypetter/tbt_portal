@@ -59,13 +59,4 @@ export const OrganizationService = {
     });
     return organization;
   },
-
-  async getEngagements(orgId: number) {
-    const engagements = await prisma.engagement.findMany({
-      take: 100,
-      where: { organizationId: orgId },
-    });
-
-    return engagements;
-  },
 };

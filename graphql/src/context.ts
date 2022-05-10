@@ -5,12 +5,16 @@ import { ExpressContext } from "apollo-server-express";
 import { getUser } from "./lib/cognito";
 import { AuthenticationError } from "apollo-server";
 import { OrganizationService } from "./services/organization";
+import { EngagementService } from "./services/engagement";
+import { CohortService } from "./services/cohort";
 
 export type Context = {
   authedUser: User;
   UserService: typeof UserService;
   AuthorizationService: typeof AuthorizationService;
   OrganizationService: typeof OrganizationService;
+  EngagementService: typeof EngagementService;
+  CohortService: typeof CohortService;
 };
 
 export async function getContext({ req }: ExpressContext): Promise<Context> {
@@ -33,5 +37,7 @@ export async function getContext({ req }: ExpressContext): Promise<Context> {
     UserService,
     AuthorizationService,
     OrganizationService,
+    EngagementService,
+    CohortService,
   };
 }
