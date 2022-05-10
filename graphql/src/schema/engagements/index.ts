@@ -8,11 +8,11 @@ import { EngagementResolver } from "./EngagementResolver";
 export const typeDefs = gql`
   type Engagement {
     id: ID!
-    # createdAt: Date
+    createdAt: Date!
     name: String
     cohorts: [Cohort!]!
-    # startDate: Date
-    # endDate: Date
+    startDate: Date
+    endDate: Date
   }
 `;
 

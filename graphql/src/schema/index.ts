@@ -13,10 +13,13 @@ import {
   typeDefs as CohortDefs,
   resolvers as CohortResolvers,
 } from "./cohorts";
+import { dateScalar } from "./scalars/date";
 
 import merge from "lodash/merge";
 
 export const typeDefs = gql`
+  scalar Date
+
   ${UserDefs}
   ${OrganizationDefs}
   ${EngagementDefs}
@@ -31,7 +34,7 @@ export const typeDefs = gql`
 `;
 
 export const resolvers = merge(
-  {},
+  { Date: dateScalar },
   UserResolvers,
   OrganizationResolvers,
   EngagementResolvers,
