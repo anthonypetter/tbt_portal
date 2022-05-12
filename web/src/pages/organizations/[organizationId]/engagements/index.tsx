@@ -7,7 +7,7 @@ import { OrganizationDetailPageQuery } from "@generated/graphql";
 import { triggerErrorToast } from "components/Toast";
 import { getSession } from "@lib/apollo-client";
 import { processResult } from "@utils/apollo";
-import { fromJust } from "@utils/types";
+import { parseOrgId } from "@utils/parsing";
 
 const GET_ORGANIZATION = gql`
   query OrganizationDetailPage($id: ID!) {
@@ -21,23 +21,20 @@ const GET_ORGANIZATION = gql`
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const auth = await getServerSideAuth(context);
 
-  const params = fromJust(context.params, "context.params");
-  console.log("params", params);
-
   if (!auth.isAuthenticated) {
     return { redirect: auth.redirect };
   }
 
+  const { organizationId } = parseOrgId(context.params);
   const { client } = getSession(auth.token);
   const result: ApolloQueryResult<OrganizationDetailPageQuery> =
     await client.query({
       query: GET_ORGANIZATION,
-      variables: { id: params.id },
+      variables: { id: organizationId },
       fetchPolicy: "no-cache",
     });
 
   const organization = processResult(result, (r) => r.organization);
-  console.log("server side single org", organization);
 
   return {
     props: { organization },
@@ -62,12 +59,12 @@ const Organizations: NextPage<Props> = ({ organization }) => {
     },
   });
 
-  console.log("client-side org", data?.organization);
-
   // To avoid loading flash, we'll preload the table using server-side fetched orgs.
   return (
     <AuthedLayout>
-      <OrganizationDetailPage organization={organization} />
+      <OrganizationDetailPage
+        organization={data?.organization ?? organization}
+      />
     </AuthedLayout>
   );
 };
