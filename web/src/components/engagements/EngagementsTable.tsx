@@ -1,4 +1,4 @@
-import { OrganizationDetailPageQuery } from "@generated/graphql";
+import { OrgDetailPageEngagementsQuery } from "@generated/graphql";
 import { Routes } from "@utils/routes";
 import { DateText } from "components/Date";
 import { Table } from "components/Table";
@@ -8,12 +8,12 @@ import { Column, Cell } from "react-table";
 
 type Props = {
   engagements: NonNullable<
-    OrganizationDetailPageQuery["organization"]
+    OrgDetailPageEngagementsQuery["organization"]
   >["engagements"];
   onRowClick: (engagementId: string) => void;
   selectedEngagement:
     | NonNullable<
-        OrganizationDetailPageQuery["organization"]
+        OrgDetailPageEngagementsQuery["organization"]
       >["engagements"][number]
     | null;
 };
@@ -48,7 +48,7 @@ export type EngagementTableData = {
 
 function usePrepEngagementData(
   engagements: NonNullable<
-    OrganizationDetailPageQuery["organization"]
+    OrgDetailPageEngagementsQuery["organization"]
   >["engagements"]
 ): {
   data: EngagementTableData[];

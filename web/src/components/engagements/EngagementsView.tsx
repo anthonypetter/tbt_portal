@@ -1,4 +1,5 @@
-import { OrganizationDetailPageQuery } from "@generated/graphql";
+import { gql } from "@apollo/client";
+import { OrgDetailPageEngagementsQuery } from "@generated/graphql";
 import { SearchIcon } from "@heroicons/react/outline";
 import clsx from "clsx";
 import { DateText } from "components/Date";
@@ -7,8 +8,29 @@ import { useState } from "react";
 import { EngagementsTable } from "./EngagementsTable";
 import filter from "lodash/filter";
 
+EngagementsView.fragments = {
+  engagementsList: gql`
+    fragment EngagementsViewListF on Organization {
+      engagements {
+        id
+        name
+        startDate
+        endDate
+        organizationId
+        cohorts {
+          id
+          name
+          grade
+          startDate
+          endDate
+        }
+      }
+    }
+  `,
+};
+
 type Props = {
-  organization: NonNullable<OrganizationDetailPageQuery["organization"]>;
+  organization: NonNullable<OrgDetailPageEngagementsQuery["organization"]>;
 };
 
 export function EngagementsView({ organization }: Props) {
@@ -63,7 +85,7 @@ export function EngagementsView({ organization }: Props) {
 type DetailsSidebarProps = {
   selectedEngagement:
     | NonNullable<
-        OrganizationDetailPageQuery["organization"]
+        OrgDetailPageEngagementsQuery["organization"]
       >["engagements"][number]
     | null;
 };
@@ -74,21 +96,22 @@ function DetailsSidebar({ selectedEngagement }: DetailsSidebarProps) {
       <aside
         className={clsx(
           "hidden lg:block",
-          "p-8 overflow-y-auto w-80",
+          "p-8 overflow-y-auto w-72 xl:w-96",
           "bg-white border-l border-gray-200"
         )}
       >
         <div className="pb-16 space-y-6">
-          Please select an engagement to see its Details.
+          Please select an engagement to see its details.
         </div>
       </aside>
     );
   }
+
   return (
     <aside
       className={clsx(
         "hidden lg:block",
-        "p-6 overflow-y-auto w-80",
+        "py-6 pl-6 overflow-y-auto w-72 xl:w-96",
         "bg-white border-l border-gray-200"
       )}
     >
@@ -104,35 +127,115 @@ function DetailsSidebar({ selectedEngagement }: DetailsSidebarProps) {
             </div>
           </div>
         </div>
-        <div>
-          <h3 className="font-medium text-gray-900">Details</h3>
-          <dl className="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
-            <div className="py-3 flex justify-between text-sm font-medium">
-              <dt className="text-gray-500">Manager</dt>
-              <dd className="text-gray-900">Chamara Adams</dd>
-            </div>
-            <div className="py-3 flex justify-between text-sm font-medium">
-              <dt className="text-gray-500">Starts</dt>
-              <dd className="text-gray-900">
-                <DateText timeMs={selectedEngagement.startDate} />
-              </dd>
-            </div>
-            <div className="py-3 flex justify-between text-sm font-medium">
-              <dt className="text-gray-500">Ends</dt>
-              <dd className="text-gray-900">
-                <DateText timeMs={selectedEngagement.endDate} />
-              </dd>
-            </div>
-            <div className="py-3 flex justify-between text-sm font-medium">
-              <dt className="text-gray-500">POC</dt>
-              <dd className="text-gray-900">N/A</dd>
-            </div>
-          </dl>
-        </div>
-        <div>
-          <h3 className="font-medium text-gray-900">Staffing</h3>
-        </div>
+        <DetailSection title="Details">
+          <DetailLine label="Manager" value="Chamara Adams" />
+          <DetailLine
+            label="Starts"
+            value={<DateText timeMs={selectedEngagement.startDate} />}
+          />
+          <DetailLine
+            label="Starts"
+            value={<DateText timeMs={selectedEngagement.endDate} />}
+          />
+          <DetailLine label="POC" value="N/A" />
+        </DetailSection>
+
+        {/* <DetailSection title="Staffing - Engagement-wide">
+          Coming Soon
+        </DetailSection> */}
+
+        <DetailTable
+          title="Cohorts"
+          rows={selectedEngagement.cohorts.map((c) => ({
+            col1: c.name,
+            col2: (
+              <span>
+                <DateText timeMs={c.startDate} />
+                {" - "}
+                <DateText timeMs={c.endDate} />
+              </span>
+            ),
+          }))}
+        />
       </div>
     </aside>
+  );
+}
+
+type DetailSectionProps = {
+  title: string;
+  children: React.ReactNode;
+};
+
+function DetailSection({ title, children }: DetailSectionProps) {
+  return (
+    <div>
+      <h3 className="font-medium text-gray-900">{title}</h3>
+      <dl className="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
+        {children}
+      </dl>
+    </div>
+  );
+}
+
+type DetailLineProps = {
+  label?: string;
+  value: React.ReactNode;
+};
+
+function DetailLine({ label, value }: DetailLineProps) {
+  return (
+    <div className="py-3 flex justify-between text-sm font-medium">
+      <dt className="text-gray-500">{label}</dt>
+      <dd className="text-gray-900">{value}</dd>
+    </div>
+  );
+}
+
+type DetailTableProps = {
+  title: string;
+  headers?: { col1: string; col2: string };
+  rows: { col1: string; col2: React.ReactNode }[];
+};
+
+function DetailTable({ title, headers, rows }: DetailTableProps) {
+  return (
+    <div>
+      <h3 className="font-medium text-gray-900 mb-3">{title}</h3>
+      <div className="overflow-y-auto max-h-64">
+        <table className="min-w-full divide-gray-200 divide-y border-t border-b border-gray-200">
+          {headers && (
+            <thead className="bg-gray-50">
+              <th
+                scope="col"
+                className="px-1 py-3 text-left text-gray-500 text-xs font-medium tracking-wider uppercase"
+              >
+                {headers.col1}
+              </th>
+              <th
+                scope="col"
+                className="px-1 py-3 text-left text-gray-500 text-xs font-medium tracking-wider uppercase"
+              >
+                {headers.col2}
+              </th>
+            </thead>
+          )}
+          <tbody className="bg-white divide-gray-200 divide-y">
+            {rows.map((r) => {
+              return (
+                <tr key={r.col1} className="hover:bg-gray-50">
+                  <td className="py-4 text-gray-900 text-sm font-medium">
+                    {r.col1}
+                  </td>
+                  <td className="py-4 text-gray-500 text-sm font-medium">
+                    {r.col2}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
