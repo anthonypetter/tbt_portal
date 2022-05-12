@@ -1,15 +1,23 @@
 import { prisma } from "../lib/prisma-client";
-import { Engagement } from "@prisma/client";
 
 export const CohortService = {
   // TODO: Fix pagination
   async getCohorts(engagementId: number) {
-    const engagements = await prisma.cohort.findMany({
+    const cohorts = await prisma.cohort.findMany({
       take: 100,
       where: { engagementId },
       // include: { staffAssignments: true },
     });
 
-    return engagements;
+    return cohorts;
+  },
+
+  async getCohortsForOrg(orgId: number) {
+    const cohorts = await prisma.cohort.findMany({
+      take: 100,
+      where: { engagement: { organizationId: orgId } },
+    });
+
+    return cohorts;
   },
 };

@@ -9,10 +9,11 @@ export const typeDefs = gql`
   type Engagement {
     id: ID!
     createdAt: Date!
-    name: String
-    cohorts: [Cohort!]!
+    name: String!
     startDate: Date
     endDate: Date
+    organizationId: ID!
+    cohorts: [Cohort!]!
   }
 `;
 

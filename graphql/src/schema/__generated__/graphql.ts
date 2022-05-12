@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -12,6 +12,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Date: any;
 };
 
 export enum AccountStatus {
@@ -28,9 +29,16 @@ export type AddOrganizationInput = {
 
 export type Cohort = {
   __typename?: 'Cohort';
+  createdAt: Scalars['Date'];
+  endDate?: Maybe<Scalars['Date']>;
+  engagementId: Scalars['ID'];
+  exempt?: Maybe<Scalars['String']>;
   grade?: Maybe<Scalars['String']>;
+  hostKey?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
-  name?: Maybe<Scalars['String']>;
+  meetingRoom?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  startDate?: Maybe<Scalars['Date']>;
 };
 
 export type EditOrganizationInput = {
@@ -43,8 +51,12 @@ export type EditOrganizationInput = {
 export type Engagement = {
   __typename?: 'Engagement';
   cohorts: Array<Cohort>;
+  createdAt: Scalars['Date'];
+  endDate?: Maybe<Scalars['Date']>;
   id: Scalars['ID'];
-  name?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  organizationId: Scalars['ID'];
+  startDate?: Maybe<Scalars['Date']>;
 };
 
 export type InviteUserResonse = {
@@ -96,10 +108,16 @@ export type Organization = {
 export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']>;
+  cohorts: Array<Cohort>;
   currentUser?: Maybe<User>;
   organization?: Maybe<Organization>;
   organizations: Array<Organization>;
   users: Array<User>;
+};
+
+
+export type QueryCohortsArgs = {
+  organizationId: Scalars['ID'];
 };
 
 
@@ -193,6 +211,7 @@ export type ResolversTypes = {
   AddOrganizationInput: AddOrganizationInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Cohort: ResolverTypeWrapper<Cohort>;
+  Date: ResolverTypeWrapper<Scalars['Date']>;
   EditOrganizationInput: EditOrganizationInput;
   Engagement: ResolverTypeWrapper<Engagement>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
@@ -210,6 +229,7 @@ export type ResolversParentTypes = {
   AddOrganizationInput: AddOrganizationInput;
   Boolean: Scalars['Boolean'];
   Cohort: Cohort;
+  Date: Scalars['Date'];
   EditOrganizationInput: EditOrganizationInput;
   Engagement: Engagement;
   ID: Scalars['ID'];
@@ -222,16 +242,31 @@ export type ResolversParentTypes = {
 };
 
 export type CohortResolvers<ContextType = any, ParentType extends ResolversParentTypes['Cohort'] = ResolversParentTypes['Cohort']> = {
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  endDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  engagementId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  exempt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   grade?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  hostKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  meetingRoom?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
+  name: 'Date';
+}
+
 export type EngagementResolvers<ContextType = any, ParentType extends ResolversParentTypes['Engagement'] = ResolversParentTypes['Engagement']> = {
   cohorts?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  endDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  organizationId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -261,6 +296,7 @@ export type OrganizationResolvers<ContextType = any, ParentType extends Resolver
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  cohorts?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType, RequireFields<QueryCohortsArgs, 'organizationId'>>;
   currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
@@ -276,6 +312,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 
 export type Resolvers<ContextType = any> = {
   Cohort?: CohortResolvers<ContextType>;
+  Date?: GraphQLScalarType;
   Engagement?: EngagementResolvers<ContextType>;
   InviteUserResonse?: InviteUserResonseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
