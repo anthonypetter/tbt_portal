@@ -11,20 +11,14 @@ configureAmplify();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <>
-      <Head>
-        <link rel="shortcut icon" href="/favicon.ico" />
-      </Head>
-
-      <AuthProvider>
-        <ThemeProvider>
-          <Layout>
-            <Toaster position="top-right" />
-            <Component {...pageProps} />
-          </Layout>
-        </ThemeProvider>
-      </AuthProvider>
-    </>
+    <AuthProvider>
+      <ThemeProvider>
+        <Layout>
+          <Toaster position="top-right" />
+          <Component {...pageProps} />
+        </Layout>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 
