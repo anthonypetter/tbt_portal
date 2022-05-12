@@ -37,7 +37,6 @@ export function ThemeProvider({ children }: Props) {
   const { user } = useAuth();
 
   const theme = getTheme(user?.role);
-  console.log("[🎩 ThemeProvider]: Theme found: ", user?.role ?? "Default");
 
   return (
     <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>
