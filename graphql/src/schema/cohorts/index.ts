@@ -1,4 +1,7 @@
 import { gql } from "apollo-server";
+import { Context } from "../../context";
+import { QueryCohortsArgs } from "../__generated__/graphql";
+import { parseId } from "../../utils/numbers";
 
 /**
  * Type Defs
@@ -7,9 +10,38 @@ import { gql } from "apollo-server";
 export const typeDefs = gql`
   type Cohort {
     id: ID!
-    name: String
+    createdAt: Date!
+    name: String!
     grade: String
+    meetingRoom: String
+    hostKey: String
+    exempt: String
+    startDate: Date
+    endDate: Date
+
+    engagementId: ID!
+  }
+
+  extend type Query {
+    cohorts(organizationId: ID!): [Cohort!]!
   }
 `;
 
-export const resolvers = {};
+/**
+ * Query Resolvers
+ */
+
+async function cohorts(
+  _parent: undefined,
+  { organizationId }: QueryCohortsArgs,
+  { authedUser, AuthorizationService, CohortService }: Context
+) {
+  AuthorizationService.assertIsAdmin(authedUser);
+  return CohortService.getCohortsForOrg(parseId(organizationId));
+}
+
+export const resolvers = {
+  Query: {
+    cohorts,
+  },
+};
