@@ -19,10 +19,22 @@ export const Routes = {
     href: () => "/organizations",
     path: () => "/organizations",
   },
-  organizationDetails: {
-    href: (id: string) => `/organizations/${id}`,
-    path: () => "/organizations",
+  org: {
+    engagements: {
+      href: (orgId: string) => `/organizations/${orgId}/engagements`,
+      path: () => "/organizations/[organizationId]/engagements",
+    },
+    cohorts: {
+      href: (orgId: string) => `/organizations/${orgId}/cohorts`,
+      path: () => "/organizations/[organizationId]/cohorts",
+    },
+    engagementDetails: {
+      href: (orgId: string, engagementId: string) =>
+        `/organizations/${orgId}/engagements/${engagementId}`,
+      path: () => "/organizations/[organizationId]/engagements/[engagementId]",
+    },
   },
+
   engagements: {
     href: () => "/engagements",
     path: () => "/engagements",
