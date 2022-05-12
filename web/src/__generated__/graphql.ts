@@ -13,6 +13,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Date: any;
 };
 
 export enum AccountStatus {
@@ -27,11 +28,35 @@ export type AddOrganizationInput = {
   subDistrict?: InputMaybe<Scalars['String']>;
 };
 
+export type Cohort = {
+  __typename?: 'Cohort';
+  createdAt: Scalars['Date'];
+  endDate?: Maybe<Scalars['Date']>;
+  exempt?: Maybe<Scalars['String']>;
+  grade?: Maybe<Scalars['String']>;
+  hostKey?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  meetingRoom?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  startDate?: Maybe<Scalars['Date']>;
+};
+
 export type EditOrganizationInput = {
   district?: InputMaybe<Scalars['String']>;
   id: Scalars['ID'];
   name?: InputMaybe<Scalars['String']>;
   subDistrict?: InputMaybe<Scalars['String']>;
+};
+
+export type Engagement = {
+  __typename?: 'Engagement';
+  cohorts: Array<Cohort>;
+  createdAt: Scalars['Date'];
+  endDate?: Maybe<Scalars['Date']>;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  organizationId: Scalars['ID'];
+  startDate?: Maybe<Scalars['Date']>;
 };
 
 export type InviteUserResonse = {
@@ -73,6 +98,7 @@ export type Organization = {
   __typename?: 'Organization';
   description?: Maybe<Scalars['String']>;
   district?: Maybe<Scalars['String']>;
+  engagements: Array<Engagement>;
   id: Scalars['ID'];
   location?: Maybe<Scalars['String']>;
   name: Scalars['String'];
@@ -134,7 +160,7 @@ export type EditOrganizationMutationVariables = Exact<{
 
 export type EditOrganizationMutation = { __typename?: 'Mutation', editOrganization: { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null } };
 
-export type OrganizationDetailsFragment = { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null };
+export type OrganizationDetailsFragment = { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null }> }> };
 
 export type OrganizationsFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null }> };
 
@@ -155,7 +181,7 @@ export type OrganizationDetailPageQueryVariables = Exact<{
 }>;
 
 
-export type OrganizationDetailPageQuery = { __typename?: 'Query', organization?: { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null } | null };
+export type OrganizationDetailPageQuery = { __typename?: 'Query', organization?: { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null }> }> } | null };
 
 export type OrganizationsPageQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -184,6 +210,18 @@ export const OrganizationDetailsFragmentDoc = gql`
   subDistrict
   location
   description
+  engagements {
+    id
+    name
+    startDate
+    endDate
+    organizationId
+    cohorts {
+      id
+      name
+      grade
+    }
+  }
 }
     `;
 export const OrganizationsTableFragmentDoc = gql`
