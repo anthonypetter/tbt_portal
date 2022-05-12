@@ -6,9 +6,9 @@ type Props = {
 
 export function DateText({ timeMs }: Props) {
   if (!timeMs) {
-    return <>{"&ndash"}</>;
+    return <span>&#8212;</span>;
   }
 
   const date = new Date(timeMs);
-  return <>{date.toLocaleDateString()}</>;
+  return <span>{date.toLocaleDateString()}</span>;
 }
