@@ -1,4 +1,4 @@
-import { Organization, Prisma, PrismaClient, User } from "@prisma/client";
+import { Prisma, PrismaClient, User } from "@prisma/client";
 import { fromJust } from "../src/utils/types";
 
 const prisma = new PrismaClient();
@@ -111,8 +111,6 @@ async function createElPasoOrg(users: User[]) {
   const endDate = new Date(startDate.getTime());
   endDate.setFullYear(startDate.getFullYear() + 5);
 
-  console.log("startDate", startDate);
-  console.log("endDate", endDate);
   const mentorTeacher = fromJust(
     users.find((u) => u.email === "victor+mt@tutored.live")
   );
@@ -125,39 +123,13 @@ async function createElPasoOrg(users: User[]) {
 
   const newOrg = await prisma.organization.create({
     data: {
-      name: "El Paso Org",
+      name: "El Paso ISD",
       location: "Texas",
       description: "Org for all schools in El Paso, TX.",
       district: "El Paso ISD",
-      subDistrict: "El Paso ISD Socorro SD",
       createdAt: new Date(),
       engagements: {
-        create: [
-          {
-            name: "EP - 5 Year",
-            startDate: startDate,
-            endDate: endDate,
-            cohorts: {
-              create: [
-                {
-                  createdAt: new Date(),
-                  name: "EP-G3 Cohort",
-                  grade: "3",
-                },
-                {
-                  createdAt: new Date(),
-                  name: "EP-G4 Cohort",
-                  grade: "4",
-                },
-                {
-                  createdAt: new Date(),
-                  name: "EP-G5 Cohort",
-                  grade: "5",
-                },
-              ],
-            },
-          },
-        ],
+        create: createSchoolEngagements(),
       },
     },
     include: {
@@ -203,4 +175,53 @@ async function createElPasoOrg(users: User[]) {
       },
     }),
   ]);
+}
+
+function createSchoolEngagements() {
+  const schools = [
+    { schoolName: "Socorro Middle School", abbreviation: "SMS" },
+    { schoolName: "Sanchez Middle School", abbreviation: "San" },
+    { schoolName: "El Paso Middle School", abbreviation: "EP Mid" },
+    { schoolName: "Montwood Middle School", abbreviation: "Mtw Mid" },
+    { schoolName: "Rojas Elementary School", abbreviation: "Roj El" },
+    { schoolName: "Hilley Elementary School", abbreviation: "Hil" },
+    { schoolName: "Belair High School", abbreviation: "Bel" },
+    { schoolName: "Coronado High School", abbreviation: "Cor" },
+    { schoolName: "Don Haskins", abbreviation: "DH" },
+    { schoolName: "Chapin High School", abbreviation: "Chap" },
+    { schoolName: "Coach Archie Duran", abbreviation: "CAD" },
+    { schoolName: "Coldwell Elementary", abbreviation: "CE" },
+  ];
+
+  const startDate = new Date();
+
+  return schools.map((school) => {
+    const endDate = new Date(startDate.getTime());
+    endDate.setMonth(startDate.getMonth() + Math.floor(Math.random() * 24) + 1);
+
+    return {
+      name: school.schoolName,
+      startDate: startDate,
+      endDate: endDate,
+      cohorts: {
+        create: [
+          {
+            createdAt: new Date(),
+            name: `${school.abbreviation}-G6 Cohort`,
+            grade: "6",
+          },
+          {
+            createdAt: new Date(),
+            name: `${school.abbreviation}-G7 Cohort`,
+            grade: "7",
+          },
+          {
+            createdAt: new Date(),
+            name: `${school.abbreviation}-G8 Cohort`,
+            grade: "8",
+          },
+        ],
+      },
+    };
+  });
 }
