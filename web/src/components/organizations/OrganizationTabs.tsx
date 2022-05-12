@@ -1,61 +1,47 @@
-import { OrganizationDetailPageQuery } from "@generated/graphql";
 import { Routes } from "@utils/routes";
+import { assertUnreachable } from "@utils/types";
 import { LinkTabs } from "components/LinkTabs";
-import { useRouter } from "next/router";
+import { TabOrganization } from "./OrganizationDetailPage";
 
 export enum Tab {
   Engagements,
   Cohorts,
 }
 
-const ENGAGEMENT_TAB = {
-  tab: Tab.Engagements,
-  displayName: "Engagements",
-};
-
-const COHORT_TAB = {
-  tab: Tab.Cohorts,
-  displayName: "Cohorts",
-};
-
 type Props = {
-  organization: NonNullable<OrganizationDetailPageQuery["organization"]>;
+  tabOrg: TabOrganization;
 };
 
-export function OrganizationTabs({ organization }: Props) {
-  const { pathname } = useRouter();
-
-  const { tab: currentTab } = identifyTab(pathname);
+export function OrganizationTabs({ tabOrg }: Props) {
+  const { tab, organization } = tabOrg;
+  const cohortCount = organization.engagements.flatMap((e) => e.cohorts).length;
 
   const tabsConfig = [
     {
-      name: ENGAGEMENT_TAB.displayName,
+      name: getDisplayName(Tab.Engagements),
       href: Routes.org.engagements.href(organization.id),
       count: organization.engagements.length,
-      current: currentTab === Tab.Engagements,
+      current: tab === Tab.Engagements,
     },
     {
-      name: COHORT_TAB.displayName,
+      name: getDisplayName(Tab.Cohorts),
       href: Routes.org.cohorts.href(organization.id),
-      count: 36, //TODO: fix
-      current: currentTab === Tab.Cohorts,
+      count: cohortCount,
+      current: tab === Tab.Cohorts,
     },
   ];
   return <LinkTabs tabs={tabsConfig} />;
 }
 
-export function identifyTab(pathname: string): {
-  tab: Tab;
-  displayName: string;
-} {
-  switch (pathname) {
-    case Routes.org.engagements.path():
-      return ENGAGEMENT_TAB;
+export function getDisplayName(tab: Tab) {
+  switch (tab) {
+    case Tab.Cohorts:
+      return "Cohorts";
 
-    case Routes.org.cohorts.path():
-      return COHORT_TAB;
+    case Tab.Engagements:
+      return "Engagements";
 
     default:
-      return ENGAGEMENT_TAB;
+      assertUnreachable(tab, "tab");
   }
 }

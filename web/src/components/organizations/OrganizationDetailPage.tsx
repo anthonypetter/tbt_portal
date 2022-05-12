@@ -1,48 +1,61 @@
 import { gql } from "@apollo/client";
-import { OrganizationDetailPageQuery } from "@generated/graphql";
+import {
+  OrgDetailPageEngagementsQuery,
+  OrgDetailPageCohortsQuery,
+} from "@generated/graphql";
 import { Breadcrumbs } from "components/Breadcrumbs";
 import { Routes } from "@utils/routes";
 import { HomeIcon } from "@heroicons/react/solid";
 import { Button } from "components/Button";
 import clsx from "clsx";
 import { Container } from "components/Container";
-import { useRouter } from "next/router";
 import { EngagementsView } from "../engagements/EngagementsView";
-import { identifyTab, OrganizationTabs, Tab } from "./OrganizationTabs";
+import { getDisplayName, OrganizationTabs, Tab } from "./OrganizationTabs";
+import { CohortsView } from "components/cohorts/CohortsView";
+import { assertUnreachable } from "@utils/types";
 
 OrganizationDetailPage.fragments = {
-  details: gql`
-    fragment OrganizationDetails on Organization {
+  engagementsView: gql`
+    fragment EngagementsViewF on Organization {
       id
       name
       district
       subDistrict
       location
       description
-      engagements {
-        id
-        name
-        startDate
-        endDate
-        organizationId
-        cohorts {
-          id
-          name
-          grade
-        }
-      }
+      ...EngagementsViewListF
     }
+    ${EngagementsView.fragments.engagementsList}
+  `,
+  cohortsView: gql`
+    fragment CohortsViewF on Organization {
+      id
+      name
+      district
+      subDistrict
+      location
+      description
+      ...CohortsViewListF
+    }
+    ${CohortsView.fragments.cohortsList}
   `,
 };
 
+export type TabOrganization =
+  | {
+      tab: Tab.Engagements;
+      organization: NonNullable<OrgDetailPageEngagementsQuery["organization"]>;
+    }
+  | {
+      tab: Tab.Cohorts;
+      organization: NonNullable<OrgDetailPageCohortsQuery["organization"]>;
+    };
+
 type Props = {
-  organization: NonNullable<OrganizationDetailPageQuery["organization"]>;
+  tabOrg: TabOrganization;
 };
 
-export function OrganizationDetailPage({ organization }: Props) {
-  const { pathname } = useRouter();
-  const { tab, displayName } = identifyTab(pathname);
-
+export function OrganizationDetailPage({ tabOrg }: Props) {
   return (
     <div>
       <Breadcrumbs
@@ -53,30 +66,43 @@ export function OrganizationDetailPage({ organization }: Props) {
             href: Routes.organizations.href(),
           },
           {
-            name: `${organization.name} ${displayName}`,
-            href: Routes.org.engagements.href(organization.id),
+            name: `${tabOrg.organization.name} ${getDisplayName(tabOrg.tab)}`,
+            href: Routes.org.engagements.href(tabOrg.organization.id),
             current: true,
           },
         ]}
       />
 
       <Header
-        title={organization.name}
-        description={organization.description}
+        title={tabOrg.organization.name}
+        description={tabOrg.organization.description}
       />
 
       <div className="mt-8">
         <Container padding="md">
-          <OrganizationTabs organization={organization} />
-          {tab === Tab.Engagements ? (
-            <EngagementsView organization={organization} />
-          ) : (
-            <h1>Cohorts tab</h1>
-          )}
+          <OrganizationTabs tabOrg={tabOrg} />
+          <TabView tabOrg={tabOrg} />
         </Container>
       </div>
     </div>
   );
+}
+
+type TabViewProps = {
+  tabOrg: TabOrganization;
+};
+
+function TabView({ tabOrg }: TabViewProps) {
+  switch (tabOrg.tab) {
+    case Tab.Engagements:
+      return <EngagementsView organization={tabOrg.organization} />;
+
+    case Tab.Cohorts:
+      return <CohortsView organization={tabOrg.organization} />;
+
+    default:
+      assertUnreachable(tabOrg, "TabOrg.tab");
+  }
 }
 
 type HeaderProps = {

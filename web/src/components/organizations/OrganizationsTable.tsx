@@ -97,7 +97,7 @@ function usePrepOrgData(
         accessor: "name",
         Cell: ({ row }: Cell<OrgTableData>) => {
           return (
-            <Link href={Routes.organizationDetails.href(row.original.id)}>
+            <Link href={Routes.org.engagements.href(row.original.id)}>
               <a className="font-medium text-gray-900">{row.original.name}</a>
             </Link>
           );
