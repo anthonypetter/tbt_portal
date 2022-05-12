@@ -1,15 +1,22 @@
-import { useTable, Column, TableState } from "react-table";
+import clsx from "clsx";
+import { useTable, Column, TableState, Row } from "react-table";
 
 type Props<D extends Record<string, unknown>> = {
   columns: Column<D>[];
   data: D[];
   hiddenColumns?: TableState["hiddenColumns"];
+  onRowClick?: (row: Row<D>) => void;
+  selectedId?: string | null;
+  border?: boolean;
 };
 
-export function Table<D extends Record<string, unknown>>({
+export function Table<D extends { id: string }>({
   columns,
   data,
   hiddenColumns,
+  onRowClick,
+  selectedId,
+  border = true,
 }: Props<D>) {
   const initialState = { hiddenColumns };
 
@@ -21,7 +28,12 @@ export function Table<D extends Record<string, unknown>>({
     });
 
   return (
-    <div className="border-b border-gray-200 shadow overflow-hidden sm:rounded-lg">
+    <div
+      className={clsx(
+        border &&
+          "border-b border-gray-200 shadow overflow-hidden sm:rounded-lg"
+      )}
+    >
       <table
         className="min-w-full divide-gray-200 divide-y"
         {...getTableProps()}
@@ -52,9 +64,19 @@ export function Table<D extends Record<string, unknown>>({
         >
           {rows.map((row) => {
             prepareRow(row);
+            const isRowSelected = row.original.id === selectedId;
+            const onClick = onRowClick
+              ? { onClick: () => onRowClick(row) }
+              : {};
             return (
               // eslint-disable-next-line react/jsx-key
-              <tr {...row.getRowProps()}>
+              <tr
+                {...row.getRowProps()}
+                className={clsx(
+                  isRowSelected ? "bg-blue-100" : "hover:bg-gray-50"
+                )}
+                {...onClick}
+              >
                 {row.cells.map((cell) => {
                   return (
                     // eslint-disable-next-line react/jsx-key
