@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { forwardRef } from "react";
+import { forwardRef, MouseEventHandler } from "react";
 
 type Props = {
   id: string;
@@ -12,6 +12,8 @@ type Props = {
   description?: string;
   placeholder?: string;
   leftIcon?: (props: React.ComponentProps<"svg">) => JSX.Element;
+  className?: string;
+  onClick?: MouseEventHandler<HTMLInputElement>;
 };
 
 function InputForwardRef(
@@ -26,6 +28,8 @@ function InputForwardRef(
     description,
     placeholder: placeholderProp,
     leftIcon: LeftIcon,
+    className: classNameProp,
+    onClick: onClickProp,
   }: Props,
   ref: React.Ref<HTMLInputElement>
 ) {
@@ -33,9 +37,11 @@ function InputForwardRef(
   const onChange = onChangeProp ? { onChange: onChangeProp } : {};
   const name = nameProp ? { name: nameProp } : {};
   const placeholder = placeholderProp ? { placeholder: placeholderProp } : {};
+  const className = classNameProp ? { className: classNameProp } : {};
+  const onClick = onClickProp ? { onClick: onClickProp } : {};
 
   return (
-    <div>
+    <div {...className}>
       {label ? (
         <label htmlFor={id} className="block text-sm font-medium text-gray-700">
           {label}{" "}
@@ -71,6 +77,7 @@ function InputForwardRef(
           {...value}
           {...onChange}
           {...placeholder}
+          {...onClick}
         />
       </div>
       {description && (
