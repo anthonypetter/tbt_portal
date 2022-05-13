@@ -4,6 +4,8 @@ import clsx from "clsx";
 import { Button, ThemeT } from "./Button";
 import { assertUnreachable } from "@utils/types";
 
+type WidthOptions = "medium" | "large";
+
 type Props = {
   show: boolean;
   children: React.ReactNode;
@@ -11,6 +13,7 @@ type Props = {
   icon: React.ReactNode;
   title: string;
   initialFocus?: React.MutableRefObject<HTMLElement | null> | undefined;
+  width?: WidthOptions;
 };
 
 export function Modal({
@@ -20,6 +23,7 @@ export function Modal({
   title,
   children,
   initialFocus,
+  width = "medium",
 }: Props) {
   return (
     <Transition.Root show={show} as={React.Fragment}>
@@ -69,8 +73,9 @@ export function Modal({
           >
             <div
               className={clsx(
-                "w-full border relative inline-block text-left",
-                "pb-4 pt-5 px-4 sm:mt-8 sm:mb-60 sm:p-6 sm:max-w-lg",
+                getModalWidth(width),
+                "border relative inline-block text-left",
+                "pb-4 pt-5 px-4 sm:mt-8 sm:mb-60 sm:p-6",
                 "align-bottom sm:align-middle",
                 "bg-white rounded-lg shadow-xl",
                 "transform transition-all"
@@ -96,9 +101,22 @@ export function Modal({
   );
 }
 
+function getModalWidth(options: WidthOptions) {
+  switch (options) {
+    case "medium":
+      return "w-full sm:max-w-lg";
+
+    case "large":
+      return "w-full sm:max-w-2xl";
+
+    default:
+      return "w-full sm:max-w-lg";
+  }
+}
+
 function ModalButtons({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">{children}</div>
+    <div className="mt-5 sm:mt-8 sm:flex sm:flex-row-reverse">{children}</div>
   );
 }
 
