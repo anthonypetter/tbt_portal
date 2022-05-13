@@ -1,20 +1,20 @@
-import { useRef, useState, useEffect, useMemo } from "react";
+import { useRef, useState, useMemo } from "react";
 import { UserIcon } from "@heroicons/react/outline";
 import { Spinner } from "../Spinner";
 import { Modal } from "../Modal";
 import { SelectMenu } from "../SelectMenu";
 import { ErrorBox } from "components/ErrorBox";
-import { gql } from "@apollo/client";
-import { UserRole, useInviteUserMutation } from "@generated/graphql";
+import { ApolloError, gql, useMutation } from "@apollo/client";
+import { UserRole } from "@generated/graphql";
 import { fromJust } from "@utils/types";
 import { Input } from "components/Input";
 import { useResetOnShow } from "@utils/useResetOnShow";
+import { InviteUserMutation } from "@generated/graphql";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const INVITE_USER = gql`
-  mutation InviteUser($email: String!, $role: UserRole!) {
-    inviteUser(email: $email, role: $role) {
-      inviteSent
+  mutation InviteUser($input: InviteUserInput!) {
+    inviteUser(input: $input) {
+      id
     }
   }
 `;
@@ -28,50 +28,49 @@ export function InviteUserModal({
   onCancel: () => void;
   onSuccess: () => void;
 }) {
-  const [inviting, setInviting] = useState(false);
-  const cancelButtonRef = useRef(null);
-  const [inviteUser] = useInviteUserMutation();
-  const [inviteFailure, setInviteFailure] = useState<string | null>(null);
   const [email, setEmail] = useState<string>("");
+  const [fullName, setFullName] = useState<string>("");
   const [role, setRole] = useState<UserRole | null>(null);
+  const cancelButtonRef = useRef(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [inviteUser, { loading, reset }] = useMutation<InviteUserMutation>(
+    INVITE_USER,
+    {
+      onError: (err: ApolloError) => setErrorMsg(err.message),
+      onCompleted: onSuccess,
+    }
+  );
 
-  // Resetting form here instead of on modal close to prevent user
-  // from seeing the form reset. It looks kinda ugly.
-
+  // Resetting form here instead of on modal close to prevent flicker.
   useResetOnShow(show, () => {
-    setInviting(false);
-    setInviteFailure(null);
+    reset();
+    setErrorMsg(null);
     setEmail("");
+    setFullName("");
     setRole(null);
   });
 
   const onInviteUser = async () => {
-    setInviting(true);
-
-    try {
-      const { data } = await inviteUser({
-        variables: { email, role: fromJust(role, "role") },
-      });
-
-      if (!data?.inviteUser.inviteSent) {
-        setInviting(false);
-        throw new Error("Something went wrong with the invite.");
-      }
-
-      setInviting(false);
-      onSuccess();
-    } catch (error: unknown) {
-      console.error(error);
-
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Something went wrong with the invite.";
-
-      setInviting(false);
-      setInviteFailure(message);
-    }
+    await inviteUser({
+      variables: {
+        input: {
+          email: fromJust(email, "email"),
+          fullName: fromJust(fullName, "fullName"),
+          role: fromJust(role, "role"),
+        },
+      },
+    });
   };
+
+  const options = useMemo(
+    () => [
+      { id: "NONE_SELECTED", name: "Select an option", role: null },
+      { id: "1", name: "Administrator", role: UserRole.Admin },
+      { id: "2", name: "Mentor Teacher", role: UserRole.MentorTeacher },
+      { id: "3", name: "Tutor Teacher", role: UserRole.TutorTeacher },
+    ],
+    []
+  );
 
   return (
     <Modal
@@ -86,16 +85,44 @@ export function InviteUserModal({
     >
       <div className="py-3">
         <div className="mb-4">
-          <InviteUserForm email={email} setEmail={setEmail} setRole={setRole} />
+          <div className="space-y-4">
+            <Input
+              id="invite-user-email"
+              type="email"
+              label="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              description="An invitation email will be sent to this address."
+              placeholder="invitee@tutored.live"
+              required
+            />
+
+            <Input
+              id="invite-user-name"
+              label="Name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+            />
+
+            <div>
+              <SelectMenu
+                labelText="Role"
+                options={options}
+                onSelect={(option) => setRole(option.role)}
+                required
+              />
+            </div>
+          </div>
         </div>
-        {inviteFailure && <ErrorBox />}
+        {errorMsg && <ErrorBox msg={errorMsg} />}
         <Modal.Buttons>
           <Modal.Button
             type="confirm"
             onClick={onInviteUser}
-            disabled={!email || !role}
+            disabled={!email || !role || !fullName}
           >
-            {inviting ? <Spinner /> : "Invite"}
+            {loading ? <Spinner /> : "Invite"}
           </Modal.Button>
           <Modal.Button type="cancel" onClick={onCancel} ref={cancelButtonRef}>
             Cancel
@@ -103,50 +130,5 @@ export function InviteUserModal({
         </Modal.Buttons>
       </div>
     </Modal>
-  );
-}
-
-type Props = {
-  email: string;
-  setEmail: (email: string) => void;
-  setRole: (role: UserRole | null) => void;
-};
-
-function InviteUserForm({ email, setEmail, setRole }: Props) {
-  //TODO: Add email format validation
-  const options = useMemo(
-    () => [
-      { id: "NONE_SELECTED", name: "Select an option", role: null },
-      { id: "1", name: "Administrator", role: UserRole.Admin },
-      { id: "2", name: "Mentor Teacher", role: UserRole.MentorTeacher },
-      { id: "3", name: "Tutor Teacher", role: UserRole.TutorTeacher },
-    ],
-    []
-  );
-
-  return (
-    <div className="space-y-4">
-      <Input
-        id="invite-user-email"
-        type="email"
-        label="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        description="This will trigger an invitation email."
-        placeholder="invitee@tutored.live"
-        required
-      />
-
-      <div>
-        <SelectMenu
-          labelText="Role"
-          options={options}
-          onSelect={(option) => setRole(option.role)}
-        />
-        <p className="mt-2 text-sm text-gray-500" id="email-description">
-          {"The user will be given different permissions based on their role."}
-        </p>
-      </div>
-    </div>
   );
 }
