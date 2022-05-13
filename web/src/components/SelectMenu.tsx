@@ -9,12 +9,14 @@ type Props<O> = {
   labelText: string;
   options: Option<O>[];
   onSelect: (option: Option<O>) => void;
+  required?: boolean;
 };
 
 export function SelectMenu<O>({
   labelText,
   options,
   onSelect: onSelectProp,
+  required = false,
 }: Props<O>) {
   const [selected, setSelected] = useState(options[0]);
 
@@ -29,6 +31,9 @@ export function SelectMenu<O>({
         <>
           <Listbox.Label className="block text-sm font-medium text-gray-700">
             {labelText}
+            {required && (
+              <span className="ml-1 text-gray-500 text-sm font-light">*</span>
+            )}
           </Listbox.Label>
           <div className="mt-1 relative">
             <Listbox.Button className="bg-white relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
