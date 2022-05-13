@@ -1,6 +1,6 @@
 import { gql } from "apollo-server";
 import { Context } from "../../context";
-import { InviteUserResonse, MutationInviteUserArgs } from "@generated/graphql";
+import { MutationInviteUserArgs } from "@generated/graphql";
 
 /**
  * Type Defs
@@ -20,13 +20,17 @@ export const typeDefs = gql`
   }
 
   type User {
+    id: String!
     email: String!
+    fullName: String!
     role: UserRole!
     accountStatus: AccountStatus!
   }
 
-  type InviteUserResonse {
-    inviteSent: Boolean!
+  input InviteUserInput {
+    email: String!
+    fullName: String!
+    role: UserRole!
   }
 
   extend type Query {
@@ -35,7 +39,7 @@ export const typeDefs = gql`
   }
 
   extend type Mutation {
-    inviteUser(email: String!, role: UserRole!): InviteUserResonse!
+    inviteUser(input: InviteUserInput!): User!
   }
 `;
 
@@ -62,13 +66,13 @@ async function users(
 
 async function inviteUser(
   _parent: undefined,
-  { email, role }: MutationInviteUserArgs,
+  { input }: MutationInviteUserArgs,
   { authedUser, UserService, AuthorizationService }: Context
-): Promise<InviteUserResonse> {
+) {
   AuthorizationService.assertIsAdmin(authedUser);
+  const { email, role, fullName } = input;
 
-  const result = await UserService.inviteUser(email, role);
-  return { inviteSent: result.success };
+  return UserService.inviteUser({ email, fullName, role });
 }
 
 export const resolvers = {

@@ -19,15 +19,21 @@ export const UserService = {
     return users;
   },
 
-  async inviteUser(
-    email: string,
-    role: UserRole
-  ): Promise<{ success: boolean }> {
+  async inviteUser({
+    email,
+    fullName,
+    role,
+  }: {
+    email: string;
+    fullName: string;
+    role: UserRole;
+  }): Promise<User> {
     const cognitoSub = await createCognitoUser(email);
 
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email,
+        fullName,
         cognitoSub,
         createdAt: new Date(),
         role,
@@ -35,7 +41,7 @@ export const UserService = {
       },
     });
 
-    return { success: true };
+    return user;
   },
 
   async activateUser(user: User) {

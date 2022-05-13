@@ -11,7 +11,7 @@ import { triggerErrorToast } from "components/Toast";
 
 const GET_USERS = gql`
   query UsersPage {
-    ...Users
+    ...UsersPage
   }
   ${UsersPage.fragments.users}
 `;
