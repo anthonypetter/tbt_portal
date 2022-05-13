@@ -1,0 +1,13 @@
+/* 
+   CSS below overrides react-datepicker styles 
+   Component is located at: import DatePicker from "react-datepicker";   
+*/
+
+.react-datepicker__day--keyboard-selected,
+.react-datepicker__day--selected {
+  @apply bg-blue-500;
+}
+
+.react-datepicker__header {
+  @apply bg-gray-100;
+}
