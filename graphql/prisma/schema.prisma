@@ -25,7 +25,7 @@ model User {
   email                       String                    @unique
   createdAt                   DateTime                  @default(now())
   cognitoSub                  String                    @unique
-  fullName                    String?
+  fullName                    String
 
   role                        UserRole                  @default(TUTOR_TEACHER)
   accountStatus               AccountStatus             @default(PENDING)

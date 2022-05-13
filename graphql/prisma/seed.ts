@@ -41,7 +41,7 @@ async function createUsers(env: string): Promise<User[]> {
     },
     {
       email: "victor+mt@tutored.live",
-      fullName: "VM Mentor Teacher",
+      fullName: "Victor Merino Mentor",
       cognitoSub: "a5449f83-b175-42d2-bc0d-69ffbb039815",
       createdAt: new Date(),
       role: "MENTOR_TEACHER",
@@ -49,7 +49,7 @@ async function createUsers(env: string): Promise<User[]> {
     },
     {
       email: "victor+tt@tutored.live",
-      fullName: "VM Tutor Teacher",
+      fullName: "Victor Merino Tutor",
       cognitoSub: "bfb7afbd-b5e4-4c8f-bb0f-9eba28d40882",
       createdAt: new Date(),
       role: "TUTOR_TEACHER",
@@ -57,7 +57,7 @@ async function createUsers(env: string): Promise<User[]> {
     },
     {
       email: "victor+st@tutored.live",
-      fullName: "VM Substitute Teacher",
+      fullName: "Victor Merino Substitute",
       cognitoSub: "254598de-6867-4175-95f4-dcb03832ae3f",
       createdAt: new Date(),
       role: "TUTOR_TEACHER",
@@ -68,6 +68,7 @@ async function createUsers(env: string): Promise<User[]> {
   const stagingUsers: Prisma.UserCreateManyInput[] = [
     {
       email: "victor@tutored.live",
+      fullName: "Victor Merino",
       cognitoSub: "07155a34-6b7a-410d-9140-2af0b1877104",
       createdAt: new Date(),
       role: "ADMIN",
@@ -75,6 +76,7 @@ async function createUsers(env: string): Promise<User[]> {
     },
     {
       email: "rafik@tutored.live",
+      fullName: "Rafik Robeal",
       cognitoSub: "8b43e5b1-268f-4530-9b11-944e5578a369",
       createdAt: new Date(),
       role: "ADMIN",

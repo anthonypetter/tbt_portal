@@ -1,10 +1,25 @@
 import { useMemo } from "react";
+import { gql } from "@apollo/client";
 import { Column, Cell } from "react-table";
 import { Table } from "components/Table";
 import { UsersPageQuery } from "@generated/graphql";
 import { AccountStatusBadge } from "components/AccountStatusBadge";
 import { getTextForRole } from "components/RoleText";
 import { ContextMenu } from "components/ContextMenu";
+
+UsersTable.fragments = {
+  users: gql`
+    fragment UsersTable on Query {
+      users {
+        id
+        fullName
+        email
+        role
+        accountStatus
+      }
+    }
+  `,
+};
 
 type Props = {
   users: NonNullable<UsersPageQuery["users"]>;
@@ -17,6 +32,7 @@ export function UsersTable({ users }: Props) {
 
 type UserTableData = {
   id: string;
+  fullName: string;
   email: string;
   role: string;
   accountStatus: string;
@@ -28,6 +44,10 @@ function usePrepUserData(users: NonNullable<UsersPageQuery["users"]>): {
 } {
   const columns: Column<UserTableData>[] = useMemo(() => {
     return [
+      {
+        Header: "Name",
+        accessor: "fullName",
+      },
       {
         Header: "Email",
         accessor: "email",
@@ -66,6 +86,7 @@ function usePrepUserData(users: NonNullable<UsersPageQuery["users"]>): {
       const roleText = getTextForRole(user.role);
       return {
         id: user.id,
+        fullName: user.fullName,
         email: user.email,
         role: roleText === "Administrator" ? "Admin" : roleText,
         accountStatus: user.accountStatus,
