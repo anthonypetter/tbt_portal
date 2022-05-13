@@ -3,9 +3,10 @@ import type { AppProps } from "next/app";
 import { AuthProvider } from "components/auth/AuthProvider";
 import { configureAmplify } from "@lib/amplify";
 import { Layout } from "components/Layout";
-import Head from "next/head";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "components/ThemeProvider";
+import "react-datepicker/dist/react-datepicker.css";
+import "components/DatePicker/datepicker.css";
 
 configureAmplify();
 
