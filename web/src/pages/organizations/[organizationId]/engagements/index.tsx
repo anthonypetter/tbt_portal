@@ -10,6 +10,7 @@ import { processResult } from "@utils/apollo";
 import { parseOrgId } from "@utils/parsing";
 import { Tab } from "components/organizations/OrganizationTabs";
 
+export const QUERY_NAME = "OrgDetailPageEngagements";
 const GET_ORGANIZATION = gql`
   query OrgDetailPageEngagements($id: ID!) {
     organization(id: $id) {
