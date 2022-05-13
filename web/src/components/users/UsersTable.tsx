@@ -4,6 +4,7 @@ import { Table } from "components/Table";
 import { UsersPageQuery } from "@generated/graphql";
 import { AccountStatusBadge } from "components/AccountStatusBadge";
 import { getTextForRole } from "components/RoleText";
+import { ContextMenu } from "components/ContextMenu";
 
 type Props = {
   users: NonNullable<UsersPageQuery["users"]>;
@@ -15,6 +16,7 @@ export function UsersTable({ users }: Props) {
 }
 
 type UserTableData = {
+  id: string;
   email: string;
   role: string;
   accountStatus: string;
@@ -43,6 +45,17 @@ function usePrepUserData(users: NonNullable<UsersPageQuery["users"]>): {
           );
         },
       },
+      {
+        Header: () => null,
+        accessor: "id",
+        Cell: ({ row }: Cell<UserTableData>) => {
+          return (
+            <div className="flex justify-end">
+              <ContextMenu />
+            </div>
+          );
+        },
+      },
     ];
   }, []);
 
@@ -52,6 +65,7 @@ function usePrepUserData(users: NonNullable<UsersPageQuery["users"]>): {
     return users.map((user) => {
       const roleText = getTextForRole(user.role);
       return {
+        id: user.id,
         email: user.email,
         role: roleText === "Administrator" ? "Admin" : roleText,
         accountStatus: user.accountStatus,

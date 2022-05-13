@@ -15,6 +15,7 @@ UsersPage.fragments = {
   users: gql`
     fragment Users on Query {
       users {
+        id
         email
         role
         accountStatus
