@@ -61,10 +61,18 @@ model Engagement {
   cohorts                     Cohort[]
 }
 
+
+enum AssignmentRole {
+  MENTOR_TEACHER
+  SUBSTITUTE_TEACHER
+  GENERAL_TEACHER
+}
+
 model EngagementStaffAssignments {
   createdAt                   DateTime                  @default(now())
   engagementId                Int
   userId                      Int
+  assignmentRole              AssignmentRole           @default(MENTOR_TEACHER)
   
   user                        User                     @relation(fields: [userId], references: [id])
   engagement                  Engagement               @relation(fields: [engagementId], references: [id])
@@ -92,6 +100,7 @@ model CohortStaffAssignments {
   createdAt                   DateTime                  @default(now())
   userId                      Int
   cohortId                    Int
+  assignmentRole              AssignmentRole           @default(GENERAL_TEACHER)
   
   user                        User                     @relation(fields: [userId], references: [id])
   cohort                      Cohort                   @relation(fields: [cohortId], references: [id])
