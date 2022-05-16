@@ -11,7 +11,7 @@
     "generate": "DOTENV_CONFIG_PATH=./.env graphql-codegen -r dotenv/config --config codegen.yml"
   },
   "dependencies": {
-    "@apollo/client": "^3.6.0",
+    "@apollo/client": "^3.6.3",
     "@headlessui/react": "^1.6.0",
     "@heroicons/react": "^1.0.6",
     "aws-amplify": "^4.3.20",
