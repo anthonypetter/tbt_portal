@@ -1,14 +1,12 @@
 import { useState } from "react";
 import { Auth, CognitoUser } from "@aws-amplify/auth";
-import { useRouter } from "next/router";
-import { Routes } from "@utils/routes";
 import { ShieldCheckIcon, CheckIcon } from "@heroicons/react/solid";
 import { Spinner } from "components/Spinner";
 import { assertUnreachable } from "@utils/types";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ErrorBox } from "components/ErrorBox";
 import { ButtonAndIcon, HeaderAndLogo, UnauthCenterLayout } from "./LoginPage";
-import { RequiredField } from "./RequiredField";
+import { RequiredField } from "../RequiredField";
 import { useAuth } from "./AuthProvider";
 
 type PasswordChangeInputs = {

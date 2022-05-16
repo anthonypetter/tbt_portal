@@ -13,7 +13,7 @@ import { ErrorBox } from "components/ErrorBox";
 import { LoginStatus } from "./AuthContext";
 import { ChangePasswordPage } from "./ChangePasswordPage";
 import { CognitoUser } from "@aws-amplify/auth";
-import { RequiredField } from "./RequiredField";
+import { RequiredField } from "../RequiredField";
 import { Container } from "components/Container";
 
 type LoginInputs = {
