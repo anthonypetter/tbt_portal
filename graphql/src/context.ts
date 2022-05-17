@@ -2,11 +2,12 @@ import { User } from "@prisma/client";
 import { UserService } from "./services/user";
 import { AuthorizationService } from "./services/authorization";
 import { ExpressContext } from "apollo-server-express";
-import { getUser } from "./lib/cognito";
+import { authenticateUser } from "./lib/cognito";
 import { AuthenticationError } from "apollo-server";
 import { OrganizationService } from "./services/organization";
 import { EngagementService } from "./services/engagement";
 import { CohortService } from "./services/cohort";
+import { SearchService } from "./services/search";
 
 export type Context = {
   authedUser: User;
@@ -15,20 +16,26 @@ export type Context = {
   OrganizationService: typeof OrganizationService;
   EngagementService: typeof EngagementService;
   CohortService: typeof CohortService;
+  SearchService: typeof SearchService;
 };
 
 export async function getContext({ req }: ExpressContext): Promise<Context> {
   const authHeader = req.headers.authorization;
-  const authedUser = await getUser(authHeader);
+  const authedUser = await authenticateUser(authHeader);
 
   if (!authedUser) {
     throw new AuthenticationError("User not found.");
   }
 
+  if (UserService.accountIsPending(authedUser)) {
+    await UserService.activateUser(authedUser);
+    console.log(`[Auth]: '${authedUser.email}' account activated.`);
+  }
+
   console.log(`[Auth]: '${authedUser.email}' authenticated.`);
 
   /**
-   * Intentionally leaving prisma off context. (for now)
+   * Intentionally leaving prisma off context.
    * Idea is that all db access should go through a "service" layer.
    */
 
@@ -39,5 +46,6 @@ export async function getContext({ req }: ExpressContext): Promise<Context> {
     OrganizationService,
     EngagementService,
     CohortService,
+    SearchService,
   };
 }

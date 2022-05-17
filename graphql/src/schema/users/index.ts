@@ -64,6 +64,10 @@ async function users(
   return UserService.getUsers(10);
 }
 
+/**
+ * Mutation Resolvers
+ */
+
 async function inviteUser(
   _parent: undefined,
   { input }: MutationInviteUserArgs,

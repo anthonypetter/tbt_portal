@@ -50,4 +50,8 @@ export const UserService = {
       data: { accountStatus: AccountStatus.ACTIVE },
     });
   },
+
+  accountIsPending(user: User) {
+    return user.accountStatus === AccountStatus.PENDING;
+  },
 };
