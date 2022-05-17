@@ -29,10 +29,6 @@ export function getSession(token: string) {
    * If we dont have a client in memory, let's create one.
    */
   if (!session?.client) {
-    console.log(
-      "[🚀 ApolloClient]: No client found in cache. Creating new apollo client"
-    );
-
     // create new client
     const client = createApolloClient({ token });
 
@@ -50,10 +46,6 @@ export function getSession(token: string) {
    */
 
   if (session.token !== token) {
-    console.log(
-      "[🚀 ApolloClient]: Session refresh. Spinning up client with new refreshed token."
-    );
-
     // create new client
     const client = createApolloClient({ token });
 
@@ -65,7 +57,6 @@ export function getSession(token: string) {
     return newSession;
   }
 
-  console.log("[🚀 ApolloClient]: Returning previously cached client.");
   return session;
 }
 
@@ -83,14 +74,14 @@ function createApolloClient({ token }: { token?: string | null }) {
   const errorLink = onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors) {
       graphQLErrors.forEach(({ message, locations, path }) =>
-        console.log(
+        console.error(
           `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
         )
       );
     }
 
     if (networkError) {
-      console.log(`[Network error]: ${networkError}`);
+      console.error(`[Network error]: ${networkError}`);
     }
   });
 
