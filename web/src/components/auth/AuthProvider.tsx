@@ -87,12 +87,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             await getRefreshTokenCallback(onRefreshSuccess, onRefreshError)
           );
         } else {
-          console.log("[AuthProvider] - Current session is not valid");
+          console.log("[🔑 AuthProvider] - Current session is not valid");
           setAuthState(unauthenticated());
         }
       } catch (error) {
         console.error(error);
-        console.log("[AuthProvider] - No current session");
+        console.log("[🔑 AuthProvider] - No current session");
         setAuthState(unauthenticated());
       }
     }
@@ -260,7 +260,7 @@ async function getRefreshTokenCallback(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return async (err: unknown, session: any) => {
     if (err) {
-      console.error("[AuthProvider] - Error Refreshing session.", err);
+      console.error("[🔑 AuthProvider] - Error Refreshing session.", err);
       if (onError) {
         onError();
       }
@@ -272,7 +272,7 @@ async function getRefreshTokenCallback(
         throw new Error("User not found in refresh operation.");
       }
 
-      console.log("[AuthProvider] - Token refresh success:", {
+      console.log("[🔑 AuthProvider] - Token refresh success:", {
         email: user.email,
         token: refreshedAccessToken,
       });
