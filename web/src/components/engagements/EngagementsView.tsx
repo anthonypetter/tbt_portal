@@ -24,10 +24,22 @@ EngagementsView.fragments = {
           startDate
           endDate
         }
+        staffAssignments {
+          user {
+            id
+            fullName
+            email
+          }
+          assignmentRole
+        }
       }
     }
   `,
 };
+
+export type QueryEngagements = NonNullable<
+  OrgDetailPageEngagementsQuery["organization"]
+>["engagements"];
 
 type Props = {
   organization: NonNullable<OrgDetailPageEngagementsQuery["organization"]>;
@@ -53,7 +65,6 @@ export function EngagementsView({ organization }: Props) {
     <>
       <div className="flex min-h-full">
         <div className={clsx("flex-1 flex flex-col overflow-hidden")}>
-          {/* Main content */}
           <div className="flex-1 flex items-stretch overflow-hidden">
             <main className="flex-1 overflow-y-auto">
               <div className="flex-1 my-4 lg:max-w-sm lg:mr-2 lg:ml-1">
@@ -73,7 +84,6 @@ export function EngagementsView({ organization }: Props) {
               />
             </main>
 
-            {/* Details sidebar */}
             <DetailsSidebar selectedEngagement={selectedEngagement} />
           </div>
         </div>
@@ -83,11 +93,7 @@ export function EngagementsView({ organization }: Props) {
 }
 
 type DetailsSidebarProps = {
-  selectedEngagement:
-    | NonNullable<
-        OrgDetailPageEngagementsQuery["organization"]
-      >["engagements"][number]
-    | null;
+  selectedEngagement: QueryEngagements[number] | null;
 };
 
 function DetailsSidebar({ selectedEngagement }: DetailsSidebarProps) {
@@ -134,7 +140,7 @@ function DetailsSidebar({ selectedEngagement }: DetailsSidebarProps) {
             value={<DateText timeMs={selectedEngagement.startDate} />}
           />
           <DetailLine
-            label="Starts"
+            label="Ends"
             value={<DateText timeMs={selectedEngagement.endDate} />}
           />
           <DetailLine label="POC" value="N/A" />
