@@ -20,7 +20,7 @@ const cognitoClient = new CognitoIdentityProvider({
  * @param authHeader request authorization header
  */
 
-export async function getUser(authHeader: string | undefined) {
+export async function authenticateUser(authHeader: string | undefined) {
   if (!authHeader) {
     throw new AuthenticationError("Auth header is missing.");
   }
@@ -40,15 +40,9 @@ export async function getUser(authHeader: string | undefined) {
     "cognitoSub attribute"
   ).Value;
 
-  const user = await UserService.getUserByCognitoSub(
+  return UserService.getUserByCognitoSub(
     fromJust(mCognitoSub, "cognitoSub value")
   );
-
-  if (user) {
-    await UserService.activateUser(user);
-  }
-
-  return user;
 }
 
 /**

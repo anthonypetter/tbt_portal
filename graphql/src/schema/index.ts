@@ -13,6 +13,7 @@ import {
   typeDefs as CohortDefs,
   resolvers as CohortResolvers,
 } from "./cohorts";
+import { typeDefs as SearchDefs, resolvers as SearchResolvers } from "./search";
 import { dateScalar } from "./scalars/date";
 
 import merge from "lodash/merge";
@@ -24,6 +25,7 @@ export const typeDefs = gql`
   ${OrganizationDefs}
   ${EngagementDefs}
   ${CohortDefs}
+  ${SearchDefs}
 
   type Query {
     _empty: String
@@ -38,5 +40,6 @@ export const resolvers = merge(
   UserResolvers,
   OrganizationResolvers,
   EngagementResolvers,
-  CohortResolvers
+  CohortResolvers,
+  SearchResolvers
 );

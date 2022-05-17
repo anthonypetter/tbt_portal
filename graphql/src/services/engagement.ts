@@ -1,11 +1,13 @@
 import { prisma } from "../lib/prisma-client";
-import { Engagement } from "@prisma/client";
+import { Engagement, User } from "@prisma/client";
 
 export const EngagementService = {
   async getEngagement(id: number): Promise<Engagement | null> {
     const engagement = await prisma.engagement.findFirst({
       where: { id },
+      include: { staffAssignments: true },
     });
+    console.log("engagement", engagement);
     return engagement;
   },
 
@@ -14,6 +16,7 @@ export const EngagementService = {
     const engagements = await prisma.engagement.findMany({
       take: 100,
       where: { organizationId },
+      include: { staffAssignments: { include: { user: true } } },
     });
 
     return engagements;
