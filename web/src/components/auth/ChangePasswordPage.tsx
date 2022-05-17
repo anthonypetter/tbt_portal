@@ -6,7 +6,7 @@ import { assertUnreachable } from "@utils/types";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ErrorBox } from "components/ErrorBox";
 import { ButtonAndIcon, HeaderAndLogo, UnauthCenterLayout } from "./LoginPage";
-import { RequiredField } from "../RequiredField";
+import { FieldError } from "../FieldError";
 import { useAuth } from "./AuthProvider";
 
 type PasswordChangeInputs = {
@@ -86,7 +86,7 @@ export function ChangePasswordPage({ cognitoUser }: Props) {
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                 />
                 {errors.password?.message && (
-                  <RequiredField msg={errors.password?.message} />
+                  <FieldError msg={errors.password?.message} />
                 )}
               </div>
             </div>
@@ -110,7 +110,7 @@ export function ChangePasswordPage({ cognitoUser }: Props) {
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                 />
                 {errors.password?.message && (
-                  <RequiredField msg={errors.password?.message} />
+                  <FieldError msg={errors.password?.message} />
                 )}
               </div>
             </div>
