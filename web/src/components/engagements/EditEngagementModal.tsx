@@ -13,6 +13,8 @@ import DatePicker from "react-datepicker";
 import { QueryEngagements } from "./EngagementsView";
 import { AddTeachers, StaffTeacher, toStaffTeacher } from "./AddTeachers";
 
+const REFETCH_QUERIES = ["OrgDetailPageEngagements"];
+
 const EDIT_ENGAGEMENT = gql`
   mutation EditEngagement($input: EditEngagementInput!) {
     editEngagement(input: $input) {
@@ -35,15 +37,18 @@ export function EditEngagementModal({
   onSuccess,
   engagement,
 }: Props) {
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState<null | Date>(null);
-  const [endDate, setEndDate] = useState<null | Date>(null);
-  const [staff, setStaff] = useState<StaffTeacher[]>([]);
   const cancelButtonRef = useRef(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [name, setName] = useState<string | null | undefined>(
     engagement?.name ?? undefined
   );
+  const [startDate, setStartDate] = useState<Date | null | undefined>(
+    undefined
+  );
+  const [endDate, setEndDate] = useState<Date | null | undefined>(undefined);
+  const [staff, setStaff] = useState<StaffTeacher[]>([]);
 
+  // Edit Mutation
   const [editOrg, { loading, reset }] = useMutation<EditEngagementMutation>(
     EDIT_ENGAGEMENT,
     {
@@ -55,9 +60,10 @@ export function EditEngagementModal({
   useResetOnShow(show, () => {
     const eng = fromJust(engagement, "engagement");
     reset();
+    setErrorMsg(null);
     setName(eng.name);
-    setStartDate(eng.startDate);
-    setEndDate(eng.endDate);
+    setStartDate(eng.startDate ? new Date(eng.startDate) : undefined);
+    setEndDate(eng.endDate ? new Date(eng.endDate) : undefined);
     setStaff(eng.staffAssignments.map((sa) => toStaffTeacher(sa)));
   });
 
@@ -65,13 +71,21 @@ export function EditEngagementModal({
     const eng = fromJust(engagement, "engagement");
     await editOrg({
       variables: {
-        input: { id: eng.id, name: fromJust(name, "name") },
+        input: {
+          id: eng.id,
+          name: fromJust(name, "name"),
+          startDate: startDate ? startDate.getTime() : startDate,
+          endDate: endDate ? endDate.getTime() : endDate,
+        },
       },
+      refetchQueries: REFETCH_QUERIES,
       onQueryUpdated(observableQuery) {
         observableQuery.refetch();
       },
     });
   };
+
+  //
 
   return (
     <Modal
@@ -88,6 +102,11 @@ export function EditEngagementModal({
       title="Edit engagement"
       width="large"
     >
+      {errorMsg && (
+        <div className="mt-4">
+          <ErrorBox msg={errorMsg} />
+        </div>
+      )}
       <div className="py-3">
         <div className="mb-4 grid grid-cols-6 gap-6">
           <Input
@@ -125,7 +144,7 @@ export function EditEngagementModal({
             />
           </div>
         </div>
-        {errorMsg && <ErrorBox msg={"errorMsg"} />}
+
         <Modal.Buttons>
           <Modal.Button type="confirm" onClick={onEditOrg} disabled={!name}>
             {loading ? <Spinner /> : "Save"}

@@ -87,7 +87,7 @@ export function SearchTeachersInput({ onSelect, onClickAdd }: Props) {
       <div className="flex">
         <div className="w-full">
           <SearchCombobox
-            id="search-users-combobox"
+            id="search-teachers-combobox"
             loading={loading}
             query={query}
             onChange={(searchString: string) => setQuery(searchString)}

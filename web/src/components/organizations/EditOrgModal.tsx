@@ -159,7 +159,7 @@ export function EditOrgModal({
         {error && <ErrorBox />}
         <Modal.Buttons>
           <Modal.Button type="confirm" onClick={onEditOrg} disabled={!name}>
-            {loading ? <Spinner /> : "Edit"}
+            {loading ? <Spinner /> : "Save"}
           </Modal.Button>
           <Modal.Button type="cancel" onClick={onCancel} ref={cancelButtonRef}>
             Cancel

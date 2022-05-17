@@ -53,8 +53,6 @@ const Organizations: NextPage<Props> = ({ organizations }) => {
     },
   });
 
-  console.log("client-side orgs", data?.organizations);
-
   // To avoid loading flash, we'll preload the table using server-side fetched orgs.
   return (
     <AuthedLayout>

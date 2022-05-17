@@ -48,10 +48,11 @@ export type Cohort = {
 };
 
 export type EditEngagementInput = {
-  district?: InputMaybe<Scalars['String']>;
+  endDate?: InputMaybe<Scalars['Date']>;
   id: Scalars['ID'];
   name?: InputMaybe<Scalars['String']>;
-  subDistrict?: InputMaybe<Scalars['String']>;
+  staffAssignments?: InputMaybe<Array<StaffAssignmentEdit>>;
+  startDate?: InputMaybe<Scalars['Date']>;
 };
 
 export type EditOrganizationInput = {
@@ -163,6 +164,11 @@ export type StaffAssignment = {
   user: User;
 };
 
+export type StaffAssignmentEdit = {
+  assignmentRole: AssignmentRole;
+  userId: Scalars['ID'];
+};
+
 export type User = {
   __typename?: 'User';
   accountStatus: AccountStatus;
@@ -264,6 +270,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   SearchResults: ResolverTypeWrapper<SearchResults>;
   StaffAssignment: ResolverTypeWrapper<StaffAssignment>;
+  StaffAssignmentEdit: StaffAssignmentEdit;
   String: ResolverTypeWrapper<Scalars['String']>;
   User: ResolverTypeWrapper<User>;
   UserRole: UserRole;
@@ -286,6 +293,7 @@ export type ResolversParentTypes = {
   Query: {};
   SearchResults: SearchResults;
   StaffAssignment: StaffAssignment;
+  StaffAssignmentEdit: StaffAssignmentEdit;
   String: Scalars['String'];
   User: User;
 };
