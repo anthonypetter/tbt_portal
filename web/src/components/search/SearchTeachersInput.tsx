@@ -4,6 +4,7 @@ import { AssignmentRole, SearchUsersQuery } from "@generated/graphql";
 import { SearchItem, SearchCombobox } from "./SearchCombobox";
 import { AddTeacherButton } from "./AddTeacherButton";
 import { fromJust } from "@utils/types";
+import { useDebounce } from "use-debounce";
 
 const SEARCH_USERS = gql`
   query SearchUsers($query: String!) {
@@ -37,6 +38,7 @@ type Props = {
 
 export function SearchTeachersInput({ onSelect, onClickAdd }: Props) {
   const [query, setQuery] = useState<string>("");
+  const [debouncedQuery] = useDebounce(query, 300);
   const [teacherSelection, setTeacherSelection] =
     useState<TeacherSelection | null>(null);
 
@@ -49,10 +51,10 @@ export function SearchTeachersInput({ onSelect, onClickAdd }: Props) {
   );
 
   useEffect(() => {
-    if (query.length > 3) {
-      searchUsers({ variables: { query } });
+    if (debouncedQuery.length > 3) {
+      searchUsers({ variables: { query: debouncedQuery } });
     }
-  }, [query, searchUsers]);
+  }, [debouncedQuery, searchUsers]);
 
   let results: SearchUsersResult[] = [];
   if (data?.searchUsers.__typename === "SearchResults") {
