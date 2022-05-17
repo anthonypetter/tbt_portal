@@ -1,21 +1,20 @@
+import { useMemo, useState } from "react";
 import { OrgDetailPageEngagementsQuery } from "@generated/graphql";
+import { PencilIcon } from "@heroicons/react/solid";
 import { Routes } from "@utils/routes";
+import clsx from "clsx";
 import { DateText } from "components/Date";
 import { Table } from "components/Table";
 import Link from "next/link";
-import { useMemo } from "react";
 import { Column, Cell } from "react-table";
+import { EditEngagementModal } from "./EditEngagementModal";
+import { QueryEngagements } from "./EngagementsView";
+import { fromJust } from "@utils/types";
 
 type Props = {
-  engagements: NonNullable<
-    OrgDetailPageEngagementsQuery["organization"]
-  >["engagements"];
+  engagements: QueryEngagements;
   onRowClick: (engagementId: string) => void;
-  selectedEngagement:
-    | NonNullable<
-        OrgDetailPageEngagementsQuery["organization"]
-      >["engagements"][number]
-    | null;
+  selectedEngagement: QueryEngagements[number] | null;
 };
 
 export function EngagementsTable({
@@ -23,7 +22,18 @@ export function EngagementsTable({
   onRowClick,
   selectedEngagement,
 }: Props) {
-  const { data, columns } = usePrepEngagementData(engagements);
+  const [editModalEngagement, setEditModalEngagement] =
+    useState<EngagementTableData | null>(null);
+
+  const contextMenu = useMemo(() => {
+    return {
+      onClickEdit(engagement: EngagementTableData) {
+        setEditModalEngagement(engagement);
+      },
+    };
+  }, []);
+
+  const { data, columns } = usePrepEngagementData(engagements, contextMenu);
 
   return (
     <div className="min-w-full">
@@ -33,6 +43,19 @@ export function EngagementsTable({
         border={false}
         onRowClick={(row) => onRowClick(row.original.id)}
         selectedId={selectedEngagement?.id}
+      />
+      <EditEngagementModal
+        show={editModalEngagement !== null}
+        onCancel={() => setEditModalEngagement(null)}
+        onSuccess={() => setEditModalEngagement(null)}
+        engagement={
+          editModalEngagement
+            ? fromJust(
+                engagements.find((e) => e.id === editModalEngagement.id),
+                "editModalEngagement.id in engagements"
+              )
+            : null
+        }
       />
     </div>
   );
@@ -49,7 +72,11 @@ export type EngagementTableData = {
 function usePrepEngagementData(
   engagements: NonNullable<
     OrgDetailPageEngagementsQuery["organization"]
-  >["engagements"]
+  >["engagements"],
+
+  contextMenu: {
+    onClickEdit: (engagement: EngagementTableData) => void;
+  }
 ): {
   data: EngagementTableData[];
   columns: Column<EngagementTableData>[];
@@ -83,7 +110,20 @@ function usePrepEngagementData(
         Header: "Ends",
         accessor: "endDate",
         Cell: ({ row }: Cell<EngagementTableData>) => {
-          return <DateText timeMs={row.original.startDate} />;
+          return <DateText timeMs={row.original.endDate} />;
+        },
+      },
+      {
+        Header: () => null,
+        accessor: "id",
+        Cell: ({ row }: Cell<EngagementTableData>) => {
+          return (
+            <div className="flex justify-end">
+              <EditIconButton
+                onClick={() => contextMenu.onClickEdit(row.original)}
+              />
+            </div>
+          );
         },
       },
     ];
@@ -107,4 +147,20 @@ function usePrepEngagementData(
   }, [stringifiedEngagements]);
 
   return { data, columns };
+}
+
+function EditIconButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      className={clsx(
+        "inline-flex items-center rounded-md",
+        "text-sm font-medium text-gray-700",
+        "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-blue-500"
+      )}
+      onClick={onClick}
+    >
+      <PencilIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+    </button>
+  );
 }
