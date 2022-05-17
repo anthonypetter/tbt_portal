@@ -49,10 +49,11 @@ export type Cohort = {
 };
 
 export type EditEngagementInput = {
-  district?: InputMaybe<Scalars['String']>;
+  endDate?: InputMaybe<Scalars['Date']>;
   id: Scalars['ID'];
   name?: InputMaybe<Scalars['String']>;
-  subDistrict?: InputMaybe<Scalars['String']>;
+  staffAssignments?: InputMaybe<Array<StaffAssignmentEdit>>;
+  startDate?: InputMaybe<Scalars['Date']>;
 };
 
 export type EditOrganizationInput = {
@@ -162,6 +163,11 @@ export type StaffAssignment = {
   __typename?: 'StaffAssignment';
   assignmentRole: AssignmentRole;
   user: User;
+};
+
+export type StaffAssignmentEdit = {
+  assignmentRole: AssignmentRole;
+  userId: Scalars['ID'];
 };
 
 export type User = {
