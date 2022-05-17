@@ -118,13 +118,10 @@ export function EditEngagementModal({
           <div className="col-span-6 sm:col-span-6">
             <AddTeachers
               staff={staff}
-              onAdd={(teacher) => {
-                console.log("teacher", teacher);
-                setStaff([...staff, teacher]);
-              }}
-              onRemove={(teacher) => {
-                setStaff(staff.filter((t) => t.userId !== teacher.userId));
-              }}
+              onAdd={(teacher) => setStaff([...staff, teacher])}
+              onRemove={(teacher) =>
+                setStaff(staff.filter((t) => t.userId !== teacher.userId))
+              }
             />
           </div>
         </div>
