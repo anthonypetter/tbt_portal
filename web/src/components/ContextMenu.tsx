@@ -28,7 +28,7 @@ export function ContextMenu({ onClickEdit, onClickDelete }: Props) {
                       ? "bg-gray-100 text-gray-900"
                       : "text-gray-700"
                   )}
-                  {...(onClickEdit ? { onClickEdit } : {})}
+                  {...(onClickEdit ? { onClick: onClickEdit } : {})}
                 >
                   <PencilAltIcon
                     className={clsx(
@@ -59,7 +59,7 @@ export function ContextMenu({ onClickEdit, onClickDelete }: Props) {
                       : "text-red-600",
                     "group flex items-center px-4 py-2 w-full text-sm"
                   )}
-                  {...(onClickDelete ? { onClickDelete } : {})}
+                  {...(onClickDelete ? { onClick: onClickDelete } : {})}
                 >
                   <TrashIcon
                     className={clsx(
