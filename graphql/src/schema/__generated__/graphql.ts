@@ -51,7 +51,7 @@ export type EditEngagementInput = {
   endDate?: InputMaybe<Scalars['Date']>;
   id: Scalars['ID'];
   name?: InputMaybe<Scalars['String']>;
-  staffAssignments?: InputMaybe<Array<StaffAssignmentEdit>>;
+  newStaffAssignments?: InputMaybe<Array<NewStaffAssignment>>;
   startDate?: InputMaybe<Scalars['Date']>;
 };
 
@@ -115,6 +115,11 @@ export type MutationInviteUserArgs = {
   input: InviteUserInput;
 };
 
+export type NewStaffAssignment = {
+  assignmentRole: AssignmentRole;
+  userId: Scalars['ID'];
+};
+
 export type Organization = {
   __typename?: 'Organization';
   description?: Maybe<Scalars['String']>;
@@ -162,11 +167,6 @@ export type StaffAssignment = {
   __typename?: 'StaffAssignment';
   assignmentRole: AssignmentRole;
   user: User;
-};
-
-export type StaffAssignmentEdit = {
-  assignmentRole: AssignmentRole;
-  userId: Scalars['ID'];
 };
 
 export type User = {
@@ -266,11 +266,11 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']>;
   InviteUserInput: InviteUserInput;
   Mutation: ResolverTypeWrapper<{}>;
+  NewStaffAssignment: NewStaffAssignment;
   Organization: ResolverTypeWrapper<Organization>;
   Query: ResolverTypeWrapper<{}>;
   SearchResults: ResolverTypeWrapper<SearchResults>;
   StaffAssignment: ResolverTypeWrapper<StaffAssignment>;
-  StaffAssignmentEdit: StaffAssignmentEdit;
   String: ResolverTypeWrapper<Scalars['String']>;
   User: ResolverTypeWrapper<User>;
   UserRole: UserRole;
@@ -289,11 +289,11 @@ export type ResolversParentTypes = {
   Int: Scalars['Int'];
   InviteUserInput: InviteUserInput;
   Mutation: {};
+  NewStaffAssignment: NewStaffAssignment;
   Organization: Organization;
   Query: {};
   SearchResults: SearchResults;
   StaffAssignment: StaffAssignment;
-  StaffAssignmentEdit: StaffAssignmentEdit;
   String: Scalars['String'];
   User: User;
 };
