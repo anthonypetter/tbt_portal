@@ -52,7 +52,7 @@ export type EditEngagementInput = {
   endDate?: InputMaybe<Scalars['Date']>;
   id: Scalars['ID'];
   name?: InputMaybe<Scalars['String']>;
-  staffAssignments?: InputMaybe<Array<StaffAssignmentEdit>>;
+  newStaffAssignments?: InputMaybe<Array<NewStaffAssignment>>;
   startDate?: InputMaybe<Scalars['Date']>;
 };
 
@@ -116,6 +116,11 @@ export type MutationInviteUserArgs = {
   input: InviteUserInput;
 };
 
+export type NewStaffAssignment = {
+  assignmentRole: AssignmentRole;
+  userId: Scalars['ID'];
+};
+
 export type Organization = {
   __typename?: 'Organization';
   description?: Maybe<Scalars['String']>;
@@ -163,11 +168,6 @@ export type StaffAssignment = {
   __typename?: 'StaffAssignment';
   assignmentRole: AssignmentRole;
   user: User;
-};
-
-export type StaffAssignmentEdit = {
-  assignmentRole: AssignmentRole;
-  userId: Scalars['ID'];
 };
 
 export type User = {
