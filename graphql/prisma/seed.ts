@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient, User } from "@prisma/client";
+import { AssignmentRole, Prisma, PrismaClient, User } from "@prisma/client";
 import { fromJust } from "../src/utils/types";
 
 const prisma = new PrismaClient();
@@ -147,12 +147,14 @@ async function createElPasoOrg(users: User[]) {
       data: {
         engagement: { connect: { id: engagement.id } },
         user: { connect: { id: mentorTeacher.id } },
+        assignmentRole: AssignmentRole.MENTOR_TEACHER,
       },
     }),
     prisma.engagementStaffAssignment.create({
       data: {
         engagement: { connect: { id: engagement.id } },
         user: { connect: { id: substituteTeacher.id } },
+        assignmentRole: AssignmentRole.SUBSTITUTE_TEACHER,
       },
     }),
   ]);
@@ -162,18 +164,21 @@ async function createElPasoOrg(users: User[]) {
       data: {
         cohort: { connect: { id: engagement.cohorts[0].id } },
         user: { connect: { id: tutorTeacher.id } },
+        assignmentRole: AssignmentRole.GENERAL_TEACHER,
       },
     }),
     prisma.cohortStaffAssignment.create({
       data: {
         cohort: { connect: { id: engagement.cohorts[1].id } },
         user: { connect: { id: substituteTeacher.id } },
+        assignmentRole: AssignmentRole.GENERAL_TEACHER,
       },
     }),
     prisma.cohortStaffAssignment.create({
       data: {
         cohort: { connect: { id: engagement.cohorts[2].id } },
         user: { connect: { id: tutorTeacher.id } },
+        assignmentRole: AssignmentRole.GENERAL_TEACHER,
       },
     }),
   ]);
