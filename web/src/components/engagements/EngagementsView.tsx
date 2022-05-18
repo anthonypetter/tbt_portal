@@ -7,6 +7,7 @@ import { Input } from "components/Input";
 import { useState } from "react";
 import { EngagementsTable } from "./EngagementsTable";
 import filter from "lodash/filter";
+import { AssignmentRoleBadge } from "components/AssignmentRoleBadge";
 
 EngagementsView.fragments = {
   engagementsList: gql`
@@ -97,6 +98,7 @@ type DetailsSidebarProps = {
 };
 
 function DetailsSidebar({ selectedEngagement }: DetailsSidebarProps) {
+  console.log("selectedEngagement", selectedEngagement);
   if (!selectedEngagement) {
     return (
       <aside
@@ -121,7 +123,7 @@ function DetailsSidebar({ selectedEngagement }: DetailsSidebarProps) {
         "bg-white border-l border-gray-200"
       )}
     >
-      <div className="pb-16 space-y-6">
+      <div className="pb-16 space-y-8">
         <div>
           <div className="flex items-start justify-between">
             <div>
@@ -129,12 +131,11 @@ function DetailsSidebar({ selectedEngagement }: DetailsSidebarProps) {
                 <span className="sr-only">Details for </span>
                 {selectedEngagement.name}
               </h2>
-              <p className="text-sm font-medium text-gray-500">Texas</p>
             </div>
           </div>
         </div>
+
         <DetailSection title="Details">
-          <DetailLine label="Manager" value="Chamara Adams" />
           <DetailLine
             label="Starts"
             value={<DateText timeMs={selectedEngagement.startDate} />}
@@ -143,12 +144,27 @@ function DetailsSidebar({ selectedEngagement }: DetailsSidebarProps) {
             label="Ends"
             value={<DateText timeMs={selectedEngagement.endDate} />}
           />
-          <DetailLine label="POC" value="N/A" />
         </DetailSection>
 
-        {/* <DetailSection title="Staffing - Engagement-wide">
-          Coming Soon
-        </DetailSection> */}
+        <DetailSection title="Staff">
+          {selectedEngagement.staffAssignments.length === 0 ? (
+            <p className="py-2 text-sm font-medium text-gray-500 italic">
+              Teachers not yet assigned.
+            </p>
+          ) : (
+            selectedEngagement.staffAssignments.map((assignment) => (
+              <DetailLine
+                key={assignment.user.id}
+                label={assignment.user.fullName}
+                value={
+                  <AssignmentRoleBadge
+                    assignmentRole={assignment.assignmentRole}
+                  />
+                }
+              />
+            ))
+          )}
+        </DetailSection>
 
         <DetailTable
           title="Cohorts"
@@ -177,7 +193,7 @@ function DetailSection({ title, children }: DetailSectionProps) {
   return (
     <div>
       <h3 className="font-medium text-gray-900">{title}</h3>
-      <dl className="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
+      <dl className="mt-2 border-t border-gray-200 divide-y divide-gray-200">
         {children}
       </dl>
     </div>
@@ -191,7 +207,7 @@ type DetailLineProps = {
 
 function DetailLine({ label, value }: DetailLineProps) {
   return (
-    <div className="py-3 flex justify-between text-sm font-medium">
+    <div className="py-2 flex justify-between text-sm font-medium">
       <dt className="text-gray-500">{label}</dt>
       <dd className="text-gray-900">{value}</dd>
     </div>
@@ -230,10 +246,10 @@ function DetailTable({ title, headers, rows }: DetailTableProps) {
             {rows.map((r) => {
               return (
                 <tr key={r.col1} className="hover:bg-gray-50">
-                  <td className="py-4 text-gray-900 text-sm font-medium">
+                  <td className="py-2 text-gray-900 text-sm font-medium">
                     {r.col1}
                   </td>
-                  <td className="py-4 text-gray-500 text-sm font-medium">
+                  <td className="py-2 text-gray-500 text-sm font-medium">
                     {r.col2}
                   </td>
                 </tr>
