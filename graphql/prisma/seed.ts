@@ -213,19 +213,25 @@ function createSchoolEngagements() {
       cohorts: {
         create: [
           {
-            createdAt: new Date(),
+            createdAt: startDate,
             name: `${school.abbreviation}-G6 Cohort`,
             grade: "6",
+            startDate: startDate,
+            endDate: endDate,
           },
           {
-            createdAt: new Date(),
+            createdAt: startDate,
             name: `${school.abbreviation}-G7 Cohort`,
             grade: "7",
+            startDate: startDate,
+            endDate: endDate,
           },
           {
             createdAt: new Date(),
             name: `${school.abbreviation}-G8 Cohort`,
             grade: "8",
+            startDate: startDate,
+            endDate: endDate,
           },
         ],
       },
