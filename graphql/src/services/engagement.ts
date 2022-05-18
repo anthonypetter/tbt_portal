@@ -1,60 +1,141 @@
 import { prisma } from "../lib/prisma-client";
-import { Engagement, User } from "@prisma/client";
+import { AssignmentRole, Engagement } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
+
+/**
+ * Gets an engagement by id
+ */
+async function getEngagement(id: number) {
+  const engagement = await prisma.engagement.findFirst({
+    where: { id },
+    include: { staffAssignments: true },
+  });
+  return engagement;
+}
+
+/**
+ * Gets an organization's engagements
+ */
+
+async function getEngagements(organizationId: number) {
+  const engagements = await prisma.engagement.findMany({
+    take: 100,
+    where: { organizationId },
+    include: { staffAssignments: { include: { user: true } } },
+  });
+
+  return engagements;
+}
+
+/**
+ * Adds an engagement
+ */
+
+type AddEngagementInput = {
+  name: string;
+  organizationId: number;
+};
+
+async function addEngagement({
+  name,
+  organizationId,
+}: AddEngagementInput): Promise<Engagement> {
+  const engagement = await prisma.engagement.create({
+    data: { name, organizationId },
+  });
+
+  return engagement;
+}
+
+/**
+ * Deletes an engagement
+ */
+
+async function deleteEngagement(id: number): Promise<Engagement> {
+  const engagement = await prisma.engagement.delete({
+    where: { id },
+  });
+  return engagement;
+}
+
+/**
+ * Edits an engagement
+ */
+
+type EditInput = {
+  id: number;
+  name?: string;
+  startDate?: Date;
+  endDate?: Date;
+  staffChangeSet?: ChangeSet;
+};
+
+type ChangeSet = {
+  additions: EditInputStaffAssignment[];
+  removals: EditInputStaffAssignment[];
+  updates: EditInputStaffAssignment[];
+};
+
+export type EditInputStaffAssignment = {
+  userId: number;
+  assignmentRole: AssignmentRole;
+};
+
+async function editEngagement({
+  id,
+  name,
+  startDate,
+  endDate,
+  staffChangeSet,
+}: EditInput): Promise<Engagement> {
+  let staffAssignments: Prisma.EngagementUpdateInput["staffAssignments"];
+
+  if (staffChangeSet) {
+    const newAssignments = staffChangeSet.additions.map((teacher) => ({
+      createdAt: new Date(),
+      userId: teacher.userId,
+      assignmentRole: teacher.assignmentRole,
+    }));
+
+    const createMany =
+      newAssignments.length > 0 ? { data: newAssignments } : undefined;
+
+    const updateMany = staffChangeSet.updates.map((teacher) => ({
+      where: { userId: teacher.userId },
+      data: { assignmentRole: teacher.assignmentRole },
+    }));
+
+    const deleteMany = staffChangeSet.removals.map((teacher) => ({
+      userId: teacher.userId,
+      engagementId: id,
+    }));
+
+    if (createMany || updateMany.length > 0 || deleteMany.length > 0) {
+      staffAssignments = {
+        ...(createMany ? { createMany } : {}),
+        ...(updateMany ? { updateMany } : {}),
+        ...(deleteMany ? { deleteMany } : {}),
+      };
+    }
+  }
+
+  const engagement = await prisma.engagement.update({
+    where: { id },
+    data: {
+      name,
+      startDate,
+      endDate,
+      staffAssignments,
+    },
+  });
+
+  return engagement;
+}
 
 export const EngagementService = {
-  async getEngagement(id: number): Promise<Engagement | null> {
-    const engagement = await prisma.engagement.findFirst({
-      where: { id },
-      include: { staffAssignments: true },
-    });
-    console.log("engagement", engagement);
-    return engagement;
-  },
-
-  // TODO: Fix pagination
-  async getEngagements(organizationId: number) {
-    const engagements = await prisma.engagement.findMany({
-      take: 100,
-      where: { organizationId },
-      include: { staffAssignments: { include: { user: true } } },
-    });
-
-    return engagements;
-  },
-
-  async addEngagement({
-    name,
-    organizationId,
-  }: {
-    name: string;
-    organizationId: number;
-  }): Promise<Engagement> {
-    const engagement = await prisma.engagement.create({
-      data: { name, organizationId },
-    });
-
-    return engagement;
-  },
-
-  // Prisma will ignore fields that are undefined and will not update them.
-  async editEngagement({
-    id,
-    name,
-  }: {
-    id: number;
-    name?: string;
-  }): Promise<Engagement> {
-    const engagement = await prisma.engagement.update({
-      where: { id },
-      data: { name },
-    });
-    return engagement;
-  },
-
-  async deleteEngagement(id: number): Promise<Engagement> {
-    const engagement = await prisma.engagement.delete({
-      where: { id },
-    });
-    return engagement;
-  },
+  getEngagement,
+  getEngagements,
+  addEngagement,
+  deleteEngagement,
+  editEngagement,
 };
