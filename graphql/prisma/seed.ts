@@ -41,7 +41,7 @@ async function createUsers(env: string): Promise<User[]> {
     },
     {
       email: "victor+mt@tutored.live",
-      fullName: "Victor Merino Mentor",
+      fullName: "James Hetfield",
       cognitoSub: "a5449f83-b175-42d2-bc0d-69ffbb039815",
       createdAt: new Date(),
       role: "MENTOR_TEACHER",
@@ -49,7 +49,7 @@ async function createUsers(env: string): Promise<User[]> {
     },
     {
       email: "victor+tt@tutored.live",
-      fullName: "Victor Merino Tutor",
+      fullName: "Eddie Vedder",
       cognitoSub: "bfb7afbd-b5e4-4c8f-bb0f-9eba28d40882",
       createdAt: new Date(),
       role: "TUTOR_TEACHER",
@@ -57,7 +57,7 @@ async function createUsers(env: string): Promise<User[]> {
     },
     {
       email: "victor+st@tutored.live",
-      fullName: "Victor Merino Substitute",
+      fullName: "Michael Jordan",
       cognitoSub: "254598de-6867-4175-95f4-dcb03832ae3f",
       createdAt: new Date(),
       role: "TUTOR_TEACHER",
