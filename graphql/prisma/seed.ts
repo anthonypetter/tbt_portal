@@ -143,13 +143,13 @@ async function createElPasoOrg(users: User[]) {
   const engagement = newOrg.engagements[0];
 
   await Promise.all([
-    prisma.engagementStaffAssignments.create({
+    prisma.engagementStaffAssignment.create({
       data: {
         engagement: { connect: { id: engagement.id } },
         user: { connect: { id: mentorTeacher.id } },
       },
     }),
-    prisma.engagementStaffAssignments.create({
+    prisma.engagementStaffAssignment.create({
       data: {
         engagement: { connect: { id: engagement.id } },
         user: { connect: { id: substituteTeacher.id } },
@@ -158,19 +158,19 @@ async function createElPasoOrg(users: User[]) {
   ]);
 
   await Promise.all([
-    prisma.cohortStaffAssignments.create({
+    prisma.cohortStaffAssignment.create({
       data: {
         cohort: { connect: { id: engagement.cohorts[0].id } },
         user: { connect: { id: tutorTeacher.id } },
       },
     }),
-    prisma.cohortStaffAssignments.create({
+    prisma.cohortStaffAssignment.create({
       data: {
         cohort: { connect: { id: engagement.cohorts[1].id } },
         user: { connect: { id: substituteTeacher.id } },
       },
     }),
-    prisma.cohortStaffAssignments.create({
+    prisma.cohortStaffAssignment.create({
       data: {
         cohort: { connect: { id: engagement.cohorts[2].id } },
         user: { connect: { id: tutorTeacher.id } },
