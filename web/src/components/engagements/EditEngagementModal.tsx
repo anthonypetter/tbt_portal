@@ -69,6 +69,7 @@ export function EditEngagementModal({
 
   const onEditOrg = async () => {
     const eng = fromJust(engagement, "engagement");
+
     await editOrg({
       variables: {
         input: {
@@ -76,6 +77,10 @@ export function EditEngagementModal({
           name: fromJust(name, "name"),
           startDate: startDate ? startDate.getTime() : startDate,
           endDate: endDate ? endDate.getTime() : endDate,
+          newStaffAssignments: staff.map((t) => ({
+            userId: t.userId,
+            assignmentRole: t.assignmentRole,
+          })),
         },
       },
       refetchQueries: REFETCH_QUERIES,
@@ -84,8 +89,6 @@ export function EditEngagementModal({
       },
     });
   };
-
-  //
 
   return (
     <Modal
