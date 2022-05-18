@@ -30,10 +30,10 @@ model User {
   role                        UserRole                  @default(TUTOR_TEACHER)
   accountStatus               AccountStatus             @default(PENDING)
   //top level assignments (mentor teachers, admins, etc)
-  engagementAssignments       EngagementStaffAssignments[]
+  engagementAssignments       EngagementStaffAssignment[]
   
   //direct cohort assignments
-  cohortAssignments           CohortStaffAssignments[]
+  cohortAssignments           CohortStaffAssignment[]
 }
 
 model Organization {
@@ -54,7 +54,7 @@ model Engagement {
   name                        String
   startDate                   DateTime?                  
   endDate                     DateTime?
-  staffAssignments            EngagementStaffAssignments[]
+  staffAssignments            EngagementStaffAssignment[]
   organizationId              Int
 
   organization                Organization              @relation(fields: [organizationId], references: [id])
@@ -68,7 +68,7 @@ enum AssignmentRole {
   GENERAL_TEACHER
 }
 
-model EngagementStaffAssignments {
+model EngagementStaffAssignment {
   createdAt                   DateTime                  @default(now())
   engagementId                Int
   userId                      Int
@@ -92,11 +92,11 @@ model Cohort {
   endDate                     DateTime?
 
   engagement                  Engagement               @relation(fields: [engagementId], references: [id])
-  staffAssignments            CohortStaffAssignments[]
+  staffAssignments            CohortStaffAssignment[]
   sessions                    CohortSession[]
 }
 
-model CohortStaffAssignments {
+model CohortStaffAssignment {
   createdAt                   DateTime                  @default(now())
   userId                      Int
   cohortId                    Int
