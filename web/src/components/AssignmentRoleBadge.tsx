@@ -26,7 +26,7 @@ export function AssignmentRoleBadge({ assignmentRole }: Props) {
     case AssignmentRole.SubstituteTeacher:
       return (
         <Badge className="text-purple-800 bg-purple-100 mr-5">
-          Substitue Teacher
+          Substitute Teacher
         </Badge>
       );
 
