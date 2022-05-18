@@ -49,7 +49,7 @@ export function AddTeachers({ staff, onAdd, onRemove }: Props) {
 
       <div className="h-6">{error && <FieldError msg={error} />}</div>
 
-      <div className="overflow-y-auto mt-6 h-64">
+      <div className="overflow-y-auto h-64">
         {staff.length === 0 ? (
           <EmptyState />
         ) : (
