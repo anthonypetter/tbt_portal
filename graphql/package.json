@@ -17,7 +17,7 @@
     "generate:prisma": "npx prisma generate",
     "generate:graphql": "graphql-codegen --config codegen.yml",
     "generate:web": "cd ../web && npm run generate",
-    "generate": "npm run generate:graphql && npm run generate:web",
+    "generate": "npm run generate:prisma && npm run generate:graphql && npm run generate:web",
     "lint": "eslint . --ext .ts"
   },
   "keywords": [],
