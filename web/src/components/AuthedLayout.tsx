@@ -318,8 +318,8 @@ export function AuthedLayout({ children }: Props) {
             </div>
           </div>
 
-          <main>
-            <div className="py-6">
+          <main className="h-screen-nav overflow-y-scroll">
+            <div className="pt-6 pb-12">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
                 {children}
               </div>

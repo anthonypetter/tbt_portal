@@ -65,7 +65,7 @@ export function EngagementsView({ organization }: Props) {
 
   return (
     <>
-      <div className="flex min-h-full">
+      <div className="flex min-h-[500px]">
         <div className={clsx("flex-1 flex flex-col overflow-hidden")}>
           <div className="flex-1 flex items-stretch overflow-hidden">
             <main className="flex-1 overflow-y-auto">

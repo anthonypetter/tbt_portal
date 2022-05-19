@@ -11,6 +11,9 @@ module.exports = {
         "soph-light-blue-2": "#7395AE",
         "deep-blue": "#031534",
       },
+      spacing: {
+        "screen-nav": "calc(100vh - 4rem)",
+      },
     },
   },
   corePlugins: {
