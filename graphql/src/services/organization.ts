@@ -40,15 +40,17 @@ export const OrganizationService = {
     name,
     district,
     subDistrict,
+    description,
   }: {
     id: number;
     name?: string;
     district?: string | null;
     subDistrict?: string | null;
+    description?: string | null;
   }): Promise<Organization> {
     const organization = await prisma.organization.update({
       where: { id },
-      data: { name, district, subDistrict },
+      data: { name, district, subDistrict, description },
     });
     return organization;
   },

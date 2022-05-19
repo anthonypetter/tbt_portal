@@ -34,6 +34,7 @@ export const typeDefs = gql`
   input EditOrganizationInput {
     id: ID!
     name: String
+    description: String
     district: String
     subDistrict: String
   }
@@ -110,6 +111,7 @@ async function editOrganization(
     name: input.name,
     district: input.district,
     subDistrict: input.subDistrict,
+    description: input.description,
   });
 }
 
