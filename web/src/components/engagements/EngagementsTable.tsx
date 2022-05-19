@@ -1,8 +1,5 @@
 import { useMemo, useState } from "react";
-import { OrgDetailPageEngagementsQuery } from "@generated/graphql";
-import { PencilIcon } from "@heroicons/react/solid";
 import { Routes } from "@utils/routes";
-import clsx from "clsx";
 import { DateText } from "components/Date";
 import { Table } from "components/Table";
 import Link from "next/link";
@@ -10,6 +7,7 @@ import { Column, Cell } from "react-table";
 import { EditEngagementModal } from "./EditEngagementModal";
 import { QueryEngagements } from "./EngagementsView";
 import { fromJust } from "@utils/types";
+import { EditIconButton } from "components/EditIconButton";
 
 type Props = {
   engagements: QueryEngagements;
@@ -70,10 +68,7 @@ export type EngagementTableData = {
 };
 
 function usePrepEngagementData(
-  engagements: NonNullable<
-    OrgDetailPageEngagementsQuery["organization"]
-  >["engagements"],
-
+  engagements: QueryEngagements,
   contextMenu: {
     onClickEdit: (engagement: EngagementTableData) => void;
   }
@@ -147,20 +142,4 @@ function usePrepEngagementData(
   }, [stringifiedEngagements]);
 
   return { data, columns };
-}
-
-function EditIconButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      className={clsx(
-        "inline-flex items-center rounded-md",
-        "text-sm font-medium text-gray-700",
-        "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-blue-500"
-      )}
-      onClick={onClick}
-    >
-      <PencilIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-    </button>
-  );
 }

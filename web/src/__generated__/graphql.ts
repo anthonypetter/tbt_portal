@@ -49,6 +49,17 @@ export type Cohort = {
   startDate?: Maybe<Scalars['Date']>;
 };
 
+export type EditCohortInput = {
+  endDate?: InputMaybe<Scalars['Date']>;
+  grade?: InputMaybe<Scalars['String']>;
+  hostKey?: InputMaybe<Scalars['String']>;
+  id: Scalars['ID'];
+  meetingRoom?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
+  newStaffAssignments?: InputMaybe<Array<NewStaffAssignment>>;
+  startDate?: InputMaybe<Scalars['Date']>;
+};
+
 export type EditEngagementInput = {
   endDate?: InputMaybe<Scalars['Date']>;
   id: Scalars['ID'];
@@ -88,6 +99,7 @@ export type Mutation = {
   _empty?: Maybe<Scalars['String']>;
   addOrganization: Organization;
   deleteOrganization: Organization;
+  editCohort: Cohort;
   editEngagement: Engagement;
   editOrganization: Organization;
   inviteUser: User;
@@ -101,6 +113,11 @@ export type MutationAddOrganizationArgs = {
 
 export type MutationDeleteOrganizationArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationEditCohortArgs = {
+  input: EditCohortInput;
 };
 
 
@@ -193,6 +210,13 @@ export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', email: string, accountStatus: AccountStatus, role: UserRole } | null };
 
 export type CohortsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, staffAssignments: Array<{ __typename?: 'StaffAssignment', assignmentRole: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> }> };
+
+export type EditCohortMutationVariables = Exact<{
+  input: EditCohortInput;
+}>;
+
+
+export type EditCohortMutation = { __typename?: 'Mutation', editCohort: { __typename?: 'Cohort', id: string, name: string } };
 
 export type EditEngagementMutationVariables = Exact<{
   input: EditEngagementInput;
@@ -432,6 +456,40 @@ export function useCurrentUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type CurrentUserQueryHookResult = ReturnType<typeof useCurrentUserQuery>;
 export type CurrentUserLazyQueryHookResult = ReturnType<typeof useCurrentUserLazyQuery>;
 export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
+export const EditCohortDocument = gql`
+    mutation EditCohort($input: EditCohortInput!) {
+  editCohort(input: $input) {
+    id
+    name
+  }
+}
+    `;
+export type EditCohortMutationFn = Apollo.MutationFunction<EditCohortMutation, EditCohortMutationVariables>;
+
+/**
+ * __useEditCohortMutation__
+ *
+ * To run a mutation, you first call `useEditCohortMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditCohortMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editCohortMutation, { data, loading, error }] = useEditCohortMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useEditCohortMutation(baseOptions?: Apollo.MutationHookOptions<EditCohortMutation, EditCohortMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditCohortMutation, EditCohortMutationVariables>(EditCohortDocument, options);
+      }
+export type EditCohortMutationHookResult = ReturnType<typeof useEditCohortMutation>;
+export type EditCohortMutationResult = Apollo.MutationResult<EditCohortMutation>;
+export type EditCohortMutationOptions = Apollo.BaseMutationOptions<EditCohortMutation, EditCohortMutationVariables>;
 export const EditEngagementDocument = gql`
     mutation EditEngagement($input: EditEngagementInput!) {
   editEngagement(input: $input) {
