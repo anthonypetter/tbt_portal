@@ -1,6 +1,6 @@
 import { gql } from "apollo-server";
 import { Context } from "../../context";
-import { MutationInviteUserArgs } from "@generated/graphql";
+import { MutationInviteUserArgs } from "../__generated__/graphql";
 
 /**
  * Type Defs
