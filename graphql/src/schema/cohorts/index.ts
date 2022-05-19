@@ -2,6 +2,7 @@ import { gql } from "apollo-server";
 import { Context } from "../../context";
 import { QueryCohortsArgs } from "../__generated__/graphql";
 import { parseId } from "../../utils/numbers";
+import { CohortResolver } from "./CohortResolver";
 
 /**
  * Type Defs
@@ -20,6 +21,7 @@ export const typeDefs = gql`
     endDate: Date
 
     engagementId: ID!
+    staffAssignments: [StaffAssignment!]!
   }
 
   extend type Query {
@@ -44,4 +46,5 @@ export const resolvers = {
   Query: {
     cohorts,
   },
+  Cohort: CohortResolver,
 };

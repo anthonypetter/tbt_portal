@@ -44,6 +44,7 @@ export type Cohort = {
   id: Scalars['ID'];
   meetingRoom?: Maybe<Scalars['String']>;
   name: Scalars['String'];
+  staffAssignments: Array<StaffAssignment>;
   startDate?: Maybe<Scalars['Date']>;
 };
 
@@ -309,6 +310,7 @@ export type CohortResolvers<ContextType = any, ParentType extends ResolversParen
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   meetingRoom?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  staffAssignments?: Resolver<Array<ResolversTypes['StaffAssignment']>, ParentType, ContextType>;
   startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

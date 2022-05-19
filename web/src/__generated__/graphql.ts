@@ -45,6 +45,7 @@ export type Cohort = {
   id: Scalars['ID'];
   meetingRoom?: Maybe<Scalars['String']>;
   name: Scalars['String'];
+  staffAssignments: Array<StaffAssignment>;
   startDate?: Maybe<Scalars['Date']>;
 };
 
