@@ -1,6 +1,7 @@
 import { prisma } from "../lib/prisma-client";
-import { AssignmentRole, Engagement } from "@prisma/client";
+import { Engagement } from "@prisma/client";
 import type { Prisma } from "@prisma/client";
+import { ChangeSet } from "../utils/staffAssignments";
 
 /**
  * Gets an engagement by id
@@ -68,17 +69,6 @@ type EditInput = {
   startDate?: Date;
   endDate?: Date;
   staffChangeSet?: ChangeSet;
-};
-
-type ChangeSet = {
-  additions: EditInputStaffAssignment[];
-  removals: EditInputStaffAssignment[];
-  updates: EditInputStaffAssignment[];
-};
-
-export type EditInputStaffAssignment = {
-  userId: number;
-  assignmentRole: AssignmentRole;
 };
 
 async function editEngagement({

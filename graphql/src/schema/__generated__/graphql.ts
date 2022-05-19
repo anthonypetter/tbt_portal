@@ -48,6 +48,17 @@ export type Cohort = {
   startDate?: Maybe<Scalars['Date']>;
 };
 
+export type EditCohortInput = {
+  endDate?: InputMaybe<Scalars['Date']>;
+  grade?: InputMaybe<Scalars['String']>;
+  hostKey?: InputMaybe<Scalars['String']>;
+  id: Scalars['ID'];
+  meetingRoom?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
+  newStaffAssignments?: InputMaybe<Array<NewStaffAssignment>>;
+  startDate?: InputMaybe<Scalars['Date']>;
+};
+
 export type EditEngagementInput = {
   endDate?: InputMaybe<Scalars['Date']>;
   id: Scalars['ID'];
@@ -87,6 +98,7 @@ export type Mutation = {
   _empty?: Maybe<Scalars['String']>;
   addOrganization: Organization;
   deleteOrganization: Organization;
+  editCohort: Cohort;
   editEngagement: Engagement;
   editOrganization: Organization;
   inviteUser: User;
@@ -100,6 +112,11 @@ export type MutationAddOrganizationArgs = {
 
 export type MutationDeleteOrganizationArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationEditCohortArgs = {
+  input: EditCohortInput;
 };
 
 
@@ -261,6 +278,7 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Cohort: ResolverTypeWrapper<Cohort>;
   Date: ResolverTypeWrapper<Scalars['Date']>;
+  EditCohortInput: EditCohortInput;
   EditEngagementInput: EditEngagementInput;
   EditOrganizationInput: EditOrganizationInput;
   Engagement: ResolverTypeWrapper<Engagement>;
@@ -284,6 +302,7 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
   Cohort: Cohort;
   Date: Scalars['Date'];
+  EditCohortInput: EditCohortInput;
   EditEngagementInput: EditEngagementInput;
   EditOrganizationInput: EditOrganizationInput;
   Engagement: Engagement;
@@ -335,6 +354,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   addOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   deleteOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
+  editCohort?: Resolver<ResolversTypes['Cohort'], ParentType, ContextType, RequireFields<MutationEditCohortArgs, 'input'>>;
   editEngagement?: Resolver<ResolversTypes['Engagement'], ParentType, ContextType, RequireFields<MutationEditEngagementArgs, 'input'>>;
   editOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'input'>>;
   inviteUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationInviteUserArgs, 'input'>>;
