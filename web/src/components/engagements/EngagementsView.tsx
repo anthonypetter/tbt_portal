@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 import { OrgDetailPageEngagementsQuery } from "@generated/graphql";
-import { SearchIcon } from "@heroicons/react/outline";
+import { PlusIcon, SearchIcon } from "@heroicons/react/outline";
 import clsx from "clsx";
 import { DateText } from "components/Date";
 import { Input } from "components/Input";
@@ -8,6 +8,7 @@ import { useState } from "react";
 import { EngagementsTable } from "./EngagementsTable";
 import filter from "lodash/filter";
 import { AssignmentRoleBadge } from "components/AssignmentRoleBadge";
+import { Button } from "components/Button";
 
 EngagementsView.fragments = {
   engagementsList: gql`
@@ -68,14 +69,23 @@ export function EngagementsView({ organization }: Props) {
         <div className={clsx("flex-1 flex flex-col overflow-hidden")}>
           <div className="flex-1 flex items-stretch overflow-hidden">
             <main className="flex-1 overflow-y-auto">
-              <div className="flex-1 my-4 lg:max-w-sm lg:mr-2 lg:ml-1">
-                <Input
-                  id="engagements-search"
-                  type="search"
-                  placeholder="Search"
-                  leftIcon={SearchIcon}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+              <div className="flex my-4 justify-between">
+                <div className="flex-1 lg:max-w-sm lg:mr-2 lg:ml-1">
+                  <Input
+                    id="engagements-search"
+                    type="search"
+                    placeholder="Search"
+                    leftIcon={SearchIcon}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <Button type="button" theme="tertiary" className="mx-2">
+                  <PlusIcon
+                    className="-ml-2 mr-1 h-5 w-5 text-gray-400"
+                    aria-hidden="true"
+                  />
+                  <span>Add</span>
+                </Button>
               </div>
 
               <EngagementsTable
@@ -98,7 +108,6 @@ type DetailsSidebarProps = {
 };
 
 function DetailsSidebar({ selectedEngagement }: DetailsSidebarProps) {
-  console.log("selectedEngagement", selectedEngagement);
   if (!selectedEngagement) {
     return (
       <aside
