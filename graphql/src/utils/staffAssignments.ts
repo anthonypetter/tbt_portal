@@ -1,17 +1,22 @@
 import {
   EngagementStaffAssignment,
   CohortStaffAssignment,
+  AssignmentRole,
 } from "@prisma/client";
 import { differenceBy, intersectionBy } from "lodash";
 import { NewStaffAssignment } from "src/schema/__generated__/graphql";
-import { EditInputStaffAssignment } from "src/services/engagement";
 import { parseId } from "./numbers";
 import { fromJust } from "./types";
 
-type ChangeSet = {
+export type ChangeSet = {
   additions: EditInputStaffAssignment[];
   removals: EditInputStaffAssignment[];
   updates: EditInputStaffAssignment[];
+};
+
+type EditInputStaffAssignment = {
+  userId: number;
+  assignmentRole: AssignmentRole;
 };
 
 export function calcStaffChanges(

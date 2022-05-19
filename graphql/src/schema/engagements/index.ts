@@ -81,7 +81,6 @@ async function editEngagement(
     );
   }
 
-  // Update engagement
   const updatedStaffAssignment = await EngagementService.editEngagement({
     id: engagementId,
     name: input.name,
