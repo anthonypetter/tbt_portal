@@ -58,6 +58,9 @@ export function EditOrgModal({
   const [subDistrict, setSubDistrict] = useState<string | null | undefined>(
     organization?.subDistrict ?? undefined
   );
+  const [description, setDescription] = useState<string | null | undefined>(
+    organization?.subDistrict ?? undefined
+  );
 
   const [editOrg] = useMutation<EditOrganizationMutation>(EDIT_ORGANIZATION, {
     update(cache, { data }) {
@@ -74,6 +77,7 @@ export function EditOrgModal({
     setName(org.name);
     setDistrict(org.district ?? undefined);
     setSubDistrict(org.subDistrict ?? undefined);
+    setDescription(org.description ?? undefined);
   });
 
   const onEditOrg = async () => {
@@ -88,6 +92,7 @@ export function EditOrgModal({
             name: fromJust(name, "name"),
             district,
             subDistrict,
+            description,
           },
         },
         refetchQueries: [GET_ORGANIZATIONS_QUERY_NAME],
@@ -139,6 +144,13 @@ export function EditOrgModal({
               value={name ?? ""}
               onChange={(e) => setName(e.target.value)}
               required
+            />
+
+            <Input
+              id="org-description"
+              label="Description"
+              value={description ?? ""}
+              onChange={(e) => setDescription(e.target.value)}
             />
 
             <Input

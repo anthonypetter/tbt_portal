@@ -78,6 +78,7 @@ export type OrgTableData = {
   name: string;
   district?: string | null;
   subDistrict?: string | null;
+  description?: string | null;
 };
 
 function usePrepOrgData(
@@ -102,6 +103,10 @@ function usePrepOrgData(
             </Link>
           );
         },
+      },
+      {
+        Header: "Description",
+        accessor: "description",
       },
       {
         Header: "District",
@@ -136,7 +141,7 @@ function usePrepOrgData(
         id: org.id,
         name: org.name,
         district: org.district,
-        subDistrict: org.subDistrict,
+        description: org.description,
       };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

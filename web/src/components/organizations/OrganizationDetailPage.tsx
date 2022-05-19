@@ -6,7 +6,6 @@ import {
 import { Breadcrumbs } from "components/Breadcrumbs";
 import { Routes } from "@utils/routes";
 import { HomeIcon } from "@heroicons/react/solid";
-import { Button } from "components/Button";
 import clsx from "clsx";
 import { Container } from "components/Container";
 import { EngagementsView } from "../engagements/EngagementsView";
@@ -130,11 +129,6 @@ function Header({ title, description }: HeaderProps) {
             )}
           </div>
         </div>
-      </div>
-      <div className="sm:my-0 mt-4">
-        <Button className="min-w-[80px]" onClick={() => console.log("edit")}>
-          Edit
-        </Button>
       </div>
     </div>
   );
