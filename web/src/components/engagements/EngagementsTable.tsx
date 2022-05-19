@@ -20,13 +20,15 @@ export function EngagementsTable({
   onRowClick,
   selectedEngagement,
 }: Props) {
-  const [editModalEngagement, setEditModalEngagement] =
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const [engagementToEdit, setEngagementToEdit] =
     useState<EngagementTableData | null>(null);
 
   const contextMenu = useMemo(() => {
     return {
       onClickEdit(engagement: EngagementTableData) {
-        setEditModalEngagement(engagement);
+        setEngagementToEdit(engagement);
+        setShowEditModal(true);
       },
     };
   }, []);
@@ -43,14 +45,14 @@ export function EngagementsTable({
         selectedId={selectedEngagement?.id}
       />
       <EditEngagementModal
-        show={editModalEngagement !== null}
-        onCancel={() => setEditModalEngagement(null)}
-        onSuccess={() => setEditModalEngagement(null)}
+        show={showEditModal}
+        onCancel={() => setShowEditModal(false)}
+        onSuccess={() => setShowEditModal(false)}
         engagement={
-          editModalEngagement
+          engagementToEdit
             ? fromJust(
-                engagements.find((e) => e.id === editModalEngagement.id),
-                "editModalEngagement.id in engagements"
+                engagements.find((e) => e.id === engagementToEdit.id),
+                "engagementToEdit.id in engagements"
               )
             : null
         }
