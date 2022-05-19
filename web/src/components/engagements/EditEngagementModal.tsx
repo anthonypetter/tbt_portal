@@ -93,7 +93,7 @@ export function EditEngagementModalBody({
     engagement.staffAssignments.map((sa) => toStaffTeacher(sa))
   );
 
-  const [editOrg, { loading }] = useMutation<EditEngagementMutation>(
+  const [editEngagement, { loading }] = useMutation<EditEngagementMutation>(
     EDIT_ENGAGEMENT,
     {
       onError: (err: ApolloError) => setErrorMsg(err.message),
@@ -101,8 +101,8 @@ export function EditEngagementModalBody({
     }
   );
 
-  const onEditOrg = async () => {
-    await editOrg({
+  const onEditEngagement = async () => {
+    await editEngagement({
       variables: {
         input: {
           id: engagement.id,
@@ -168,7 +168,11 @@ export function EditEngagementModalBody({
         </div>
 
         <Modal.Buttons>
-          <Modal.Button type="confirm" onClick={onEditOrg} disabled={!name}>
+          <Modal.Button
+            type="confirm"
+            onClick={onEditEngagement}
+            disabled={!name}
+          >
             {loading ? <Spinner /> : "Save"}
           </Modal.Button>
           <Modal.Button type="cancel" onClick={onCancel} ref={cancelButtonRef}>
