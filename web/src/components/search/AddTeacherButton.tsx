@@ -11,11 +11,9 @@ type Props = {
 };
 
 const assignmentRoles = [
-  { value: AssignmentRole.MentorTeacher, displayName: "Mentor Teacher" },
-  {
-    value: AssignmentRole.SubstituteTeacher,
-    displayName: "Substitute Teacher",
-  },
+  AssignmentRole.MentorTeacher,
+  AssignmentRole.SubstituteTeacher,
+  AssignmentRole.GeneralTeacher,
 ];
 
 export function AddTeacherButton({ onAdd }: Props) {
@@ -59,17 +57,17 @@ export function AddTeacherButton({ onAdd }: Props) {
         >
           <Menu.Items className="origin-top-right absolute right-0 mt-2 -mr-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
             <div className="py-1">
-              {assignmentRoles.map((item) => (
-                <Menu.Item key={item.value}>
+              {assignmentRoles.map((role) => (
+                <Menu.Item key={role}>
                   {({ active }) => (
                     <button
                       className={clsx(
                         active ? "bg-gray-100 text-gray-900" : "text-gray-700",
                         "w-full block px-4 py-2 text-sm text-left"
                       )}
-                      onClick={() => setAssignAs(item.value)}
+                      onClick={() => setAssignAs(role)}
                     >
-                      {item.displayName}
+                      {getDisplayName(role)}
                     </button>
                   )}
                 </Menu.Item>

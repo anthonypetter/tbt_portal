@@ -8,7 +8,7 @@ import {
   TeacherSelection,
 } from "components/search/SearchTeachersInput";
 import React, { useState } from "react";
-import { QueryEngagements } from "./EngagementsView";
+import { QueryEngagements } from "../engagements/EngagementsView";
 
 type Props = {
   staff: StaffTeacher[];

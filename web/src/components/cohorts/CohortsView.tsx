@@ -43,7 +43,7 @@ CohortsView.fragments = {
   `,
 };
 
-type QueryCohorts = NonNullable<
+export type QueryCohorts = NonNullable<
   OrgDetailPageCohortsQuery["organization"]
 >["engagements"][number]["cohorts"];
 
