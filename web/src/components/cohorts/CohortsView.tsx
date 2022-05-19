@@ -8,6 +8,7 @@ import { useState } from "react";
 import { CohortsTable } from "./CohortsTable";
 import filter from "lodash/filter";
 import { DetailsAside } from "components/DetailsAside";
+import { AssignmentRoleBadge } from "components/AssignmentRoleBadge";
 
 CohortsView.fragments = {
   cohortsList: gql`
@@ -28,6 +29,14 @@ CohortsView.fragments = {
           exempt
           startDate
           endDate
+          staffAssignments {
+            user {
+              id
+              fullName
+              email
+            }
+            assignmentRole
+          }
         }
       }
     }
@@ -58,34 +67,32 @@ export function CohortsView({ organization }: Props) {
     filteredCohorts.find((e) => e.id === selectedCohortId) ?? null;
 
   return (
-    <>
-      <div className="flex min-h-full">
-        <div className={clsx("flex-1 flex flex-col overflow-hidden")}>
-          <div className="flex-1 flex items-stretch overflow-hidden">
-            <main className="flex-1 overflow-y-auto">
-              <div className="flex-1 my-4 lg:max-w-sm lg:mr-2">
-                <Input
-                  id="cohorts-search"
-                  type="search"
-                  placeholder="Search"
-                  leftIcon={SearchIcon}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-
-              <CohortsTable
-                organizationId={organization.id}
-                cohorts={filteredCohorts}
-                onRowClick={(id) => setSelectedCohortId(id)}
-                selectedCohort={selectedCohort}
+    <div className="flex min-h-full">
+      <div className={clsx("flex-1 flex flex-col overflow-hidden")}>
+        <div className="flex-1 flex items-stretch overflow-hidden">
+          <main className="flex-1 overflow-y-auto">
+            <div className="flex-1 my-4 lg:max-w-sm lg:mr-2">
+              <Input
+                id="cohorts-search"
+                type="search"
+                placeholder="Search"
+                leftIcon={SearchIcon}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
-            </main>
+            </div>
 
-            <DetailsSidebar selectedCohort={selectedCohort} />
-          </div>
+            <CohortsTable
+              organizationId={organization.id}
+              cohorts={filteredCohorts}
+              onRowClick={(id) => setSelectedCohortId(id)}
+              selectedCohort={selectedCohort}
+            />
+          </main>
+
+          <DetailsSidebar selectedCohort={selectedCohort} />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -124,6 +131,25 @@ function DetailsSidebar({ selectedCohort }: DetailsSidebarProps) {
           label="Created"
           value={<DateText timeMs={selectedCohort.createdAt} />}
         />
+      </DetailsAside.Section>
+      <DetailsAside.Section title="Staff">
+        {selectedCohort.staffAssignments.length === 0 ? (
+          <p className="py-2 text-sm font-medium text-gray-500 italic">
+            Teachers not yet assigned.
+          </p>
+        ) : (
+          selectedCohort.staffAssignments.map((assignment) => (
+            <DetailsAside.Line
+              key={assignment.user.id}
+              label={assignment.user.fullName}
+              value={
+                <AssignmentRoleBadge
+                  assignmentRole={assignment.assignmentRole}
+                />
+              }
+            />
+          ))
+        )}
       </DetailsAside.Section>
     </DetailsAside>
   );
