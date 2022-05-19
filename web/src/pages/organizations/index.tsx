@@ -29,7 +29,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   });
 
   const organizations = processResult(result, (r) => r.organizations);
-  console.log("server side orgs", organizations);
 
   return {
     props: { organizations },
