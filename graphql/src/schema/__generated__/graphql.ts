@@ -56,6 +56,7 @@ export type EditEngagementInput = {
 };
 
 export type EditOrganizationInput = {
+  description?: InputMaybe<Scalars['String']>;
   district?: InputMaybe<Scalars['String']>;
   id: Scalars['ID'];
   name?: InputMaybe<Scalars['String']>;
