@@ -6,7 +6,7 @@ export const CohortService = {
     const cohorts = await prisma.cohort.findMany({
       take: 100,
       where: { engagementId },
-      // include: { staffAssignments: true },
+      include: { staffAssignments: { include: { user: true } } },
     });
 
     return cohorts;
