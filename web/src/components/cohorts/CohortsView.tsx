@@ -7,6 +7,7 @@ import { Input } from "components/Input";
 import { useState } from "react";
 import { CohortsTable } from "./CohortsTable";
 import filter from "lodash/filter";
+import { DetailsAside } from "components/DetailsAside";
 
 CohortsView.fragments = {
   cohortsList: gql`
@@ -33,6 +34,10 @@ CohortsView.fragments = {
   `,
 };
 
+type QueryCohorts = NonNullable<
+  OrgDetailPageCohortsQuery["organization"]
+>["engagements"][number]["cohorts"];
+
 type Props = {
   organization: NonNullable<OrgDetailPageCohortsQuery["organization"]>;
 };
@@ -56,7 +61,6 @@ export function CohortsView({ organization }: Props) {
     <>
       <div className="flex min-h-full">
         <div className={clsx("flex-1 flex flex-col overflow-hidden")}>
-          {/* Main content */}
           <div className="flex-1 flex items-stretch overflow-hidden">
             <main className="flex-1 overflow-y-auto">
               <div className="flex-1 my-4 lg:max-w-sm lg:mr-2">
@@ -77,7 +81,6 @@ export function CohortsView({ organization }: Props) {
               />
             </main>
 
-            {/* Details sidebar */}
             <DetailsSidebar selectedCohort={selectedCohort} />
           </div>
         </div>
@@ -87,88 +90,41 @@ export function CohortsView({ organization }: Props) {
 }
 
 type DetailsSidebarProps = {
-  selectedCohort:
-    | NonNullable<
-        OrgDetailPageCohortsQuery["organization"]
-      >["engagements"][number]["cohorts"][number]
-    | null;
+  selectedCohort: QueryCohorts[number] | null;
 };
 
-//TODO: extract sharable component
 function DetailsSidebar({ selectedCohort }: DetailsSidebarProps) {
   if (!selectedCohort) {
     return (
-      <aside
-        className={clsx(
-          "hidden lg:block",
-          "p-8 overflow-y-auto w-80",
-          "bg-white border-l border-gray-200"
-        )}
-      >
+      <DetailsAside>
         <div className="pb-16 space-y-6">
           Please select a cohort to see its details.
         </div>
-      </aside>
+      </DetailsAside>
     );
   }
   return (
-    <aside
-      className={clsx(
-        "hidden lg:block",
-        "p-6 overflow-y-auto w-80",
-        "bg-white border-l border-gray-200"
-      )}
-    >
-      <div className="pb-16 space-y-6">
-        <div>
-          <div className="flex items-start justify-between">
-            <div>
-              <h2 className="text-lg font-medium text-gray-900">
-                <span className="sr-only">Details for </span>
-                {selectedCohort.name}
-              </h2>
-              {/* <p className="text-sm font-medium text-gray-500">Texas</p> */}
-            </div>
-          </div>
-        </div>
-        <div>
-          <h3 className="font-medium text-gray-900">Details</h3>
-          <dl className="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
-            <div className="py-3 flex justify-between text-sm font-medium">
-              <dt className="text-gray-500">Starts</dt>
-              <dd className="text-gray-900">
-                <DateText timeMs={selectedCohort.startDate} />
-              </dd>
-            </div>
-            <div className="py-3 flex justify-between text-sm font-medium">
-              <dt className="text-gray-500">Ends</dt>
-              <dd className="text-gray-900">
-                <DateText timeMs={selectedCohort.endDate} />
-              </dd>
-            </div>
-            <div className="py-3 flex justify-between text-sm font-medium">
-              <dt className="text-gray-500">Grade</dt>
-              <dd className="text-gray-900">{selectedCohort.grade}</dd>
-            </div>
-            <div className="py-3 flex justify-between text-sm font-medium">
-              <dt className="text-gray-500">Meeting Room</dt>
-              <dd className="text-gray-900">{selectedCohort.meetingRoom}</dd>
-            </div>
-            <div className="py-3 flex justify-between text-sm font-medium">
-              <dt className="text-gray-500">Exempt</dt>
-              <dd className="text-gray-900">{selectedCohort.exempt}</dd>
-            </div>
-            <div className="py-3 flex justify-between text-sm font-medium">
-              <dt className="text-gray-500">Exempt</dt>
-              <dd className="text-gray-900">{selectedCohort.exempt}</dd>
-            </div>
-          </dl>
-        </div>
-        <div>
-          <h3 className="font-medium text-gray-900">Staffing</h3>
-          <p className="text-sm font-medium text-gray-500">Coming Soon..</p>
-        </div>
-      </div>
-    </aside>
+    <DetailsAside title={selectedCohort.name}>
+      <DetailsAside.Section title="Details">
+        <DetailsAside.Line
+          label="Starts"
+          value={<DateText timeMs={selectedCohort.startDate} />}
+        />
+        <DetailsAside.Line
+          label="Ends"
+          value={<DateText timeMs={selectedCohort.endDate} />}
+        />
+        <DetailsAside.Line label="Grade" value={selectedCohort.grade} />
+        <DetailsAside.Line
+          label="Meeting Room"
+          value={selectedCohort.meetingRoom}
+        />
+        <DetailsAside.Line label="Host key" value={selectedCohort.hostKey} />
+        <DetailsAside.Line
+          label="Created"
+          value={<DateText timeMs={selectedCohort.createdAt} />}
+        />
+      </DetailsAside.Section>
+    </DetailsAside>
   );
 }

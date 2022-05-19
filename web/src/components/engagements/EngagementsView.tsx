@@ -9,6 +9,7 @@ import { EngagementsTable } from "./EngagementsTable";
 import filter from "lodash/filter";
 import { AssignmentRoleBadge } from "components/AssignmentRoleBadge";
 import { Button } from "components/Button";
+import { DetailsAside } from "components/DetailsAside";
 
 EngagementsView.fragments = {
   engagementsList: gql`
@@ -110,163 +111,60 @@ type DetailsSidebarProps = {
 function DetailsSidebar({ selectedEngagement }: DetailsSidebarProps) {
   if (!selectedEngagement) {
     return (
-      <aside
-        className={clsx(
-          "hidden lg:block",
-          "p-8 overflow-y-auto w-72 xl:w-96",
-          "bg-white border-l border-gray-200"
-        )}
-      >
+      <DetailsAside>
         <div className="pb-16 space-y-6">
           Please select an engagement to see its details.
         </div>
-      </aside>
+      </DetailsAside>
     );
   }
 
   return (
-    <aside
-      className={clsx(
-        "hidden lg:block",
-        "py-6 pl-6 overflow-y-auto w-72 xl:w-96",
-        "bg-white border-l border-gray-200"
-      )}
-    >
-      <div className="pb-16 space-y-8">
-        <div>
-          <div className="flex items-start justify-between">
-            <div>
-              <h2 className="text-lg font-medium text-gray-900">
-                <span className="sr-only">Details for </span>
-                {selectedEngagement.name}
-              </h2>
-            </div>
-          </div>
-        </div>
-
-        <DetailSection title="Details">
-          <DetailLine
-            label="Starts"
-            value={<DateText timeMs={selectedEngagement.startDate} />}
-          />
-          <DetailLine
-            label="Ends"
-            value={<DateText timeMs={selectedEngagement.endDate} />}
-          />
-        </DetailSection>
-
-        <DetailSection title="Staff">
-          {selectedEngagement.staffAssignments.length === 0 ? (
-            <p className="py-2 text-sm font-medium text-gray-500 italic">
-              Teachers not yet assigned.
-            </p>
-          ) : (
-            selectedEngagement.staffAssignments.map((assignment) => (
-              <DetailLine
-                key={assignment.user.id}
-                label={assignment.user.fullName}
-                value={
-                  <AssignmentRoleBadge
-                    assignmentRole={assignment.assignmentRole}
-                  />
-                }
-              />
-            ))
-          )}
-        </DetailSection>
-
-        <DetailTable
-          title="Cohorts"
-          rows={selectedEngagement.cohorts.map((c) => ({
-            col1: c.name,
-            col2: (
-              <span>
-                <DateText timeMs={c.startDate} />
-                {" - "}
-                <DateText timeMs={c.endDate} />
-              </span>
-            ),
-          }))}
+    <DetailsAside title={selectedEngagement.name}>
+      <DetailsAside.Section title="Details">
+        <DetailsAside.Line
+          label="Starts"
+          value={<DateText timeMs={selectedEngagement.startDate} />}
         />
-      </div>
-    </aside>
-  );
-}
+        <DetailsAside.Line
+          label="Ends"
+          value={<DateText timeMs={selectedEngagement.endDate} />}
+        />
+      </DetailsAside.Section>
 
-type DetailSectionProps = {
-  title: string;
-  children: React.ReactNode;
-};
+      <DetailsAside.Section title="Staff">
+        {selectedEngagement.staffAssignments.length === 0 ? (
+          <p className="py-2 text-sm font-medium text-gray-500 italic">
+            Teachers not yet assigned.
+          </p>
+        ) : (
+          selectedEngagement.staffAssignments.map((assignment) => (
+            <DetailsAside.Line
+              key={assignment.user.id}
+              label={assignment.user.fullName}
+              value={
+                <AssignmentRoleBadge
+                  assignmentRole={assignment.assignmentRole}
+                />
+              }
+            />
+          ))
+        )}
+      </DetailsAside.Section>
 
-function DetailSection({ title, children }: DetailSectionProps) {
-  return (
-    <div>
-      <h3 className="font-medium text-gray-900">{title}</h3>
-      <dl className="mt-2 border-t border-gray-200 divide-y divide-gray-200">
-        {children}
-      </dl>
-    </div>
-  );
-}
-
-type DetailLineProps = {
-  label?: string;
-  value: React.ReactNode;
-};
-
-function DetailLine({ label, value }: DetailLineProps) {
-  return (
-    <div className="py-2 flex justify-between text-sm font-medium">
-      <dt className="text-gray-500">{label}</dt>
-      <dd className="text-gray-900">{value}</dd>
-    </div>
-  );
-}
-
-type DetailTableProps = {
-  title: string;
-  headers?: { col1: string; col2: string };
-  rows: { col1: string; col2: React.ReactNode }[];
-};
-
-function DetailTable({ title, headers, rows }: DetailTableProps) {
-  return (
-    <div>
-      <h3 className="font-medium text-gray-900 mb-3">{title}</h3>
-      <div className="overflow-y-auto max-h-64">
-        <table className="min-w-full divide-gray-200 divide-y border-t border-b border-gray-200">
-          {headers && (
-            <thead className="bg-gray-50">
-              <th
-                scope="col"
-                className="px-1 py-3 text-left text-gray-500 text-xs font-medium tracking-wider uppercase"
-              >
-                {headers.col1}
-              </th>
-              <th
-                scope="col"
-                className="px-1 py-3 text-left text-gray-500 text-xs font-medium tracking-wider uppercase"
-              >
-                {headers.col2}
-              </th>
-            </thead>
-          )}
-          <tbody className="bg-white divide-gray-200 divide-y">
-            {rows.map((r) => {
-              return (
-                <tr key={r.col1} className="hover:bg-gray-50">
-                  <td className="py-2 text-gray-900 text-sm font-medium">
-                    {r.col1}
-                  </td>
-                  <td className="py-2 text-gray-500 text-sm font-medium">
-                    {r.col2}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </div>
+      <DetailsAside.Table
+        title="Cohorts"
+        rows={selectedEngagement.cohorts.map((c) => ({
+          col1: c.name,
+          col2: (
+            <span>
+              <DateText timeMs={c.startDate} />
+              {" - "}
+              <DateText timeMs={c.endDate} />
+            </span>
+          ),
+        }))}
+      />
+    </DetailsAside>
   );
 }
