@@ -3,6 +3,7 @@ import { usePopper } from "react-popper";
 import { Menu, Transition } from "@headlessui/react";
 import { DotsHorizontalIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
+import noop from "lodash/noop";
 
 export function DotsMenu({ children }: { children: ReactNode }) {
   // Using popper to address this issue: https://github.com/tailwindlabs/tailwindui-issues/issues/147
@@ -10,7 +11,7 @@ export function DotsMenu({ children }: { children: ReactNode }) {
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
     null
   );
-  const { styles, attributes } = usePopper(refElement, popperElement);
+  const { styles, attributes, update } = usePopper(refElement, popperElement);
 
   return (
     <Menu>
@@ -21,6 +22,9 @@ export function DotsMenu({ children }: { children: ReactNode }) {
           "text-gray-400 hover:text-gray-600 bg-gray-50",
           "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-100"
         )}
+        onClick={() => {
+          update ? update() : noop();
+        }}
       >
         <span className="sr-only">Open options</span>
         <DotsHorizontalIcon className="w-5 h-5" aria-hidden="true" />
