@@ -22,6 +22,14 @@ export enum AccountStatus {
   Pending = 'PENDING'
 }
 
+export type AddEngagementInput = {
+  endDate?: InputMaybe<Scalars['Date']>;
+  name: Scalars['String'];
+  newStaffAssignments: Array<NewStaffAssignment>;
+  organizationId: Scalars['ID'];
+  startDate?: InputMaybe<Scalars['Date']>;
+};
+
 export type AddOrganizationInput = {
   district?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
@@ -97,12 +105,18 @@ export type InviteUserInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   _empty?: Maybe<Scalars['String']>;
+  addEngagement: Engagement;
   addOrganization: Organization;
   deleteOrganization: Organization;
   editCohort: Cohort;
   editEngagement: Engagement;
   editOrganization: Organization;
   inviteUser: User;
+};
+
+
+export type MutationAddEngagementArgs = {
+  input: AddEngagementInput;
 };
 
 
@@ -217,6 +231,13 @@ export type EditCohortMutationVariables = Exact<{
 
 
 export type EditCohortMutation = { __typename?: 'Mutation', editCohort: { __typename?: 'Cohort', id: string, name: string } };
+
+export type AddEngagementMutationVariables = Exact<{
+  input: AddEngagementInput;
+}>;
+
+
+export type AddEngagementMutation = { __typename?: 'Mutation', addEngagement: { __typename?: 'Engagement', id: string, name: string } };
 
 export type EditEngagementMutationVariables = Exact<{
   input: EditEngagementInput;
@@ -490,6 +511,40 @@ export function useEditCohortMutation(baseOptions?: Apollo.MutationHookOptions<E
 export type EditCohortMutationHookResult = ReturnType<typeof useEditCohortMutation>;
 export type EditCohortMutationResult = Apollo.MutationResult<EditCohortMutation>;
 export type EditCohortMutationOptions = Apollo.BaseMutationOptions<EditCohortMutation, EditCohortMutationVariables>;
+export const AddEngagementDocument = gql`
+    mutation AddEngagement($input: AddEngagementInput!) {
+  addEngagement(input: $input) {
+    id
+    name
+  }
+}
+    `;
+export type AddEngagementMutationFn = Apollo.MutationFunction<AddEngagementMutation, AddEngagementMutationVariables>;
+
+/**
+ * __useAddEngagementMutation__
+ *
+ * To run a mutation, you first call `useAddEngagementMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddEngagementMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addEngagementMutation, { data, loading, error }] = useAddEngagementMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useAddEngagementMutation(baseOptions?: Apollo.MutationHookOptions<AddEngagementMutation, AddEngagementMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddEngagementMutation, AddEngagementMutationVariables>(AddEngagementDocument, options);
+      }
+export type AddEngagementMutationHookResult = ReturnType<typeof useAddEngagementMutation>;
+export type AddEngagementMutationResult = Apollo.MutationResult<AddEngagementMutation>;
+export type AddEngagementMutationOptions = Apollo.BaseMutationOptions<AddEngagementMutation, AddEngagementMutationVariables>;
 export const EditEngagementDocument = gql`
     mutation EditEngagement($input: EditEngagementInput!) {
   editEngagement(input: $input) {
