@@ -36,7 +36,12 @@ export function DeleteEngagementModal({ engagement, afterLeave }: Props) {
       show={show}
       onClose={() => setShow(false)}
       icon={
-        <ExclamationIcon className="w-6 h-6 text-red-600" aria-hidden="true" />
+        <Modal.Icon className="bg-red-100">
+          <ExclamationIcon
+            className="w-6 h-6 text-red-600"
+            aria-hidden="true"
+          />
+        </Modal.Icon>
       }
       title="Delete Engagement"
       afterLeave={afterLeave}
