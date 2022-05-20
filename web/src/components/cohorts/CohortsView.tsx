@@ -89,7 +89,10 @@ export function CohortsView({ organization }: Props) {
             />
           </main>
 
-          <DetailsSidebar selectedCohort={selectedCohort} />
+          <DetailsSidebar
+            selectedCohort={selectedCohort}
+            onClose={() => setSelectedCohortId(null)}
+          />
         </div>
       </div>
     </div>
@@ -98,20 +101,15 @@ export function CohortsView({ organization }: Props) {
 
 type DetailsSidebarProps = {
   selectedCohort: QueryCohorts[number] | null;
+  onClose: () => void;
 };
 
-function DetailsSidebar({ selectedCohort }: DetailsSidebarProps) {
+function DetailsSidebar({ selectedCohort, onClose }: DetailsSidebarProps) {
   if (!selectedCohort) {
-    return (
-      <DetailsAside>
-        <div className="pb-16 space-y-6">
-          Please select a cohort to see its details.
-        </div>
-      </DetailsAside>
-    );
+    return <DetailsAside isOpen={false} onClose={onClose} />;
   }
   return (
-    <DetailsAside title={selectedCohort.name}>
+    <DetailsAside isOpen={true} onClose={onClose} title={selectedCohort.name}>
       <DetailsAside.Section title="Details">
         <DetailsAside.Line
           label="Starts"
