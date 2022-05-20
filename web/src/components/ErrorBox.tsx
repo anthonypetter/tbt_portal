@@ -1,16 +1,23 @@
 import React from "react";
 import { XCircleIcon } from "@heroicons/react/solid";
+import clsx from "clsx";
 
 type Props = {
   msg?: string;
   subMsg?: string;
+  className?: string;
 };
 
-export function ErrorBox({ msg, subMsg }: Props) {
+export function ErrorBox({ msg, subMsg, className }: Props) {
   const message = msg ?? "Looks like something went wrong.";
 
   return (
-    <div className="mb-4 p-4 bg-red-50 border border-red-400 rounded-md">
+    <div
+      className={clsx(
+        "mb-4 p-4 bg-red-50 border border-red-400 rounded-md",
+        className ?? ""
+      )}
+    >
       <div className="flex">
         <div className="flex-shrink-0">
           <XCircleIcon className="w-5 h-5 text-red-400" aria-hidden="true" />
