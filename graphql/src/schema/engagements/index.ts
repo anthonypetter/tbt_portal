@@ -4,6 +4,7 @@ import { Context } from "../../context";
 import {
   MutationEditEngagementArgs,
   MutationAddEngagementArgs,
+  MutationDeleteEngagementArgs,
 } from "../__generated__/graphql";
 import { parseId } from "../../utils/numbers";
 import { fromJust } from "../../utils/types";
@@ -60,6 +61,7 @@ export const typeDefs = gql`
   extend type Mutation {
     editEngagement(input: EditEngagementInput!): Engagement!
     addEngagement(input: AddEngagementInput!): Engagement!
+    deleteEngagement(id: ID!): Engagement # TODO return type is mandatory
   }
 `;
 
@@ -120,6 +122,15 @@ async function addEngagement(
   });
 }
 
+async function deleteEngagement(
+  _parent: undefined,
+  { id }: MutationDeleteEngagementArgs,
+  { authedUser, AuthorizationService, EngagementService }: Context
+) {
+  AuthorizationService.assertIsAdmin(authedUser);
+  return EngagementService.deleteEngagement(parseId(id));
+}
+
 /**
  * Resolvers
  */
@@ -128,6 +139,7 @@ export const resolvers = {
   Mutation: {
     editEngagement,
     addEngagement,
+    deleteEngagement,
   },
   Engagement: EngagementResolver,
 };
