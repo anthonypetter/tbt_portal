@@ -1,23 +1,30 @@
+import { ReactNode } from "react";
+import { XIcon } from "@heroicons/react/outline";
 import clsx from "clsx";
-import React from "react";
 
 type Props = {
   title?: string;
-  children: React.ReactNode;
+  children?: ReactNode;
+  isOpen: boolean;
+  onClose: () => void;
 };
 
-export function DetailsAside({ title, children }: Props) {
-  return (
+export function DetailsAside({ title, children, isOpen, onClose }: Props) {
+  return !isOpen ? null : (
     <aside
       className={clsx(
         "hidden lg:block",
+        "relative",
         "py-6 pl-6 overflow-y-auto w-72 xl:w-96",
         "bg-white border-l border-gray-200"
       )}
     >
+      <div className="absolute right-2 top-3">
+        <CloseButton onClick={onClose} />
+      </div>
       <div className="pb-16 space-y-8">
         {title && (
-          <h2 className="text-lg font-medium text-gray-900">
+          <h2 className="text-lg font-medium text-gray-900 mr-6">
             <span className="sr-only">Details for </span>
             {title}
           </h2>
@@ -31,7 +38,7 @@ export function DetailsAside({ title, children }: Props) {
 
 type DetailSectionProps = {
   title: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 function DetailSection({ title, children }: DetailSectionProps) {
@@ -46,7 +53,7 @@ function DetailSection({ title, children }: DetailSectionProps) {
 }
 type DetailLineProps = {
   label?: string;
-  value: React.ReactNode;
+  value: ReactNode;
 };
 
 function DetailLine({ label, value }: DetailLineProps) {
@@ -61,7 +68,7 @@ function DetailLine({ label, value }: DetailLineProps) {
 type DetailTableProps = {
   title: string;
   headers?: { col1: string; col2: string };
-  rows: { col1: string; col2: React.ReactNode }[];
+  rows: { col1: string; col2: ReactNode }[];
 };
 
 function DetailTable({ title, headers, rows }: DetailTableProps) {
@@ -109,3 +116,16 @@ function DetailTable({ title, headers, rows }: DetailTableProps) {
 DetailsAside.Section = DetailSection;
 DetailsAside.Line = DetailLine;
 DetailsAside.Table = DetailTable;
+
+function CloseButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      onClick={onClick}
+    >
+      <span className="sr-only">Close panel</span>
+      <XIcon className="h-6 w-6" aria-hidden="true" />
+    </button>
+  );
+}

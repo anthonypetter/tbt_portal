@@ -10,6 +10,7 @@ import filter from "lodash/filter";
 import { AssignmentRoleBadge } from "components/AssignmentRoleBadge";
 import { Button } from "components/Button";
 import { DetailsAside } from "components/DetailsAside";
+import { AddEngagementModal } from "./AddNewEngagementModal";
 
 EngagementsView.fragments = {
   engagementsList: gql`
@@ -52,7 +53,7 @@ export function EngagementsView({ organization }: Props) {
   const [selectedEngagementId, setSelectedEngagementId] = useState<
     string | null
   >(null);
-
+  const [showAddModal, setShowAddModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
 
   const filteredEngagements = searchTerm
@@ -80,7 +81,12 @@ export function EngagementsView({ organization }: Props) {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                <Button type="button" theme="tertiary" className="mx-2">
+                <Button
+                  type="button"
+                  theme="tertiary"
+                  className="mx-2"
+                  onClick={() => setShowAddModal(true)}
+                >
                   <PlusIcon
                     className="-ml-2 mr-1 h-5 w-5 text-gray-400"
                     aria-hidden="true"
@@ -94,9 +100,19 @@ export function EngagementsView({ organization }: Props) {
                 onRowClick={(id) => setSelectedEngagementId(id)}
                 selectedEngagement={selectedEngagement}
               />
+
+              <AddEngagementModal
+                organizationId={organization.id}
+                show={showAddModal}
+                onCancel={() => setShowAddModal(false)}
+                onSuccess={() => setShowAddModal(false)}
+              />
             </main>
 
-            <DetailsSidebar selectedEngagement={selectedEngagement} />
+            <DetailsSidebar
+              selectedEngagement={selectedEngagement}
+              onClose={() => setSelectedEngagementId(null)}
+            />
           </div>
         </div>
       </div>
@@ -106,21 +122,20 @@ export function EngagementsView({ organization }: Props) {
 
 type DetailsSidebarProps = {
   selectedEngagement: QueryEngagements[number] | null;
+  onClose: () => void;
 };
 
-function DetailsSidebar({ selectedEngagement }: DetailsSidebarProps) {
+function DetailsSidebar({ selectedEngagement, onClose }: DetailsSidebarProps) {
   if (!selectedEngagement) {
-    return (
-      <DetailsAside>
-        <div className="pb-16 space-y-6">
-          Please select an engagement to see its details.
-        </div>
-      </DetailsAside>
-    );
+    return <DetailsAside isOpen={false} onClose={onClose} />;
   }
 
   return (
-    <DetailsAside title={selectedEngagement.name}>
+    <DetailsAside
+      title={selectedEngagement.name}
+      isOpen={true}
+      onClose={onClose}
+    >
       <DetailsAside.Section title="Details">
         <DetailsAside.Line
           label="Starts"
