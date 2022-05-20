@@ -16,8 +16,7 @@ import {
   toStaffTeacher,
 } from "../staffAssignments/AddTeachers";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
-
-const REFETCH_QUERIES = ["OrgDetailPageEngagements"];
+import { OrgDetailPageEngagementsQueryName } from "./constants";
 
 const EDIT_ENGAGEMENT = gql`
   mutation EditEngagement($input: EditEngagementInput!) {
@@ -115,7 +114,7 @@ export function EditEngagementModalBody({
           })),
         },
       },
-      refetchQueries: REFETCH_QUERIES,
+      refetchQueries: [OrgDetailPageEngagementsQueryName],
       onQueryUpdated(observableQuery) {
         observableQuery.refetch();
       },

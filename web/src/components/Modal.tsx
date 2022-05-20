@@ -14,6 +14,7 @@ type Props = {
   title: string;
   initialFocus?: React.MutableRefObject<HTMLElement | null> | undefined;
   width?: WidthOptions;
+  afterLeave?: () => void;
 };
 
 export function Modal({
@@ -24,6 +25,7 @@ export function Modal({
   children,
   initialFocus,
   width = "medium",
+  afterLeave,
 }: Props) {
   return (
     <Transition.Root show={show} as={React.Fragment}>
@@ -70,6 +72,7 @@ export function Modal({
             leave="ease-in duration-200"
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            afterLeave={afterLeave}
           >
             <div
               className={clsx(
@@ -120,7 +123,7 @@ function ModalButtons({ children }: { children: React.ReactNode }) {
   );
 }
 
-type ModalButtonType = "confirm" | "cancel";
+type ModalButtonType = "confirm" | "cancel" | "delete";
 
 function getButtonStyles(type: ModalButtonType): {
   theme: ThemeT;
@@ -133,13 +136,16 @@ function getButtonStyles(type: ModalButtonType): {
     case "cancel":
       return { theme: "tertiary", positioning: "mt-3 sm:mt-0" };
 
+    case "delete":
+      return { theme: "danger", positioning: "sm:ml-3" };
+
     default:
       assertUnreachable(type, "ModalButtonType");
   }
 }
 
 type ModalButtonProps = {
-  type: "confirm" | "cancel";
+  type: "confirm" | "cancel" | "delete";
   onClick: () => void;
   children: React.ReactNode;
   disabled?: boolean;
