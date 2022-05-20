@@ -107,6 +107,7 @@ export type Mutation = {
   _empty?: Maybe<Scalars['String']>;
   addEngagement: Engagement;
   addOrganization: Organization;
+  deleteEngagement?: Maybe<Engagement>;
   deleteOrganization: Organization;
   editCohort: Cohort;
   editEngagement: Engagement;
@@ -122,6 +123,11 @@ export type MutationAddEngagementArgs = {
 
 export type MutationAddOrganizationArgs = {
   input: AddOrganizationInput;
+};
+
+
+export type MutationDeleteEngagementArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -238,6 +244,13 @@ export type AddEngagementMutationVariables = Exact<{
 
 
 export type AddEngagementMutation = { __typename?: 'Mutation', addEngagement: { __typename?: 'Engagement', id: string, name: string } };
+
+export type DeleteEngagementMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type DeleteEngagementMutation = { __typename?: 'Mutation', deleteEngagement?: { __typename?: 'Engagement', id: string, name: string } | null };
 
 export type EditEngagementMutationVariables = Exact<{
   input: EditEngagementInput;
@@ -545,6 +558,40 @@ export function useAddEngagementMutation(baseOptions?: Apollo.MutationHookOption
 export type AddEngagementMutationHookResult = ReturnType<typeof useAddEngagementMutation>;
 export type AddEngagementMutationResult = Apollo.MutationResult<AddEngagementMutation>;
 export type AddEngagementMutationOptions = Apollo.BaseMutationOptions<AddEngagementMutation, AddEngagementMutationVariables>;
+export const DeleteEngagementDocument = gql`
+    mutation DeleteEngagement($id: ID!) {
+  deleteEngagement(id: $id) {
+    id
+    name
+  }
+}
+    `;
+export type DeleteEngagementMutationFn = Apollo.MutationFunction<DeleteEngagementMutation, DeleteEngagementMutationVariables>;
+
+/**
+ * __useDeleteEngagementMutation__
+ *
+ * To run a mutation, you first call `useDeleteEngagementMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteEngagementMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteEngagementMutation, { data, loading, error }] = useDeleteEngagementMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteEngagementMutation(baseOptions?: Apollo.MutationHookOptions<DeleteEngagementMutation, DeleteEngagementMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteEngagementMutation, DeleteEngagementMutationVariables>(DeleteEngagementDocument, options);
+      }
+export type DeleteEngagementMutationHookResult = ReturnType<typeof useDeleteEngagementMutation>;
+export type DeleteEngagementMutationResult = Apollo.MutationResult<DeleteEngagementMutation>;
+export type DeleteEngagementMutationOptions = Apollo.BaseMutationOptions<DeleteEngagementMutation, DeleteEngagementMutationVariables>;
 export const EditEngagementDocument = gql`
     mutation EditEngagement($input: EditEngagementInput!) {
   editEngagement(input: $input) {
