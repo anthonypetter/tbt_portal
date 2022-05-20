@@ -21,13 +21,14 @@ export function EngagementsTable({
   selectedEngagement,
 }: Props) {
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
-  const [engagementToEdit, setEngagementToEdit] =
-    useState<EngagementTableData | null>(null);
+  const [engagementIdToEdit, setEngagementIdToEdit] = useState<string | null>(
+    null
+  );
 
   const contextMenu = useMemo(() => {
     return {
       onClickEdit(engagement: EngagementTableData) {
-        setEngagementToEdit(engagement);
+        setEngagementIdToEdit(engagement.id);
         setShowEditModal(true);
       },
     };
@@ -49,11 +50,8 @@ export function EngagementsTable({
         onCancel={() => setShowEditModal(false)}
         onSuccess={() => setShowEditModal(false)}
         engagement={
-          engagementToEdit
-            ? fromJust(
-                engagements.find((e) => e.id === engagementToEdit.id),
-                "engagementToEdit.id in engagements"
-              )
+          engagementIdToEdit
+            ? engagements.find((e) => e.id === engagementIdToEdit) ?? null
             : null
         }
       />
