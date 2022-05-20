@@ -7,7 +7,8 @@ class MyDocument extends Document {
         <Head>
           <link rel="icon" href="/favicon.ico" />
         </Head>
-        <body>
+        {/* We don't want to include the topnav in the scroll. */}
+        <body className="overflow-hidden">
           <Main />
           <NextScript />
         </body>
