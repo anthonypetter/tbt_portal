@@ -6,8 +6,8 @@ import Link from "next/link";
 import { Column, Cell } from "react-table";
 import { EditEngagementModal } from "./EditEngagementModal";
 import { QueryEngagements } from "./EngagementsView";
-import { fromJust } from "@utils/types";
-import { EditIconButton } from "components/EditIconButton";
+import { ContextMenu } from "components/ContextMenu";
+import { DeleteEngagementModal } from "./DeleteEngagementModal";
 
 type Props = {
   engagements: QueryEngagements;
@@ -21,15 +21,23 @@ export function EngagementsTable({
   selectedEngagement,
 }: Props) {
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
+
   const [engagementIdToEdit, setEngagementIdToEdit] = useState<string | null>(
     null
   );
+
+  const [engagementIdToDelete, setEngagementIdToDelete] = useState<
+    string | null
+  >(null);
 
   const contextMenu = useMemo(() => {
     return {
       onClickEdit(engagement: EngagementTableData) {
         setEngagementIdToEdit(engagement.id);
         setShowEditModal(true);
+      },
+      onClickDelete(engagement: EngagementTableData) {
+        setEngagementIdToDelete(engagement.id);
       },
     };
   }, []);
@@ -55,6 +63,15 @@ export function EngagementsTable({
             : null
         }
       />
+
+      <DeleteEngagementModal
+        engagement={
+          engagementIdToDelete
+            ? engagements.find((e) => e.id === engagementIdToDelete) ?? null
+            : null
+        }
+        afterLeave={() => setEngagementIdToDelete(null)}
+      />
     </div>
   );
 }
@@ -71,6 +88,7 @@ function usePrepEngagementData(
   engagements: QueryEngagements,
   contextMenu: {
     onClickEdit: (engagement: EngagementTableData) => void;
+    onClickDelete: (engagement: EngagementTableData) => void;
   }
 ): {
   data: EngagementTableData[];
@@ -114,15 +132,16 @@ function usePrepEngagementData(
         Cell: ({ row }: Cell<EngagementTableData>) => {
           return (
             <div className="flex justify-end">
-              <EditIconButton
-                onClick={() => contextMenu.onClickEdit(row.original)}
+              <ContextMenu
+                onClickEdit={() => contextMenu.onClickEdit(row.original)}
+                onClickDelete={() => contextMenu.onClickDelete(row.original)}
               />
             </div>
           );
         },
       },
     ];
-  }, []);
+  }, [contextMenu]);
 
   //TODO: revisit this. Look into performance implications
   const stringifiedEngagements = JSON.stringify(engagements);
