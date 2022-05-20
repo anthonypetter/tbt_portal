@@ -20,8 +20,6 @@ export function EngagementsTable({
   onRowClick,
   selectedEngagement,
 }: Props) {
-  const [showEditModal, setShowEditModal] = useState<boolean>(false);
-
   const [engagementIdToEdit, setEngagementIdToEdit] = useState<string | null>(
     null
   );
@@ -34,7 +32,6 @@ export function EngagementsTable({
     return {
       onClickEdit(engagement: EngagementTableData) {
         setEngagementIdToEdit(engagement.id);
-        setShowEditModal(true);
       },
       onClickDelete(engagement: EngagementTableData) {
         setEngagementIdToDelete(engagement.id);
@@ -53,10 +50,9 @@ export function EngagementsTable({
         onRowClick={(row) => onRowClick(row.original.id)}
         selectedId={selectedEngagement?.id}
       />
+
       <EditEngagementModal
-        show={showEditModal}
-        onCancel={() => setShowEditModal(false)}
-        onSuccess={() => setShowEditModal(false)}
+        afterLeave={() => setEngagementIdToEdit(null)}
         engagement={
           engagementIdToEdit
             ? engagements.find((e) => e.id === engagementIdToEdit) ?? null
