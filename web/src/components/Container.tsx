@@ -17,7 +17,7 @@ export function Container({ children, className, padding = "md" }: Props) {
         "mt-6 lg:mt-0",
         "bg-white shadow sm:rounded-lg",
         paddingStyle,
-        className ?? ""
+        className
       )}
     >
       {children}

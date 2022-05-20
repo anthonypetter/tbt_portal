@@ -15,7 +15,7 @@ export function ErrorBox({ msg, subMsg, className }: Props) {
     <div
       className={clsx(
         "mb-4 p-4 bg-red-50 border border-red-400 rounded-md",
-        className ?? ""
+        className
       )}
     >
       <div className="flex">
