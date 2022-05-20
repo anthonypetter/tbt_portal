@@ -176,5 +176,25 @@ const ModalButton = React.forwardRef<HTMLButtonElement, ModalButtonProps>(
   ModalButtonForwardRef
 );
 
+function ModalIcon({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={clsx(
+        "flex flex-shrink-0 items-center justify-center mx-auto w-12 h-12 rounded-full sm:mx-0 sm:w-10 sm:h-10",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
 Modal.Buttons = ModalButtons;
 Modal.Button = ModalButton;
+Modal.Icon = ModalIcon;
