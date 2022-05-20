@@ -1,10 +1,13 @@
 import { gql } from "apollo-server";
 import { EngagementResolver } from "./EngagementResolver";
 import { Context } from "../../context";
-import { MutationEditEngagementArgs } from "../__generated__/graphql";
+import {
+  MutationEditEngagementArgs,
+  MutationAddEngagementArgs,
+} from "../__generated__/graphql";
 import { parseId } from "../../utils/numbers";
 import { fromJust } from "../../utils/types";
-import { calcStaffChanges } from "../../utils/staffAssignments";
+import { calcStaffChanges, fromNewToInput } from "../../utils/staffAssignments";
 
 /**
  * Type Defs
@@ -46,8 +49,17 @@ export const typeDefs = gql`
     newStaffAssignments: [NewStaffAssignment!]
   }
 
+  input AddEngagementInput {
+    organizationId: ID!
+    name: String!
+    startDate: Date
+    endDate: Date
+    newStaffAssignments: [NewStaffAssignment!]!
+  }
+
   extend type Mutation {
     editEngagement(input: EditEngagementInput!): Engagement!
+    addEngagement(input: AddEngagementInput!): Engagement!
   }
 `;
 
@@ -92,6 +104,22 @@ async function editEngagement(
   return updatedStaffAssignment;
 }
 
+async function addEngagement(
+  _parent: undefined,
+  { input }: MutationAddEngagementArgs,
+  { authedUser, AuthorizationService, EngagementService }: Context
+) {
+  AuthorizationService.assertIsAdmin(authedUser);
+
+  return EngagementService.addEngagement({
+    name: input.name,
+    organizationId: parseId(input.organizationId),
+    startDate: input.startDate,
+    endDate: input.endDate,
+    staff: input.newStaffAssignments.map((t) => fromNewToInput(t)),
+  });
+}
+
 /**
  * Resolvers
  */
@@ -99,6 +127,7 @@ async function editEngagement(
 export const resolvers = {
   Mutation: {
     editEngagement,
+    addEngagement,
   },
   Engagement: EngagementResolver,
 };

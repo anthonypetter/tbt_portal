@@ -9,12 +9,12 @@ import { parseId } from "./numbers";
 import { fromJust } from "./types";
 
 export type ChangeSet = {
-  additions: EditInputStaffAssignment[];
-  removals: EditInputStaffAssignment[];
-  updates: EditInputStaffAssignment[];
+  additions: StaffAssignmentInput[];
+  removals: StaffAssignmentInput[];
+  updates: StaffAssignmentInput[];
 };
 
-type EditInputStaffAssignment = {
+export type StaffAssignmentInput = {
   userId: number;
   assignmentRole: AssignmentRole;
 };
@@ -35,16 +35,16 @@ export function calcStaffChanges(
 
 function fromExistingToInput(
   existingAssignment: EngagementStaffAssignment | CohortStaffAssignment
-): EditInputStaffAssignment {
+): StaffAssignmentInput {
   return {
     userId: existingAssignment.userId,
     assignmentRole: existingAssignment.assignmentRole,
   };
 }
 
-function fromNewToInput(
+export function fromNewToInput(
   newAssignment: NewStaffAssignment
-): EditInputStaffAssignment {
+): StaffAssignmentInput {
   return {
     userId: parseId(newAssignment.userId),
     assignmentRole: newAssignment.assignmentRole,
@@ -55,8 +55,8 @@ function findToDelete({
   existingStaff,
   newStaff,
 }: {
-  existingStaff: EditInputStaffAssignment[];
-  newStaff: EditInputStaffAssignment[];
+  existingStaff: StaffAssignmentInput[];
+  newStaff: StaffAssignmentInput[];
 }) {
   const assignmentsToDelete = differenceBy(
     existingStaff, //The array to inspect
@@ -71,8 +71,8 @@ function findToAdd({
   existingStaff,
   newStaff,
 }: {
-  existingStaff: EditInputStaffAssignment[];
-  newStaff: EditInputStaffAssignment[];
+  existingStaff: StaffAssignmentInput[];
+  newStaff: StaffAssignmentInput[];
 }) {
   const assignmentsToAdd = differenceBy(
     newStaff, //The array to inspect
@@ -87,8 +87,8 @@ function findToUpdate({
   existingStaff,
   newStaff,
 }: {
-  existingStaff: EditInputStaffAssignment[];
-  newStaff: EditInputStaffAssignment[];
+  existingStaff: StaffAssignmentInput[];
+  newStaff: StaffAssignmentInput[];
 }) {
   const staffInBothArrays = intersectionBy(
     newStaff,

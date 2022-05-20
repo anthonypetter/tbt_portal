@@ -1,7 +1,7 @@
 import { prisma } from "../lib/prisma-client";
 import { Engagement } from "@prisma/client";
 import type { Prisma } from "@prisma/client";
-import { ChangeSet } from "../utils/staffAssignments";
+import { ChangeSet, StaffAssignmentInput } from "../utils/staffAssignments";
 
 /**
  * Gets an engagement by id
@@ -35,17 +35,36 @@ async function getEngagements(organizationId: number) {
 type AddEngagementInput = {
   name: string;
   organizationId: number;
+  startDate?: Date;
+  endDate?: Date;
+  staff: StaffAssignmentInput[];
 };
 
 async function addEngagement({
   name,
   organizationId,
-}: AddEngagementInput): Promise<Engagement> {
-  const engagement = await prisma.engagement.create({
-    data: { name, organizationId },
-  });
+  startDate,
+  endDate,
+  staff,
+}: AddEngagementInput) {
+  const newAssignments = staff.map((teacher) => ({
+    createdAt: new Date(),
+    userId: teacher.userId,
+    assignmentRole: teacher.assignmentRole,
+  }));
 
-  return engagement;
+  return prisma.engagement.create({
+    data: {
+      name,
+      organizationId,
+      startDate,
+      endDate,
+      staffAssignments:
+        newAssignments.length > 0
+          ? { createMany: { data: newAssignments } }
+          : undefined,
+    },
+  });
 }
 
 /**
@@ -109,7 +128,7 @@ async function editEngagement({
     }
   }
 
-  const engagement = await prisma.engagement.update({
+  return prisma.engagement.update({
     where: { id },
     data: {
       name,
@@ -118,8 +137,6 @@ async function editEngagement({
       staffAssignments,
     },
   });
-
-  return engagement;
 }
 
 export const EngagementService = {
