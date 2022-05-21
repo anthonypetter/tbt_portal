@@ -9,7 +9,11 @@ import { ChangeSet, StaffAssignmentInput } from "../utils/staffAssignments";
 async function getEngagement(id: number) {
   const engagement = await prisma.engagement.findFirst({
     where: { id },
-    include: { staffAssignments: true },
+    include: {
+      staffAssignments: { include: { user: true } },
+      cohorts: { include: { staffAssignments: { include: { user: true } } } },
+      organization: true,
+    },
   });
   return engagement;
 }

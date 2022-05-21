@@ -175,6 +175,8 @@ export type Query = {
   _empty?: Maybe<Scalars['String']>;
   cohorts: Array<Cohort>;
   currentUser?: Maybe<User>;
+  engagement?: Maybe<Engagement>;
+  engagements: Array<Engagement>;
   organization?: Maybe<Organization>;
   organizations: Array<Organization>;
   searchUsers: SearchResults;
@@ -184,6 +186,11 @@ export type Query = {
 
 export type QueryCohortsArgs = {
   organizationId: Scalars['ID'];
+};
+
+
+export type QueryEngagementArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -399,6 +406,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cohorts?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType, RequireFields<QueryCohortsArgs, 'organizationId'>>;
   currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  engagement?: Resolver<Maybe<ResolversTypes['Engagement']>, ParentType, ContextType, RequireFields<QueryEngagementArgs, 'id'>>;
+  engagements?: Resolver<Array<ResolversTypes['Engagement']>, ParentType, ContextType>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
   searchUsers?: Resolver<ResolversTypes['SearchResults'], ParentType, ContextType, RequireFields<QuerySearchUsersArgs, 'query'>>;
