@@ -5,6 +5,7 @@ import {
   MutationEditEngagementArgs,
   MutationAddEngagementArgs,
   MutationDeleteEngagementArgs,
+  QueryEngagementArgs,
 } from "../__generated__/graphql";
 import { parseId } from "../../utils/numbers";
 import { fromJust } from "../../utils/types";
@@ -58,12 +59,31 @@ export const typeDefs = gql`
     newStaffAssignments: [NewStaffAssignment!]!
   }
 
+  extend type Query {
+    engagements: [Engagement!]!
+    engagement(id: ID!): Engagement
+  }
+
   extend type Mutation {
     editEngagement(input: EditEngagementInput!): Engagement!
     addEngagement(input: AddEngagementInput!): Engagement!
-    deleteEngagement(id: ID!): Engagement # TODO return type is mandatory
+    deleteEngagement(id: ID!): Engagement!
   }
 `;
+
+/**
+ * Query resolvers
+ */
+
+async function engagement(
+  _parent: undefined,
+  { id }: QueryEngagementArgs,
+  { authedUser, AuthorizationService, EngagementService }: Context
+) {
+  AuthorizationService.assertIsAdmin(authedUser);
+  return EngagementService.getEngagement(parseId(id));
+  //
+}
 
 /**
  * Mutation resolvers
@@ -136,6 +156,9 @@ async function deleteEngagement(
  */
 
 export const resolvers = {
+  Query: {
+    engagement,
+  },
   Mutation: {
     editEngagement,
     addEngagement,
