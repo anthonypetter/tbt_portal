@@ -4,7 +4,7 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl"]
 }
 
@@ -21,46 +21,45 @@ enum AccountStatus {
 }
 
 model User {
-  id                          Int                       @id @default(autoincrement())
-  email                       String                    @unique
-  createdAt                   DateTime                  @default(now())
-  cognitoSub                  String                    @unique
-  fullName                    String
+  id            Int           @id @default(autoincrement())
+  email         String        @unique
+  createdAt     DateTime      @default(now())
+  cognitoSub    String        @unique
+  fullName      String
+  role          UserRole      @default(TUTOR_TEACHER)
+  accountStatus AccountStatus @default(PENDING)
 
-  role                        UserRole                  @default(TUTOR_TEACHER)
-  accountStatus               AccountStatus             @default(PENDING)
-  //top level assignments (mentor teachers, admins, etc)
-  engagementAssignments       EngagementStaffAssignment[]
-  
-  //direct cohort assignments
-  cohortAssignments           CohortStaffAssignment[]
+  //relation fields
+  engagementAssignments EngagementStaffAssignment[]
+  cohortAssignments     CohortStaffAssignment[]
 }
 
 model Organization {
-  id                          Int                       @id @default(autoincrement())
-  createdAt                   DateTime                  @default(now())
-  name                        String
-  description                 String?
-  location                    String?
-  district                    String?
-  subDistrict                 String?
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  name        String
+  description String?
+  location    String?
+  district    String?
+  subDistrict String?
 
-  engagements                 Engagement[]
+  //relation fields
+  engagements Engagement[]
 }
 
 model Engagement {
-  id                          Int                       @id @default(autoincrement())
-  createdAt                   DateTime                  @default(now())
-  name                        String
-  startDate                   DateTime?                  
-  endDate                     DateTime?
-  staffAssignments            EngagementStaffAssignment[]
-  organizationId              Int
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  name      String
+  startDate DateTime?
+  endDate   DateTime?
 
-  organization                Organization              @relation(fields: [organizationId], references: [id])
-  cohorts                     Cohort[]
+  //relation fields
+  staffAssignments EngagementStaffAssignment[]
+  organizationId   Int
+  organization     Organization                @relation(fields: [organizationId], references: [id])
+  cohorts          Cohort[]
 }
-
 
 enum AssignmentRole {
   MENTOR_TEACHER
@@ -69,50 +68,56 @@ enum AssignmentRole {
 }
 
 model EngagementStaffAssignment {
-  createdAt                   DateTime                  @default(now())
-  engagementId                Int
-  userId                      Int
-  assignmentRole              AssignmentRole           @default(MENTOR_TEACHER)
-  
-  user                        User                     @relation(fields: [userId], references: [id])
-  engagement                  Engagement               @relation(fields: [engagementId], references: [id])
+  createdAt      DateTime       @default(now())
+  engagementId   Int
+  userId         Int
+  assignmentRole AssignmentRole @default(MENTOR_TEACHER)
+
+  // relation fields
+  user       User       @relation(fields: [userId], references: [id])
+  engagement Engagement @relation(fields: [engagementId], references: [id])
+
+  //TODO: Add role to compound key? Is it expected to have staff members take on multiple roles?
   @@id([userId, engagementId])
 }
 
 model Cohort {
-  id                          Int                       @id @default(autoincrement())
-  createdAt                   DateTime                  @default(now())
-  name                        String
-  engagementId                Int
-  grade                       String?
-  meetingRoom                 String?
-  hostKey                     String?
-  exempt                      Boolean                   @default(false)
-  startDate                   DateTime?                  
-  endDate                     DateTime?
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  name        String
+  grade       String?
+  meetingRoom String?
+  hostKey     String?
+  exempt      Boolean   @default(false)
+  startDate   DateTime?
+  endDate     DateTime?
 
-  engagement                  Engagement               @relation(fields: [engagementId], references: [id])
-  staffAssignments            CohortStaffAssignment[]
-  sessions                    CohortSession[]
+  // relation fields
+  engagementId     Int
+  engagement       Engagement              @relation(fields: [engagementId], references: [id])
+  staffAssignments CohortStaffAssignment[]
+  sessions         CohortSession[]
 }
 
 model CohortStaffAssignment {
-  createdAt                   DateTime                  @default(now())
-  userId                      Int
-  cohortId                    Int
-  assignmentRole              AssignmentRole           @default(GENERAL_TEACHER)
-  
-  user                        User                     @relation(fields: [userId], references: [id])
-  cohort                      Cohort                   @relation(fields: [cohortId], references: [id])
+  createdAt      DateTime       @default(now())
+  assignmentRole AssignmentRole @default(GENERAL_TEACHER)
+
+  // relation fields
+  userId   Int
+  user     User   @relation(fields: [userId], references: [id])
+  cohortId Int
+  cohort   Cohort @relation(fields: [cohortId], references: [id])
+
   @@id([userId, cohortId])
 }
 
-
 model CohortSession {
-  id                          Int                       @id @default(autoincrement())
-  createdAt                   DateTime                  @default(now())
-  recording                   String?                   
-  cohortId                    Int
-  
-  cohort                      Cohort                    @relation(fields: [cohortId], references: [id])
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  recording String?
+
+  // relation fields
+  cohortId Int
+  cohort   Cohort @relation(fields: [cohortId], references: [id])
 }
