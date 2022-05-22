@@ -1,5 +1,6 @@
 import { AssignmentRole, Prisma, PrismaClient, User } from "@prisma/client";
 import { fromJust } from "../src/utils/types";
+import { add } from "date-fns";
 
 const prisma = new PrismaClient();
 
@@ -109,10 +110,6 @@ async function createOrgs(users: User[]) {
 }
 
 async function createElPasoOrg(users: User[]) {
-  const startDate = new Date();
-  const endDate = new Date(startDate.getTime());
-  endDate.setFullYear(startDate.getFullYear() + 5);
-
   const mentorTeacher = fromJust(
     users.find((u) => u.email === "victor+mt@tutored.live")
   );
@@ -200,38 +197,33 @@ function createSchoolEngagements() {
     { schoolName: "Coldwell Elementary", abbreviation: "CE" },
   ];
 
-  const startDate = new Date();
-
   return schools.map((school) => {
-    const endDate = new Date(startDate.getTime());
-    endDate.setMonth(startDate.getMonth() + Math.floor(Math.random() * 24) + 1);
-
     return {
       name: school.schoolName,
-      startDate: startDate,
-      endDate: endDate,
+      startDate: new Date(),
+      endDate: add(new Date(), { days: 60 }),
       cohorts: {
         create: [
           {
-            createdAt: startDate,
+            createdAt: new Date(),
             name: `${school.abbreviation}-G6 Cohort`,
             grade: "6",
-            startDate: startDate,
-            endDate: endDate,
+            startDate: new Date(),
+            endDate: add(new Date(), { days: 7 }),
           },
           {
-            createdAt: startDate,
+            createdAt: new Date(),
             name: `${school.abbreviation}-G7 Cohort`,
             grade: "7",
-            startDate: startDate,
-            endDate: endDate,
+            startDate: new Date(),
+            endDate: add(new Date(), { days: 14 }),
           },
           {
             createdAt: new Date(),
             name: `${school.abbreviation}-G8 Cohort`,
             grade: "8",
-            startDate: startDate,
-            endDate: endDate,
+            startDate: new Date(),
+            endDate: add(new Date(), { days: 30 }),
           },
         ],
       },
