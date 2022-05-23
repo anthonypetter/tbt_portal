@@ -11,14 +11,12 @@
 
 ### Node
 
-We're using Node v16.14. Use of [Node Version Manager](https://github.com/nvm-sh/nvm) for version management is recommended.
-
-To run the application locally, you'll need to run both the apollo server backend and the NextJS frontend.
+- We're using Node v16.14. Use of [Node Version Manager](https://github.com/nvm-sh/nvm) for version management is recommended.
 
 ### Backend
 
-Follow the instructions found in the [graphql README](https://github.com/TutoredByTeachers/tbt-portal/blob/main/graphql/README.md). Get apollo-server up and running.
+- Follow the instructions found in the [graphql README](https://github.com/TutoredByTeachers/tbt-portal/blob/main/graphql/README.md). Get apollo-server up and running.
 
 ### Frontend
 
-After you have apollo-server up, Follow the instructions in the [web README](https://github.com/TutoredByTeachers/tbt-portal/blob/main/web/README.md) to get NextJS app running.
+- After you have apollo-server up, Follow the instructions in the [web README](https://github.com/TutoredByTeachers/tbt-portal/blob/main/web/README.md) to get NextJS app running.
