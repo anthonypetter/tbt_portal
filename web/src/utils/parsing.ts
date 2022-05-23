@@ -30,3 +30,17 @@ export function parseEngagementId(
     engagementId: params.engagementId,
   };
 }
+
+export function parseCohortId(mParams: GetServerSidePropsContext["params"]): {
+  cohortId: string;
+} {
+  const params = fromJust(mParams, "params");
+
+  if (typeof params.cohortId !== "string") {
+    throw new Error("Unable to parse cohortId from url");
+  }
+
+  return {
+    cohortId: params.cohortId,
+  };
+}
