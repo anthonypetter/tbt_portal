@@ -24,4 +24,18 @@ export const EngagementResolver = {
       assignmentRole: sa.assignmentRole,
     }));
   },
+
+  async organization(
+    parent: Engagement,
+    _args: undefined,
+    { authedUser, AuthorizationService, OrganizationService }: Context
+  ) {
+    AuthorizationService.assertIsAdmin(authedUser);
+
+    if (parent.organization) {
+      return parent.organization;
+    }
+
+    return OrganizationService.getOrg(parseId(parent.organizationId));
+  },
 };
