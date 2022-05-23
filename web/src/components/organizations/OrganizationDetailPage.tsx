@@ -3,15 +3,13 @@ import {
   OrgDetailPageEngagementsQuery,
   OrgDetailPageCohortsQuery,
 } from "@generated/graphql";
-import { Breadcrumbs } from "components/Breadcrumbs";
 import { Routes } from "@utils/routes";
 import { HomeIcon } from "@heroicons/react/solid";
-import clsx from "clsx";
 import { Container } from "components/Container";
 import { EngagementsView } from "../engagements/EngagementsView";
 import { getDisplayName, OrganizationTabs, Tab } from "./OrganizationTabs";
 import { CohortsView } from "components/cohorts/CohortsView";
-import { assertUnreachable } from "@utils/types";
+import { PageHeader } from "components/PageHeader";
 
 OrganizationDetailPage.fragments = {
   engagementsView: gql`
@@ -56,9 +54,11 @@ type Props = {
 
 export function OrganizationDetailPage({ tabOrg }: Props) {
   return (
-    <div>
-      <Breadcrumbs
-        path={[
+    <>
+      <PageHeader
+        title={tabOrg.organization.name}
+        description={tabOrg.organization.description}
+        breadcrumbs={[
           { name: "Home", href: Routes.home.href(), icon: HomeIcon },
           {
             name: "Organizations",
@@ -72,64 +72,11 @@ export function OrganizationDetailPage({ tabOrg }: Props) {
         ]}
       />
 
-      <Header
-        title={tabOrg.organization.name}
-        description={tabOrg.organization.description}
-      />
-
       <div className="mt-8">
         <Container padding="md">
           <OrganizationTabs tabOrg={tabOrg} />
-          <TabView tabOrg={tabOrg} />
         </Container>
       </div>
-    </div>
-  );
-}
-
-type TabViewProps = {
-  tabOrg: TabOrganization;
-};
-
-function TabView({ tabOrg }: TabViewProps) {
-  switch (tabOrg.tab) {
-    case Tab.Engagements:
-      return <EngagementsView organization={tabOrg.organization} />;
-
-    case Tab.Cohorts:
-      return <CohortsView organization={tabOrg.organization} />;
-
-    default:
-      assertUnreachable(tabOrg, "TabOrg.tab");
-  }
-}
-
-type HeaderProps = {
-  title: string;
-  description?: string | null;
-};
-
-function Header({ title, description }: HeaderProps) {
-  return (
-    <div
-      className={clsx(
-        "flex flex-col sm:flex-row sm:items-center sm:justify-between",
-        "mb-8"
-      )}
-    >
-      <div className="flex items-center">
-        <div className="flex">
-          <div>
-            <h1 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate mb-2">
-              {title}
-            </h1>
-
-            {description && (
-              <p className="text-sm font-medium text-gray-500">{description}</p>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }
