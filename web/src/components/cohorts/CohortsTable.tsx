@@ -4,7 +4,7 @@ import { Routes } from "@utils/routes";
 import { DateText } from "components/Date";
 import { EditIconButton } from "components/EditIconButton";
 import { Table } from "components/Table";
-import Link from "next/link";
+import { Link } from "components/Link";
 import { Column, Cell } from "react-table";
 import { EditCohortModal } from "./EditCohortModal";
 import { fromJust } from "@utils/types";
@@ -104,7 +104,7 @@ function usePrepCohortData({
                 row.original.id
               )}
             >
-              <a className="font-medium text-gray-900">{row.original.name}</a>
+              {row.original.name}
             </Link>
           );
         },
@@ -141,7 +141,7 @@ function usePrepCohortData({
         },
       },
     ];
-  }, []);
+  }, [organizationId, contextMenu]);
 
   const stringifiedCohorts = JSON.stringify(cohorts);
 
