@@ -2,7 +2,7 @@ import React from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/solid";
 import Link from "next/link";
 
-type Breadcrumb = {
+export type Breadcrumb = {
   name: string;
   href: string;
   current?: boolean;

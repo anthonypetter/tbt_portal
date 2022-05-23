@@ -1,5 +1,7 @@
 import { Routes } from "@utils/routes";
 import { assertUnreachable } from "@utils/types";
+import { CohortsView } from "components/cohorts/CohortsView";
+import { EngagementsView } from "components/engagements/EngagementsView";
 import { LinkTabs } from "components/LinkTabs";
 import { TabOrganization } from "./OrganizationDetailPage";
 
@@ -30,7 +32,29 @@ export function OrganizationTabs({ tabOrg }: Props) {
       current: tab === Tab.Cohorts,
     },
   ];
-  return <LinkTabs tabs={tabsConfig} />;
+  return (
+    <>
+      <LinkTabs tabs={tabsConfig} />
+      <TabView tabOrg={tabOrg} />
+    </>
+  );
+}
+
+type TabViewProps = {
+  tabOrg: TabOrganization;
+};
+
+function TabView({ tabOrg }: TabViewProps) {
+  switch (tabOrg.tab) {
+    case Tab.Engagements:
+      return <EngagementsView organization={tabOrg.organization} />;
+
+    case Tab.Cohorts:
+      return <CohortsView organization={tabOrg.organization} />;
+
+    default:
+      assertUnreachable(tabOrg, "TabOrg.tab");
+  }
 }
 
 export function getDisplayName(tab: Tab) {
