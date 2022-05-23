@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Routes } from "@utils/routes";
 import { DateText } from "components/Date";
 import { Table } from "components/Table";
-import Link from "next/link";
+import { Link } from "components/Link";
 import { Column, Cell } from "react-table";
 import { EditEngagementModal } from "./EditEngagementModal";
 import { QueryEngagements } from "./EngagementsView";
@@ -103,7 +103,7 @@ function usePrepEngagementData(
                 row.original.id
               )}
             >
-              <a className="font-medium text-gray-900">{row.original.name}</a>
+              {row.original.name}
             </Link>
           );
         },

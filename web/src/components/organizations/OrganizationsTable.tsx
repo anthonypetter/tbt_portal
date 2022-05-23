@@ -6,7 +6,7 @@ import { OrganizationsPageQuery } from "@generated/graphql";
 import { ContextMenu } from "components/ContextMenu";
 import { DeleteOrganizationModal } from "./DeleteOrganizationModal";
 import { EditOrgModal } from "./EditOrgModal";
-import Link from "next/link";
+import { Link } from "components/Link";
 import { Routes } from "@utils/routes";
 
 OrganizationsTable.fragments = {
@@ -99,7 +99,7 @@ function usePrepOrgData(
         Cell: ({ row }: Cell<OrgTableData>) => {
           return (
             <Link href={Routes.org.engagements.href(row.original.id)}>
-              <a className="font-medium text-gray-900">{row.original.name}</a>
+              {row.original.name}
             </Link>
           );
         },
