@@ -36,6 +36,7 @@ export const typeDefs = gql`
     organizationId: ID!
     cohorts: [Cohort!]!
     staffAssignments: [StaffAssignment!]!
+    organization: Organization!
   }
 
   input NewStaffAssignment {
