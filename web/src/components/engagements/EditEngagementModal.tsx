@@ -28,14 +28,18 @@ const EDIT_ENGAGEMENT = gql`
 `;
 
 type Props = {
+  show: boolean;
+  closeModal: () => void;
   engagement: QueryEngagements[number] | null;
   afterLeave: () => void;
 };
 
-export function EditEngagementModal({ engagement, afterLeave }: Props) {
-  const [show, setShow] = useState(engagement !== null);
-  useEffect(() => setShow(engagement !== null), [engagement]);
-
+export function EditEngagementModal({
+  show,
+  closeModal,
+  engagement,
+  afterLeave,
+}: Props) {
   return (
     <Modal
       show={show}
@@ -54,8 +58,8 @@ export function EditEngagementModal({ engagement, afterLeave }: Props) {
     >
       {engagement ? (
         <EditEngagementModalBody
-          onCancel={() => setShow(false)}
-          onSuccess={() => setShow(false)}
+          onCancel={closeModal}
+          onSuccess={closeModal}
           engagement={engagement}
         />
       ) : (
