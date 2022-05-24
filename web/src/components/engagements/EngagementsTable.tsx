@@ -28,13 +28,18 @@ export function EngagementsTable({
     string | null
   >(null);
 
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const contextMenu = useMemo(() => {
     return {
       onClickEdit(engagement: EngagementTableData) {
         setEngagementIdToEdit(engagement.id);
+        setShowEditModal(true);
       },
       onClickDelete(engagement: EngagementTableData) {
         setEngagementIdToDelete(engagement.id);
+        setShowDeleteModal(true);
       },
     };
   }, []);
@@ -52,6 +57,8 @@ export function EngagementsTable({
       />
 
       <EditEngagementModal
+        show={showEditModal}
+        closeModal={() => setShowEditModal(false)}
         afterLeave={() => setEngagementIdToEdit(null)}
         engagement={
           engagementIdToEdit
@@ -61,12 +68,14 @@ export function EngagementsTable({
       />
 
       <DeleteEngagementModal
+        show={showDeleteModal}
+        closeModal={() => setShowDeleteModal(false)}
+        afterLeave={() => setEngagementIdToDelete(null)}
         engagement={
           engagementIdToDelete
             ? engagements.find((e) => e.id === engagementIdToDelete) ?? null
             : null
         }
-        afterLeave={() => setEngagementIdToDelete(null)}
       />
     </div>
   );

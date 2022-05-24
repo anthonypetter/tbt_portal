@@ -23,18 +23,22 @@ const DELETE_ENGAGEMENT = gql`
 `;
 
 type Props = {
-  engagement: QueryEngagements[number] | null;
+  show: boolean;
+  closeModal: () => void;
   afterLeave: () => void;
+  engagement: QueryEngagements[number] | null;
 };
 
-export function DeleteEngagementModal({ engagement, afterLeave }: Props) {
-  const [show, setShow] = useState(engagement !== null);
-  useEffect(() => setShow(engagement !== null), [engagement]);
-
+export function DeleteEngagementModal({
+  show,
+  closeModal,
+  engagement,
+  afterLeave,
+}: Props) {
   return (
     <Modal
       show={show}
-      onClose={() => setShow(false)}
+      onClose={closeModal}
       icon={
         <Modal.Icon className="bg-red-100">
           <ExclamationIcon
@@ -49,8 +53,8 @@ export function DeleteEngagementModal({ engagement, afterLeave }: Props) {
       {engagement ? (
         <DeleteEngagementModalBody
           engagement={engagement}
-          onCancel={() => setShow(false)}
-          onSuccess={() => setShow(false)}
+          onCancel={closeModal}
+          onSuccess={closeModal}
         />
       ) : (
         <LoadingSkeleton className="h-56" />
