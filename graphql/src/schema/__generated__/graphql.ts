@@ -21,6 +21,17 @@ export enum AccountStatus {
   Pending = 'PENDING'
 }
 
+export type AddCohortInput = {
+  endDate?: InputMaybe<Scalars['Date']>;
+  engagementId: Scalars['ID'];
+  grade?: InputMaybe<Scalars['String']>;
+  hostKey?: InputMaybe<Scalars['String']>;
+  meetingRoom?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
+  newStaffAssignments: Array<NewStaffAssignment>;
+  startDate?: InputMaybe<Scalars['Date']>;
+};
+
 export type AddEngagementInput = {
   endDate?: InputMaybe<Scalars['Date']>;
   name: Scalars['String'];
@@ -105,6 +116,7 @@ export type InviteUserInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   _empty?: Maybe<Scalars['String']>;
+  addCohort: Cohort;
   addEngagement: Engagement;
   addOrganization: Organization;
   deleteCohort: Cohort;
@@ -114,6 +126,11 @@ export type Mutation = {
   editEngagement: Engagement;
   editOrganization: Organization;
   inviteUser: User;
+};
+
+
+export type MutationAddCohortArgs = {
+  input: AddCohortInput;
 };
 
 
@@ -307,6 +324,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   AccountStatus: AccountStatus;
+  AddCohortInput: AddCohortInput;
   AddEngagementInput: AddEngagementInput;
   AddOrganizationInput: AddOrganizationInput;
   AssignmentRole: AssignmentRole;
@@ -333,6 +351,7 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  AddCohortInput: AddCohortInput;
   AddEngagementInput: AddEngagementInput;
   AddOrganizationInput: AddOrganizationInput;
   Boolean: Scalars['Boolean'];
@@ -389,6 +408,7 @@ export type EngagementResolvers<ContextType = any, ParentType extends ResolversP
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  addCohort?: Resolver<ResolversTypes['Cohort'], ParentType, ContextType, RequireFields<MutationAddCohortArgs, 'input'>>;
   addEngagement?: Resolver<ResolversTypes['Engagement'], ParentType, ContextType, RequireFields<MutationAddEngagementArgs, 'input'>>;
   addOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   deleteCohort?: Resolver<ResolversTypes['Cohort'], ParentType, ContextType, RequireFields<MutationDeleteCohortArgs, 'id'>>;
