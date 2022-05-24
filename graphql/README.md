@@ -2,27 +2,44 @@
 
 ## Local Development Environment
 
-1. Ensure you've changed your directory to be in this directory. (`graphql`)
+Before getting started, ensure you have the following:
 
-2. To spin up a local instance of postgres via docker compose, run:
+- [] AWS creds
+- [] An invite to our doppler team account and the [doppler CLI](https://docs.doppler.com/docs/install-cli) installed.
+- [] [docker compose](https://docs.docker.com/compose/install) installed.
+- [] You're using Node v16.14.1
+
+Once that is in place, follow these steps:
+
+1. Ensure you've changed your directory to `graphql` (this directory).
+
+2. Intall dependencies by running
+
+```
+npm install
+```
+
+3. To spin up a local instance of postgres via docker compose, run:
 
 ```bash
 docker compose -f docker-compose-db.yml up -d
 ```
 
-3. Once DB is running, start apollo server locally by running (still in `graphql` directory)
+4. Once DB is running, start apollo server locally by running (still in `graphql` directory)
 
 ```
 npm run dev
 ```
 
-3. If this is your first time setting up the db, run the following `db:setup` command. This will apply all migrations and run the `seed.ts` script.
+5. If this is your first time setting up the db, run the following `db:setup` command. This will apply all migrations and run the `seed.ts` script.
 
 ```bash
 npm run db:setup
 ```
 
-If all goes well, you should see something like:
+Hopefully you'll see some seed script logs being outputted.
+
+Once the server is up and running, you should see:
 
 ```
 🚀 Server ready at: http://localhost:4000
