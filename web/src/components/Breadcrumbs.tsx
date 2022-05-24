@@ -51,7 +51,7 @@ export function Breadcrumbs({ path }: Props) {
               ) : null;
 
               const link = breadcrumb.current ? (
-                <p className="ml-4 text-gray-500 hover:text-gray-700 text-sm font-medium">
+                <p className="ml-4 text-gray-500 text-sm font-medium">
                   {icon ?? breadcrumb.name}
                 </p>
               ) : (
