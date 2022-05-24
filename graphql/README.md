@@ -1,13 +1,13 @@
-# Apollo Server
+# Graphql Backend - Apollo Server
 
 ## Local Development Environment
 
 Before getting started, ensure you have the following:
 
 - [ ] AWS creds
-- [ ] An invite to our doppler team account and the [doppler CLI](https://docs.doppler.com/docs/install-cli) installed.
-- [ ] [docker compose](https://docs.docker.com/compose/install) installed.
 - [ ] You're using Node v16.14.1
+- [ ] Doppler is installed and configured. More info on how to do that here: https://github.com/TutoredByTeachers/tbt-portal#env-files
+- [ ] [docker compose](https://docs.docker.com/compose/install) installed.
 
 Once that is in place, follow these steps:
 
@@ -31,7 +31,7 @@ docker compose -f docker-compose-db.yml up -d
 npm run dev
 ```
 
-5. If this is your first time setting up the db, run the following `db:setup` command. This will apply all migrations and run the `seed.ts` script.
+5. If this is your first time setting up the db, run the following `db:setup` command. This will apply all prisma migrations and run the `seed.ts` script.
 
 ```bash
 npm run db:setup
