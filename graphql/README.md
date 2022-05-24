@@ -4,10 +4,10 @@
 
 Before getting started, ensure you have the following:
 
-- [] AWS creds
-- [] An invite to our doppler team account and the [doppler CLI](https://docs.doppler.com/docs/install-cli) installed.
-- [] [docker compose](https://docs.docker.com/compose/install) installed.
-- [] You're using Node v16.14.1
+- [ ] AWS creds
+- [ ] An invite to our doppler team account and the [doppler CLI](https://docs.doppler.com/docs/install-cli) installed.
+- [ ] [docker compose](https://docs.docker.com/compose/install) installed.
+- [ ] You're using Node v16.14.1
 
 Once that is in place, follow these steps:
 
