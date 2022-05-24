@@ -107,6 +107,7 @@ export type Mutation = {
   _empty?: Maybe<Scalars['String']>;
   addEngagement: Engagement;
   addOrganization: Organization;
+  deleteCohort: Cohort;
   deleteEngagement: Engagement;
   deleteOrganization: Organization;
   editCohort: Cohort;
@@ -123,6 +124,11 @@ export type MutationAddEngagementArgs = {
 
 export type MutationAddOrganizationArgs = {
   input: AddOrganizationInput;
+};
+
+
+export type MutationDeleteCohortArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -385,6 +391,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   addEngagement?: Resolver<ResolversTypes['Engagement'], ParentType, ContextType, RequireFields<MutationAddEngagementArgs, 'input'>>;
   addOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
+  deleteCohort?: Resolver<ResolversTypes['Cohort'], ParentType, ContextType, RequireFields<MutationDeleteCohortArgs, 'id'>>;
   deleteEngagement?: Resolver<ResolversTypes['Engagement'], ParentType, ContextType, RequireFields<MutationDeleteEngagementArgs, 'id'>>;
   deleteOrganization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   editCohort?: Resolver<ResolversTypes['Cohort'], ParentType, ContextType, RequireFields<MutationEditCohortArgs, 'input'>>;

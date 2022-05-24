@@ -41,6 +41,12 @@ async function getCohortsForOrg(orgId: number) {
   });
 }
 
+/**
+ * Updates a cohort.
+ * @param input EditInput
+ * @returns the updated cohort
+ */
+
 type EditInput = {
   id: number;
   name?: string;
@@ -107,9 +113,20 @@ async function editCohort({
   });
 }
 
+/**
+ * Deletes a cohort
+ */
+
+async function deleteCohort(id: number) {
+  return prisma.cohort.delete({
+    where: { id },
+  });
+}
+
 export const CohortService = {
   getCohort,
   getCohorts,
   getCohortsForOrg,
   editCohort,
+  deleteCohort,
 };
