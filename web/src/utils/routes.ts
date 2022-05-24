@@ -28,10 +28,13 @@ export const Routes = {
       href: (orgId: string) => `/organizations/${orgId}/cohorts`,
       path: () => "/organizations/[organizationId]/cohorts",
     },
-    engagementDetails: {
+  },
+  engagement: {
+    cohorts: {
       href: (orgId: string, engagementId: string) =>
-        `/organizations/${orgId}/engagements/${engagementId}`,
-      path: () => "/organizations/[organizationId]/engagements/[engagementId]",
+        `/organizations/${orgId}/engagements/${engagementId}/cohorts`,
+      path: () =>
+        "/organizations/[organizationId]/engagements/[engagementId]/cohorts",
     },
   },
 
