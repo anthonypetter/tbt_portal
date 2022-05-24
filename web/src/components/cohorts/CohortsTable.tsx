@@ -7,6 +7,7 @@ import { Link } from "components/Link";
 import { Column, Cell } from "react-table";
 import { EditCohortModal } from "./EditCohortModal";
 import { ContextMenu } from "components/ContextMenu";
+import { DeleteCohortModal } from "./DeleteCohortModal";
 
 type QueryCohorts = NonNullable<
   OrgDetailPageCohortsQuery["organization"]
@@ -54,6 +55,7 @@ export function CohortsTable({
         onRowClick={(row) => onRowClick(row.original.id)}
         selectedId={selectedCohort?.id}
       />
+
       <EditCohortModal
         afterLeave={() => setCohortIdToEdit(null)}
         cohort={
@@ -61,6 +63,15 @@ export function CohortsTable({
             ? cohorts.find((e) => e.id === cohortIdToEdit) ?? null
             : null
         }
+      />
+
+      <DeleteCohortModal
+        cohort={
+          cohortIdToDelete
+            ? cohorts.find((e) => e.id === cohortIdToDelete) ?? null
+            : null
+        }
+        afterLeave={() => setCohortIdToDelete(null)}
       />
     </div>
   );

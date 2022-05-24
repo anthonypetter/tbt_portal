@@ -1,21 +1,21 @@
 import { useState, useEffect } from "react";
 import React from "react";
 import { gql, useMutation } from "@apollo/client";
-import { DeleteEngagementMutation } from "@generated/graphql";
+import { DeleteCohortMutation } from "@generated/graphql";
 import { triggerSuccessToast } from "components/Toast";
-import { OrgDetailPageEngagementsQueryName } from "./constants";
+import { EngagementDetailPageQueryName } from "./constants";
 import { ExclamationIcon } from "@heroicons/react/outline";
 import { Modal } from "components/Modal";
 import { ErrorBox } from "components/ErrorBox";
 import { Spinner } from "components/Spinner";
-import { QueryEngagements } from "./EngagementsView";
+import { QueryCohorts } from "./CohortsView";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { FieldError } from "components/FieldError";
 import pluralize from "pluralize";
 
-const DELETE_ENGAGEMENT = gql`
-  mutation DeleteEngagement($id: ID!) {
-    deleteEngagement(id: $id) {
+const DELETE_COHORT = gql`
+  mutation DeleteCohort($id: ID!) {
+    deleteCohort(id: $id) {
       id
       name
     }
@@ -23,13 +23,13 @@ const DELETE_ENGAGEMENT = gql`
 `;
 
 type Props = {
-  engagement: QueryEngagements[number] | null;
+  cohort: QueryCohorts[number] | null;
   afterLeave: () => void;
 };
 
-export function DeleteEngagementModal({ engagement, afterLeave }: Props) {
-  const [show, setShow] = useState(engagement !== null);
-  useEffect(() => setShow(engagement !== null), [engagement]);
+export function DeleteCohortModal({ cohort, afterLeave }: Props) {
+  const [show, setShow] = useState(cohort !== null);
+  useEffect(() => setShow(cohort !== null), [cohort]);
 
   return (
     <Modal
@@ -43,12 +43,12 @@ export function DeleteEngagementModal({ engagement, afterLeave }: Props) {
           />
         </Modal.Icon>
       }
-      title="Delete Engagement"
+      title="Delete Cohort"
       afterLeave={afterLeave}
     >
-      {engagement ? (
-        <DeleteEngagementModalBody
-          engagement={engagement}
+      {cohort ? (
+        <DeleteCohortModalBody
+          cohort={cohort}
           onCancel={() => setShow(false)}
           onSuccess={() => setShow(false)}
         />
@@ -60,63 +60,55 @@ export function DeleteEngagementModal({ engagement, afterLeave }: Props) {
 }
 
 type DeleteEngagementModalBodyProps = {
-  engagement: QueryEngagements[number];
+  cohort: QueryCohorts[number];
   onCancel: () => void;
   onSuccess: () => void;
 };
 
-export function DeleteEngagementModalBody({
-  engagement,
+export function DeleteCohortModalBody({
+  cohort,
   onSuccess: onSuccessProp,
   onCancel,
 }: DeleteEngagementModalBodyProps) {
-  const { id, name, cohorts, staffAssignments } = engagement;
+  const { id, name, staffAssignments } = cohort;
 
-  const [deleteEngagement, { error, loading }] =
-    useMutation<DeleteEngagementMutation>(DELETE_ENGAGEMENT, {
-      refetchQueries: [OrgDetailPageEngagementsQueryName],
+  const [deleteCohort, { error, loading }] = useMutation<DeleteCohortMutation>(
+    DELETE_COHORT,
+    {
+      refetchQueries: [EngagementDetailPageQueryName],
       onQueryUpdated(observableQuery) {
         observableQuery.refetch();
       },
-    });
+    }
+  );
 
   const onDelete = async () => {
-    await deleteEngagement({ variables: { id } });
+    await deleteCohort({ variables: { id } });
     onSuccessProp();
     triggerSuccessToast({ message: "Delete operation successful." });
   };
 
-  const cohortMsg =
-    cohorts.length > 0
-      ? `This engagement has ${pluralize(
-          "cohort",
-          cohorts.length,
-          true
-        )} assigned to it.`
-      : undefined;
-
   const staffAssignmentMsg =
     staffAssignments.length > 0
-      ? `This engagement has ${pluralize(
+      ? `This cohort has ${pluralize(
           "teacher",
           staffAssignments.length,
           true
         )} assigned to it.`
       : undefined;
 
-  const deleteDisabled = staffAssignments.length > 0 || cohorts.length > 0;
+  const deleteDisabled = staffAssignments.length > 0;
 
   return (
     <div className="space-y-4 mt-4">
-      <p className="text-gray-700 font-medium">Engagement: {name}</p>
+      <p className="text-gray-700 font-medium">Cohort: {name}</p>
 
-      {cohortMsg && <FieldError msg={cohortMsg} />}
       {staffAssignmentMsg && <FieldError msg={staffAssignmentMsg} />}
 
       <p className="text-gray-700 text-sm">
         {deleteDisabled
-          ? "You'll need to unassign teachers and delete cohorts manually to be able to delete this engagement. Sorry!"
-          : "Are you sure you want to delete this engagement?"}
+          ? "You'll need to unassign teachers manually to be able to delete this cohort. Sorry!"
+          : "Are you sure you want to delete this cohort?"}
       </p>
 
       {error && (
