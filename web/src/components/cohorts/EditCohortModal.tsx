@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Spinner } from "../Spinner";
 import { Modal } from "../Modal";
 import { ErrorBox } from "components/ErrorBox";
@@ -6,7 +6,6 @@ import { ApolloError, gql, useMutation } from "@apollo/client";
 import { EditEngagementMutation } from "@generated/graphql";
 import { fromJust } from "@utils/types";
 import { Input } from "components/Input";
-import { useResetOnShow } from "@utils/useResetOnShow";
 import { MdWorkspacesOutline } from "react-icons/md";
 import noop from "lodash/noop";
 import DatePicker from "react-datepicker";
@@ -16,8 +15,8 @@ import {
   StaffTeacher,
   toStaffTeacher,
 } from "../staffAssignments/AddTeachers";
-
-const REFETCH_QUERIES = ["OrgDetailPageCohorts"];
+import { LoadingSkeleton } from "components/LoadingSkeleton";
+import { OrgDetailPageCohortsQueryName } from "./constants";
 
 const EDIT_COHORT = gql`
   mutation EditCohort($input: EditCohortInput!) {
@@ -29,31 +28,75 @@ const EDIT_COHORT = gql`
 `;
 
 type Props = {
-  show: boolean;
-  onCancel: () => void;
-  onSuccess: () => void;
   cohort: QueryCohorts[number] | null;
+  afterLeave: () => void;
 };
 
-export function EditCohortModal({
-  show,
+export function EditCohortModal({ cohort, afterLeave }: Props) {
+  const [show, setShow] = useState(cohort !== null);
+  useEffect(() => setShow(cohort !== null), [cohort]);
+
+  return (
+    <Modal
+      show={show}
+      onClose={noop}
+      icon={
+        <Modal.Icon className="bg-blue-100">
+          <MdWorkspacesOutline
+            className="w-6 h-6 text-blue-600"
+            aria-hidden="true"
+          />
+        </Modal.Icon>
+      }
+      title="Edit cohort"
+      width="large"
+      afterLeave={afterLeave}
+    >
+      {cohort ? (
+        <EditCohortModalBody
+          onCancel={() => setShow(false)}
+          onSuccess={() => setShow(false)}
+          cohort={cohort}
+        />
+      ) : (
+        <LoadingSkeleton />
+      )}
+    </Modal>
+  );
+}
+
+type EditCohortModalBodyProps = {
+  onCancel: () => void;
+  onSuccess: () => void;
+  cohort: QueryCohorts[number];
+};
+
+export function EditCohortModalBody({
   onCancel,
   onSuccess,
-  cohort: mCohort,
-}: Props) {
+  cohort,
+}: EditCohortModalBodyProps) {
   const cancelButtonRef = useRef(null);
-  //TODO: use react-hook-form to get rid of all of this manual state management.
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [name, setName] = useState<string | null | undefined>();
-  const [startDate, setStartDate] = useState<Date | null | undefined>();
-  const [endDate, setEndDate] = useState<Date | null | undefined>();
-  const [grade, setGrade] = useState<string | null | undefined>();
-  const [hostKey, setHostKey] = useState<string | null | undefined>();
-  const [meetingRoom, setMeetingRoom] = useState<string | null | undefined>();
-  const [staff, setStaff] = useState<StaffTeacher[]>([]);
+  const [name, setName] = useState<string | null | undefined>(cohort.name);
+  const [startDate, setStartDate] = useState<Date | null | undefined>(
+    cohort.startDate ? new Date(cohort.startDate) : undefined
+  );
+  const [endDate, setEndDate] = useState<Date | null | undefined>(
+    cohort.endDate ? new Date(cohort.endDate) : undefined
+  );
+  const [grade, setGrade] = useState<string | null | undefined>(cohort.grade);
+  const [hostKey, setHostKey] = useState<string | null | undefined>(
+    cohort.hostKey
+  );
+  const [meetingRoom, setMeetingRoom] = useState<string | null | undefined>(
+    cohort.meetingRoom
+  );
+  const [staff, setStaff] = useState<StaffTeacher[]>(
+    cohort.staffAssignments.map((sa) => toStaffTeacher(sa))
+  );
 
-  // Edit Mutation
-  const [editOrg, { loading, reset }] = useMutation<EditEngagementMutation>(
+  const [editOrg, { loading }] = useMutation<EditEngagementMutation>(
     EDIT_COHORT,
     {
       onError: (err: ApolloError) => setErrorMsg(err.message),
@@ -61,22 +104,7 @@ export function EditCohortModal({
     }
   );
 
-  useResetOnShow(show, () => {
-    const cohort = fromJust(mCohort, "cohort");
-    reset();
-    setErrorMsg(null);
-    setName(cohort.name);
-    setStartDate(cohort.startDate ? new Date(cohort.startDate) : undefined);
-    setEndDate(cohort.endDate ? new Date(cohort.endDate) : undefined);
-    setGrade(cohort.grade ?? undefined);
-    setHostKey(cohort.hostKey ?? undefined);
-    setMeetingRoom(cohort.meetingRoom ?? undefined);
-    setStaff(cohort.staffAssignments.map((sa) => toStaffTeacher(sa)));
-  });
-
   const onEditOrg = async () => {
-    const cohort = fromJust(mCohort, "cohort");
-
     await editOrg({
       variables: {
         input: {
@@ -93,7 +121,7 @@ export function EditCohortModal({
           })),
         },
       },
-      refetchQueries: REFETCH_QUERIES,
+      refetchQueries: [OrgDetailPageCohortsQueryName],
       onQueryUpdated(observableQuery) {
         observableQuery.refetch();
       },
@@ -101,20 +129,7 @@ export function EditCohortModal({
   };
 
   return (
-    <Modal
-      show={show}
-      onClose={noop}
-      icon={
-        <div className="flex flex-shrink-0 items-center justify-center mx-auto w-12 h-12 bg-blue-100 rounded-full sm:mx-0 sm:w-10 sm:h-10">
-          <MdWorkspacesOutline
-            className="w-6 h-6 text-blue-600"
-            aria-hidden="true"
-          />
-        </div>
-      }
-      title="Edit cohort"
-      width="large"
-    >
+    <>
       {errorMsg && (
         <div className="mt-4">
           <ErrorBox msg={errorMsg} />
@@ -194,6 +209,6 @@ export function EditCohortModal({
           </Modal.Button>
         </Modal.Buttons>
       </div>
-    </Modal>
+    </>
   );
 }

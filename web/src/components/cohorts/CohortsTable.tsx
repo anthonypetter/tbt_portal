@@ -2,12 +2,11 @@ import { useMemo, useState } from "react";
 import { OrgDetailPageCohortsQuery } from "@generated/graphql";
 import { Routes } from "@utils/routes";
 import { DateText } from "components/Date";
-import { EditIconButton } from "components/EditIconButton";
 import { Table } from "components/Table";
 import { Link } from "components/Link";
 import { Column, Cell } from "react-table";
 import { EditCohortModal } from "./EditCohortModal";
-import { fromJust } from "@utils/types";
+import { ContextMenu } from "components/ContextMenu";
 
 type QueryCohorts = NonNullable<
   OrgDetailPageCohortsQuery["organization"]
@@ -26,13 +25,16 @@ export function CohortsTable({
   onRowClick,
   selectedCohort,
 }: Props) {
-  const [editModalCohort, setEditModalCohort] =
-    useState<CohortTableData | null>(null);
+  const [cohortIdToEdit, setCohortIdToEdit] = useState<string | null>(null);
+  const [cohortIdToDelete, setCohortIdToDelete] = useState<string | null>(null);
 
   const contextMenu = useMemo(() => {
     return {
       onClickEdit(cohort: CohortTableData) {
-        setEditModalCohort(cohort);
+        setCohortIdToEdit(cohort.id);
+      },
+      onClickDelete(cohort: CohortTableData) {
+        setCohortIdToDelete(cohort.id);
       },
     };
   }, []);
@@ -53,15 +55,10 @@ export function CohortsTable({
         selectedId={selectedCohort?.id}
       />
       <EditCohortModal
-        show={editModalCohort !== null}
-        onCancel={() => setEditModalCohort(null)}
-        onSuccess={() => setEditModalCohort(null)}
+        afterLeave={() => setCohortIdToEdit(null)}
         cohort={
-          editModalCohort
-            ? fromJust(
-                cohorts.find((e) => e.id === editModalCohort.id),
-                "editModalCohort.id in cohorts"
-              )
+          cohortIdToEdit
+            ? cohorts.find((e) => e.id === cohortIdToEdit) ?? null
             : null
         }
       />
@@ -86,6 +83,7 @@ function usePrepCohortData({
   cohorts: QueryCohorts;
   contextMenu: {
     onClickEdit: (cohort: CohortTableData) => void;
+    onClickDelete: (cohort: CohortTableData) => void;
   };
 }): {
   data: CohortTableData[];
@@ -99,7 +97,7 @@ function usePrepCohortData({
         Cell: ({ row }: Cell<CohortTableData>) => {
           return (
             <Link
-              href={Routes.org.engagementDetails.href(
+              href={Routes.engagement.cohorts.href(
                 organizationId,
                 row.original.id
               )}
@@ -133,8 +131,9 @@ function usePrepCohortData({
         Cell: ({ row }: Cell<CohortTableData>) => {
           return (
             <div className="flex justify-end">
-              <EditIconButton
-                onClick={() => contextMenu.onClickEdit(row.original)}
+              <ContextMenu
+                onClickEdit={() => contextMenu.onClickEdit(row.original)}
+                onClickDelete={() => contextMenu.onClickDelete(row.original)}
               />
             </div>
           );
