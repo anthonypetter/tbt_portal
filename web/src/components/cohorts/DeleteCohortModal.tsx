@@ -59,7 +59,7 @@ export function DeleteCohortModal({ cohort, afterLeave }: Props) {
   );
 }
 
-type DeleteEngagementModalBodyProps = {
+type DeleteCohortModalBodyProps = {
   cohort: QueryCohorts[number];
   onCancel: () => void;
   onSuccess: () => void;
@@ -69,7 +69,7 @@ export function DeleteCohortModalBody({
   cohort,
   onSuccess: onSuccessProp,
   onCancel,
-}: DeleteEngagementModalBodyProps) {
+}: DeleteCohortModalBodyProps) {
   const { id, name, staffAssignments } = cohort;
 
   const [deleteCohort, { error, loading }] = useMutation<DeleteCohortMutation>(
