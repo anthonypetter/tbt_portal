@@ -1,1 +1,1 @@
-export const OrgDetailPageCohortsQueryName = "OrgDetailPageCohorts";
+export const EngagementDetailPageQueryName = "EngagementDetailPage";

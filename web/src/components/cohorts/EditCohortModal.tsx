@@ -16,7 +16,7 @@ import {
   toStaffTeacher,
 } from "../staffAssignments/AddTeachers";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
-import { OrgDetailPageCohortsQueryName } from "./constants";
+import { EngagementDetailPageQueryName } from "./constants";
 
 const EDIT_COHORT = gql`
   mutation EditCohort($input: EditCohortInput!) {
@@ -121,7 +121,7 @@ export function EditCohortModalBody({
           })),
         },
       },
-      refetchQueries: [OrgDetailPageCohortsQueryName],
+      refetchQueries: [EngagementDetailPageQueryName],
       onQueryUpdated(observableQuery) {
         observableQuery.refetch();
       },

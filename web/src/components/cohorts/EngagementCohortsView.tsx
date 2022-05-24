@@ -45,8 +45,6 @@ type Props = {
 };
 
 export function EngagementCohortsView({ engagement }: Props) {
-  console.log("engagement", engagement);
-
   const [selectedCohortId, setSelectedCohortId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
 
@@ -75,7 +73,7 @@ export function EngagementCohortsView({ engagement }: Props) {
             </div>
 
             <CohortsTable
-              organizationId={"1"} //TODO: REMOVE
+              organizationId={engagement.organization.id}
               cohorts={filteredCohorts}
               onRowClick={(id) => setSelectedCohortId(id)}
               selectedCohort={selectedCohort}
