@@ -64,6 +64,14 @@ async function createUsers(env: string): Promise<User[]> {
       role: "TUTOR_TEACHER",
       accountStatus: "ACTIVE",
     },
+    {
+      email: "scottk@tutored.live",
+      fullName: "Scott Kuecker",
+      cognitoSub: "24bd72ed-8872-4a14-bca4-ea6b5e218d51",
+      createdAt: new Date(),
+      role: "ADMIN",
+      accountStatus: "ACTIVE",
+    },
   ];
 
   const stagingUsers: Prisma.UserCreateManyInput[] = [
