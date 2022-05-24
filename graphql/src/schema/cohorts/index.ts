@@ -3,6 +3,7 @@ import { Context } from "../../context";
 import {
   QueryCohortsArgs,
   MutationEditCohortArgs,
+  MutationDeleteCohortArgs,
 } from "../__generated__/graphql";
 import { parseId } from "../../utils/numbers";
 import { CohortResolver } from "./CohortResolver";
@@ -46,6 +47,7 @@ export const typeDefs = gql`
 
   extend type Mutation {
     editCohort(input: EditCohortInput!): Cohort!
+    deleteCohort(id: ID!): Cohort!
   }
 `;
 
@@ -106,12 +108,26 @@ async function editCohort(
   return updatedStaffAssignment;
 }
 
+async function deleteCohort(
+  _parent: undefined,
+  { id }: MutationDeleteCohortArgs,
+  { authedUser, AuthorizationService, CohortService }: Context
+) {
+  AuthorizationService.assertIsAdmin(authedUser);
+  return CohortService.deleteCohort(parseId(id));
+}
+
+/**
+ * Resolvers
+ */
+
 export const resolvers = {
   Query: {
     cohorts,
   },
   Mutation: {
     editCohort,
+    deleteCohort,
   },
   Cohort: CohortResolver,
 };
