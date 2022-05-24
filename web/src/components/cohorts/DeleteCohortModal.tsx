@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import React from "react";
 import { gql, useMutation } from "@apollo/client";
 import { DeleteCohortMutation } from "@generated/graphql";
@@ -23,18 +22,22 @@ const DELETE_COHORT = gql`
 `;
 
 type Props = {
+  show: boolean;
+  closeModal: () => void;
   cohort: QueryCohorts[number] | null;
   afterLeave: () => void;
 };
 
-export function DeleteCohortModal({ cohort, afterLeave }: Props) {
-  const [show, setShow] = useState(cohort !== null);
-  useEffect(() => setShow(cohort !== null), [cohort]);
-
+export function DeleteCohortModal({
+  show,
+  closeModal,
+  cohort,
+  afterLeave,
+}: Props) {
   return (
     <Modal
       show={show}
-      onClose={() => setShow(false)}
+      onClose={closeModal}
       icon={
         <Modal.Icon className="bg-red-100">
           <ExclamationIcon
@@ -49,8 +52,8 @@ export function DeleteCohortModal({ cohort, afterLeave }: Props) {
       {cohort ? (
         <DeleteCohortModalBody
           cohort={cohort}
-          onCancel={() => setShow(false)}
-          onSuccess={() => setShow(false)}
+          onCancel={closeModal}
+          onSuccess={closeModal}
         />
       ) : (
         <LoadingSkeleton className="h-56" />

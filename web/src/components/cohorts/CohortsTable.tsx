@@ -28,14 +28,18 @@ export function CohortsTable({
 }: Props) {
   const [cohortIdToEdit, setCohortIdToEdit] = useState<string | null>(null);
   const [cohortIdToDelete, setCohortIdToDelete] = useState<string | null>(null);
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
   const contextMenu = useMemo(() => {
     return {
       onClickEdit(cohort: CohortTableData) {
         setCohortIdToEdit(cohort.id);
+        setShowEditModal(true);
       },
       onClickDelete(cohort: CohortTableData) {
         setCohortIdToDelete(cohort.id);
+        setShowDeleteModal(true);
       },
     };
   }, []);
@@ -57,6 +61,8 @@ export function CohortsTable({
       />
 
       <EditCohortModal
+        show={showEditModal}
+        closeModal={() => setShowEditModal(false)}
         afterLeave={() => setCohortIdToEdit(null)}
         cohort={
           cohortIdToEdit
@@ -66,6 +72,8 @@ export function CohortsTable({
       />
 
       <DeleteCohortModal
+        show={showDeleteModal}
+        closeModal={() => setShowDeleteModal(false)}
         cohort={
           cohortIdToDelete
             ? cohorts.find((e) => e.id === cohortIdToDelete) ?? null
