@@ -30,12 +30,12 @@ export function AddOrgModal({ show, closeModal }: Props) {
       show={show}
       onClose={closeModal}
       icon={
-        <div className="flex flex-shrink-0 items-center justify-center mx-auto w-12 h-12 bg-green-100 rounded-full sm:mx-0 sm:w-10 sm:h-10">
+        <Modal.Icon className="bg-green-100">
           <FaRegBuilding
             className="w-6 h-6 text-green-600"
             aria-hidden="true"
           />
-        </div>
+        </Modal.Icon>
       }
       title="Add an organization"
     >

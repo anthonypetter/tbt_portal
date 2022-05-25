@@ -40,12 +40,12 @@ export function AddEngagementModal({
       show={show}
       onClose={noop}
       icon={
-        <div className="flex flex-shrink-0 items-center justify-center mx-auto w-12 h-12 bg-blue-100 rounded-full sm:mx-0 sm:w-10 sm:h-10">
+        <Modal.Icon className="bg-green-100">
           <MdWorkspacesOutline
             className="w-6 h-6 text-green-600"
             aria-hidden="true"
           />
-        </div>
+        </Modal.Icon>
       }
       title="Add engagement"
       width="large"
