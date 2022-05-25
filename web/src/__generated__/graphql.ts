@@ -259,7 +259,7 @@ export enum UserRole {
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', email: string, accountStatus: AccountStatus, role: UserRole } | null };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', email: string, accountStatus: AccountStatus, role: UserRole, fullName: string } | null };
 
 export type AddCohortMutationVariables = Exact<{
   input: AddCohortInput;
@@ -566,6 +566,7 @@ export const CurrentUserDocument = gql`
     email
     accountStatus
     role
+    fullName
   }
 }
     `;

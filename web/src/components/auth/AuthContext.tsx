@@ -1,6 +1,6 @@
 import { createContext } from "react";
-import { User } from "@generated/graphql";
 import { CognitoUser } from "@aws-amplify/auth";
+import { CurrentUserQuery } from "@generated/graphql";
 
 /**
  * AuthContext
@@ -21,7 +21,7 @@ interface LoginResult {
 }
 
 interface AuthContextT {
-  user: User | null;
+  user: CurrentUserQuery["currentUser"];
   login: (email: string, password: string) => Promise<LoginResult>;
   signOut: () => Promise<void>;
   onCompleteNewPassword: () => void;

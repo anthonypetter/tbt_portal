@@ -11,7 +11,7 @@ import { ApolloProvider, gql, ApolloQueryResult } from "@apollo/client";
 import { fromJust } from "@utils/types";
 import { useRouter } from "next/router";
 import { getUnauthenticatedRoutes, Routes } from "@utils/routes";
-import { CurrentUserQuery, User } from "@generated/graphql";
+import { CurrentUserQuery } from "@generated/graphql";
 import { AuthContext, LoginStatus } from "./AuthContext";
 import { useInterval } from "@utils/useInterval";
 import { Spinner } from "components/Spinner";
@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useState(false);
 
   const [authState, setAuthState] = useState<{
-    user: User | null;
+    user: CurrentUserQuery["currentUser"] | null;
     token: string | null;
     isAuthenticating: boolean;
   }>({
@@ -44,7 +44,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const session = cognitoUser.getSignInUserSession();
       const refreshToken = session.getRefreshToken();
 
-      const onRefreshSuccess = (user: User, token: string) => {
+      const onRefreshSuccess = (
+        user: CurrentUserQuery["currentUser"],
+        token: string
+      ) => {
         setAuthState({ user, token, isAuthenticating: false });
       };
 
@@ -76,7 +79,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const refreshToken = session.getRefreshToken();
 
         if (session.isValid()) {
-          const onRefreshSuccess = (user: User, token: string) => {
+          const onRefreshSuccess = (
+            user: CurrentUserQuery["currentUser"],
+            token: string
+          ) => {
             setAuthState({ user, token, isAuthenticating: false });
           };
 
@@ -254,7 +260,7 @@ function unauthenticated() {
 }
 
 async function getRefreshTokenCallback(
-  onSuccess: (user: User, token: string) => void,
+  onSuccess: (user: CurrentUserQuery["currentUser"], token: string) => void,
   onError?: () => void
 ) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -302,11 +308,14 @@ export const GET_CURRENT_USER = gql`
       email
       accountStatus
       role
+      fullName
     }
   }
 `;
 
-async function fetchUser(accessToken: string): Promise<User | null> {
+async function fetchUser(
+  accessToken: string
+): Promise<CurrentUserQuery["currentUser"]> {
   const { client } = getSession(accessToken);
 
   const result: ApolloQueryResult<CurrentUserQuery> = await client.query({
