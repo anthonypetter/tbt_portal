@@ -29,6 +29,7 @@ CohortsView.fragments = {
           exempt
           startDate
           endDate
+          engagementId
           staffAssignments {
             user {
               id

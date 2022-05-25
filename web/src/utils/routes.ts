@@ -38,6 +38,13 @@ export const Routes = {
     },
   },
 
+  cohort: {
+    href: (orgId: string, engagementId: string, cohortId: string) =>
+      `/organizations/${orgId}/engagements/${engagementId}/cohorts/${cohortId}`,
+    path: () =>
+      "/organizations/[organizationId]/engagements/[engagementId]/cohorts/[cohortId]",
+  },
+
   engagements: {
     href: () => "/engagements",
     path: () => "/engagements",
