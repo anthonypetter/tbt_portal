@@ -5,6 +5,9 @@ import { UsersPageQuery } from "@generated/graphql";
 import { gql } from "@apollo/client";
 import { triggerSuccessToast } from "../Toast";
 import { UsersTable } from "./UsersTable";
+import { Routes } from "@utils/routes";
+import { PageHeader } from "components/PageHeader";
+import { HomeIcon } from "@heroicons/react/solid";
 
 type Props = {
   users: NonNullable<UsersPageQuery["users"]>;
@@ -25,7 +28,17 @@ export function UsersPage({ users, refetchUsers }: Props) {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold text-gray-900 mb-6">Users</h1>
+      <PageHeader
+        title="Users"
+        breadcrumbs={[
+          { name: "Home", href: Routes.home.href(), icon: HomeIcon },
+          {
+            name: "Users",
+            href: Routes.users.href(),
+            current: true,
+          },
+        ]}
+      />
 
       <div className="flex justify-end mb-6">
         <Button onClick={() => setShowInviteModal(true)}>Invite User</Button>
