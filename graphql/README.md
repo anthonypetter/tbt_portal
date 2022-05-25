@@ -4,10 +4,10 @@
 
 Before getting started, ensure you have the following:
 
-- [ ] AWS creds
-- [ ] You're using Node v16.14.1
-- [ ] Doppler is installed and configured. More info on how to do that here: https://github.com/TutoredByTeachers/tbt-portal#env-files
-- [ ] [docker compose](https://docs.docker.com/compose/install) installed.
+- [x] AWS creds
+- [x] You're using Node v16.14.1
+- [x] Doppler is installed and configured. More info on how to do that here: https://github.com/TutoredByTeachers/tbt-portal#env-files
+- [x] [docker compose](https://docs.docker.com/compose/install) installed.
 
 Once that is in place, follow these steps:
 
