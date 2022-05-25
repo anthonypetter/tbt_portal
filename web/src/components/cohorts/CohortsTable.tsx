@@ -91,6 +91,7 @@ export type CohortTableData = {
   grade?: string | null;
   startDate?: number | null;
   endDate?: number | null;
+  engagementId: string;
 };
 
 function usePrepCohortData({
@@ -115,14 +116,16 @@ function usePrepCohortData({
         accessor: "name",
         Cell: ({ row }: Cell<CohortTableData>) => {
           return (
-            <Link
-              href={Routes.engagement.cohorts.href(
-                organizationId,
-                row.original.id
-              )}
-            >
-              {row.original.name}
-            </Link>
+            <span className="font-semibold">{row.original.name}</span>
+            // <Link
+            //   href={Routes.cohort.href(
+            //     organizationId,
+            //     row.original.engagementId,
+            //     row.original.id
+            //   )}
+            // >
+            //   {row.original.name}
+            // </Link>
           );
         },
       },
@@ -171,6 +174,7 @@ function usePrepCohortData({
         grade: cohort.grade,
         startDate: cohort.startDate,
         endDate: cohort.endDate,
+        engagementId: cohort.engagementId,
       };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
