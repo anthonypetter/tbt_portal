@@ -21,7 +21,7 @@ To get both the frontend and backend running, you first need to get Doppler set 
 
 1. Install the [Doppler CLI](https://docs.doppler.com/docs/install-cli).
 2. Authenticate into the CLI via `doppler login`. For this work, you need to have been invited to our Doppler team account. If you haven't been invited, reach out in the #engineering channel.
-3. Once authenticated, run `doppler setup` in both directories (`graphql` and `web`). Since each directory has its own `doppler.yaml` file, you'll be asked if you want to use the settings from the corresponding config file. Type `yes` to both. That will setup both your `web` and `graphql` projects to point to the corresponding doppler project. They're both setup to used a "dev_local" config.
+3. Once authenticated, run `doppler setup` in both directories (`graphql` and `web`). Since each directory has its own `doppler.yaml` file, you'll be asked if you want to use the settings from the corresponding config file. Type `yes` to both. That will setup both your `web` and `graphql` projects to point to the corresponding doppler project. They're both setup to use a "dev_local" config.
 
 Once you have doppler set up, you should be ready to proceed.
 
