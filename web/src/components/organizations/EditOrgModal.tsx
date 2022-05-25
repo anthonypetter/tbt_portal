@@ -2,15 +2,13 @@ import { useRef, useState } from "react";
 import { Spinner } from "../Spinner";
 import { Modal } from "../Modal";
 import { ErrorBox } from "components/ErrorBox";
-import { gql, useMutation } from "@apollo/client";
+import { ApolloError, gql, useMutation } from "@apollo/client";
 import { EditOrganizationMutation } from "@generated/graphql";
 import { fromJust } from "@utils/types";
 import { FaRegBuilding } from "react-icons/fa";
 import { Input } from "components/Input";
-import { triggerSuccessToast } from "components/Toast";
 import { OrgTableData } from "./OrganizationsTable";
-import { useResetOnShow } from "@utils/useResetOnShow";
-import { GET_ORGANIZATIONS_QUERY_NAME } from "pages/organizations";
+import { GET_ORGANIZATIONS_QUERY_NAME } from "./constants";
 
 const EDIT_ORGANIZATION = gql`
   mutation EditOrganization($input: EditOrganizationInput!) {
@@ -23,19 +21,52 @@ const EDIT_ORGANIZATION = gql`
   }
 `;
 
+type Props = {
+  show: boolean;
+  closeModal: () => void;
+  afterLeave: () => void;
+  organization: OrgTableData | null;
+};
+
 export function EditOrgModal({
   show,
+  closeModal,
+  organization,
+  afterLeave,
+}: Props) {
+  return (
+    <Modal
+      show={show}
+      onClose={closeModal}
+      icon={
+        <div className="flex flex-shrink-0 items-center justify-center mx-auto w-12 h-12 bg-blue-100 rounded-full sm:mx-0 sm:w-10 sm:h-10">
+          <FaRegBuilding className="w-6 h-6 text-blue-600" aria-hidden="true" />
+        </div>
+      }
+      title="Edit an organization"
+      afterLeave={afterLeave}
+    >
+      {organization && (
+        <EditOrgModalBody
+          organization={organization}
+          onCancel={closeModal}
+          onSuccess={closeModal}
+        />
+      )}
+    </Modal>
+  );
+}
+
+export function EditOrgModalBody({
   onCancel,
   onSuccess,
   organization,
 }: {
-  show: boolean;
   onCancel: () => void;
   onSuccess: () => void;
-  organization: OrgTableData | null;
+  organization: OrgTableData;
 }) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const cancelButtonRef = useRef(null);
 
   /**
@@ -50,134 +81,89 @@ export function EditOrgModal({
    */
 
   const [name, setName] = useState<string | null | undefined>(
-    organization?.name ?? undefined
-  );
-  const [district, setDistrict] = useState<string | null | undefined>(
-    organization?.district ?? undefined
-  );
-  const [subDistrict, setSubDistrict] = useState<string | null | undefined>(
-    organization?.subDistrict ?? undefined
+    organization.name
   );
   const [description, setDescription] = useState<string | null | undefined>(
-    organization?.subDistrict ?? undefined
+    organization.subDistrict ?? undefined
+  );
+  const [district, setDistrict] = useState<string | null | undefined>(
+    organization.district ?? undefined
+  );
+  const [subDistrict, setSubDistrict] = useState<string | null | undefined>(
+    organization.subDistrict ?? undefined
   );
 
-  const [editOrg] = useMutation<EditOrganizationMutation>(EDIT_ORGANIZATION, {
-    update(cache, { data }) {
-      if (!data?.editOrganization) {
-        return;
-      }
-    },
-  });
-
-  useResetOnShow(show, () => {
-    const org = fromJust(organization, "organization");
-    setLoading(false);
-    setError(null);
-    setName(org.name);
-    setDistrict(org.district ?? undefined);
-    setSubDistrict(org.subDistrict ?? undefined);
-    setDescription(org.description ?? undefined);
-  });
+  const [editOrg, { loading }] = useMutation<EditOrganizationMutation>(
+    EDIT_ORGANIZATION,
+    {
+      onCompleted: onSuccess,
+      onError: (err: ApolloError) => setErrorMsg(err.message),
+    }
+  );
 
   const onEditOrg = async () => {
-    setLoading(true);
-
-    try {
-      const org = fromJust(organization, "organization");
-      const { data } = await editOrg({
-        variables: {
-          input: {
-            id: org.id,
-            name: fromJust(name, "name"),
-            district,
-            subDistrict,
-            description,
-          },
+    await editOrg({
+      variables: {
+        input: {
+          id: organization.id,
+          name: fromJust(name, "name"),
+          district,
+          subDistrict,
+          description,
         },
-        refetchQueries: [GET_ORGANIZATIONS_QUERY_NAME],
-        onQueryUpdated(observableQuery) {
-          if (observableQuery.queryName === GET_ORGANIZATIONS_QUERY_NAME) {
-            observableQuery.refetch();
-          }
-        },
-      });
-
-      if (!data?.editOrganization) {
-        setLoading(false);
-        throw new Error("Something went wrong with the invite.");
-      }
-
-      setLoading(false);
-      triggerSuccessToast({ message: "Organization successfully edited!" });
-      onSuccess();
-    } catch (error: unknown) {
-      console.error(error);
-
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Something went wrong with the invite.";
-
-      setLoading(false);
-      setError(message);
-    }
+      },
+      refetchQueries: [GET_ORGANIZATIONS_QUERY_NAME],
+      onQueryUpdated(observableQuery) {
+        if (observableQuery.queryName === GET_ORGANIZATIONS_QUERY_NAME) {
+          observableQuery.refetch();
+        }
+      },
+    });
   };
 
   return (
-    <Modal
-      show={show}
-      onClose={onCancel}
-      icon={
-        <div className="flex flex-shrink-0 items-center justify-center mx-auto w-12 h-12 bg-blue-100 rounded-full sm:mx-0 sm:w-10 sm:h-10">
-          <FaRegBuilding className="w-6 h-6 text-blue-600" aria-hidden="true" />
+    <div className="py-3">
+      <div className="mb-4">
+        <div className="space-y-4">
+          <Input
+            id="org-name"
+            label="Name"
+            value={name ?? ""}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+
+          <Input
+            id="org-description"
+            label="Description"
+            value={description ?? ""}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+
+          <Input
+            id="org-district-name"
+            label="District"
+            value={district ?? ""}
+            onChange={(e) => setDistrict(e.target.value)}
+          />
+
+          <Input
+            id="org-sub-district-name"
+            label="SubDistrict"
+            value={subDistrict ?? ""}
+            onChange={(e) => setSubDistrict(e.target.value)}
+          />
         </div>
-      }
-      title="Edit an organization"
-    >
-      <div className="py-3">
-        <div className="mb-4">
-          <div className="space-y-4">
-            <Input
-              id="org-name"
-              label="Name"
-              value={name ?? ""}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-
-            <Input
-              id="org-description"
-              label="Description"
-              value={description ?? ""}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-
-            <Input
-              id="org-district-name"
-              label="District"
-              value={district ?? ""}
-              onChange={(e) => setDistrict(e.target.value)}
-            />
-
-            <Input
-              id="org-sub-district-name"
-              label="SubDistrict"
-              value={subDistrict ?? ""}
-              onChange={(e) => setSubDistrict(e.target.value)}
-            />
-          </div>
-        </div>
-        {error && <ErrorBox />}
-        <Modal.Buttons>
-          <Modal.Button type="confirm" onClick={onEditOrg} disabled={!name}>
-            {loading ? <Spinner /> : "Save"}
-          </Modal.Button>
-          <Modal.Button type="cancel" onClick={onCancel} ref={cancelButtonRef}>
-            Cancel
-          </Modal.Button>
-        </Modal.Buttons>
       </div>
-    </Modal>
+      {errorMsg && <ErrorBox msg={errorMsg} />}
+      <Modal.Buttons>
+        <Modal.Button type="confirm" onClick={onEditOrg} disabled={!name}>
+          {loading ? <Spinner /> : "Save"}
+        </Modal.Button>
+        <Modal.Button type="cancel" onClick={onCancel} ref={cancelButtonRef}>
+          Cancel
+        </Modal.Button>
+      </Modal.Buttons>
+    </div>
   );
 }
