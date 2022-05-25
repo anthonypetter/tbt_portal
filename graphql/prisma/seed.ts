@@ -84,7 +84,7 @@ async function upsertUsers(env: string): Promise<User[]> {
     },
     {
       email: "victor+mt@tutored.live",
-      fullName: "Neil deGrasse Tyson",
+      fullName: "Albert Einsten",
       cognitoSub: "dbb5906f-f4ca-4aad-ab54-b316962c4636",
       createdAt: new Date(),
       role: "TUTOR_TEACHER",
