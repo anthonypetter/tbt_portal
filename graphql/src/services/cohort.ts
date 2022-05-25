@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma-client";
 import type { Prisma } from "@prisma/client";
-import { ChangeSet } from "../utils/staffAssignments";
+import { ChangeSet, StaffAssignmentInput } from "../utils/staffAssignments";
 
 /**
  * Gets a cohort
@@ -123,10 +123,59 @@ async function deleteCohort(id: number) {
   });
 }
 
+/**
+ * Adds a cohort
+ */
+
+type AddCohortInput = {
+  name: string;
+  engagementId: number;
+  startDate?: Date;
+  endDate?: Date;
+  grade?: string | null;
+  hostKey?: string | null;
+  meetingRoom?: string | null;
+  staff: StaffAssignmentInput[];
+};
+
+async function addCohort({
+  name,
+  engagementId,
+  startDate,
+  endDate,
+  grade,
+  hostKey,
+  meetingRoom,
+  staff,
+}: AddCohortInput) {
+  const newAssignments = staff.map((teacher) => ({
+    createdAt: new Date(),
+    userId: teacher.userId,
+    assignmentRole: teacher.assignmentRole,
+  }));
+
+  return prisma.cohort.create({
+    data: {
+      name,
+      engagementId,
+      startDate,
+      endDate,
+      grade,
+      hostKey,
+      meetingRoom,
+      staffAssignments:
+        newAssignments.length > 0
+          ? { createMany: { data: newAssignments } }
+          : undefined,
+    },
+  });
+}
+
 export const CohortService = {
   getCohort,
   getCohorts,
   getCohortsForOrg,
   editCohort,
   deleteCohort,
+  addCohort,
 };
