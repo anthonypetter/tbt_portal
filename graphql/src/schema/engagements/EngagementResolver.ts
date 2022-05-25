@@ -36,6 +36,6 @@ export const EngagementResolver = {
       return parent.organization;
     }
 
-    return OrganizationService.getOrg(parseId(parent.organizationId));
+    return OrganizationService.getOrganization(parseId(parent.organizationId));
   },
 };

@@ -41,6 +41,7 @@ export type AddEngagementInput = {
 };
 
 export type AddOrganizationInput = {
+  description?: InputMaybe<Scalars['String']>;
   district?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   subDistrict?: InputMaybe<Scalars['String']>;

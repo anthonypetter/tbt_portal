@@ -7,7 +7,6 @@ import {
   QueryOrganizationArgs,
 } from "../__generated__/graphql";
 import { parseId } from "../../utils/numbers";
-import { OrganizationService } from "../../services/organization";
 import { OrganizationResolver } from "./OrganizationResolver";
 
 /**
@@ -27,6 +26,7 @@ export const typeDefs = gql`
 
   input AddOrganizationInput {
     name: String!
+    description: String
     district: String
     subDistrict: String
   }
@@ -61,7 +61,7 @@ async function organizations(
   { authedUser, AuthorizationService, OrganizationService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
-  return OrganizationService.getOrgs(50);
+  return OrganizationService.getOrganizations(50);
 }
 
 async function organization(
@@ -70,7 +70,7 @@ async function organization(
   { authedUser, AuthorizationService, OrganizationService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
-  return OrganizationService.getOrg(parseId(id));
+  return OrganizationService.getOrganization(parseId(id));
 }
 
 /**
@@ -84,8 +84,9 @@ async function addOrganization(
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
 
-  return OrganizationService.addOrg({
+  return OrganizationService.addOrganization({
     name: input.name,
+    description: input.description,
     district: input.district,
     subDistrict: input.subDistrict,
   });
@@ -118,7 +119,7 @@ async function editOrganization(
 async function deleteOrganization(
   _parent: undefined,
   { id }: MutationDeleteOrganizationArgs,
-  { authedUser, AuthorizationService }: Context
+  { authedUser, AuthorizationService, OrganizationService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
 
