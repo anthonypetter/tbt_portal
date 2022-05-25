@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import React from "react";
 import { gql, useMutation } from "@apollo/client";
 import { DeleteEngagementMutation } from "@generated/graphql";
