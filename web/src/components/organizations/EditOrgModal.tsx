@@ -84,7 +84,7 @@ export function EditOrgModalBody({
     organization.name
   );
   const [description, setDescription] = useState<string | null | undefined>(
-    organization.subDistrict ?? undefined
+    organization.description ?? undefined
   );
   const [district, setDistrict] = useState<string | null | undefined>(
     organization.district ?? undefined
