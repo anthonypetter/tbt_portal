@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { gql } from "@apollo/client";
-import { Header } from "components/Header";
 import { OrganizationsPageQuery } from "@generated/graphql";
 import { Button } from "components/Button";
 import { OrganizationsTable } from "./OrganizationsTable";
 import { AddOrgModal } from "./AddOrgModal";
-import { Breadcrumbs } from "components/Breadcrumbs";
 import { Routes } from "@utils/routes";
 import { HomeIcon } from "@heroicons/react/solid";
+import { PageHeader } from "components/PageHeader";
 
 OrganizationsPage.fragments = {
   organizations: gql`
@@ -27,8 +26,9 @@ export function OrganizationsPage({ organizations }: Props) {
 
   return (
     <div>
-      <Breadcrumbs
-        path={[
+      <PageHeader
+        title="Organizations"
+        breadcrumbs={[
           { name: "Home", href: Routes.home.href(), icon: HomeIcon },
           {
             name: "Organizations",
@@ -37,7 +37,6 @@ export function OrganizationsPage({ organizations }: Props) {
           },
         ]}
       />
-      <Header>Organizations</Header>
 
       <div className="flex justify-end mb-6">
         <Button onClick={() => setShowAddOrgModal(true)}>
@@ -50,8 +49,7 @@ export function OrganizationsPage({ organizations }: Props) {
 
       <AddOrgModal
         show={showAddOrgModal}
-        onCancel={() => setShowAddOrgModal(false)}
-        onSuccess={() => setShowAddOrgModal(false)}
+        closeModal={() => setShowAddOrgModal(false)}
       />
     </div>
   );
