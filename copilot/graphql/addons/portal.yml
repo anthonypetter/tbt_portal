@@ -114,7 +114,7 @@ Resources:
       VpcSecurityGroupIds:
         - !Ref portalDBClusterSecurityGroup
       ScalingConfiguration:
-        AutoPause: true
+        AutoPause: false
         # Replace "All" below with "!Ref Env" to set different autoscaling limits per environment.
         MinCapacity:
           !FindInMap [portalEnvScalingConfigurationMap, All, DBMinCapacity]
