@@ -8,7 +8,6 @@ import { triggerErrorToast } from "components/Toast";
 import { getSession } from "@lib/apollo-client";
 import { processResult } from "@utils/apollo";
 
-export const GET_ORGANIZATIONS_QUERY_NAME = "OrganizationsPage";
 const GET_ORGANIZATIONS = gql`
   query OrganizationsPage {
     ...Organizations

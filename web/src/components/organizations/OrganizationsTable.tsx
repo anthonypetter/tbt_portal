@@ -19,6 +19,9 @@ OrganizationsTable.fragments = {
         subDistrict
         location
         description
+        engagements {
+          id
+        }
       }
     }
   `,
@@ -35,14 +38,18 @@ export function OrganizationsTable({ organizations }: Props) {
   } | null>(null);
 
   const [editModalOrg, setEditModalOrg] = useState<OrgTableData | null>(null);
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
   const contextMenu = useMemo(() => {
     return {
       onClickDelete(org: OrgTableData) {
         setDeleteModaOrg({ id: org.id, name: org.name });
+        setShowDeleteModal(true);
       },
       onClickEdit(org: OrgTableData) {
         setEditModalOrg(org);
+        setShowEditModal(true);
       },
     };
   }, []);
@@ -51,22 +58,26 @@ export function OrganizationsTable({ organizations }: Props) {
     organizations,
     contextMenu
   );
+
   return (
     <>
       <Table columns={columns} data={tableData} />
 
       <DeleteOrganizationModal
-        organizationId={deleteModalOrg?.id}
-        orgName={deleteModalOrg?.name}
-        show={deleteModalOrg !== null}
-        onCancel={() => setDeleteModaOrg(null)}
-        onDelete={() => setDeleteModaOrg(null)}
+        show={showDeleteModal}
+        closeModal={() => setShowDeleteModal(false)}
+        afterLeave={() => setDeleteModaOrg(null)}
+        organization={
+          deleteModalOrg
+            ? organizations.find((o) => o.id === deleteModalOrg.id) ?? null
+            : null
+        }
       />
 
       <EditOrgModal
-        show={editModalOrg !== null}
-        onCancel={() => setEditModalOrg(null)}
-        onSuccess={() => setEditModalOrg(null)}
+        show={showEditModal}
+        closeModal={() => setShowEditModal(false)}
+        afterLeave={() => setEditModalOrg(null)}
         organization={editModalOrg}
       />
     </>
@@ -141,6 +152,7 @@ function usePrepOrgData(
         id: org.id,
         name: org.name,
         district: org.district,
+        subDistrict: org.subDistrict,
         description: org.description,
       };
     });
