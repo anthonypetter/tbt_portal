@@ -39,9 +39,9 @@ export function EditOrgModal({
       show={show}
       onClose={closeModal}
       icon={
-        <div className="flex flex-shrink-0 items-center justify-center mx-auto w-12 h-12 bg-blue-100 rounded-full sm:mx-0 sm:w-10 sm:h-10">
+        <Modal.Icon className="bg-blue-100">
           <FaRegBuilding className="w-6 h-6 text-blue-600" aria-hidden="true" />
-        </div>
+        </Modal.Icon>
       }
       title="Edit an organization"
       afterLeave={afterLeave}
