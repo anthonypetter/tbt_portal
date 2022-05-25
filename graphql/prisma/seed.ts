@@ -87,7 +87,7 @@ async function upsertUsers(env: string): Promise<User[]> {
       fullName: "Albert Einsten",
       cognitoSub: "dbb5906f-f4ca-4aad-ab54-b316962c4636",
       createdAt: new Date(),
-      role: "TUTOR_TEACHER",
+      role: "MENTOR_TEACHER",
       accountStatus: "ACTIVE",
     },
     {
