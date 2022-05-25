@@ -1,5 +1,4 @@
 import { AssignmentRole, Prisma, PrismaClient, User } from "@prisma/client";
-import { fromJust } from "../src/utils/types";
 import { add } from "date-fns";
 
 const prisma = new PrismaClient();
@@ -249,4 +248,16 @@ function createSchoolEngagements() {
       },
     };
   });
+}
+
+export function fromJust<T>(t: T | null | undefined, nameForError?: string): T {
+  if (t === null || t === undefined) {
+    const errorString = `Unexpected undefined/null value${
+      nameForError == null ? "" : `: ${nameForError}`
+    }`;
+
+    throw new Error(errorString);
+  }
+
+  return t;
 }
