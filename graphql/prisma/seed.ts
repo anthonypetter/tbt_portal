@@ -12,7 +12,7 @@ async function main() {
     throw new Error("Unexpected null/undefiend value for APP_ENV");
   }
 
-  const users = await createUsers(env);
+  const users = await upsertUsers(env);
   await createOrgs(users);
 
   console.log("[🌱 Seed] - Finished seeding.");
@@ -30,7 +30,7 @@ main()
 /**
  * Users
  */
-async function createUsers(env: string): Promise<User[]> {
+async function upsertUsers(env: string): Promise<User[]> {
   const devUsers: Prisma.UserCreateManyInput[] = [
     {
       email: "victor@tutored.live",
@@ -97,13 +97,15 @@ async function createUsers(env: string): Promise<User[]> {
 
   const results = await Promise.all(
     users.map((devUser) => {
-      return prisma.user.create({
-        data: devUser,
+      return prisma.user.upsert({
+        where: { email: devUser.email },
+        create: devUser,
+        update: devUser,
       });
     })
   );
 
-  console.log("[🌱 Seed] - Users created.");
+  console.log("[🌱 Seed] - Users upserted.");
   return results;
 }
 
@@ -111,9 +113,19 @@ async function createUsers(env: string): Promise<User[]> {
  * Orgs
  */
 
-async function createOrgs(users: User[]) {
-  await createElPasoOrg(users);
+const EP_SEED_ORG_NAME = "El Paso ISD";
 
+async function createOrgs(users: User[]) {
+  const epOrg = await prisma.organization.findFirst({
+    where: { name: EP_SEED_ORG_NAME },
+  });
+
+  if (epOrg) {
+    console.log("[🌱 Seed] - Found existing org. Skipping org seed.");
+    return;
+  }
+
+  await createElPasoOrg(users);
   console.log("[🌱 Seed] - Organizations created.");
 }
 
@@ -130,7 +142,7 @@ async function createElPasoOrg(users: User[]) {
 
   const newOrg = await prisma.organization.create({
     data: {
-      name: "El Paso ISD",
+      name: EP_SEED_ORG_NAME,
       location: "Texas",
       description: "Org for all schools in El Paso, TX.",
       district: "El Paso ISD",
