@@ -4,12 +4,12 @@ import {
   OrgDetailPageCohortsQuery,
 } from "@generated/graphql";
 import { Routes } from "@utils/routes";
-import { HomeIcon } from "@heroicons/react/solid";
 import { Container } from "components/Container";
 import { EngagementsView } from "../engagements/EngagementsView";
 import { getDisplayName, OrganizationTabs, Tab } from "./OrganizationTabs";
 import { CohortsView } from "components/cohorts/CohortsView";
 import { PageHeader } from "components/PageHeader";
+import { breadcrumbs } from "@utils/breadcrumbs";
 
 OrganizationDetailPage.fragments = {
   engagementsView: gql`
@@ -59,11 +59,8 @@ export function OrganizationDetailPage({ tabOrg }: Props) {
         title={tabOrg.organization.name}
         description={tabOrg.organization.description}
         breadcrumbs={[
-          { name: "Home", href: Routes.home.href(), icon: HomeIcon },
-          {
-            name: "Organizations",
-            href: Routes.organizations.href(),
-          },
+          breadcrumbs.home(),
+          breadcrumbs.organizations(),
           {
             name: `${tabOrg.organization.name} ${getDisplayName(tabOrg.tab)}`,
             href: Routes.org.engagements.href(tabOrg.organization.id),
