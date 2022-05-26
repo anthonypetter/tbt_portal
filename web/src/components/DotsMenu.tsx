@@ -30,7 +30,12 @@ export function DotsMenu({ children }: { children: ReactNode }) {
         <DotsHorizontalIcon className="w-5 h-5" aria-hidden="true" />
       </Menu.Button>
 
-      <div style={styles.popper} {...attributes.popper} ref={setPopperElement}>
+      <div
+        style={styles.popper}
+        {...attributes.popper}
+        ref={setPopperElement}
+        className="z-10"
+      >
         <Transition
           as={Fragment}
           enter="transition ease-out duration-100 "
