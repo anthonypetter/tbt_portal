@@ -5,6 +5,7 @@ import { Table } from "components/Table";
 import { UsersPageQuery } from "@generated/graphql";
 import { AccountStatusBadge } from "components/AccountStatusBadge";
 import { getTextForRole } from "components/RoleText";
+import { ContextMenu } from "components/ContextMenu";
 
 UsersTable.fragments = {
   users: gql`
@@ -61,6 +62,17 @@ function usePrepUserData(users: NonNullable<UsersPageQuery["users"]>): {
         Cell: ({ row }: Cell<UserTableData>) => {
           return (
             <AccountStatusBadge accountStatus={row.values.accountStatus} />
+          );
+        },
+      },
+      {
+        Header: () => null,
+        accessor: "id",
+        Cell: ({ row }: Cell<UserTableData>) => {
+          return (
+            <div className="flex justify-end">
+              <ContextMenu />
+            </div>
           );
         },
       },
