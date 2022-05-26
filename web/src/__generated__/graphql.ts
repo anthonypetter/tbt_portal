@@ -311,6 +311,8 @@ export type EngagementDetailPageCohortsFragment = { __typename?: 'Engagement', i
 
 export type EngagementsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'StaffAssignment', assignmentRole: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
+export type FlatEngagementsFragment = { __typename?: 'Query', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'StaffAssignment', assignmentRole: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
+
 export type AddOrganizationMutationVariables = Exact<{
   input: AddOrganizationInput;
 }>;
@@ -359,6 +361,11 @@ export type InviteUserMutation = { __typename?: 'Mutation', inviteUser: { __type
 export type UsersPageFragment = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, fullName: string, email: string, role: UserRole, accountStatus: AccountStatus }> };
 
 export type UsersTableFragment = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, fullName: string, email: string, role: UserRole, accountStatus: AccountStatus }> };
+
+export type FlatEngagementsPageQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FlatEngagementsPageQuery = { __typename?: 'Query', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'StaffAssignment', assignmentRole: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
 export type OrgDetailPageCohortsQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -436,6 +443,32 @@ export const EngagementDetailPageCohortsFragmentDoc = gql`
   ...EngagementCohortsView
 }
     ${EngagementCohortsViewFragmentDoc}`;
+export const FlatEngagementsFragmentDoc = gql`
+    fragment FlatEngagements on Query {
+  engagements {
+    id
+    name
+    startDate
+    endDate
+    organizationId
+    cohorts {
+      id
+      name
+      grade
+      startDate
+      endDate
+    }
+    staffAssignments {
+      user {
+        id
+        fullName
+        email
+      }
+      assignmentRole
+    }
+  }
+}
+    `;
 export const NewOrgFragmentDoc = gql`
     fragment NewOrg on Organization {
   id
@@ -982,6 +1015,38 @@ export function useInviteUserMutation(baseOptions?: Apollo.MutationHookOptions<I
 export type InviteUserMutationHookResult = ReturnType<typeof useInviteUserMutation>;
 export type InviteUserMutationResult = Apollo.MutationResult<InviteUserMutation>;
 export type InviteUserMutationOptions = Apollo.BaseMutationOptions<InviteUserMutation, InviteUserMutationVariables>;
+export const FlatEngagementsPageDocument = gql`
+    query FlatEngagementsPage {
+  ...FlatEngagements
+}
+    ${FlatEngagementsFragmentDoc}`;
+
+/**
+ * __useFlatEngagementsPageQuery__
+ *
+ * To run a query within a React component, call `useFlatEngagementsPageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFlatEngagementsPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFlatEngagementsPageQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useFlatEngagementsPageQuery(baseOptions?: Apollo.QueryHookOptions<FlatEngagementsPageQuery, FlatEngagementsPageQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FlatEngagementsPageQuery, FlatEngagementsPageQueryVariables>(FlatEngagementsPageDocument, options);
+      }
+export function useFlatEngagementsPageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FlatEngagementsPageQuery, FlatEngagementsPageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FlatEngagementsPageQuery, FlatEngagementsPageQueryVariables>(FlatEngagementsPageDocument, options);
+        }
+export type FlatEngagementsPageQueryHookResult = ReturnType<typeof useFlatEngagementsPageQuery>;
+export type FlatEngagementsPageLazyQueryHookResult = ReturnType<typeof useFlatEngagementsPageLazyQuery>;
+export type FlatEngagementsPageQueryResult = Apollo.QueryResult<FlatEngagementsPageQuery, FlatEngagementsPageQueryVariables>;
 export const OrgDetailPageCohortsDocument = gql`
     query OrgDetailPageCohorts($id: ID!) {
   organization(id: $id) {

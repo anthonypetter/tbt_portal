@@ -86,6 +86,15 @@ async function engagement(
   //
 }
 
+async function engagements(
+  _parent: undefined,
+  _args: undefined,
+  { authedUser, AuthorizationService, EngagementService }: Context
+) {
+  AuthorizationService.assertIsAdmin(authedUser);
+  return EngagementService.getAllEngagements();
+}
+
 /**
  * Mutation resolvers
  */
@@ -159,6 +168,7 @@ async function deleteEngagement(
 export const resolvers = {
   Query: {
     engagement,
+    engagements,
   },
   Mutation: {
     editEngagement,

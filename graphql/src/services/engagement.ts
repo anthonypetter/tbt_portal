@@ -3,6 +3,8 @@ import { Engagement } from "@prisma/client";
 import type { Prisma } from "@prisma/client";
 import { ChangeSet, StaffAssignmentInput } from "../utils/staffAssignments";
 
+const TAKE_LIMIT = 100;
+
 /**
  * Gets an engagement by id
  */
@@ -30,6 +32,13 @@ async function getEngagements(organizationId: number) {
   });
 
   return engagements;
+}
+
+async function getAllEngagements() {
+  return prisma.engagement.findMany({
+    take: TAKE_LIMIT,
+    include: { staffAssignments: { include: { user: true } } },
+  });
 }
 
 /**
@@ -149,4 +158,5 @@ export const EngagementService = {
   addEngagement,
   deleteEngagement,
   editEngagement,
+  getAllEngagements,
 };
