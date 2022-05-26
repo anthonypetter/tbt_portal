@@ -1,5 +1,6 @@
 import { AssignmentRole, Prisma, PrismaClient, User } from "@prisma/client";
 import { add } from "date-fns";
+import range from "lodash/range";
 
 const prisma = new PrismaClient();
 
@@ -136,23 +137,121 @@ async function upsertUsers(env: string): Promise<User[]> {
  * Orgs
  */
 
-const EP_SEED_ORG_NAME = "El Paso ISD";
+const ORGANIZATIONS = [
+  {
+    name: "NYC",
+    description: "New York City department of Education",
+    engagementAbbvr: "NYC",
+    state: "New York",
+  },
+  {
+    name: "LAUSD",
+    description: "Los Angeles Unified school district",
+    engagementAbbvr: "LAUSD",
+    state: "California",
+  },
+  {
+    name: "PR",
+    description: "Puerto Rico Department of Education",
+    engagementAbbvr: "PR",
+    state: "Puerto Rico",
+  },
+  {
+    name: "CPS",
+    description: "Chicago Public Schools",
+    engagementAbbvr: "CPS",
+    state: "Illinois",
+  },
+  {
+    name: "MDCPS",
+    description: "Miami-Dade County Public Schools",
+    engagementAbbvr: "MDCPS",
+    state: "Florida",
+  },
+  {
+    name: "CCSD",
+    description: "Clark County School District",
+    engagementAbbvr: "CCSD",
+    state: "Nevada",
+  },
+  {
+    name: "BCPS",
+    description: "Broward County Public Schools",
+    engagementAbbvr: "BCPS",
+    state: "Florida",
+  },
+  {
+    name: "HISD",
+    description: "Houston Independent School District",
+    engagementAbbvr: "HISD",
+    state: "Texas",
+  },
+  {
+    name: "HCPS",
+    description: "Hillsborough County Public Schools",
+    engagementAbbvr: "HCPS",
+    state: "Florida",
+  },
+  {
+    name: "HDE",
+    description: "Hawaii Department of Education",
+    engagementAbbvr: "HDE",
+    state: "Hawaii",
+  },
+  {
+    name: "OCPS",
+    description: "Orange County Public Schools",
+    engagementAbbvr: "OCPS",
+    state: "Florida",
+  },
+  {
+    name: "SDPBC",
+    description: "School District of Palm Beach County",
+    engagementAbbvr: "SDPBC",
+    state: "Florida",
+  },
+  {
+    name: "FCPS",
+    description: "Fairfax County Public Schools",
+    engagementAbbvr: "FCPS",
+    state: "Virginia",
+  },
+  {
+    name: "SDP",
+    description: "School District of Philadelphia",
+    engagementAbbvr: "SDP",
+    state: "Pennsylvania",
+  },
+  {
+    name: "GCPS",
+    description: "Gwinnett County Public Schools",
+    engagementAbbvr: "GCPS",
+    state: "Georgia",
+  },
+  {
+    name: "EPISD",
+    description: "El Paso Independent School District",
+    engagementAbbvr: "EPISD",
+    state: "Texas",
+  },
+];
 
 async function createOrgs(users: User[]) {
-  const epOrg = await prisma.organization.findFirst({
-    where: { name: EP_SEED_ORG_NAME },
+  const nycOrg = await prisma.organization.findFirst({
+    where: { name: "NYC" },
   });
 
-  if (epOrg) {
-    console.log("[🌱 Seed] - Found existing org. Skipping org seed.");
+  if (nycOrg) {
+    console.log("[🌱 Seed] - Found existing orgs. Skipping org seed.");
     return;
   }
 
-  await createElPasoOrg(users);
+  await Promise.all(ORGANIZATIONS.map((org) => createOrg(users, org)));
+
   console.log("[🌱 Seed] - Organizations created.");
 }
 
-async function createElPasoOrg(users: User[]) {
+async function createOrg(users: User[], org: typeof ORGANIZATIONS[number]) {
   const mentorTeacher = fromJust(
     users.find((u) => u.email === "victor+mt@tutored.live")
   );
@@ -165,13 +264,13 @@ async function createElPasoOrg(users: User[]) {
 
   const newOrg = await prisma.organization.create({
     data: {
-      name: EP_SEED_ORG_NAME,
-      location: "Texas",
-      description: "Org for all schools in El Paso, TX.",
-      district: "El Paso ISD",
+      name: org.name,
+      location: org.state,
+      description: org.description,
+      district: org.name,
       createdAt: new Date(),
       engagements: {
-        create: createSchoolEngagements(),
+        create: createSchoolEngagements(org.engagementAbbvr),
       },
     },
     include: {
@@ -224,49 +323,46 @@ async function createElPasoOrg(users: User[]) {
   ]);
 }
 
-function createSchoolEngagements() {
-  const schools = [
-    { schoolName: "Socorro Middle School", abbreviation: "SMS" },
-    { schoolName: "Sanchez Middle School", abbreviation: "San" },
-    { schoolName: "El Paso Middle School", abbreviation: "EP Mid" },
-    { schoolName: "Montwood Middle School", abbreviation: "Mtw Mid" },
-    { schoolName: "Rojas Elementary School", abbreviation: "Roj El" },
-    { schoolName: "Hilley Elementary School", abbreviation: "Hil" },
-    { schoolName: "Belair High School", abbreviation: "Bel" },
-    { schoolName: "Coronado High School", abbreviation: "Cor" },
-    { schoolName: "Don Haskins", abbreviation: "DH" },
-    { schoolName: "Chapin High School", abbreviation: "Chap" },
-    { schoolName: "Coach Archie Duran", abbreviation: "CAD" },
-    { schoolName: "Coldwell Elementary", abbreviation: "CE" },
-  ];
+function createSchoolEngagements(engAbbr: string) {
+  const engagements = range(1, 15).map((index) => ({
+    name: `${engAbbr}-${index}`,
+    cohortAbbvr: `${engAbbr}-${index}-Cohort`,
+  }));
 
-  return schools.map((school) => {
+  return engagements.map((eng) => {
     return {
-      name: school.schoolName,
+      name: eng.name,
       startDate: new Date(),
       endDate: add(new Date(), { days: 60 }),
       cohorts: {
         create: [
           {
             createdAt: new Date(),
-            name: `${school.abbreviation}-G6 Cohort`,
-            grade: "6",
+            name: `${eng.cohortAbbvr}-K`,
+            grade: "K",
             startDate: new Date(),
             endDate: add(new Date(), { days: 7 }),
           },
           {
             createdAt: new Date(),
-            name: `${school.abbreviation}-G7 Cohort`,
-            grade: "7",
+            name: `${eng.cohortAbbvr}-1`,
+            grade: "1",
             startDate: new Date(),
             endDate: add(new Date(), { days: 14 }),
           },
           {
             createdAt: new Date(),
-            name: `${school.abbreviation}-G8 Cohort`,
-            grade: "8",
+            name: `${eng.cohortAbbvr}-2`,
+            grade: "2",
             startDate: new Date(),
             endDate: add(new Date(), { days: 30 }),
+          },
+          {
+            createdAt: new Date(),
+            name: `${eng.cohortAbbvr}-3`,
+            grade: "3",
+            startDate: new Date(),
+            endDate: add(new Date(), { days: 20 }),
           },
         ],
       },
