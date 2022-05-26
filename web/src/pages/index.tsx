@@ -1,7 +1,7 @@
-import { Header } from "components/Header";
 import type { NextPage, GetServerSidePropsContext } from "next";
 import { getServerSideAuth } from "@utils/auth/server-side-auth";
 import { AuthedLayout } from "components/AuthedLayout";
+import { PageHeader } from "components/PageHeader";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const auth = await getServerSideAuth(context);
@@ -20,7 +20,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 const Home: NextPage = () => {
   return (
     <AuthedLayout>
-      <Header>Home</Header>
+      <PageHeader title="Home" />
     </AuthedLayout>
   );
 };

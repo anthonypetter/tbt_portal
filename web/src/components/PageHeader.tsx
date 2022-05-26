@@ -4,13 +4,13 @@ import { Breadcrumbs, type Breadcrumb } from "./Breadcrumbs";
 type Props = {
   title: string;
   description?: string | null;
-  breadcrumbs: Breadcrumb[];
+  breadcrumbs?: Breadcrumb[];
 };
 
 export function PageHeader({ title, description, breadcrumbs }: Props) {
   return (
     <>
-      <Breadcrumbs path={breadcrumbs} />
+      {breadcrumbs && <Breadcrumbs path={breadcrumbs} />}
       <div
         className={clsx(
           "flex flex-col sm:flex-row sm:items-center sm:justify-between",

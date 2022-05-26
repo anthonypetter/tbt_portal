@@ -1,7 +1,8 @@
-import { Header } from "components/Header";
 import type { NextPage, GetServerSidePropsContext } from "next";
 import { getServerSideAuth } from "@utils/auth/server-side-auth";
 import { AuthedLayout } from "components/AuthedLayout";
+import { PageHeader } from "components/PageHeader";
+import { breadcrumbs } from "@utils/breadcrumbs";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const auth = await getServerSideAuth(context);
@@ -20,7 +21,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 const MySchedule: NextPage = () => {
   return (
     <AuthedLayout>
-      <Header>My Schedule</Header>
+      <PageHeader
+        title="My Schedule"
+        breadcrumbs={[
+          breadcrumbs.home(),
+          breadcrumbs.mySchedule({ current: true }),
+        ]}
+      />
     </AuthedLayout>
   );
 };
