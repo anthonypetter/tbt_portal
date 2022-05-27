@@ -29,6 +29,7 @@ async function getEngagements(organizationId: number) {
     take: 100,
     where: { organizationId },
     include: { staffAssignments: { include: { user: true } } },
+    orderBy: [{ name: "asc" }],
   });
 
   return engagements;
@@ -38,6 +39,7 @@ async function getAllEngagements() {
   return prisma.engagement.findMany({
     take: TAKE_LIMIT,
     include: { staffAssignments: { include: { user: true } } },
+    orderBy: [{ name: "asc" }],
   });
 }
 

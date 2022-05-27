@@ -61,7 +61,7 @@ async function organizations(
   { authedUser, AuthorizationService, OrganizationService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
-  return OrganizationService.getOrganizations(100);
+  return OrganizationService.getOrganizations();
 }
 
 async function organization(

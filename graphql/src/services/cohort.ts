@@ -25,6 +25,7 @@ async function getCohorts(engagementId: number) {
     take: 100,
     where: { engagementId },
     include: { staffAssignments: { include: { user: true } } },
+    orderBy: [{ name: "asc" }],
   });
 }
 

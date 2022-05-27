@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { gql } from "@apollo/client";
 import { Column, Cell } from "react-table";
-import { Table } from "components/Table";
+import { CONTEXT_MENU_ID, Table } from "components/Table";
 import { UsersPageQuery } from "@generated/graphql";
 import { AccountStatusBadge } from "components/AccountStatusBadge";
 import { getTextForRole } from "components/RoleText";
@@ -68,12 +68,9 @@ function usePrepUserData(users: NonNullable<UsersPageQuery["users"]>): {
       {
         Header: () => null,
         accessor: "id",
+        id: CONTEXT_MENU_ID,
         Cell: ({ row }: Cell<UserTableData>) => {
-          return (
-            <div className="flex justify-end">
-              <ContextMenu />
-            </div>
-          );
+          return <ContextMenu />;
         },
       },
     ];
