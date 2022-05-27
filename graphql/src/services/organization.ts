@@ -1,6 +1,8 @@
 import { prisma } from "../lib/prisma-client";
 import { Organization } from "@prisma/client";
 
+const TAKE_LIMIT = 100;
+
 async function getOrganization(id: number): Promise<Organization | null> {
   const organization = await prisma.organization.findFirst({
     where: { id },
@@ -9,8 +11,11 @@ async function getOrganization(id: number): Promise<Organization | null> {
 }
 
 // TODO: Fix pagination
-async function getOrganizations(take: number): Promise<Organization[]> {
-  const organizations = await prisma.organization.findMany({ take });
+async function getOrganizations(): Promise<Organization[]> {
+  const organizations = await prisma.organization.findMany({
+    take: TAKE_LIMIT,
+    orderBy: [{ name: "asc" }],
+  });
   return organizations;
 }
 

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Routes } from "@utils/routes";
 import { DateText } from "components/Date";
-import { Table } from "components/Table";
+import { CONTEXT_MENU_ID, Table } from "components/Table";
 import { Link } from "components/Link";
 import { Column, Cell } from "react-table";
 import { EditEngagementModal } from "./EditEngagementModal";
@@ -129,15 +129,14 @@ export function usePrepEngagementData(
       },
       {
         Header: () => null,
+        id: CONTEXT_MENU_ID,
         accessor: "id",
         Cell: ({ row }: Cell<EngagementTableData>) => {
           return (
-            <div className="flex justify-end">
-              <ContextMenu
-                onClickEdit={() => contextMenu.onClickEdit(row.original)}
-                onClickDelete={() => contextMenu.onClickDelete(row.original)}
-              />
-            </div>
+            <ContextMenu
+              onClickEdit={() => contextMenu.onClickEdit(row.original)}
+              onClickDelete={() => contextMenu.onClickDelete(row.original)}
+            />
           );
         },
       },

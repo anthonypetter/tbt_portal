@@ -1,13 +1,24 @@
 import clsx from "clsx";
-import { useTable, Column, TableState, Row, usePagination } from "react-table";
+import {
+  useTable,
+  Column,
+  TableState,
+  Row,
+  usePagination,
+  useSortBy,
+} from "react-table";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
+  ArrowUpIcon,
   ChevronDoubleRightIcon,
   ChevronDoubleLeftIcon,
+  ArrowDownIcon,
 } from "@heroicons/react/solid";
 import { Button } from "./Button";
 import pluralize from "pluralize";
+
+export const CONTEXT_MENU_ID = "contextMenu";
 
 type Props<D extends Record<string, unknown>> = {
   columns: Column<D>[];
@@ -52,6 +63,7 @@ export function Table<D extends { id: string }>({
       data,
       ...(hiddenColumns ? { initialState } : {}),
     },
+    useSortBy,
     usePagination
   );
 
@@ -76,10 +88,32 @@ export function Table<D extends { id: string }>({
                     // eslint-disable-next-line react/jsx-key
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-gray-500 text-xs font-medium tracking-wider uppercase"
+                      className={clsx(
+                        column.id === CONTEXT_MENU_ID ? "w-16" : "px-6 py-3",
+                        "text-left text-gray-500 text-xs font-medium tracking-wider uppercase"
+                      )}
                       {...column.getHeaderProps()} //key is in here.
                     >
-                      {column.render("Header")}
+                      <div className="flex">
+                        <div
+                          className="flex"
+                          {...(column.id === CONTEXT_MENU_ID
+                            ? {}
+                            : column.getSortByToggleProps())}
+                        >
+                          {column.render("Header")}
+
+                          {column.isSorted ? (
+                            column.isSortedDesc ? (
+                              <ArrowDownIcon className="ml-2 h-4 w-4" />
+                            ) : (
+                              <ArrowUpIcon className="ml-2 h-4 w-4" />
+                            )
+                          ) : (
+                            <div className="ml-2 w-4" />
+                          )}
+                        </div>
+                      </div>
                     </th>
                   );
                 })}
@@ -107,13 +141,27 @@ export function Table<D extends { id: string }>({
                   {...onClick}
                 >
                   {row.cells.map((cell) => {
+                    const cellToRender =
+                      cell.column.id === CONTEXT_MENU_ID ? (
+                        <div className="flex justify-center">
+                          {cell.render("Cell")}
+                        </div>
+                      ) : (
+                        cell.render("Cell")
+                      );
+
                     return (
                       // eslint-disable-next-line react/jsx-key
                       <td
                         {...cell.getCellProps()}
-                        className="px-6 py-4 text-gray-500 text-sm"
+                        className={clsx(
+                          cell.column.id === CONTEXT_MENU_ID
+                            ? "px-0 py-0"
+                            : "px-6 py-4",
+                          "text-gray-500 text-sm"
+                        )}
                       >
-                        {cell.render("Cell")}
+                        {cellToRender}
                       </td>
                     );
                   })}

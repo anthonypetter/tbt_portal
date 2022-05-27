@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Column, Cell } from "react-table";
-import { Table } from "components/Table";
+import { Table, CONTEXT_MENU_ID } from "components/Table";
 import { gql } from "@apollo/client";
 import { OrganizationsPageQuery } from "@generated/graphql";
 import { ContextMenu } from "components/ContextMenu";
@@ -130,14 +130,13 @@ function usePrepOrgData(
       {
         Header: () => null,
         accessor: "id",
+        id: CONTEXT_MENU_ID,
         Cell: ({ row }: Cell<OrgTableData>) => {
           return (
-            <div className="flex justify-end">
-              <ContextMenu
-                onClickEdit={() => contextMenu.onClickEdit(row.original)}
-                onClickDelete={() => contextMenu.onClickDelete(row.original)}
-              />
-            </div>
+            <ContextMenu
+              onClickEdit={() => contextMenu.onClickEdit(row.original)}
+              onClickDelete={() => contextMenu.onClickDelete(row.original)}
+            />
           );
         },
       },

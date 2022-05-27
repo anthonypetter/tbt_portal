@@ -1,9 +1,7 @@
 import { useMemo, useState } from "react";
 import { OrgDetailPageCohortsQuery } from "@generated/graphql";
-import { Routes } from "@utils/routes";
 import { DateText } from "components/Date";
-import { Table } from "components/Table";
-import { Link } from "components/Link";
+import { CONTEXT_MENU_ID, Table } from "components/Table";
 import { Column, Cell } from "react-table";
 import { EditCohortModal } from "./EditCohortModal";
 import { ContextMenu } from "components/ContextMenu";
@@ -150,19 +148,18 @@ function usePrepCohortData({
       {
         Header: () => null,
         accessor: "id",
+        id: CONTEXT_MENU_ID,
         Cell: ({ row }: Cell<CohortTableData>) => {
           return (
-            <div className="flex justify-end">
-              <ContextMenu
-                onClickEdit={() => contextMenu.onClickEdit(row.original)}
-                onClickDelete={() => contextMenu.onClickDelete(row.original)}
-              />
-            </div>
+            <ContextMenu
+              onClickEdit={() => contextMenu.onClickEdit(row.original)}
+              onClickDelete={() => contextMenu.onClickDelete(row.original)}
+            />
           );
         },
       },
     ];
-  }, [organizationId, contextMenu]);
+  }, [contextMenu]);
 
   const stringifiedCohorts = JSON.stringify(cohorts);
 
