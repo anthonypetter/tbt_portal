@@ -9,6 +9,8 @@ import { CohortsTable } from "./CohortsTable";
 import filter from "lodash/filter";
 import { DetailsAside } from "components/DetailsAside";
 import { AssignmentRoleBadge } from "components/AssignmentRoleBadge";
+import { ErrorBoundary } from "components/ErrorBoundary";
+import { ErrorBox } from "components/ErrorBox";
 
 CohortsView.fragments = {
   cohortsList: gql`
@@ -68,35 +70,37 @@ export function CohortsView({ organization }: Props) {
     filteredCohorts.find((e) => e.id === selectedCohortId) ?? null;
 
   return (
-    <div className="flex min-h-full">
-      <div className={clsx("flex-1 flex flex-col overflow-hidden")}>
-        <div className="flex-1 flex items-stretch overflow-hidden">
-          <main className="flex-1 overflow-y-auto">
-            <div className="flex-1 my-4 lg:max-w-sm lg:mr-2">
-              <Input
-                id="cohorts-search"
-                type="search"
-                placeholder="Search"
-                leftIcon={SearchIcon}
-                onChange={(e) => setSearchTerm(e.target.value)}
+    <ErrorBoundary fallbackRender={() => <ErrorBox className="mt-4" />}>
+      <div className="flex min-h-full">
+        <div className={clsx("flex-1 flex flex-col overflow-hidden")}>
+          <div className="flex-1 flex items-stretch overflow-hidden">
+            <main className="flex-1 overflow-y-auto">
+              <div className="flex-1 my-4 lg:max-w-sm lg:mr-2">
+                <Input
+                  id="cohorts-search"
+                  type="search"
+                  placeholder="Search"
+                  leftIcon={SearchIcon}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+
+              <CohortsTable
+                organizationId={organization.id}
+                cohorts={filteredCohorts}
+                onRowClick={(id) => setSelectedCohortId(id)}
+                selectedCohort={selectedCohort}
               />
-            </div>
+            </main>
 
-            <CohortsTable
-              organizationId={organization.id}
-              cohorts={filteredCohorts}
-              onRowClick={(id) => setSelectedCohortId(id)}
+            <DetailsSidebar
               selectedCohort={selectedCohort}
+              onClose={() => setSelectedCohortId(null)}
             />
-          </main>
-
-          <DetailsSidebar
-            selectedCohort={selectedCohort}
-            onClose={() => setSelectedCohortId(null)}
-          />
+          </div>
         </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 
