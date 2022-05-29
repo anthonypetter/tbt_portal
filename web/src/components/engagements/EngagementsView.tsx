@@ -68,7 +68,7 @@ export function EngagementsView({ organization }: Props) {
 
   return (
     <ErrorBoundary fallbackRender={() => <ErrorBox className="mt-4" />}>
-      <div className="flex min-h-[500px]">
+      <div className="flex min-h-full">
         <main className="flex-1">
           <div className="flex justify-between my-4">
             <div className="flex-1 lg:max-w-sm lg:mr-2 lg:ml-1">
