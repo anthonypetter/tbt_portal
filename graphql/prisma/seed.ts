@@ -1,6 +1,5 @@
 import { AssignmentRole, Prisma, PrismaClient, User } from "@prisma/client";
 import { add } from "date-fns";
-import range from "lodash/range";
 
 const prisma = new PrismaClient();
 
@@ -324,16 +323,16 @@ async function createOrg(users: User[], org: typeof ORGANIZATIONS[number]) {
 }
 
 function createSchoolEngagements(engAbbr: string) {
-  const engagements = range(1, 15).map((index) => ({
-    name: `${engAbbr}-${index}`,
-    cohortAbbvr: `${engAbbr}-${index}-Cohort`,
+  const engagements = [...Array(15).keys()].map((index: number) => ({
+    name: `${engAbbr}-${index + 1}`,
+    cohortAbbvr: `${engAbbr}-${index + 1}-Cohort`,
   }));
 
-  return engagements.map((eng) => {
+  return engagements.map((eng: { name: string; cohortAbbvr: string }) => {
     return {
       name: eng.name,
       startDate: new Date(),
-      endDate: add(new Date(), { days: 60 }),
+      endDate: add(new Date(), { days: getRandomInt(60) }),
       cohorts: {
         create: [
           {
@@ -341,28 +340,28 @@ function createSchoolEngagements(engAbbr: string) {
             name: `${eng.cohortAbbvr}-K`,
             grade: "K",
             startDate: new Date(),
-            endDate: add(new Date(), { days: 7 }),
+            endDate: add(new Date(), { days: getRandomInt(60) }),
           },
           {
             createdAt: new Date(),
             name: `${eng.cohortAbbvr}-1`,
             grade: "1",
             startDate: new Date(),
-            endDate: add(new Date(), { days: 14 }),
+            endDate: add(new Date(), { days: getRandomInt(60) }),
           },
           {
             createdAt: new Date(),
             name: `${eng.cohortAbbvr}-2`,
             grade: "2",
             startDate: new Date(),
-            endDate: add(new Date(), { days: 30 }),
+            endDate: add(new Date(), { days: getRandomInt(60) }),
           },
           {
             createdAt: new Date(),
             name: `${eng.cohortAbbvr}-3`,
             grade: "3",
             startDate: new Date(),
-            endDate: add(new Date(), { days: 20 }),
+            endDate: add(new Date(), { days: getRandomInt(60) }),
           },
         ],
       },
@@ -380,4 +379,8 @@ export function fromJust<T>(t: T | null | undefined, nameForError?: string): T {
   }
 
   return t;
+}
+
+function getRandomInt(max: number) {
+  return Math.floor(Math.random() * max) + 1;
 }
