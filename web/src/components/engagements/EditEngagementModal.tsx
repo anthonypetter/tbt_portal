@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { Spinner } from "../Spinner";
 import { Modal } from "../Modal";
 import { ErrorBox } from "components/ErrorBox";
