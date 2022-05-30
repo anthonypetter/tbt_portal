@@ -26,8 +26,8 @@ type ValidationResult = {
 export enum CsvValidationError {
   emptyData = "Invalid CSV: Dataset is empty.",
   invalidFormat = "Unable to detect format.",
-  missingColumn = "Missing Column detected.",
-  rowLengthMismatch = "Row length does not match headers",
+  missingColumn = "One or more of the required column headers is missing.",
+  rowLengthMismatch = "Row length does not match headers.",
   unexpectedParseError = "An unexpected error was encountered during CSV parsing.",
 }
 
@@ -43,6 +43,7 @@ export function validateCsv(csv: unknown): ValidationResult {
   const headers = Object.keys(csv[0]);
   const expectedHeaders = Object.values(Headers);
   const diffResult = difference(headers, expectedHeaders);
+  console.log("diffResult", diffResult);
 
   if (diffResult.length > 0) {
     return {
