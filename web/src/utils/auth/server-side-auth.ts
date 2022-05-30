@@ -1,5 +1,5 @@
 import { withSSRContext } from "aws-amplify";
-import type { GetServerSidePropsContext } from "next";
+import type { GetServerSidePropsContext, NextApiRequest } from "next";
 import { Routes } from "../routes";
 
 type ServerSideAuthState =
@@ -35,6 +35,24 @@ export async function getServerSideAuth(
         destination: Routes.login.href(),
         permanent: false,
       },
+    };
+  }
+}
+
+export async function getApiAuth(
+  req: NextApiRequest
+): Promise<{ token: string | null; isAuthenticated: boolean }> {
+  const { Auth } = withSSRContext({ req });
+
+  try {
+    const cognitoUser = await Auth.currentAuthenticatedUser();
+    const session = cognitoUser.getSignInUserSession();
+    const token = session.getAccessToken().getJwtToken();
+    return { token: token, isAuthenticated: true };
+  } catch (error) {
+    return {
+      token: null,
+      isAuthenticated: false,
     };
   }
 }
