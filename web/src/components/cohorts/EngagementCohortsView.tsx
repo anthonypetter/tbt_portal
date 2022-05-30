@@ -12,6 +12,7 @@ import { Button } from "components/Button";
 import { AddNewCohortModal } from "./AddNewCohortModal";
 import { ErrorBox } from "components/ErrorBox";
 import { ErrorBoundary } from "components/ErrorBoundary";
+import { UploadCsvButton } from "./UploadCsvButton";
 
 EngagementCohortsView.fragments = {
   cohortsList: gql`
@@ -66,7 +67,7 @@ export function EngagementCohortsView({ engagement }: Props) {
     <ErrorBoundary fallbackRender={() => <ErrorBox className="mt-4" />}>
       <div className="flex min-h-[500px]">
         <main className="flex-1">
-          <div className="flex justify-between my-4">
+          <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 justify-between my-4">
             <div className="flex-1 lg:max-w-sm lg:mr-2 lg:ml-1">
               <Input
                 id="cohorts-search"
@@ -76,18 +77,21 @@ export function EngagementCohortsView({ engagement }: Props) {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Button
-              type="button"
-              theme="tertiary"
-              className="mx-2"
-              onClick={() => setShowAddModal(true)}
-            >
-              <PlusIcon
-                className="-ml-2 mr-1 h-5 w-5 text-gray-400"
-                aria-hidden="true"
-              />
-              <span>Add</span>
-            </Button>
+            <div className="flex items-center">
+              <Button
+                type="button"
+                theme="tertiary"
+                className="mr-2 sm:mx-2"
+                onClick={() => setShowAddModal(true)}
+              >
+                <PlusIcon
+                  className="-ml-2 mr-1 h-5 w-5 text-gray-400"
+                  aria-hidden="true"
+                />
+                <span>Add</span>
+              </Button>
+              <UploadCsvButton />
+            </div>
           </div>
 
           <CohortsTable
