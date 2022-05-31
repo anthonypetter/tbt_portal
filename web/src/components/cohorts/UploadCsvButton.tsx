@@ -35,7 +35,8 @@ export function UploadCsvButton() {
           )}
           aria-hidden="true"
         />
-        <span>Upload CSV</span>
+        <span className="lg:hidden">CSV</span>
+        <span className="hidden lg:block">Upload CSV</span>
         <input
           ref={inputRef}
           disabled={IS_DISABLED}
