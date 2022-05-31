@@ -9,6 +9,12 @@
 
 ## Local Development Environment
 
+### AWS
+
+- Store your AWS credentials under the `~/.aws` directory. You can setup both `~/.aws/credentials` and `~/.aws/config`.
+- For more info on how this should look, follow this guide: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
+- The AWS region we're using is `us-east-2`.
+
 ### Node
 
 - We're using Node v16.14. Use of [Node Version Manager](https://github.com/nvm-sh/nvm) for version management is recommended.
