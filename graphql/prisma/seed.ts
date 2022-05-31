@@ -71,6 +71,14 @@ async function upsertUsers(env: string): Promise<User[]> {
       role: "ADMIN",
       accountStatus: "ACTIVE",
     },
+    {
+      email: "kyle@tutored.live",
+      fullName: "Kyle Geib",
+      cognitoSub: "e33903e4-81b4-459d-a715-2bd69ea9381b",
+      createdAt: new Date(),
+      role: "ADMIN",
+      accountStatus: "ACTIVE",
+    },
   ];
 
   const stagingUsers: Prisma.UserCreateManyInput[] = [
