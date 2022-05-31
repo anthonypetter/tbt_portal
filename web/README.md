@@ -4,7 +4,7 @@
 
 Before getting started, ensure you have the following:
 
-- [x] AWS creds
+- [x] AWS creds in `~/.aws/credentials` as per [AWS Docs](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html).
 - [x] You're using Node v16.14.1
 - [x] Doppler is installed and configured. More info on how to do that here: https://github.com/TutoredByTeachers/tbt-portal#env-files
 
