@@ -43,7 +43,6 @@ export function validateCsv(csv: unknown): ValidationResult {
   const headers = Object.keys(csv[0]);
   const expectedHeaders = Object.values(Headers);
   const diffResult = difference(headers, expectedHeaders);
-  console.log("diffResult", diffResult);
 
   if (diffResult.length > 0) {
     return {
