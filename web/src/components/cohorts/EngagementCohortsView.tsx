@@ -65,9 +65,9 @@ export function EngagementCohortsView({ engagement }: Props) {
 
   return (
     <ErrorBoundary fallbackRender={() => <ErrorBox className="mt-4" />}>
-      <div className="flex min-h-[500px]">
-        <main className="flex-1">
-          <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 justify-between my-4">
+      <main className="flex flex-col min-h-full">
+        <div className="flex-1">
+          <div className="flex justify-between my-4">
             <div className="flex-1 lg:max-w-sm lg:mr-2 lg:ml-1">
               <Input
                 id="cohorts-search"
@@ -77,11 +77,11 @@ export function EngagementCohortsView({ engagement }: Props) {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center mr-1">
               <Button
                 type="button"
                 theme="tertiary"
-                className="mr-2 sm:mx-2"
+                className="mx-2"
                 onClick={() => setShowAddModal(true)}
               >
                 <PlusIcon
@@ -93,27 +93,27 @@ export function EngagementCohortsView({ engagement }: Props) {
               <UploadCsvButton />
             </div>
           </div>
+        </div>
 
-          <CohortsTable
-            organizationId={engagement.organization.id}
-            cohorts={filteredCohorts}
-            onRowClick={(id) => setSelectedCohortId(id)}
-            selectedCohort={selectedCohort}
-          />
+        <CohortsTable
+          organizationId={engagement.organization.id}
+          cohorts={filteredCohorts}
+          onRowClick={(id) => setSelectedCohortId(id)}
+          selectedCohort={selectedCohort}
+        />
 
-          <AddNewCohortModal
-            engagementId={engagement.id}
-            show={showAddModal}
-            onCancel={() => setShowAddModal(false)}
-            onSuccess={() => setShowAddModal(false)}
-          />
-        </main>
+        <AddNewCohortModal
+          engagementId={engagement.id}
+          show={showAddModal}
+          onCancel={() => setShowAddModal(false)}
+          onSuccess={() => setShowAddModal(false)}
+        />
 
         <DetailsSidebar
           selectedCohort={selectedCohort}
           onClose={() => setSelectedCohortId(null)}
         />
-      </div>
+      </main>
     </ErrorBoundary>
   );
 }
