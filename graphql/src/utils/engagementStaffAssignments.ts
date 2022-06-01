@@ -1,10 +1,6 @@
-import {
-  EngagementStaffAssignment,
-  CohortStaffAssignment,
-  AssignmentRole,
-} from "@prisma/client";
+import { EngagementStaffAssignment, AssignmentRole } from "@prisma/client";
 import { differenceBy, intersectionBy } from "lodash";
-import { NewStaffAssignment } from "src/schema/__generated__/graphql";
+import { NewEngagementStaffAssignment } from "src/schema/__generated__/graphql";
 import { parseId } from "./numbers";
 import { fromJust } from "./types";
 
@@ -16,12 +12,12 @@ export type ChangeSet = {
 
 export type StaffAssignmentInput = {
   userId: number;
-  assignmentRole: AssignmentRole;
+  role: AssignmentRole;
 };
 
 export function calcStaffChanges(
-  existingAssignments: EngagementStaffAssignment[] | CohortStaffAssignment[],
-  newAssignments: NewStaffAssignment[]
+  existingAssignments: EngagementStaffAssignment[],
+  newAssignments: NewEngagementStaffAssignment[]
 ): ChangeSet {
   const existingStaff = existingAssignments.map((a) => fromExistingToInput(a));
   const newStaff = newAssignments.map((a) => fromNewToInput(a));
@@ -34,20 +30,20 @@ export function calcStaffChanges(
 }
 
 function fromExistingToInput(
-  existingAssignment: EngagementStaffAssignment | CohortStaffAssignment
+  existingAssignment: EngagementStaffAssignment
 ): StaffAssignmentInput {
   return {
     userId: existingAssignment.userId,
-    assignmentRole: existingAssignment.assignmentRole,
+    role: existingAssignment.role,
   };
 }
 
 export function fromNewToInput(
-  newAssignment: NewStaffAssignment
+  newAssignment: NewEngagementStaffAssignment
 ): StaffAssignmentInput {
   return {
     userId: parseId(newAssignment.userId),
-    assignmentRole: newAssignment.assignmentRole,
+    role: newAssignment.role,
   };
 }
 
@@ -108,7 +104,7 @@ function findToUpdate({
       "newTeacher"
     );
 
-    return existingTeacher.assignmentRole !== newTeacher.assignmentRole;
+    return existingTeacher.role !== newTeacher.role;
   });
 
   return assignmentsToUpdate;

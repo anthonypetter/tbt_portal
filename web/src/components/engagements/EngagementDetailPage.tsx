@@ -20,7 +20,7 @@ EngagementDetailPage.fragments = {
           fullName
           email
         }
-        assignmentRole
+        role
       }
       organization {
         name

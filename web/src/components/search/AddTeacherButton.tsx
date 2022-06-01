@@ -80,8 +80,8 @@ export function AddTeacherButton({ onAdd }: Props) {
   );
 }
 
-function getDisplayName(assignmentRole: AssignmentRole) {
-  switch (assignmentRole) {
+function getDisplayName(role: AssignmentRole) {
+  switch (role) {
     case AssignmentRole.MentorTeacher:
       return "Mentor Teacher";
 
@@ -92,6 +92,6 @@ function getDisplayName(assignmentRole: AssignmentRole) {
       return "General Teacher";
 
     default:
-      assertUnreachable(assignmentRole);
+      assertUnreachable(role);
   }
 }

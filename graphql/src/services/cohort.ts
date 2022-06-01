@@ -1,6 +1,9 @@
 import { prisma } from "../lib/prisma-client";
 import type { Prisma } from "@prisma/client";
-import { ChangeSet, StaffAssignmentInput } from "../utils/staffAssignments";
+import {
+  ChangeSet,
+  StaffAssignmentInput,
+} from "../utils/engagementStaffAssignments";
 
 /**
  * Gets a cohort
@@ -75,7 +78,7 @@ async function editCohort({
     const newAssignments = staffChangeSet.additions.map((teacher) => ({
       createdAt: new Date(),
       userId: teacher.userId,
-      assignmentRole: teacher.assignmentRole,
+      role: teacher.role,
     }));
 
     const createMany =
@@ -83,7 +86,7 @@ async function editCohort({
 
     const updateMany = staffChangeSet.updates.map((teacher) => ({
       where: { userId: teacher.userId },
-      data: { assignmentRole: teacher.assignmentRole },
+      data: { role: teacher.role },
     }));
 
     const deleteMany = staffChangeSet.removals.map((teacher) => ({
@@ -152,7 +155,7 @@ async function addCohort({
   const newAssignments = staff.map((teacher) => ({
     createdAt: new Date(),
     userId: teacher.userId,
-    assignmentRole: teacher.assignmentRole,
+    role: teacher.role,
   }));
 
   return prisma.cohort.create({

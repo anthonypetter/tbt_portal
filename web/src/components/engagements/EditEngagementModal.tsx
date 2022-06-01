@@ -111,7 +111,7 @@ export function EditEngagementModalBody({
           endDate: endDate ? endDate.getTime() : endDate,
           newStaffAssignments: staff.map((t) => ({
             userId: t.userId,
-            assignmentRole: t.assignmentRole,
+            role: t.role,
           })),
         },
       },
