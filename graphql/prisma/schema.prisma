@@ -68,10 +68,10 @@ enum AssignmentRole {
 }
 
 model EngagementStaffAssignment {
-  createdAt      DateTime       @default(now())
-  engagementId   Int
-  userId         Int
-  assignmentRole AssignmentRole @default(MENTOR_TEACHER)
+  createdAt    DateTime       @default(now())
+  engagementId Int
+  userId       Int
+  role         AssignmentRole @default(MENTOR_TEACHER)
 
   // relation fields
   user       User       @relation(fields: [userId], references: [id])
