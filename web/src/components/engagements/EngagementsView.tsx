@@ -35,7 +35,7 @@ EngagementsView.fragments = {
             fullName
             email
           }
-          assignmentRole
+          role
         }
       }
     }
@@ -154,11 +154,7 @@ function DetailsSidebar({ selectedEngagement, onClose }: DetailsSidebarProps) {
             <DetailsAside.Line
               key={assignment.user.id}
               label={assignment.user.fullName}
-              value={
-                <AssignmentRoleBadge
-                  assignmentRole={assignment.assignmentRole}
-                />
-              }
+              value={<AssignmentRoleBadge role={assignment.role} />}
             />
           ))
         )}

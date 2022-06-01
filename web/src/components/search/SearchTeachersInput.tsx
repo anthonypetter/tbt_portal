@@ -30,10 +30,7 @@ export type TeacherSelection = {
 
 type Props = {
   onSelect: (teacher: TeacherSelection | null) => void;
-  onClickAdd: (
-    teacher: TeacherSelection | null,
-    assignmentRole: AssignmentRole
-  ) => void;
+  onClickAdd: (teacher: TeacherSelection | null, role: AssignmentRole) => void;
 };
 
 export function SearchTeachersInput({ onSelect, onClickAdd }: Props) {

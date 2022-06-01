@@ -4,11 +4,11 @@ import React from "react";
 import { Badge } from "./Badge";
 
 type Props = {
-  assignmentRole: AssignmentRole;
+  role: AssignmentRole;
 };
 
-export function AssignmentRoleBadge({ assignmentRole }: Props) {
-  switch (assignmentRole) {
+export function AssignmentRoleBadge({ role }: Props) {
+  switch (role) {
     case AssignmentRole.MentorTeacher:
       return (
         <Badge className="text-green-800 bg-green-100 mr-5">
@@ -31,6 +31,6 @@ export function AssignmentRoleBadge({ assignmentRole }: Props) {
       );
 
     default:
-      assertUnreachable(assignmentRole);
+      assertUnreachable(role);
   }
 }

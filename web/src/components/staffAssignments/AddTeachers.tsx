@@ -1,4 +1,4 @@
-import { AssignmentRole } from "@generated/graphql";
+import { AssignmentRole, AssignmentSubject } from "@generated/graphql";
 import { XIcon, UserGroupIcon } from "@heroicons/react/outline";
 import { AssignmentRoleBadge } from "components/AssignmentRoleBadge";
 import { Avatar } from "components/Avatar";
@@ -25,15 +25,15 @@ export function AddTeachers({ staff, onAdd, onRemove }: Props) {
         <SearchTeachersInput
           onClickAdd={(
             teacher: TeacherSelection | null,
-            assignmentRole: AssignmentRole
+            role: AssignmentRole
           ) => {
             if (!teacher) {
               setError("Please select a teacher.");
               return;
             }
 
-            const selectionKey = `${teacher.userId}_${assignmentRole}`;
-            const keys = staff.map((t) => `${t.userId}_${t.assignmentRole}`);
+            const selectionKey = `${teacher.userId}_${role}`;
+            const keys = staff.map((t) => `${t.userId}_${t.role}`);
 
             if (keys.includes(selectionKey)) {
               setError("This teacher has already been assigned!");
@@ -41,7 +41,7 @@ export function AddTeachers({ staff, onAdd, onRemove }: Props) {
             }
 
             setError(null);
-            onAdd({ ...teacher, assignmentRole });
+            onAdd({ ...teacher, role });
           }}
           onSelect={() => setError(null)}
         />
@@ -57,7 +57,7 @@ export function AddTeachers({ staff, onAdd, onRemove }: Props) {
             <ul role="list" className="divide-y divide-gray-200">
               {staff.map((teacher) => (
                 <StaffAssignment
-                  key={`${teacher.userId}_${teacher.assignmentRole}`}
+                  key={`${teacher.userId}_${teacher.role}`}
                   teacher={teacher}
                   onRemove={(teacher) => onRemove(teacher)}
                 />
@@ -89,7 +89,7 @@ function StaffAssignment({
         </div>
       </div>
       <div className="mr-3 flex items-center">
-        <AssignmentRoleBadge assignmentRole={teacher.assignmentRole} />
+        <AssignmentRoleBadge role={teacher.role} />
         <button onClick={() => onRemove(teacher)}>
           <XIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
         </button>
@@ -99,7 +99,7 @@ function StaffAssignment({
 }
 
 export type StaffTeacher = TeacherSelection & {
-  assignmentRole: AssignmentRole;
+  role: AssignmentRole;
 };
 
 export function toStaffTeacher(
@@ -109,7 +109,7 @@ export function toStaffTeacher(
     userId: staffAssignment.user.id,
     fullName: staffAssignment.user.fullName,
     email: staffAssignment.user.email,
-    assignmentRole: staffAssignment.assignmentRole,
+    role: staffAssignment.role,
   };
 }
 
