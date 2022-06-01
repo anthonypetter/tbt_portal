@@ -9,3 +9,13 @@ export const COGNITO_REGION = fromJust(
   process.env.COGNITO_REGION,
   "process.env.COGNITO_REGION"
 );
+
+export const WHEREBY_URL = fromJust(
+  process.env.WHEREBY_URL,
+  "process.env.WHEREBY_URL"
+)
+
+export const WHEREBY_API_KEY = fromJust(
+  process.env.WHEREBY_API_KEY,
+ "process.env.WHEREBY_API_KEY",
+)
