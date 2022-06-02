@@ -1,29 +1,10 @@
 import { Fragment, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon, PlusIcon } from "@heroicons/react/solid";
-import { AssignmentRole, AssignmentSubject } from "@generated/graphql";
 import { assertUnreachable } from "@utils/types";
 import clsx from "clsx";
 import noop from "lodash/noop";
-
-export enum TeacherAssignmentType {
-  Engagement = "ENGAGEMENT",
-  Cohort = "COHORT",
-}
-
-export type EngagementAssignment = {
-  type: TeacherAssignmentType.Engagement;
-  role: AssignmentRole;
-  displayName: string;
-};
-
-export type CohortAssignment = {
-  type: TeacherAssignmentType.Cohort;
-  subject: AssignmentSubject;
-  displayName: string;
-};
-
-export type Assignment = EngagementAssignment | CohortAssignment;
+import { Assignment, TeacherAssignmentType } from "./types";
 
 type Props = {
   onAdd: (assignment: Assignment) => void;

@@ -1,10 +1,6 @@
 import { AssignmentSubject } from "@generated/graphql";
 import { FieldError } from "components/FieldError";
-import {
-  Assignment,
-  CohortAssignment,
-  TeacherAssignmentType,
-} from "./AddTeacherButton";
+import { Assignment, CohortAssignment, TeacherAssignmentType } from "./types";
 import { SearchTeachersInput, TeacherSelection } from "./SearchTeachersInput";
 import React, { useState } from "react";
 import { EmptyStaffingState } from "./EmptyStaffingState";

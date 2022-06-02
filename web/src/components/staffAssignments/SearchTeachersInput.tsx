@@ -2,9 +2,10 @@ import { useState, useEffect, useMemo } from "react";
 import { gql, useLazyQuery } from "@apollo/client";
 import { SearchUsersQuery } from "@generated/graphql";
 import { SearchItem, SearchCombobox } from "./SearchCombobox";
-import { AddTeacherButton, Assignment } from "./AddTeacherButton";
+import { AddTeacherButton } from "./AddTeacherButton";
 import { fromJust } from "@utils/types";
 import { useDebounce } from "use-debounce";
+import { Assignment } from "./types";
 
 const SEARCH_USERS = gql`
   query SearchUsers($query: String!) {
