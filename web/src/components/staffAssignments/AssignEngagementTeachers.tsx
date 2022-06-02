@@ -4,11 +4,8 @@ import {
   Assignment,
   EngagementAssignment,
   TeacherAssignmentType,
-} from "components/search/AddTeacherButton";
-import {
-  SearchTeachersInput,
-  TeacherSelection,
-} from "components/search/SearchTeachersInput";
+} from "components/staffAssignments/AddTeacherButton";
+import { SearchTeachersInput, TeacherSelection } from "./SearchTeachersInput";
 import React, { useState } from "react";
 import { QueryEngagements } from "../engagements/EngagementsView";
 import { EmptyStaffingState } from "./EmptyStaffingState";
@@ -45,6 +42,8 @@ export function AssignEngagementTeachers({ staff, onAdd, onRemove }: Props) {
     <div className="flex flex-col">
       <div>
         <SearchTeachersInput
+          onSelect={() => setError(null)}
+          options={assignmentOptions}
           onClickAdd={(teacher, assignmentType) => {
             if (!teacher) {
               setError("Please select a teacher.");
@@ -64,8 +63,6 @@ export function AssignEngagementTeachers({ staff, onAdd, onRemove }: Props) {
               onAdd({ ...teacher, role: assignmentType.role });
             }
           }}
-          onSelect={() => setError(null)}
-          options={assignmentOptions}
         />
       </div>
 
