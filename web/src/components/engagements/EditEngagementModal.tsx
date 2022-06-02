@@ -9,7 +9,7 @@ import { Input } from "components/Input";
 import { MdWorkspacesOutline } from "react-icons/md";
 import noop from "lodash/noop";
 import DatePicker from "react-datepicker";
-import { QueryEngagements } from "./EngagementsView";
+import { QueryEngagements } from "./OrganizationEngagementsView";
 import {
   AssignEngagementTeachers,
   EngagementStaffTeacher,

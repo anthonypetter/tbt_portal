@@ -3,20 +3,25 @@ import { Spinner } from "../Spinner";
 import { Modal } from "../Modal";
 import { ErrorBox } from "components/ErrorBox";
 import { ApolloError, gql, useMutation } from "@apollo/client";
-import { EditEngagementMutation } from "@generated/graphql";
+import {
+  EditEngagementMutation,
+  CohortsTableFragment,
+} from "@generated/graphql";
 import { fromJust } from "@utils/types";
 import { Input } from "components/Input";
 import { MdWorkspacesOutline } from "react-icons/md";
 import noop from "lodash/noop";
 import DatePicker from "react-datepicker";
-import { QueryCohorts } from "./CohortsView";
 import {
   AssignCohortTeachers,
   CohortStaffTeacher,
   toCohortStaffTeacher,
 } from "../staffAssignments/AssignCohortTeachers";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
-import { EngagementDetailPageQueryName } from "./constants";
+import {
+  ENGAGEMENT_DETAIL_PAGE_QUERY_NAME,
+  ORG_DETAIL_PAGE_COHORTS_NAME,
+} from "./constants";
 
 const EDIT_COHORT = gql`
   mutation EditCohort($input: EditCohortInput!) {
@@ -30,7 +35,7 @@ const EDIT_COHORT = gql`
 type Props = {
   show: boolean;
   closeModal: () => void;
-  cohort: QueryCohorts[number] | null;
+  cohort: CohortsTableFragment["cohorts"][number] | null;
   afterLeave: () => void;
 };
 
@@ -72,7 +77,7 @@ export function EditCohortModal({
 type EditCohortModalBodyProps = {
   onCancel: () => void;
   onSuccess: () => void;
-  cohort: QueryCohorts[number];
+  cohort: CohortsTableFragment["cohorts"][number];
 };
 
 export function EditCohortModalBody({
@@ -125,7 +130,10 @@ export function EditCohortModalBody({
           })),
         },
       },
-      refetchQueries: [EngagementDetailPageQueryName],
+      refetchQueries: [
+        ENGAGEMENT_DETAIL_PAGE_QUERY_NAME,
+        ORG_DETAIL_PAGE_COHORTS_NAME,
+      ],
       onQueryUpdated(observableQuery) {
         observableQuery.refetch();
       },

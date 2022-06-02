@@ -13,7 +13,10 @@ import {
   AssignCohortTeachers,
   CohortStaffTeacher,
 } from "../staffAssignments/AssignCohortTeachers";
-import { EngagementDetailPageQueryName } from "./constants";
+import {
+  ENGAGEMENT_DETAIL_PAGE_QUERY_NAME,
+  ORG_DETAIL_PAGE_COHORTS_NAME,
+} from "./constants";
 
 const ADD_COHORT = gql`
   mutation AddCohort($input: AddCohortInput!) {
@@ -104,7 +107,10 @@ export function AddCohortModalBody({
           })),
         },
       },
-      refetchQueries: [EngagementDetailPageQueryName],
+      refetchQueries: [
+        ENGAGEMENT_DETAIL_PAGE_QUERY_NAME,
+        ORG_DETAIL_PAGE_COHORTS_NAME,
+      ],
       onQueryUpdated(observableQuery) {
         observableQuery.refetch();
       },
