@@ -94,6 +94,7 @@ model Cohort {
   grade       String?
   meetingRoom String?
   hostKey     String?
+  meetingId   String?
   exempt      Boolean   @default(false)
   startDate   DateTime?
   endDate     DateTime?

@@ -13,6 +13,7 @@ import {
   calcStaffChanges,
   fromNewToInput,
 } from "../../utils/cohortStaffAssignments";
+import { WhereByService } from "../../services/whereby"
 
 /**
  * Type Defs
@@ -37,6 +38,7 @@ export const typeDefs = gql`
     grade: String
     meetingRoom: String
     hostKey: String
+    meetingId: String
     exempt: String
     startDate: Date
     endDate: Date
@@ -69,7 +71,8 @@ export const typeDefs = gql`
     grade: String
     hostKey: String
     meetingRoom: String
-    newStaffAssignments: [NewCohortStaffAssignment!]!
+    meetingId: String
+    newStaffAssignments: [NewStaffAssignment!]!
   }
 
   extend type Query {
@@ -146,7 +149,15 @@ async function deleteCohort(
   { authedUser, AuthorizationService, CohortService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
-  return CohortService.deleteCohort(parseId(id));
+  const cohorteDeleted = await CohortService.deleteCohort(parseId(id));
+  try {
+    cohorteDeleted.meetingRoom ?? await WhereByService
+      .deleteWhereByRoom(cohorteDeleted.meetingId)
+  } catch (error) {
+    console.log('[Error] whereby ERROR: ', error)
+  }
+
+  return cohorteDeleted
 }
 
 async function addCohort(
@@ -155,17 +166,36 @@ async function addCohort(
   { authedUser, AuthorizationService, CohortService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
-
-  return CohortService.addCohort({
+  const newCohort = {
     name: input.name,
     engagementId: parseId(input.engagementId),
     startDate: input.startDate,
     endDate: input.endDate,
     grade: input.grade,
     hostKey: input.hostKey,
+    meetingId: input.meetingId,
     meetingRoom: input.meetingRoom,
     staff: input.newStaffAssignments.map((t) => fromNewToInput(t)),
-  });
+  }
+  console.log("the meeting room is ",input.meetingRoom)
+  // if meeting room url is specified, just create the cohort
+  if (newCohort.meetingRoom) return CohortService.addCohort(newCohort);
+
+  // else create meeting room on whereby and create the cohort
+  let wherebyResult
+  try {
+    wherebyResult = await WhereByService.createWhereByRoom(
+      (new Date(input.startDate)).toISOString(),
+      (new Date(input.endDate)).toISOString(),
+    )
+  } catch (error) {
+    console.log('[Error] whereby ERROR: ', error)
+  }
+  console.log("where bu result", wherebyResult)
+  newCohort.meetingRoom = wherebyResult?.hostRoomUrl
+  newCohort.meetingId = wherebyResult?.meetingId
+
+  return CohortService.addCohort(newCohort);
 }
 
 /**

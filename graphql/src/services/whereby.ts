@@ -1,4 +1,3 @@
-import nodeFetch from 'node-fetch'
 import axios from "axios"
 import { WHEREBY_URL, WHEREBY_API_KEY } from '../config'
 
