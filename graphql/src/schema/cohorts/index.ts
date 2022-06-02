@@ -149,15 +149,11 @@ async function deleteCohort(
   { authedUser, AuthorizationService, CohortService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
-  const cohorteDeleted = await CohortService.deleteCohort(parseId(id));
-  try {
-    cohorteDeleted.meetingRoom ?? await WhereByService
-      .deleteWhereByRoom(cohorteDeleted.meetingId)
-  } catch (error) {
-    console.log('[Error] whereby ERROR: ', error)
+  const cohortDeleted = await CohortService.deleteCohort(parseId(id));
+  if (cohortDeleted?.meetingId) {
+    await WhereByService.deleteWhereByRoom(cohortDeleted.meetingId);
   }
-
-  return cohorteDeleted
+  return cohortDeleted;
 }
 
 async function addCohort(
@@ -176,24 +172,21 @@ async function addCohort(
     meetingId: input.meetingId,
     meetingRoom: input.meetingRoom,
     staff: input.newStaffAssignments.map((t) => fromNewToInput(t)),
-  }
-  console.log("the meeting room is ",input.meetingRoom)
+  };
+
   // if meeting room url is specified, just create the cohort
-  if (newCohort.meetingRoom) return CohortService.addCohort(newCohort);
+  if (newCohort.meetingRoom) {
+    return CohortService.addCohort(newCohort);
+  }
 
   // else create meeting room on whereby and create the cohort
-  let wherebyResult
-  try {
-    wherebyResult = await WhereByService.createWhereByRoom(
-      (new Date(input.startDate)).toISOString(),
-      (new Date(input.endDate)).toISOString(),
-    )
-  } catch (error) {
-    console.log('[Error] whereby ERROR: ', error)
-  }
-  console.log("where bu result", wherebyResult)
-  newCohort.meetingRoom = wherebyResult?.hostRoomUrl
-  newCohort.meetingId = wherebyResult?.meetingId
+  const wherebyResult = await WhereByService.createWhereByRoom(
+    new Date(input.startDate).toISOString(),
+    new Date(input.endDate).toISOString()
+  );
+
+  newCohort.meetingRoom = wherebyResult?.hostRoomUrl;
+  newCohort.meetingId = wherebyResult?.meetingId;
 
   return CohortService.addCohort(newCohort);
 }
