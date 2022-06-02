@@ -38,8 +38,8 @@ export function EngagementCohortsView({ engagement }: Props) {
 
   const filteredCohorts = searchTerm
     ? filter(engagement.cohorts, (c) =>
-      c.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+        c.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
     : engagement.cohorts;
 
   const selectedCohort =
@@ -49,7 +49,7 @@ export function EngagementCohortsView({ engagement }: Props) {
     <ErrorBoundary fallbackRender={() => <ErrorBox className="mt-4" />}>
       <div className="flex min-h-[500px]">
         <main className="flex-1">
-          <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 justify-between my-4">
+          <div className="flex flex-col space-y-2 sm:flesx-row sm:space-y-0 justify-between my-4">
             <div className="flex-1 lg:max-w-sm lg:mr-2 lg:ml-1">
               <Input
                 id="cohorts-search"
