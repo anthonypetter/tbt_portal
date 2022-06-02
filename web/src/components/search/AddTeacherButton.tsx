@@ -1,24 +1,38 @@
-/* This example requires Tailwind CSS v2.0+ */
 import { Fragment, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon, PlusIcon } from "@heroicons/react/solid";
-import { AssignmentRole } from "@generated/graphql";
+import { AssignmentRole, AssignmentSubject } from "@generated/graphql";
 import { assertUnreachable } from "@utils/types";
 import clsx from "clsx";
+import noop from "lodash/noop";
 
-type Props = {
-  onAdd: (assignAs: AssignmentRole) => void;
+export enum TeacherAssignmentType {
+  Engagement = "ENGAGEMENT",
+  Cohort = "COHORT",
+}
+
+export type EngagementAssignment = {
+  type: TeacherAssignmentType.Engagement;
+  role: AssignmentRole;
+  displayName: string;
 };
 
-const assignmentRoles = [
-  AssignmentRole.MentorTeacher,
-  AssignmentRole.SubstituteTeacher,
-  AssignmentRole.GeneralTeacher,
-];
+export type CohortAssignment = {
+  type: TeacherAssignmentType.Cohort;
+  subject: AssignmentSubject;
+  displayName: string;
+};
 
-export function AddTeacherButton({ onAdd }: Props) {
-  const [assignAs, setAssignAs] = useState<AssignmentRole>(
-    AssignmentRole.MentorTeacher
+export type Assignment = EngagementAssignment | CohortAssignment;
+
+type Props = {
+  onAdd: (assignment: Assignment) => void;
+  options: Assignment[];
+};
+
+export function AddTeacherButton({ onAdd, options }: Props) {
+  const [assign, setAssign] = useState<Assignment | null>(
+    options.length > 0 ? options[0] : null
   );
 
   return (
@@ -33,11 +47,11 @@ export function AddTeacherButton({ onAdd }: Props) {
           "bg-white hover:bg-gray-50",
           "text-sm font-medium text-gray-700"
         )}
-        onClick={() => onAdd(assignAs)}
+        onClick={assign ? () => onAdd(assign) : noop}
       >
         <div className="flex justify-start">
           <PlusIcon className="mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
-          <span>{getDisplayName(assignAs)}</span>
+          <span>{assign?.displayName ?? "Please select an option."}</span>
         </div>
       </button>
 
@@ -57,17 +71,17 @@ export function AddTeacherButton({ onAdd }: Props) {
         >
           <Menu.Items className="origin-top-right absolute right-0 mt-2 -mr-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
             <div className="py-1">
-              {assignmentRoles.map((role) => (
-                <Menu.Item key={role}>
+              {options.map((option) => (
+                <Menu.Item key={getAssignmentType(option)}>
                   {({ active }) => (
                     <button
                       className={clsx(
                         active ? "bg-gray-100 text-gray-900" : "text-gray-700",
                         "w-full block px-4 py-2 text-sm text-left"
                       )}
-                      onClick={() => setAssignAs(role)}
+                      onClick={() => setAssign(option)}
                     >
-                      {getDisplayName(role)}
+                      {option.displayName}
                     </button>
                   )}
                 </Menu.Item>
@@ -80,18 +94,15 @@ export function AddTeacherButton({ onAdd }: Props) {
   );
 }
 
-function getDisplayName(role: AssignmentRole) {
-  switch (role) {
-    case AssignmentRole.MentorTeacher:
-      return "Mentor Teacher";
+export function getAssignmentType(assignment: Assignment) {
+  switch (assignment.type) {
+    case TeacherAssignmentType.Engagement:
+      return assignment.role;
 
-    case AssignmentRole.SubstituteTeacher:
-      return "Substitute Teacher";
-
-    case AssignmentRole.GeneralTeacher:
-      return "General Teacher";
+    case TeacherAssignmentType.Cohort:
+      return assignment.subject;
 
     default:
-      assertUnreachable(role);
+      assertUnreachable(assignment);
   }
 }
