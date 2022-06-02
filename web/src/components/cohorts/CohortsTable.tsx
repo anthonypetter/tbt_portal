@@ -1,21 +1,45 @@
 import { useMemo, useState } from "react";
-import { OrgDetailPageCohortsQuery } from "@generated/graphql";
+import { CohortsTableFragment } from "@generated/graphql";
 import { DateText } from "components/Date";
 import { CONTEXT_MENU_ID, Table } from "components/Table";
 import { Column, Cell } from "react-table";
 import { EditCohortModal } from "./EditCohortModal";
 import { ContextMenu } from "components/ContextMenu";
 import { DeleteCohortModal } from "./DeleteCohortModal";
+import { gql } from "@apollo/client";
 
-type QueryCohorts = NonNullable<
-  OrgDetailPageCohortsQuery["organization"]
->["engagements"][number]["cohorts"];
+CohortsTable.fragments = {
+  cohortsTable: gql`
+    fragment CohortsTable on Engagement {
+      cohorts {
+        id
+        createdAt
+        name
+        grade
+        meetingRoom
+        hostKey
+        exempt
+        startDate
+        endDate
+        engagementId
+        staffAssignments {
+          user {
+            id
+            fullName
+            email
+          }
+          subject
+        }
+      }
+    }
+  `,
+};
 
 type Props = {
   organizationId: string;
-  cohorts: QueryCohorts;
+  cohorts: CohortsTableFragment["cohorts"];
   onRowClick: (cohortId: string) => void;
-  selectedCohort: QueryCohorts[number] | null;
+  selectedCohort: CohortsTableFragment["cohorts"][number] | null;
 };
 
 export function CohortsTable({
@@ -98,7 +122,7 @@ function usePrepCohortData({
   contextMenu,
 }: {
   organizationId: string;
-  cohorts: QueryCohorts;
+  cohorts: CohortsTableFragment["cohorts"];
   contextMenu: {
     onClickEdit: (cohort: CohortTableData) => void;
     onClickDelete: (cohort: CohortTableData) => void;

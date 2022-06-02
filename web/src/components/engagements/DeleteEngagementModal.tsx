@@ -7,7 +7,7 @@ import { ExclamationIcon } from "@heroicons/react/outline";
 import { Modal } from "components/Modal";
 import { ErrorBox } from "components/ErrorBox";
 import { Spinner } from "components/Spinner";
-import { QueryEngagements } from "./EngagementsView";
+import { QueryEngagements } from "./OrganizationEngagementsView";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { FieldError } from "components/FieldError";
 import pluralize from "pluralize";

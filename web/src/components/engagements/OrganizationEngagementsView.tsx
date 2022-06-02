@@ -13,7 +13,7 @@ import { AddEngagementModal } from "./AddNewEngagementModal";
 import { ErrorBoundary } from "components/ErrorBoundary";
 import { ErrorBox } from "components/ErrorBox";
 
-EngagementsView.fragments = {
+OrganizationEngagementsView.fragments = {
   engagementsList: gql`
     fragment EngagementsViewListF on Organization {
       engagements {
@@ -50,7 +50,7 @@ type Props = {
   organization: NonNullable<OrgDetailPageEngagementsQuery["organization"]>;
 };
 
-export function EngagementsView({ organization }: Props) {
+export function OrganizationEngagementsView({ organization }: Props) {
   const [selectedEngagementId, setSelectedEngagementId] = useState<
     string | null
   >(null);
