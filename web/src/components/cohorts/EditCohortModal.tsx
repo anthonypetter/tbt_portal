@@ -11,10 +11,10 @@ import noop from "lodash/noop";
 import DatePicker from "react-datepicker";
 import { QueryCohorts } from "./CohortsView";
 import {
-  AddTeachers,
-  StaffTeacher,
-  toStaffTeacher,
-} from "../staffAssignments/AddTeachers";
+  AssignCohortTeachers,
+  CohortStaffTeacher,
+  toCohortStaffTeacher,
+} from "../staffAssignments/AssignCohortTeachers";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { EngagementDetailPageQueryName } from "./constants";
 
@@ -96,8 +96,8 @@ export function EditCohortModalBody({
   const [meetingRoom, setMeetingRoom] = useState<string | null | undefined>(
     cohort.meetingRoom
   );
-  const [staff, setStaff] = useState<StaffTeacher[]>(
-    cohort.staffAssignments.map((sa) => toStaffTeacher(sa))
+  const [staff, setStaff] = useState<CohortStaffTeacher[]>(
+    cohort.staffAssignments.map((sa) => toCohortStaffTeacher(sa))
   );
 
   const [editOrg, { loading }] = useMutation<EditEngagementMutation>(
@@ -121,7 +121,7 @@ export function EditCohortModalBody({
           meetingRoom: meetingRoom,
           newStaffAssignments: staff.map((t) => ({
             userId: t.userId,
-            assignmentRole: t.assignmentRole,
+            subject: t.subject,
           })),
         },
       },
@@ -194,7 +194,7 @@ export function EditCohortModalBody({
           </div>
 
           <div className="col-span-6 sm:col-span-6">
-            <AddTeachers
+            <AssignCohortTeachers
               staff={staff}
               onAdd={(teacher) => setStaff([...staff, teacher])}
               onRemove={(teacher) =>
