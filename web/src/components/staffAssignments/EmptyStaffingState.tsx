@@ -6,7 +6,7 @@ export function EmptyStaffingState() {
       <UserGroupIcon className="h-16 w-16 text-gray-400 text-sm" />
       <h2 className="mt-2 text-lg font-medium text-gray-900">Add teachers</h2>
       <p className="mt-1 text-sm text-gray-500">
-        {"You haven't added any teachers to this engagement yet."}
+        {"You haven't added any teachers yet."}
       </p>
     </div>
   );
