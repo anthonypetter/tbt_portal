@@ -9,7 +9,7 @@ import { SearchTeachersInput, TeacherSelection } from "./SearchTeachersInput";
 import React, { useState } from "react";
 import { EmptyStaffingState } from "./EmptyStaffingState";
 import { isCohortStaffTeacher, StaffAssignment } from "./StaffAssignment";
-import { QueryCohorts } from "components/cohorts/CohortsView";
+import { QueryCohorts } from "components/cohorts/OrganizationCohortsView";
 
 type Props = {
   staff: CohortStaffTeacher[];
