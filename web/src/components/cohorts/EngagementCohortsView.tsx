@@ -7,7 +7,7 @@ import { useState } from "react";
 import { CohortsTable } from "./CohortsTable";
 import filter from "lodash/filter";
 import { DetailsAside } from "components/DetailsAside";
-import { AssignmentRoleBadge } from "components/AssignmentRoleBadge";
+import { AssignmentSubjectBadge } from "components/AssignmentSubjectBadge";
 import { Button } from "components/Button";
 import { AddNewCohortModal } from "./AddNewCohortModal";
 import { ErrorBox } from "components/ErrorBox";
@@ -34,7 +34,7 @@ EngagementCohortsView.fragments = {
             fullName
             email
           }
-          assignmentRole
+          subject
         }
       }
     }
@@ -159,11 +159,7 @@ function DetailsSidebar({ selectedCohort, onClose }: DetailsSidebarProps) {
             <DetailsAside.Line
               key={assignment.user.id}
               label={assignment.user.fullName}
-              value={
-                <AssignmentRoleBadge
-                  assignmentRole={assignment.assignmentRole}
-                />
-              }
+              value={<AssignmentSubjectBadge subject={assignment.subject} />}
             />
           ))
         )}
