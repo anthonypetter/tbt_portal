@@ -1,13 +1,15 @@
 import React from "react";
 import { gql, useMutation } from "@apollo/client";
-import { DeleteCohortMutation } from "@generated/graphql";
+import { DeleteCohortMutation, CohortsTableFragment } from "@generated/graphql";
 import { triggerSuccessToast } from "components/Toast";
-import { EngagementDetailPageQueryName } from "./constants";
+import {
+  ORG_DETAIL_PAGE_COHORTS_NAME,
+  ENGAGEMENT_DETAIL_PAGE_QUERY_NAME,
+} from "./constants";
 import { ExclamationIcon } from "@heroicons/react/outline";
 import { Modal } from "components/Modal";
 import { ErrorBox } from "components/ErrorBox";
 import { Spinner } from "components/Spinner";
-import { QueryCohorts } from "./CohortsView";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { FieldError } from "components/FieldError";
 import pluralize from "pluralize";
@@ -24,7 +26,7 @@ const DELETE_COHORT = gql`
 type Props = {
   show: boolean;
   closeModal: () => void;
-  cohort: QueryCohorts[number] | null;
+  cohort: CohortsTableFragment["cohorts"][number] | null;
   afterLeave: () => void;
 };
 
@@ -63,7 +65,7 @@ export function DeleteCohortModal({
 }
 
 type DeleteCohortModalBodyProps = {
-  cohort: QueryCohorts[number];
+  cohort: CohortsTableFragment["cohorts"][number];
   onCancel: () => void;
   onSuccess: () => void;
 };
@@ -78,7 +80,10 @@ export function DeleteCohortModalBody({
   const [deleteCohort, { error, loading }] = useMutation<DeleteCohortMutation>(
     DELETE_COHORT,
     {
-      refetchQueries: [EngagementDetailPageQueryName],
+      refetchQueries: [
+        ORG_DETAIL_PAGE_COHORTS_NAME,
+        ENGAGEMENT_DETAIL_PAGE_QUERY_NAME,
+      ],
       onQueryUpdated(observableQuery) {
         observableQuery.refetch();
       },
