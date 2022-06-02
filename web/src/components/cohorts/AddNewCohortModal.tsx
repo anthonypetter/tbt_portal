@@ -9,8 +9,14 @@ import { Input } from "components/Input";
 import { MdWorkspacesOutline } from "react-icons/md";
 import noop from "lodash/noop";
 import DatePicker from "react-datepicker";
-import { AddTeachers, StaffTeacher } from "../staffAssignments/AddTeachers";
-import { EngagementDetailPageQueryName } from "./constants";
+import {
+  AssignCohortTeachers,
+  CohortStaffTeacher,
+} from "../staffAssignments/AssignCohortTeachers";
+import {
+  ENGAGEMENT_DETAIL_PAGE_QUERY_NAME,
+  ORG_DETAIL_PAGE_COHORTS_NAME,
+} from "./constants";
 
 const ADD_COHORT = gql`
   mutation AddCohort($input: AddCohortInput!) {
@@ -77,7 +83,7 @@ export function AddCohortModalBody({
   const [grade, setGrade] = useState<string | null | undefined>();
   const [hostKey, setHostKey] = useState<string | null | undefined>();
   const [meetingRoom, setMeetingRoom] = useState<string | null | undefined>();
-  const [staff, setStaff] = useState<StaffTeacher[]>([]);
+  const [staff, setStaff] = useState<CohortStaffTeacher[]>([]);
 
   const [addCohort, { loading }] = useMutation<AddCohortMutation>(ADD_COHORT, {
     onError: (err: ApolloError) => setErrorMsg(err.message),
@@ -97,11 +103,14 @@ export function AddCohortModalBody({
           meetingRoom: meetingRoom,
           newStaffAssignments: staff.map((t) => ({
             userId: t.userId,
-            assignmentRole: t.assignmentRole,
+            subject: t.subject,
           })),
         },
       },
-      refetchQueries: [EngagementDetailPageQueryName],
+      refetchQueries: [
+        ENGAGEMENT_DETAIL_PAGE_QUERY_NAME,
+        ORG_DETAIL_PAGE_COHORTS_NAME,
+      ],
       onQueryUpdated(observableQuery) {
         observableQuery.refetch();
       },
@@ -170,7 +179,7 @@ export function AddCohortModalBody({
           </div>
 
           <div className="col-span-6 sm:col-span-6">
-            <AddTeachers
+            <AssignCohortTeachers
               staff={staff}
               onAdd={(teacher) => setStaff([...staff, teacher])}
               onRemove={(teacher) =>

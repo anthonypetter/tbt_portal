@@ -1,7 +1,10 @@
 import { prisma } from "../lib/prisma-client";
 import { Engagement } from "@prisma/client";
 import type { Prisma } from "@prisma/client";
-import { ChangeSet, StaffAssignmentInput } from "../utils/staffAssignments";
+import {
+  ChangeSet,
+  StaffAssignmentInput,
+} from "../utils/engagementStaffAssignments";
 
 const TAKE_LIMIT = 100;
 
@@ -65,7 +68,7 @@ async function addEngagement({
   const newAssignments = staff.map((teacher) => ({
     createdAt: new Date(),
     userId: teacher.userId,
-    assignmentRole: teacher.assignmentRole,
+    role: teacher.role,
   }));
 
   return prisma.engagement.create({
@@ -118,7 +121,7 @@ async function editEngagement({
     const newAssignments = staffChangeSet.additions.map((teacher) => ({
       createdAt: new Date(),
       userId: teacher.userId,
-      assignmentRole: teacher.assignmentRole,
+      role: teacher.role,
     }));
 
     const createMany =
@@ -126,7 +129,7 @@ async function editEngagement({
 
     const updateMany = staffChangeSet.updates.map((teacher) => ({
       where: { userId: teacher.userId },
-      data: { assignmentRole: teacher.assignmentRole },
+      data: { role: teacher.role },
     }));
 
     const deleteMany = staffChangeSet.removals.map((teacher) => ({

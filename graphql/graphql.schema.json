@@ -137,7 +137,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "NewStaffAssignment",
+                    "name": "NewCohortStaffAssignment",
                     "ofType": null
                   }
                 }
@@ -212,7 +212,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "NewStaffAssignment",
+                    "name": "NewEngagementStaffAssignment",
                     "ofType": null
                   }
                 }
@@ -340,6 +340,35 @@
           },
           {
             "name": "SUBSTITUTE_TEACHER",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "AssignmentSubject",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "ELA",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "GENERAL",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "MATH",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -501,7 +530,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "StaffAssignment",
+                    "name": "CohortStaffAssignment",
                     "ofType": null
                   }
                 }
@@ -518,6 +547,49 @@
               "kind": "SCALAR",
               "name": "Date",
               "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "CohortStaffAssignment",
+        "description": null,
+        "fields": [
+          {
+            "name": "subject",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "AssignmentSubject",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "user",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "User",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -631,7 +703,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "INPUT_OBJECT",
-                  "name": "NewStaffAssignment",
+                  "name": "NewCohortStaffAssignment",
                   "ofType": null
                 }
               }
@@ -714,7 +786,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "INPUT_OBJECT",
-                  "name": "NewStaffAssignment",
+                  "name": "NewEngagementStaffAssignment",
                   "ofType": null
                 }
               }
@@ -951,7 +1023,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "StaffAssignment",
+                    "name": "EngagementStaffAssignment",
                     "ofType": null
                   }
                 }
@@ -968,6 +1040,49 @@
               "kind": "SCALAR",
               "name": "Date",
               "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "EngagementStaffAssignment",
+        "description": null,
+        "fields": [
+          {
+            "name": "role",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "AssignmentRole",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "user",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "User",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -1412,12 +1527,55 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "NewStaffAssignment",
+        "name": "NewCohortStaffAssignment",
         "description": null,
         "fields": null,
         "inputFields": [
           {
-            "name": "assignmentRole",
+            "name": "subject",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "AssignmentSubject",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "userId",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "NewEngagementStaffAssignment",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "role",
             "description": null,
             "type": {
               "kind": "NON_NULL",
@@ -1847,49 +2005,6 @@
                     "ofType": null
                   }
                 }
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
-        "name": "StaffAssignment",
-        "description": null,
-        "fields": [
-          {
-            "name": "assignmentRole",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "ENUM",
-                "name": "AssignmentRole",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "user",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "User",
-                "ofType": null
               }
             },
             "isDeprecated": false,

@@ -13,7 +13,7 @@ import { AddEngagementModal } from "./AddNewEngagementModal";
 import { ErrorBoundary } from "components/ErrorBoundary";
 import { ErrorBox } from "components/ErrorBox";
 
-EngagementsView.fragments = {
+OrganizationEngagementsView.fragments = {
   engagementsList: gql`
     fragment EngagementsViewListF on Organization {
       engagements {
@@ -35,7 +35,7 @@ EngagementsView.fragments = {
             fullName
             email
           }
-          assignmentRole
+          role
         }
       }
     }
@@ -50,7 +50,7 @@ type Props = {
   organization: NonNullable<OrgDetailPageEngagementsQuery["organization"]>;
 };
 
-export function EngagementsView({ organization }: Props) {
+export function OrganizationEngagementsView({ organization }: Props) {
   const [selectedEngagementId, setSelectedEngagementId] = useState<
     string | null
   >(null);
@@ -154,11 +154,7 @@ function DetailsSidebar({ selectedEngagement, onClose }: DetailsSidebarProps) {
             <DetailsAside.Line
               key={assignment.user.id}
               label={assignment.user.fullName}
-              value={
-                <AssignmentRoleBadge
-                  assignmentRole={assignment.assignmentRole}
-                />
-              }
+              value={<AssignmentRoleBadge role={assignment.role} />}
             />
           ))
         )}

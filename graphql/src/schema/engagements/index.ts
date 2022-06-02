@@ -9,7 +9,10 @@ import {
 } from "../__generated__/graphql";
 import { parseId } from "../../utils/numbers";
 import { fromJust } from "../../utils/types";
-import { calcStaffChanges, fromNewToInput } from "../../utils/staffAssignments";
+import {
+  calcStaffChanges,
+  fromNewToInput,
+} from "../../utils/engagementStaffAssignments";
 
 /**
  * Type Defs
@@ -22,9 +25,9 @@ export const typeDefs = gql`
     GENERAL_TEACHER
   }
 
-  type StaffAssignment {
+  type EngagementStaffAssignment {
     user: User!
-    assignmentRole: AssignmentRole!
+    role: AssignmentRole!
   }
 
   type Engagement {
@@ -35,13 +38,13 @@ export const typeDefs = gql`
     endDate: Date
     organizationId: ID!
     cohorts: [Cohort!]!
-    staffAssignments: [StaffAssignment!]!
+    staffAssignments: [EngagementStaffAssignment!]!
     organization: Organization!
   }
 
-  input NewStaffAssignment {
+  input NewEngagementStaffAssignment {
     userId: ID!
-    assignmentRole: AssignmentRole!
+    role: AssignmentRole!
   }
 
   input EditEngagementInput {
@@ -49,7 +52,7 @@ export const typeDefs = gql`
     name: String
     startDate: Date
     endDate: Date
-    newStaffAssignments: [NewStaffAssignment!]
+    newStaffAssignments: [NewEngagementStaffAssignment!]
   }
 
   input AddEngagementInput {
@@ -57,7 +60,7 @@ export const typeDefs = gql`
     name: String!
     startDate: Date
     endDate: Date
-    newStaffAssignments: [NewStaffAssignment!]!
+    newStaffAssignments: [NewEngagementStaffAssignment!]!
   }
 
   extend type Query {

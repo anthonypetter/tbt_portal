@@ -67,11 +67,17 @@ enum AssignmentRole {
   GENERAL_TEACHER
 }
 
+enum AssignmentSubject {
+  MATH
+  ELA
+  GENERAL
+}
+
 model EngagementStaffAssignment {
-  createdAt      DateTime       @default(now())
-  engagementId   Int
-  userId         Int
-  assignmentRole AssignmentRole @default(MENTOR_TEACHER)
+  createdAt    DateTime       @default(now())
+  engagementId Int
+  userId       Int
+  role         AssignmentRole @default(MENTOR_TEACHER)
 
   // relation fields
   user       User       @relation(fields: [userId], references: [id])
@@ -100,8 +106,8 @@ model Cohort {
 }
 
 model CohortStaffAssignment {
-  createdAt      DateTime       @default(now())
-  assignmentRole AssignmentRole @default(GENERAL_TEACHER)
+  createdAt DateTime          @default(now())
+  subject   AssignmentSubject @default(GENERAL)
 
   // relation fields
   userId   Int

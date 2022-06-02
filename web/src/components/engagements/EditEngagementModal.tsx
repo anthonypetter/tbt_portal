@@ -9,12 +9,12 @@ import { Input } from "components/Input";
 import { MdWorkspacesOutline } from "react-icons/md";
 import noop from "lodash/noop";
 import DatePicker from "react-datepicker";
-import { QueryEngagements } from "./EngagementsView";
+import { QueryEngagements } from "./OrganizationEngagementsView";
 import {
-  AddTeachers,
-  StaffTeacher,
-  toStaffTeacher,
-} from "../staffAssignments/AddTeachers";
+  AssignEngagementTeachers,
+  EngagementStaffTeacher,
+  toEngagementStaffTeacher,
+} from "../staffAssignments/AssignEngagementTeachers";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { OrgDetailPageEngagementsQueryName } from "./constants";
 
@@ -89,8 +89,8 @@ export function EditEngagementModalBody({
   const [endDate, setEndDate] = useState<Date | null | undefined>(
     engagement.endDate ? new Date(engagement.endDate) : undefined
   );
-  const [staff, setStaff] = useState<StaffTeacher[]>(
-    engagement.staffAssignments.map((sa) => toStaffTeacher(sa))
+  const [staff, setStaff] = useState<EngagementStaffTeacher[]>(
+    engagement.staffAssignments.map((sa) => toEngagementStaffTeacher(sa))
   );
 
   const [editEngagement, { loading }] = useMutation<EditEngagementMutation>(
@@ -111,7 +111,7 @@ export function EditEngagementModalBody({
           endDate: endDate ? endDate.getTime() : endDate,
           newStaffAssignments: staff.map((t) => ({
             userId: t.userId,
-            assignmentRole: t.assignmentRole,
+            role: t.role,
           })),
         },
       },
@@ -157,7 +157,7 @@ export function EditEngagementModalBody({
           </div>
 
           <div className="col-span-6 sm:col-span-6">
-            <AddTeachers
+            <AssignEngagementTeachers
               staff={staff}
               onAdd={(teacher) => setStaff([...staff, teacher])}
               onRemove={(teacher) =>

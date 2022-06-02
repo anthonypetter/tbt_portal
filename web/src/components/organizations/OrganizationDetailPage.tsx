@@ -5,9 +5,9 @@ import {
 } from "@generated/graphql";
 import { Routes } from "@utils/routes";
 import { Container } from "components/Container";
-import { EngagementsView } from "../engagements/EngagementsView";
+import { OrganizationEngagementsView } from "../engagements/OrganizationEngagementsView";
+import { OrganizationCohortsView } from "components/cohorts/OrganizationCohortsView";
 import { getDisplayName, OrganizationTabs, Tab } from "./OrganizationTabs";
-import { CohortsView } from "components/cohorts/CohortsView";
 import { PageHeader } from "components/PageHeader";
 import { breadcrumbs } from "@utils/breadcrumbs";
 
@@ -22,7 +22,7 @@ OrganizationDetailPage.fragments = {
       description
       ...EngagementsViewListF
     }
-    ${EngagementsView.fragments.engagementsList}
+    ${OrganizationEngagementsView.fragments.engagementsList}
   `,
   cohortsView: gql`
     fragment CohortsViewF on Organization {
@@ -34,7 +34,7 @@ OrganizationDetailPage.fragments = {
       description
       ...CohortsViewListF
     }
-    ${CohortsView.fragments.cohortsList}
+    ${OrganizationCohortsView.fragments.cohortsList}
   `,
 };
 
@@ -57,7 +57,7 @@ export function OrganizationDetailPage({ tabOrg }: Props) {
     <>
       <PageHeader
         title={tabOrg.organization.name}
-        description={tabOrg.organization.description}
+        description={`Organization: ${tabOrg.organization.description}`}
         breadcrumbs={[
           breadcrumbs.home(),
           breadcrumbs.organizations(),

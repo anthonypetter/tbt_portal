@@ -11,7 +11,7 @@ export const CohortResolver = {
 
     return parent.staffAssignments.map((sa) => ({
       user: sa.user,
-      assignmentRole: sa.assignmentRole,
+      subject: sa.subject,
     }));
   },
 };
