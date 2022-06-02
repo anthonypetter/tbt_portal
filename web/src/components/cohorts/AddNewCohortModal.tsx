@@ -10,9 +10,9 @@ import { MdWorkspacesOutline } from "react-icons/md";
 import noop from "lodash/noop";
 import DatePicker from "react-datepicker";
 import {
-  AddCohortTeachers,
+  AssignCohortTeachers,
   CohortStaffTeacher,
-} from "../staffAssignments/AddCohortTeachers";
+} from "../staffAssignments/AssignCohortTeachers";
 import { EngagementDetailPageQueryName } from "./constants";
 
 const ADD_COHORT = gql`
@@ -173,7 +173,7 @@ export function AddCohortModalBody({
           </div>
 
           <div className="col-span-6 sm:col-span-6">
-            <AddCohortTeachers
+            <AssignCohortTeachers
               staff={staff}
               onAdd={(teacher) => setStaff([...staff, teacher])}
               onRemove={(teacher) =>

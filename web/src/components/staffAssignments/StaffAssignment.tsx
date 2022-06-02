@@ -3,7 +3,7 @@ import { AssignmentRoleBadge } from "components/AssignmentRoleBadge";
 import { AssignmentSubjectBadge } from "components/AssignmentSubjectBadge";
 import { Avatar } from "components/Avatar";
 import React from "react";
-import { CohortStaffTeacher } from "./AddCohortTeachers";
+import { CohortStaffTeacher } from "./AssignCohortTeachers";
 import { EngagementStaffTeacher } from "./AssignEngagementTeachers";
 
 export function StaffAssignment({
