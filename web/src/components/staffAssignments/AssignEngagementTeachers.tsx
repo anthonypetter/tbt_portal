@@ -7,7 +7,7 @@ import {
 } from "components/staffAssignments/AddTeacherButton";
 import { SearchTeachersInput, TeacherSelection } from "./SearchTeachersInput";
 import React, { useState } from "react";
-import { QueryEngagements } from "../engagements/EngagementsView";
+import { QueryEngagements } from "../engagements/OrganizationEngagementsView";
 import { EmptyStaffingState } from "./EmptyStaffingState";
 import { isEngagementStaffTeacher, StaffAssignment } from "./StaffAssignment";
 
