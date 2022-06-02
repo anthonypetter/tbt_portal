@@ -43,3 +43,9 @@ export function isEngagementStaffTeacher(
 ): teacher is EngagementStaffTeacher {
   return (teacher as EngagementStaffTeacher).role !== undefined;
 }
+
+export function isCohortStaffTeacher(
+  teacher: EngagementStaffTeacher | CohortStaffTeacher
+): teacher is CohortStaffTeacher {
+  return (teacher as CohortStaffTeacher).subject !== undefined;
+}
