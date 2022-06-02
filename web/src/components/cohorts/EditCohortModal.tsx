@@ -3,20 +3,25 @@ import { Spinner } from "../Spinner";
 import { Modal } from "../Modal";
 import { ErrorBox } from "components/ErrorBox";
 import { ApolloError, gql, useMutation } from "@apollo/client";
-import { EditEngagementMutation } from "@generated/graphql";
+import {
+  EditEngagementMutation,
+  CohortsTableFragment,
+} from "@generated/graphql";
 import { fromJust } from "@utils/types";
 import { Input } from "components/Input";
 import { MdWorkspacesOutline } from "react-icons/md";
 import noop from "lodash/noop";
 import DatePicker from "react-datepicker";
-import { QueryCohorts } from "./CohortsView";
 import {
-  AddTeachers,
-  StaffTeacher,
-  toStaffTeacher,
-} from "../staffAssignments/AddTeachers";
+  AssignCohortTeachers,
+  CohortStaffTeacher,
+  toCohortStaffTeacher,
+} from "../staffAssignments/AssignCohortTeachers";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
-import { EngagementDetailPageQueryName } from "./constants";
+import {
+  ENGAGEMENT_DETAIL_PAGE_QUERY_NAME,
+  ORG_DETAIL_PAGE_COHORTS_NAME,
+} from "./constants";
 
 const EDIT_COHORT = gql`
   mutation EditCohort($input: EditCohortInput!) {
@@ -30,7 +35,7 @@ const EDIT_COHORT = gql`
 type Props = {
   show: boolean;
   closeModal: () => void;
-  cohort: QueryCohorts[number] | null;
+  cohort: CohortsTableFragment["cohorts"][number] | null;
   afterLeave: () => void;
 };
 
@@ -72,7 +77,7 @@ export function EditCohortModal({
 type EditCohortModalBodyProps = {
   onCancel: () => void;
   onSuccess: () => void;
-  cohort: QueryCohorts[number];
+  cohort: CohortsTableFragment["cohorts"][number];
 };
 
 export function EditCohortModalBody({
@@ -96,8 +101,8 @@ export function EditCohortModalBody({
   const [meetingRoom, setMeetingRoom] = useState<string | null | undefined>(
     cohort.meetingRoom
   );
-  const [staff, setStaff] = useState<StaffTeacher[]>(
-    cohort.staffAssignments.map((sa) => toStaffTeacher(sa))
+  const [staff, setStaff] = useState<CohortStaffTeacher[]>(
+    cohort.staffAssignments.map((sa) => toCohortStaffTeacher(sa))
   );
 
   const [editOrg, { loading }] = useMutation<EditEngagementMutation>(
@@ -121,11 +126,14 @@ export function EditCohortModalBody({
           meetingRoom: meetingRoom,
           newStaffAssignments: staff.map((t) => ({
             userId: t.userId,
-            assignmentRole: t.assignmentRole,
+            subject: t.subject,
           })),
         },
       },
-      refetchQueries: [EngagementDetailPageQueryName],
+      refetchQueries: [
+        ENGAGEMENT_DETAIL_PAGE_QUERY_NAME,
+        ORG_DETAIL_PAGE_COHORTS_NAME,
+      ],
       onQueryUpdated(observableQuery) {
         observableQuery.refetch();
       },
@@ -194,7 +202,7 @@ export function EditCohortModalBody({
           </div>
 
           <div className="col-span-6 sm:col-span-6">
-            <AddTeachers
+            <AssignCohortTeachers
               staff={staff}
               onAdd={(teacher) => setStaff([...staff, teacher])}
               onRemove={(teacher) =>

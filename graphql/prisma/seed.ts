@@ -1,4 +1,10 @@
-import { AssignmentRole, Prisma, PrismaClient, User } from "@prisma/client";
+import {
+  AssignmentRole,
+  AssignmentSubject,
+  Prisma,
+  PrismaClient,
+  User,
+} from "@prisma/client";
 import { add } from "date-fns";
 
 const prisma = new PrismaClient();
@@ -293,14 +299,14 @@ async function createOrg(users: User[], org: typeof ORGANIZATIONS[number]) {
       data: {
         engagement: { connect: { id: engagement.id } },
         user: { connect: { id: mentorTeacher.id } },
-        assignmentRole: AssignmentRole.MENTOR_TEACHER,
+        role: AssignmentRole.MENTOR_TEACHER,
       },
     }),
     prisma.engagementStaffAssignment.create({
       data: {
         engagement: { connect: { id: engagement.id } },
         user: { connect: { id: substituteTeacher.id } },
-        assignmentRole: AssignmentRole.SUBSTITUTE_TEACHER,
+        role: AssignmentRole.SUBSTITUTE_TEACHER,
       },
     }),
   ]);
@@ -310,21 +316,21 @@ async function createOrg(users: User[], org: typeof ORGANIZATIONS[number]) {
       data: {
         cohort: { connect: { id: engagement.cohorts[0].id } },
         user: { connect: { id: tutorTeacher.id } },
-        assignmentRole: AssignmentRole.GENERAL_TEACHER,
+        subject: AssignmentSubject.MATH,
       },
     }),
     prisma.cohortStaffAssignment.create({
       data: {
         cohort: { connect: { id: engagement.cohorts[1].id } },
         user: { connect: { id: substituteTeacher.id } },
-        assignmentRole: AssignmentRole.GENERAL_TEACHER,
+        subject: AssignmentSubject.ELA,
       },
     }),
     prisma.cohortStaffAssignment.create({
       data: {
         cohort: { connect: { id: engagement.cohorts[2].id } },
         user: { connect: { id: tutorTeacher.id } },
-        assignmentRole: AssignmentRole.GENERAL_TEACHER,
+        subject: AssignmentSubject.GENERAL,
       },
     }),
   ]);

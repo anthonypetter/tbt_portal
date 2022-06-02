@@ -8,11 +8,11 @@ import { useState } from "react";
 import { CohortsTable } from "./CohortsTable";
 import filter from "lodash/filter";
 import { DetailsAside } from "components/DetailsAside";
-import { AssignmentRoleBadge } from "components/AssignmentRoleBadge";
+import { AssignmentSubjectBadge } from "components/AssignmentSubjectBadge";
 import { ErrorBoundary } from "components/ErrorBoundary";
 import { ErrorBox } from "components/ErrorBox";
 
-CohortsView.fragments = {
+OrganizationCohortsView.fragments = {
   cohortsList: gql`
     fragment CohortsViewListF on Organization {
       engagements {
@@ -38,7 +38,7 @@ CohortsView.fragments = {
               fullName
               email
             }
-            assignmentRole
+            subject
           }
         }
       }
@@ -54,7 +54,7 @@ type Props = {
   organization: NonNullable<OrgDetailPageCohortsQuery["organization"]>;
 };
 
-export function CohortsView({ organization }: Props) {
+export function OrganizationCohortsView({ organization }: Props) {
   const [selectedCohortId, setSelectedCohortId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
 
@@ -145,11 +145,7 @@ function DetailsSidebar({ selectedCohort, onClose }: DetailsSidebarProps) {
             <DetailsAside.Line
               key={assignment.user.id}
               label={assignment.user.fullName}
-              value={
-                <AssignmentRoleBadge
-                  assignmentRole={assignment.assignmentRole}
-                />
-              }
+              value={<AssignmentSubjectBadge subject={assignment.subject} />}
             />
           ))
         )}

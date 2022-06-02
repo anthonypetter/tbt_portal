@@ -21,7 +21,7 @@ export const EngagementResolver = {
 
     return parent.staffAssignments.map((sa) => ({
       user: sa.user,
-      assignmentRole: sa.assignmentRole,
+      role: sa.role,
     }));
   },
 

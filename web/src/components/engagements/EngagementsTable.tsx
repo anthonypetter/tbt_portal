@@ -5,7 +5,7 @@ import { CONTEXT_MENU_ID, Table } from "components/Table";
 import { Link } from "components/Link";
 import { Column, Cell } from "react-table";
 import { EditEngagementModal } from "./EditEngagementModal";
-import { QueryEngagements } from "./EngagementsView";
+import { QueryEngagements } from "./OrganizationEngagementsView";
 import { ContextMenu } from "components/ContextMenu";
 import { DeleteEngagementModal } from "./DeleteEngagementModal";
 
