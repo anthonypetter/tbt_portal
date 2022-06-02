@@ -45,7 +45,7 @@ describe("csvValidation", () => {
 
   test("should detect empty CSV", async () => {
     const readstream = fs.createReadStream(
-      path.resolve(__dirname, "./empty.csv")
+      path.resolve(__dirname, "./invalid-empty.csv")
     );
 
     const { errors } = await validateCsvFile(readstream);
@@ -55,7 +55,7 @@ describe("csvValidation", () => {
 
   test("should detect missing header", async () => {
     const readstream = fs.createReadStream(
-      path.resolve(__dirname, "./missing-header.csv")
+      path.resolve(__dirname, "./invalid-missing-header.csv")
     );
 
     const { errors } = await validateCsvFile(readstream);
@@ -65,7 +65,7 @@ describe("csvValidation", () => {
 
   test("should detect row column mismatch.", async () => {
     const readstream = fs.createReadStream(
-      path.resolve(__dirname, "./row-column-mismatch.csv")
+      path.resolve(__dirname, "./invalid-row-column-mismatch.csv")
     );
 
     const { errors } = await validateCsvFile(readstream);
@@ -75,13 +75,25 @@ describe("csvValidation", () => {
 
   test("should detect a missing column due to typo.", async () => {
     const readstream = fs.createReadStream(
-      path.resolve(__dirname, "./header-typo.csv")
+      path.resolve(__dirname, "./invalid-header-typo.csv")
     );
 
     const { errors } = await validateCsvFile(readstream);
     expect(errors.length).toBeGreaterThan(0);
     const error = errors[0];
-    expect(error.message).toBe(CsvValidationError.missingColumn);
-    expect(error.hint).toBe("cohorttypo");
+    expect(error.message).toBe(CsvValidationError.missingRequiredColumn);
+    expect(error.hint).toBe("cohort");
+  });
+
+  test("should detect multiple missing columns.", async () => {
+    const readstream = fs.createReadStream(
+      path.resolve(__dirname, "./invalid-missing-required-columns.csv")
+    );
+
+    const { errors } = await validateCsvFile(readstream);
+    expect(errors.length).toBeGreaterThan(0);
+    const error = errors[0];
+    expect(error.message).toBe(CsvValidationError.missingRequiredColumn);
+    expect(error.hint).toBe("grade, monday, tuesday, wednesday");
   });
 });
