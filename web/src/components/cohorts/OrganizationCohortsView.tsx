@@ -12,7 +12,7 @@ import { AssignmentSubjectBadge } from "components/AssignmentSubjectBadge";
 import { ErrorBoundary } from "components/ErrorBoundary";
 import { ErrorBox } from "components/ErrorBox";
 
-CohortsView.fragments = {
+OrganizationCohortsView.fragments = {
   cohortsList: gql`
     fragment CohortsViewListF on Organization {
       engagements {
@@ -54,7 +54,7 @@ type Props = {
   organization: NonNullable<OrgDetailPageCohortsQuery["organization"]>;
 };
 
-export function CohortsView({ organization }: Props) {
+export function OrganizationCohortsView({ organization }: Props) {
   const [selectedCohortId, setSelectedCohortId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
 
