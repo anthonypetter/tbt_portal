@@ -9,7 +9,10 @@ import { Input } from "components/Input";
 import { MdWorkspacesOutline } from "react-icons/md";
 import noop from "lodash/noop";
 import DatePicker from "react-datepicker";
-import { AddTeachers, StaffTeacher } from "../staffAssignments/AddTeachers";
+import {
+  AssignEngagementTeachers,
+  EngagementStaffTeacher,
+} from "../staffAssignments/AssignEngagementTeachers";
 
 const REFETCH_QUERIES = ["OrgDetailPageEngagements"];
 
@@ -75,7 +78,7 @@ export function AddEngagementModalBody({
   const [name, setName] = useState<string | null | undefined>();
   const [startDate, setStartDate] = useState<Date | null | undefined>();
   const [endDate, setEndDate] = useState<Date | null | undefined>();
-  const [staff, setStaff] = useState<StaffTeacher[]>([]);
+  const [staff, setStaff] = useState<EngagementStaffTeacher[]>([]);
 
   const [addEngagement, { loading }] = useMutation<AddEngagementMutation>(
     ADD_ENGAGEMENT,
@@ -141,7 +144,7 @@ export function AddEngagementModalBody({
           </div>
 
           <div className="col-span-6 sm:col-span-6">
-            <AddTeachers
+            <AssignEngagementTeachers
               staff={staff}
               onAdd={(teacher) => setStaff([...staff, teacher])}
               onRemove={(teacher) =>
