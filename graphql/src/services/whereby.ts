@@ -22,7 +22,8 @@ async function createWhereByRoom(startDate: string, endDate: string) {
     });
     return await result.json();
   } catch (error) {
-    throw error;
+    console.error("[WHEREBY ERROR]", error);
+    return null;
   }
 }
 
@@ -35,7 +36,8 @@ async function deleteWhereByRoom(meetingId: string | null) {
     });
     return await result.json();
   } catch (error) {
-    throw error;
+    console.error("[WHEREBY ERROR]", error);
+    return null;
   }
 }
 
