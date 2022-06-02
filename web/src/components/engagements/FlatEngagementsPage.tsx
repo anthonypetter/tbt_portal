@@ -26,7 +26,7 @@ FlatEngagementsPage.fragments = {
             fullName
             email
           }
-          assignmentRole
+          role
         }
       }
     }

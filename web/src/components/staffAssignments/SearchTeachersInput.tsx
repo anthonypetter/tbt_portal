@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import { gql, useLazyQuery } from "@apollo/client";
-import { AssignmentRole, SearchUsersQuery } from "@generated/graphql";
+import { SearchUsersQuery } from "@generated/graphql";
 import { SearchItem, SearchCombobox } from "./SearchCombobox";
 import { AddTeacherButton } from "./AddTeacherButton";
 import { fromJust } from "@utils/types";
 import { useDebounce } from "use-debounce";
+import { Assignment } from "./types";
 
 const SEARCH_USERS = gql`
   query SearchUsers($query: String!) {
@@ -32,11 +33,12 @@ type Props = {
   onSelect: (teacher: TeacherSelection | null) => void;
   onClickAdd: (
     teacher: TeacherSelection | null,
-    assignmentRole: AssignmentRole
+    assignment: Assignment
   ) => void;
+  options: Assignment[];
 };
 
-export function SearchTeachersInput({ onSelect, onClickAdd }: Props) {
+export function SearchTeachersInput({ onSelect, onClickAdd, options }: Props) {
   const [query, setQuery] = useState<string>("");
   const [debouncedQuery] = useDebounce(query, 300);
   const [teacherSelection, setTeacherSelection] =
@@ -112,9 +114,8 @@ export function SearchTeachersInput({ onSelect, onClickAdd }: Props) {
 
         <div className="mt-1 ml-3">
           <AddTeacherButton
-            onAdd={(assignAs) => {
-              onClickAdd(teacherSelection, assignAs);
-            }}
+            onAdd={(assignment) => onClickAdd(teacherSelection, assignment)}
+            options={options}
           />
         </div>
       </div>

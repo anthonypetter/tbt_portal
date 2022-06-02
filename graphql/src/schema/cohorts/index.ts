@@ -9,13 +9,27 @@ import {
 import { parseId } from "../../utils/numbers";
 import { CohortResolver } from "./CohortResolver";
 import { fromJust } from "../../utils/types";
-import { calcStaffChanges, fromNewToInput } from "../../utils/staffAssignments";
+import {
+  calcStaffChanges,
+  fromNewToInput,
+} from "../../utils/cohortStaffAssignments";
 
 /**
  * Type Defs
  */
 
 export const typeDefs = gql`
+  enum AssignmentSubject {
+    MATH
+    ELA
+    GENERAL
+  }
+
+  type CohortStaffAssignment {
+    user: User!
+    subject: AssignmentSubject!
+  }
+
   type Cohort {
     id: ID!
     createdAt: Date!
@@ -28,7 +42,12 @@ export const typeDefs = gql`
     endDate: Date
 
     engagementId: ID!
-    staffAssignments: [StaffAssignment!]!
+    staffAssignments: [CohortStaffAssignment!]!
+  }
+
+  input NewCohortStaffAssignment {
+    userId: ID!
+    subject: AssignmentSubject!
   }
 
   input EditCohortInput {
@@ -39,7 +58,7 @@ export const typeDefs = gql`
     grade: String
     hostKey: String
     meetingRoom: String
-    newStaffAssignments: [NewStaffAssignment!]
+    newStaffAssignments: [NewCohortStaffAssignment!]
   }
 
   input AddCohortInput {
@@ -50,7 +69,7 @@ export const typeDefs = gql`
     grade: String
     hostKey: String
     meetingRoom: String
-    newStaffAssignments: [NewStaffAssignment!]!
+    newStaffAssignments: [NewCohortStaffAssignment!]!
   }
 
   extend type Query {
