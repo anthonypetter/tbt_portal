@@ -17,27 +17,9 @@ import { UploadCsvButton } from "./UploadCsvButton";
 EngagementCohortsView.fragments = {
   cohortsList: gql`
     fragment EngagementCohortsView on Engagement {
-      cohorts {
-        id
-        createdAt
-        name
-        grade
-        meetingRoom
-        hostKey
-        exempt
-        startDate
-        endDate
-        engagementId
-        staffAssignments {
-          user {
-            id
-            fullName
-            email
-          }
-          subject
-        }
-      }
+      ...CohortsTable
     }
+    ${CohortsTable.fragments.cohortsTable}
   `,
 };
 

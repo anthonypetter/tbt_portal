@@ -285,7 +285,7 @@ export type AddCohortMutationVariables = Exact<{
 
 export type AddCohortMutation = { __typename?: 'Mutation', addCohort: { __typename?: 'Cohort', id: string, name: string } };
 
-export type CohortsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> }> };
+export type CohortsTableFragment = { __typename?: 'Engagement', cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
 export type DeleteCohortMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -302,6 +302,8 @@ export type EditCohortMutationVariables = Exact<{
 export type EditCohortMutation = { __typename?: 'Mutation', editCohort: { __typename?: 'Cohort', id: string, name: string } };
 
 export type EngagementCohortsViewFragment = { __typename?: 'Engagement', cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
+
+export type CohortsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> }> };
 
 export type AddEngagementMutationVariables = Exact<{
   input: AddEngagementInput;
@@ -326,9 +328,9 @@ export type EditEngagementMutation = { __typename?: 'Mutation', editEngagement: 
 
 export type EngagementDetailPageCohortsFragment = { __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, organization: { __typename?: 'Organization', name: string, id: string }, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
-export type EngagementsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
-
 export type FlatEngagementsFragment = { __typename?: 'Query', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
+
+export type EngagementsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
 export type AddOrganizationMutationVariables = Exact<{
   input: AddOrganizationInput;
@@ -415,8 +417,8 @@ export type UsersPageQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type UsersPageQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, fullName: string, email: string, role: UserRole, accountStatus: AccountStatus }> };
 
-export const EngagementCohortsViewFragmentDoc = gql`
-    fragment EngagementCohortsView on Engagement {
+export const CohortsTableFragmentDoc = gql`
+    fragment CohortsTable on Engagement {
   cohorts {
     id
     createdAt
@@ -439,6 +441,11 @@ export const EngagementCohortsViewFragmentDoc = gql`
   }
 }
     `;
+export const EngagementCohortsViewFragmentDoc = gql`
+    fragment EngagementCohortsView on Engagement {
+  ...CohortsTable
+}
+    ${CohortsTableFragmentDoc}`;
 export const EngagementDetailPageCohortsFragmentDoc = gql`
     fragment EngagementDetailPageCohorts on Engagement {
   id
