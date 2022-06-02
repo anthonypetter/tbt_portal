@@ -4,7 +4,7 @@ import {
   Assignment,
   EngagementAssignment,
   TeacherAssignmentType,
-} from "components/staffAssignments/AddTeacherButton";
+} from "./types";
 import { SearchTeachersInput, TeacherSelection } from "./SearchTeachersInput";
 import React, { useState } from "react";
 import { QueryEngagements } from "../engagements/EngagementsView";
