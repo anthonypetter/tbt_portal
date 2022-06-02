@@ -1,24 +1,24 @@
-import { EngagementStaffAssignment, AssignmentRole } from "@prisma/client";
-import intersectionBy from "lodash/intersectionBy";
-import { NewEngagementStaffAssignment } from "src/schema/__generated__/graphql";
+import { CohortStaffAssignment, AssignmentSubject } from "@prisma/client";
+import { intersectionBy } from "lodash";
+import { NewCohortStaffAssignment } from "src/schema/__generated__/graphql";
 import { parseId } from "./numbers";
 import { findToAdd, findToDelete } from "./staffAssignments";
 import { fromJust } from "./types";
 
 export type ChangeSet = {
-  additions: StaffAssignmentInput[];
-  removals: StaffAssignmentInput[];
-  updates: StaffAssignmentInput[];
+  additions: CohortStaffAssignmentInput[];
+  removals: CohortStaffAssignmentInput[];
+  updates: CohortStaffAssignmentInput[];
 };
 
-export type StaffAssignmentInput = {
+export type CohortStaffAssignmentInput = {
   userId: number;
-  role: AssignmentRole;
+  subject: AssignmentSubject;
 };
 
 export function calcStaffChanges(
-  existingAssignments: EngagementStaffAssignment[],
-  newAssignments: NewEngagementStaffAssignment[]
+  existingAssignments: CohortStaffAssignment[],
+  newAssignments: NewCohortStaffAssignment[]
 ): ChangeSet {
   const existingStaff = existingAssignments.map((a) => fromExistingToInput(a));
   const newStaff = newAssignments.map((a) => fromNewToInput(a));
@@ -31,20 +31,20 @@ export function calcStaffChanges(
 }
 
 function fromExistingToInput(
-  existingAssignment: EngagementStaffAssignment
-): StaffAssignmentInput {
+  existingAssignment: CohortStaffAssignment
+): CohortStaffAssignmentInput {
   return {
     userId: existingAssignment.userId,
-    role: existingAssignment.role,
+    subject: existingAssignment.subject,
   };
 }
 
 export function fromNewToInput(
-  newAssignment: NewEngagementStaffAssignment
-): StaffAssignmentInput {
+  newAssignment: NewCohortStaffAssignment
+): CohortStaffAssignmentInput {
   return {
     userId: parseId(newAssignment.userId),
-    role: newAssignment.role,
+    subject: newAssignment.subject,
   };
 }
 
@@ -52,8 +52,8 @@ function findToUpdate({
   existingStaff,
   newStaff,
 }: {
-  existingStaff: StaffAssignmentInput[];
-  newStaff: StaffAssignmentInput[];
+  existingStaff: CohortStaffAssignmentInput[];
+  newStaff: CohortStaffAssignmentInput[];
 }) {
   const staffInBothArrays = intersectionBy(
     newStaff,
@@ -61,7 +61,7 @@ function findToUpdate({
     (teacher) => teacher.userId
   );
 
-  //Now lets figure out if their role changed.
+  //Now lets figure out if their subject changed.
   const assignmentsToUpdate = staffInBothArrays.filter((assignment) => {
     const existingTeacher = fromJust(
       existingStaff.find((t) => t.userId === assignment.userId),
@@ -73,7 +73,7 @@ function findToUpdate({
       "newTeacher"
     );
 
-    return existingTeacher.role !== newTeacher.role;
+    return existingTeacher.subject !== newTeacher.subject;
   });
 
   return assignmentsToUpdate;
