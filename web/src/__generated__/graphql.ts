@@ -278,6 +278,13 @@ export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', email: string, accountStatus: AccountStatus, role: UserRole, fullName: string } | null };
 
+export type AddCohortMutationVariables = Exact<{
+  input: AddCohortInput;
+}>;
+
+
+export type AddCohortMutation = { __typename?: 'Mutation', addCohort: { __typename?: 'Cohort', id: string, name: string } };
+
 export type CohortsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> }> };
 
 export type DeleteCohortMutationVariables = Exact<{
@@ -286,6 +293,13 @@ export type DeleteCohortMutationVariables = Exact<{
 
 
 export type DeleteCohortMutation = { __typename?: 'Mutation', deleteCohort: { __typename?: 'Cohort', id: string, name: string } };
+
+export type EditCohortMutationVariables = Exact<{
+  input: EditCohortInput;
+}>;
+
+
+export type EditCohortMutation = { __typename?: 'Mutation', editCohort: { __typename?: 'Cohort', id: string, name: string } };
 
 export type EngagementCohortsViewFragment = { __typename?: 'Engagement', cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
@@ -633,6 +647,40 @@ export function useCurrentUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type CurrentUserQueryHookResult = ReturnType<typeof useCurrentUserQuery>;
 export type CurrentUserLazyQueryHookResult = ReturnType<typeof useCurrentUserLazyQuery>;
 export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
+export const AddCohortDocument = gql`
+    mutation AddCohort($input: AddCohortInput!) {
+  addCohort(input: $input) {
+    id
+    name
+  }
+}
+    `;
+export type AddCohortMutationFn = Apollo.MutationFunction<AddCohortMutation, AddCohortMutationVariables>;
+
+/**
+ * __useAddCohortMutation__
+ *
+ * To run a mutation, you first call `useAddCohortMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddCohortMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addCohortMutation, { data, loading, error }] = useAddCohortMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useAddCohortMutation(baseOptions?: Apollo.MutationHookOptions<AddCohortMutation, AddCohortMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddCohortMutation, AddCohortMutationVariables>(AddCohortDocument, options);
+      }
+export type AddCohortMutationHookResult = ReturnType<typeof useAddCohortMutation>;
+export type AddCohortMutationResult = Apollo.MutationResult<AddCohortMutation>;
+export type AddCohortMutationOptions = Apollo.BaseMutationOptions<AddCohortMutation, AddCohortMutationVariables>;
 export const DeleteCohortDocument = gql`
     mutation DeleteCohort($id: ID!) {
   deleteCohort(id: $id) {
@@ -667,6 +715,40 @@ export function useDeleteCohortMutation(baseOptions?: Apollo.MutationHookOptions
 export type DeleteCohortMutationHookResult = ReturnType<typeof useDeleteCohortMutation>;
 export type DeleteCohortMutationResult = Apollo.MutationResult<DeleteCohortMutation>;
 export type DeleteCohortMutationOptions = Apollo.BaseMutationOptions<DeleteCohortMutation, DeleteCohortMutationVariables>;
+export const EditCohortDocument = gql`
+    mutation EditCohort($input: EditCohortInput!) {
+  editCohort(input: $input) {
+    id
+    name
+  }
+}
+    `;
+export type EditCohortMutationFn = Apollo.MutationFunction<EditCohortMutation, EditCohortMutationVariables>;
+
+/**
+ * __useEditCohortMutation__
+ *
+ * To run a mutation, you first call `useEditCohortMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditCohortMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editCohortMutation, { data, loading, error }] = useEditCohortMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useEditCohortMutation(baseOptions?: Apollo.MutationHookOptions<EditCohortMutation, EditCohortMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditCohortMutation, EditCohortMutationVariables>(EditCohortDocument, options);
+      }
+export type EditCohortMutationHookResult = ReturnType<typeof useEditCohortMutation>;
+export type EditCohortMutationResult = Apollo.MutationResult<EditCohortMutation>;
+export type EditCohortMutationOptions = Apollo.BaseMutationOptions<EditCohortMutation, EditCohortMutationVariables>;
 export const AddEngagementDocument = gql`
     mutation AddEngagement($input: AddEngagementInput!) {
   addEngagement(input: $input) {
