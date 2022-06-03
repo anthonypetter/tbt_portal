@@ -41,7 +41,7 @@ type SubjectSchedule = {
   subject: string;
   startTime: string;
   endTime: string;
-  timezone: string;
+  timeZone: string;
 };
 
 type StaffAssignments = {
@@ -49,7 +49,7 @@ type StaffAssignments = {
   teacher: { fullName: string; email: string };
 };
 
-type ProcessedCohort = {
+export type ProcessedCohort = {
   cohortName: string;
   grade: string;
   googleClassroomLink?: string;
@@ -110,7 +110,7 @@ export function parseToCohortRows(csv: unknown): CohortCsvRow[] {
   }
 
   // At this point, we know our CSV is an array of row objects that
-  // have the keys enumerated in the `Headers` enum.
+  // have the keys enumerated in the `RequiredHeaders` enum.
   return csv as CohortCsvRow[];
 }
 
@@ -158,7 +158,7 @@ function parseSubjectSchedules(csvDayInput: string): SubjectSchedule[] {
       subject: parseSubject(subject),
       startTime: parseHhMm(startTime),
       endTime: parseHhMm(endTime),
-      timezone: parseTimeZone(timeZone),
+      timeZone: parseTimeZone(timeZone),
     };
   });
 
@@ -197,9 +197,35 @@ function parseTeacher(tupleString: string): {
   email: string;
 } {
   const [fullName, email] = tupleString.split(";");
-  if (!isEmail.validate(email)) {
-    throw new Error(`Invalid email: ${email}`);
+
+  if (!fullName) {
+    throw new CsvValidationError(
+      CsvValidationErrorMessage.missingTeacherName,
+      email
+    );
   }
+
+  if (!email) {
+    throw new CsvValidationError(
+      CsvValidationErrorMessage.missingTeacherEmail,
+      email
+    );
+  }
+
+  try {
+    if (!isEmail.validate(email)) {
+      throw new CsvValidationError(
+        CsvValidationErrorMessage.unsupportedEmailFormat,
+        email
+      );
+    }
+  } catch (error) {
+    throw new CsvValidationError(
+      CsvValidationErrorMessage.unsupportedEmailFormat,
+      email
+    );
+  }
+
   return { fullName, email };
 }
 
@@ -245,6 +271,6 @@ function parseTimeZone(timeZone: string) {
   if (SUPPORTED_ZONES.includes(timeZone.toUpperCase())) {
     return timeZone.toUpperCase();
   } else {
-    throw new CsvValidationError(CsvValidationErrorMessage.invalidTimeZone);
+    throw new CsvValidationError(CsvValidationErrorMessage.unsupportedTimezone);
   }
 }
