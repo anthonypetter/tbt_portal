@@ -21,4 +21,6 @@ export enum CsvValidationErrorMessage {
   rowLengthMismatch = "Row length does not match headers.",
   unexpectedParseError = "An unexpected error was encountered during CSV parsing.",
   unrecognizedSubject = "Encountered an unrecognized subject.",
+  invalidTimeFormat = "Unable to parse provided time.",
+  invalidTimeZone = "Unable to parse provided time zone.",
 }
