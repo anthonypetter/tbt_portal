@@ -1,0 +1,50 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "/web: Chrome (launch)",
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/web"
+    },
+    {
+      // For macOS launch the browser with:
+      // `/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9223`
+      "name": "/web: Chrome (attach)",
+      "port": 9223,
+      "request": "attach",
+      "type": "chrome",
+      "webRoot": "${workspaceFolder}/web"
+    },
+    {
+      "name": "/web: Edge (launch)",
+      "request": "launch",
+      "type": "pwa-msedge",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/web"
+    },
+    {
+      // For macOS launch the browser with:
+      // `/Applications/Microsoft\ Edge.app/Contents/MacOS/Microsoft\ Edge --remote-debugging-port=9222`
+      "name": "/web: Edge (attach)",
+      "port": 9222,
+      "request": "attach",
+      "type": "pwa-msedge",
+      "webRoot": "${workspaceFolder}/web"
+    },
+    {
+      "name": "/graphql: Node (attach)",
+      "port": 9229,
+      "request": "attach",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node",
+      "localRoot": "${workspaceRoot}/graphql"
+    },
+  ]
+}
