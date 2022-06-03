@@ -4,3 +4,20 @@ export class NotFoundError extends Error {
     this.name = "NotFoundError";
   }
 }
+
+export class CsvValidationError extends Error {
+  public hint?: string;
+  constructor(message: string, hint?: string) {
+    super(message);
+    this.name = "CsvValidationError";
+    this.hint = hint;
+  }
+}
+
+export enum CsvValidationErrorMessage {
+  emptyData = "Invalid CSV: Dataset is empty.",
+  invalidFormat = "Unable to detect format.",
+  missingRequiredColumn = "One or more of the required column headers is missing.",
+  rowLengthMismatch = "Row length does not match headers.",
+  unexpectedParseError = "An unexpected error was encountered during CSV parsing.",
+}
