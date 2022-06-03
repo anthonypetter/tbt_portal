@@ -328,6 +328,8 @@ export type EditEngagementMutation = { __typename?: 'Mutation', editEngagement: 
 
 export type EngagementDetailsPageCohortsFragment = { __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, organization: { __typename?: 'Organization', name: string, id: string }, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
+export type EngagementDetailsPageCsvUploadFragment = { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string }, cohorts: Array<{ __typename?: 'Cohort', id: string }> };
+
 export type FlatEngagementsFragment = { __typename?: 'Query', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
 export type EngagementsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
@@ -405,7 +407,7 @@ export type EngagementCsvUploadPageQueryVariables = Exact<{
 }>;
 
 
-export type EngagementCsvUploadPageQuery = { __typename?: 'Query', engagement?: { __typename?: 'Engagement', id: string } | null };
+export type EngagementCsvUploadPageQuery = { __typename?: 'Query', engagement?: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string }, cohorts: Array<{ __typename?: 'Cohort', id: string }> } | null };
 
 export type OrgDetailPageEngagementsQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -474,6 +476,19 @@ export const EngagementDetailsPageCohortsFragmentDoc = gql`
   ...EngagementCohortsView
 }
     ${EngagementCohortsViewFragmentDoc}`;
+export const EngagementDetailsPageCsvUploadFragmentDoc = gql`
+    fragment EngagementDetailsPageCsvUpload on Engagement {
+  id
+  name
+  organization {
+    id
+    name
+  }
+  cohorts {
+    id
+  }
+}
+    `;
 export const FlatEngagementsFragmentDoc = gql`
     fragment FlatEngagements on Query {
   engagements {
@@ -1151,10 +1166,10 @@ export type EngagementDetailsPageQueryResult = Apollo.QueryResult<EngagementDeta
 export const EngagementCsvUploadPageDocument = gql`
     query EngagementCsvUploadPage($id: ID!) {
   engagement(id: $id) {
-    id
+    ...EngagementDetailsPageCsvUpload
   }
 }
-    `;
+    ${EngagementDetailsPageCsvUploadFragmentDoc}`;
 
 /**
  * __useEngagementCsvUploadPageQuery__
