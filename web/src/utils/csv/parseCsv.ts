@@ -152,9 +152,14 @@ function parseSubjectSchedules(csvDayInput: string): SubjectSchedule[] {
   const subjectSchedule = subjectTimeRanges.map((subjectRange) => {
     const [subject, ...restTime] = subjectRange.split(":");
     const timeAndZone = restTime.join(":");
-    const [timeRange, timezone] = timeAndZone.split(" ");
+    const [timeRange, timeZone] = timeAndZone.split(" ");
     const [startTime, endTime] = timeRange.split("-");
-    return { subject: parseSubject(subject), startTime, endTime, timezone };
+    return {
+      subject: parseSubject(subject),
+      startTime: parseHhMm(startTime),
+      endTime: parseHhMm(endTime),
+      timezone: parseTimeZone(timeZone),
+    };
   });
 
   return subjectSchedule;
@@ -215,5 +220,31 @@ function parseSubject(subject: string) {
         CsvValidationErrorMessage.unrecognizedSubject,
         subject
       );
+  }
+}
+
+export function parseHhMm(time: string) {
+  const regex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])?$/;
+
+  const isValid = regex.test(time);
+
+  if (isValid) {
+    return time;
+  }
+
+  throw new CsvValidationError(
+    CsvValidationErrorMessage.invalidTimeFormat,
+    time
+  );
+}
+
+// As per legacy app. Will likely change later.
+const SUPPORTED_ZONES = ["EST", "EDT", "PST", "PDT"];
+
+function parseTimeZone(timeZone: string) {
+  if (SUPPORTED_ZONES.includes(timeZone.toUpperCase())) {
+    return timeZone.toUpperCase();
+  } else {
+    throw new CsvValidationError(CsvValidationErrorMessage.invalidTimeZone);
   }
 }

@@ -1,7 +1,8 @@
-import { parseCsv } from "../parseCsv";
+import { parseCsv, parseHhMm } from "../parseCsv";
 import fs from "fs";
 import path from "path";
 import { AssignmentSubject } from "@generated/graphql";
+import { CsvValidationError, CsvValidationErrorMessage } from "@utils/errors";
 
 describe("parseCsv", () => {
   test("should parse a valid math and ela csv", async () => {
@@ -2103,4 +2104,50 @@ describe("parseCsv", () => {
     const result = await parseCsv(readStream);
     expect(result).toEqual(expected);
   });
+
+  test("should parse time correctly", () => {
+    expect(parseHhMm("9:30")).toEqual("9:30");
+    expect(parseHhMm("09:30")).toEqual("09:30");
+    expect(parseHhMm("23:59")).toEqual("23:59");
+    expect(parseHhMm("12:34")).toEqual("12:34");
+    expect(parseHhMm("00:01")).toEqual("00:01");
+    expect(getErrorMsg(() => parseHhMm("09:30"))).toEqual(undefined);
+  });
+
+  test("should fail to parse time", () => {
+    expect(getErrorMsg(() => parseHhMm("0930"))).toEqual(
+      CsvValidationErrorMessage.invalidTimeFormat
+    );
+    expect(getErrorMsg(() => parseHhMm("1:1"))).toEqual(
+      CsvValidationErrorMessage.invalidTimeFormat
+    );
+    expect(getErrorMsg(() => parseHhMm("25:30"))).toEqual(
+      CsvValidationErrorMessage.invalidTimeFormat
+    );
+    expect(getErrorMsg(() => parseHhMm("abcd"))).toEqual(
+      CsvValidationErrorMessage.invalidTimeFormat
+    );
+    expect(getErrorMsg(() => parseHhMm(""))).toEqual(
+      CsvValidationErrorMessage.invalidTimeFormat
+    );
+    expect(getErrorMsg(() => parseHhMm("09:68"))).toEqual(
+      CsvValidationErrorMessage.invalidTimeFormat
+    );
+  });
 });
+
+function getErrorMsg(parseTime: () => void): string | undefined {
+  let errorMessage;
+
+  try {
+    parseTime();
+  } catch (error: unknown) {
+    if (error instanceof CsvValidationError) {
+      errorMessage = error.message;
+    } else {
+      errorMessage = "Parsing Failed for unknown reason.";
+    }
+  }
+
+  return errorMessage;
+}
