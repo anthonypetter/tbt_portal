@@ -104,7 +104,6 @@ type DetailsSidebarProps = {
 };
 
 function DetailsSidebar({ selectedCohort, onClose }: DetailsSidebarProps) {
-  console.log("selectedCohort", selectedCohort);
   if (!selectedCohort) {
     return <DetailsAside isOpen={false} onClose={onClose} />;
   }
