@@ -28,7 +28,10 @@ export function EngagementDetailsTabs({ tabEng }: Props) {
     },
     {
       name: getDisplayName(Tab.UploadCsv),
-      href: Routes.org.cohorts.href(engagement.id),
+      href: Routes.engagement.uploadCsv.href(
+        engagement.organization.id,
+        engagement.id
+      ),
       current: tab === Tab.UploadCsv,
     },
   ];
