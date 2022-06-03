@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { Button, ThemeT } from "./Button";
 import { assertUnreachable } from "@utils/types";
 
-type WidthOptions = "medium" | "large";
+type WidthOptions = "medium" | "large" | "xlarge";
 
 type Props = {
   show: boolean;
@@ -111,6 +111,9 @@ function getModalWidth(options: WidthOptions) {
 
     case "large":
       return "w-full sm:max-w-2xl";
+
+    case "xlarge":
+      return "w-full sm:max-w-4xl";
 
     default:
       return "w-full sm:max-w-lg";
