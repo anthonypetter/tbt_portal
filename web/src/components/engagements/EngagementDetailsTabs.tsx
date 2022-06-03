@@ -2,18 +2,18 @@ import { Routes } from "@utils/routes";
 import { assertUnreachable } from "@utils/types";
 import { EngagementCohortsView } from "components/cohorts/EngagementCohortsView";
 import { LinkTabs } from "components/LinkTabs";
-import { TabEngagement } from "./EngagementDetailPage";
+import { TabEngagement } from "./EngagementDetailsPage";
 
 export enum Tab {
   Cohorts,
-  Sessions,
+  UploadCsv,
 }
 
 type Props = {
   tabEng: TabEngagement;
 };
 
-export function EngagementTabs({ tabEng }: Props) {
+export function EngagementDetailsTabs({ tabEng }: Props) {
   const { tab, engagement } = tabEng;
 
   const tabsConfig = [
@@ -27,10 +27,9 @@ export function EngagementTabs({ tabEng }: Props) {
       current: tab === Tab.Cohorts,
     },
     {
-      name: getDisplayName(Tab.Sessions),
+      name: getDisplayName(Tab.UploadCsv),
       href: Routes.org.cohorts.href(engagement.id),
-      count: 0,
-      current: tab === Tab.Sessions,
+      current: tab === Tab.UploadCsv,
     },
   ];
   return (
@@ -51,8 +50,8 @@ function TabView({ tabEng }: TabViewProps) {
       return <EngagementCohortsView engagement={tabEng.engagement} />;
 
     //TODO: Repalce
-    case Tab.Sessions:
-      return <div>hello sessions</div>;
+    case Tab.UploadCsv:
+      return <div>hello upload</div>;
 
     default:
       assertUnreachable(tabEng, "tabEng.tab");
@@ -64,8 +63,8 @@ export function getDisplayName(tab: Tab) {
     case Tab.Cohorts:
       return "Cohorts";
 
-    case Tab.Sessions:
-      return "";
+    case Tab.UploadCsv:
+      return "Upload CSV";
 
     default:
       assertUnreachable(tab, "tab");
