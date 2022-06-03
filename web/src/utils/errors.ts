@@ -22,5 +22,8 @@ export enum CsvValidationErrorMessage {
   unexpectedParseError = "An unexpected error was encountered during CSV parsing.",
   unrecognizedSubject = "Encountered an unrecognized subject.",
   invalidTimeFormat = "Unable to parse provided time.",
-  invalidTimeZone = "Unable to parse provided time zone.",
+  unsupportedTimezone = "The given time zone is not supported at this time.",
+  unsupportedEmailFormat = "The given email format is not supported.",
+  missingTeacherName = "Unable to parse a teacher's name.",
+  missingTeacherEmail = "Unable to parse a teacher's email.",
 }

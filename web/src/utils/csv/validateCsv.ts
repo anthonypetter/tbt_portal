@@ -1,10 +1,15 @@
 import { ReadStream } from "fs";
-import { CohortCsvRow, parseReadStream, parseToCohortRows } from "./parseCsv";
+import {
+  ProcessedCohort,
+  parseReadStream,
+  parseToCohortRows,
+  processCohortRow,
+} from "./parseCsv";
 import { CsvValidationError, CsvValidationErrorMessage } from "@utils/errors";
 
 type ValidationResult = {
   errors: { message: string; hint?: string }[];
-  csv?: CohortCsvRow[];
+  csv?: ProcessedCohort[];
 };
 
 export async function validateCsvFile(
@@ -31,8 +36,9 @@ export async function validateCsvFile(
 
 export function validateCsv(unvalidatedCsv: unknown): ValidationResult {
   try {
-    const parsedCsv = parseToCohortRows(unvalidatedCsv);
-    return { csv: parsedCsv, errors: [] };
+    const cohortRows = parseToCohortRows(unvalidatedCsv);
+    const processedCsv = processCohortRow(cohortRows);
+    return { csv: processedCsv, errors: [] };
   } catch (error: unknown) {
     const errors = [];
     if (error instanceof CsvValidationError) {
