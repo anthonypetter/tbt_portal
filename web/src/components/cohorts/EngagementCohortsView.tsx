@@ -49,7 +49,7 @@ export function EngagementCohortsView({ engagement }: Props) {
     <ErrorBoundary fallbackRender={() => <ErrorBox className="mt-4" />}>
       <div className="flex min-h-[500px]">
         <main className="flex-1">
-          <div className="flex flex-col space-y-2 sm:flesx-row sm:space-y-0 justify-between my-4">
+          <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 justify-between my-4">
             <div className="flex-1 lg:max-w-sm lg:mr-2 lg:ml-1">
               <Input
                 id="cohorts-search"
@@ -125,7 +125,7 @@ function DetailsSidebar({ selectedCohort, onClose }: DetailsSidebarProps) {
           label="Meeting Room"
           value={
             selectedCohort?.meetingRoom ? (
-              <a href={selectedCohort.meetingRoom || ""}>
+              <a href={selectedCohort.meetingRoom}>
                 <p className="text-ellipsis text-blue-400 truncate">
                   {selectedCohort.name} room link
                 </p>
