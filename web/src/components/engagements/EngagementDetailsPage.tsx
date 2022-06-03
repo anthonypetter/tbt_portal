@@ -2,12 +2,16 @@ import { EngagementDetailPageQuery } from "@generated/graphql";
 import { gql } from "@apollo/client";
 import { PageHeader } from "components/PageHeader";
 import { Routes } from "@utils/routes";
-import { getDisplayName, EngagementTabs, Tab } from "./EngagementTabs";
+import {
+  getDisplayName,
+  EngagementDetailsTabs,
+  Tab,
+} from "./EngagementDetailsTabs";
 import { Container } from "components/Container";
 import { EngagementCohortsView } from "components/cohorts/EngagementCohortsView";
 import { breadcrumbs } from "@utils/breadcrumbs";
 
-EngagementDetailPage.fragments = {
+EngagementDetailsPage.fragments = {
   cohortsView: gql`
     fragment EngagementDetailPageCohorts on Engagement {
       id
@@ -38,7 +42,7 @@ export type TabEngagement =
       engagement: NonNullable<EngagementDetailPageQuery["engagement"]>;
     }
   | {
-      tab: Tab.Sessions;
+      tab: Tab.UploadCsv;
       engagement: NonNullable<EngagementDetailPageQuery["engagement"]>;
     };
 
@@ -46,7 +50,7 @@ type Props = {
   tabEng: TabEngagement;
 };
 
-export function EngagementDetailPage({ tabEng }: Props) {
+export function EngagementDetailsPage({ tabEng }: Props) {
   const { tab, engagement } = tabEng;
   return (
     <>
@@ -73,7 +77,7 @@ export function EngagementDetailPage({ tabEng }: Props) {
 
       <div className="mt-8">
         <Container padding="md">
-          <EngagementTabs tabEng={tabEng} />
+          <EngagementDetailsTabs tabEng={tabEng} />
         </Container>
       </div>
     </>
