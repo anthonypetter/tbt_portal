@@ -73,6 +73,8 @@ export function CohortsScheduleCalendarModal({
     <Modal
       show={show}
       onClose={noop}
+      onOutsideClick={() => closeModal()}
+      onDismissClick={() => closeModal()}
       icon={
         <Modal.Icon className="bg-blue-100">
           <CalendarIcon
