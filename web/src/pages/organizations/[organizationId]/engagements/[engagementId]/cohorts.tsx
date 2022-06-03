@@ -2,21 +2,21 @@ import type { NextPage, GetServerSidePropsContext } from "next";
 import { AuthedLayout } from "components/AuthedLayout";
 import { getServerSideAuth } from "@utils/auth/server-side-auth";
 import { gql, useQuery, ApolloQueryResult } from "@apollo/client";
-import { EngagementDetailPageQuery } from "@generated/graphql";
+import { EngagementDetailsPageQuery } from "@generated/graphql";
 import { triggerErrorToast } from "components/Toast";
 import { getSession } from "@lib/apollo-client";
 import { processResult } from "@utils/apollo";
 import { parseEngagementId } from "@utils/parsing";
-import { EngagementDetailPage } from "components/engagements/EngagementDetailPage";
-import { Tab } from "components/engagements/EngagementTabs";
+import { EngagementDetailsPage } from "components/engagements/EngagementDetailsPage";
+import { Tab } from "components/engagements/EngagementDetailsTabs";
 
 const GET_ENGAGEMENT = gql`
-  query EngagementDetailPage($id: ID!) {
+  query EngagementDetailsPage($id: ID!) {
     engagement(id: $id) {
-      ...EngagementDetailPageCohorts
+      ...EngagementDetailsPageCohorts
     }
   }
-  ${EngagementDetailPage.fragments.cohortsView}
+  ${EngagementDetailsPage.fragments.cohortsView}
 `;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -29,7 +29,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { engagementId } = parseEngagementId(context.params);
   const { client } = getSession(auth.token);
 
-  const result: ApolloQueryResult<EngagementDetailPageQuery> =
+  const result: ApolloQueryResult<EngagementDetailsPageQuery> =
     await client.query({
       query: GET_ENGAGEMENT,
       variables: { id: engagementId },
@@ -44,11 +44,11 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 type Props = {
-  engagement: NonNullable<EngagementDetailPageQuery["engagement"]>;
+  engagement: NonNullable<EngagementDetailsPageQuery["engagement"]>;
 };
 
 const EngagementDetail: NextPage<Props> = ({ engagement }) => {
-  const { data } = useQuery<EngagementDetailPageQuery>(GET_ENGAGEMENT, {
+  const { data } = useQuery<EngagementDetailsPageQuery>(GET_ENGAGEMENT, {
     variables: { id: engagement.id },
     fetchPolicy: "network-only",
     nextFetchPolicy: "cache-first",
@@ -63,7 +63,7 @@ const EngagementDetail: NextPage<Props> = ({ engagement }) => {
 
   return (
     <AuthedLayout>
-      <EngagementDetailPage
+      <EngagementDetailsPage
         tabEng={{
           tab: Tab.Cohorts,
           engagement: data?.engagement ?? engagement,

@@ -326,7 +326,7 @@ export type EditEngagementMutationVariables = Exact<{
 
 export type EditEngagementMutation = { __typename?: 'Mutation', editEngagement: { __typename?: 'Engagement', id: string, name: string } };
 
-export type EngagementDetailPageCohortsFragment = { __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, organization: { __typename?: 'Organization', name: string, id: string }, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
+export type EngagementDetailsPageCohortsFragment = { __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, organization: { __typename?: 'Organization', name: string, id: string }, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
 export type FlatEngagementsFragment = { __typename?: 'Query', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
@@ -393,12 +393,19 @@ export type OrgDetailPageCohortsQueryVariables = Exact<{
 
 export type OrgDetailPageCohortsQuery = { __typename?: 'Query', organization?: { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> }> } | null };
 
-export type EngagementDetailPageQueryVariables = Exact<{
+export type EngagementDetailsPageQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type EngagementDetailPageQuery = { __typename?: 'Query', engagement?: { __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, organization: { __typename?: 'Organization', name: string, id: string }, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> } | null };
+export type EngagementDetailsPageQuery = { __typename?: 'Query', engagement?: { __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, organization: { __typename?: 'Organization', name: string, id: string }, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> } | null };
+
+export type EngagementCsvUploadPageQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type EngagementCsvUploadPageQuery = { __typename?: 'Query', engagement?: { __typename?: 'Engagement', id: string } | null };
 
 export type OrgDetailPageEngagementsQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -446,8 +453,8 @@ export const EngagementCohortsViewFragmentDoc = gql`
   ...CohortsTable
 }
     ${CohortsTableFragmentDoc}`;
-export const EngagementDetailPageCohortsFragmentDoc = gql`
-    fragment EngagementDetailPageCohorts on Engagement {
+export const EngagementDetailsPageCohortsFragmentDoc = gql`
+    fragment EngagementDetailsPageCohorts on Engagement {
   id
   name
   startDate
@@ -1106,41 +1113,76 @@ export function useOrgDetailPageCohortsLazyQuery(baseOptions?: Apollo.LazyQueryH
 export type OrgDetailPageCohortsQueryHookResult = ReturnType<typeof useOrgDetailPageCohortsQuery>;
 export type OrgDetailPageCohortsLazyQueryHookResult = ReturnType<typeof useOrgDetailPageCohortsLazyQuery>;
 export type OrgDetailPageCohortsQueryResult = Apollo.QueryResult<OrgDetailPageCohortsQuery, OrgDetailPageCohortsQueryVariables>;
-export const EngagementDetailPageDocument = gql`
-    query EngagementDetailPage($id: ID!) {
+export const EngagementDetailsPageDocument = gql`
+    query EngagementDetailsPage($id: ID!) {
   engagement(id: $id) {
-    ...EngagementDetailPageCohorts
+    ...EngagementDetailsPageCohorts
   }
 }
-    ${EngagementDetailPageCohortsFragmentDoc}`;
+    ${EngagementDetailsPageCohortsFragmentDoc}`;
 
 /**
- * __useEngagementDetailPageQuery__
+ * __useEngagementDetailsPageQuery__
  *
- * To run a query within a React component, call `useEngagementDetailPageQuery` and pass it any options that fit your needs.
- * When your component renders, `useEngagementDetailPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useEngagementDetailsPageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useEngagementDetailsPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useEngagementDetailPageQuery({
+ * const { data, loading, error } = useEngagementDetailsPageQuery({
  *   variables: {
  *      id: // value for 'id'
  *   },
  * });
  */
-export function useEngagementDetailPageQuery(baseOptions: Apollo.QueryHookOptions<EngagementDetailPageQuery, EngagementDetailPageQueryVariables>) {
+export function useEngagementDetailsPageQuery(baseOptions: Apollo.QueryHookOptions<EngagementDetailsPageQuery, EngagementDetailsPageQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<EngagementDetailPageQuery, EngagementDetailPageQueryVariables>(EngagementDetailPageDocument, options);
+        return Apollo.useQuery<EngagementDetailsPageQuery, EngagementDetailsPageQueryVariables>(EngagementDetailsPageDocument, options);
       }
-export function useEngagementDetailPageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<EngagementDetailPageQuery, EngagementDetailPageQueryVariables>) {
+export function useEngagementDetailsPageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<EngagementDetailsPageQuery, EngagementDetailsPageQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<EngagementDetailPageQuery, EngagementDetailPageQueryVariables>(EngagementDetailPageDocument, options);
+          return Apollo.useLazyQuery<EngagementDetailsPageQuery, EngagementDetailsPageQueryVariables>(EngagementDetailsPageDocument, options);
         }
-export type EngagementDetailPageQueryHookResult = ReturnType<typeof useEngagementDetailPageQuery>;
-export type EngagementDetailPageLazyQueryHookResult = ReturnType<typeof useEngagementDetailPageLazyQuery>;
-export type EngagementDetailPageQueryResult = Apollo.QueryResult<EngagementDetailPageQuery, EngagementDetailPageQueryVariables>;
+export type EngagementDetailsPageQueryHookResult = ReturnType<typeof useEngagementDetailsPageQuery>;
+export type EngagementDetailsPageLazyQueryHookResult = ReturnType<typeof useEngagementDetailsPageLazyQuery>;
+export type EngagementDetailsPageQueryResult = Apollo.QueryResult<EngagementDetailsPageQuery, EngagementDetailsPageQueryVariables>;
+export const EngagementCsvUploadPageDocument = gql`
+    query EngagementCsvUploadPage($id: ID!) {
+  engagement(id: $id) {
+    id
+  }
+}
+    `;
+
+/**
+ * __useEngagementCsvUploadPageQuery__
+ *
+ * To run a query within a React component, call `useEngagementCsvUploadPageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useEngagementCsvUploadPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useEngagementCsvUploadPageQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useEngagementCsvUploadPageQuery(baseOptions: Apollo.QueryHookOptions<EngagementCsvUploadPageQuery, EngagementCsvUploadPageQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<EngagementCsvUploadPageQuery, EngagementCsvUploadPageQueryVariables>(EngagementCsvUploadPageDocument, options);
+      }
+export function useEngagementCsvUploadPageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<EngagementCsvUploadPageQuery, EngagementCsvUploadPageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<EngagementCsvUploadPageQuery, EngagementCsvUploadPageQueryVariables>(EngagementCsvUploadPageDocument, options);
+        }
+export type EngagementCsvUploadPageQueryHookResult = ReturnType<typeof useEngagementCsvUploadPageQuery>;
+export type EngagementCsvUploadPageLazyQueryHookResult = ReturnType<typeof useEngagementCsvUploadPageLazyQuery>;
+export type EngagementCsvUploadPageQueryResult = Apollo.QueryResult<EngagementCsvUploadPageQuery, EngagementCsvUploadPageQueryVariables>;
 export const OrgDetailPageEngagementsDocument = gql`
     query OrgDetailPageEngagements($id: ID!) {
   organization(id: $id) {
