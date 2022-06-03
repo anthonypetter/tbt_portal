@@ -12,7 +12,6 @@ import { Button } from "components/Button";
 import { AddNewCohortModal } from "./AddNewCohortModal";
 import { ErrorBox } from "components/ErrorBox";
 import { ErrorBoundary } from "components/ErrorBoundary";
-import { UploadCsvButton } from "./UploadCsvButton";
 
 EngagementCohortsView.fragments = {
   cohortsList: gql`
@@ -47,8 +46,8 @@ export function EngagementCohortsView({ engagement }: Props) {
 
   return (
     <ErrorBoundary fallbackRender={() => <ErrorBox className="mt-4" />}>
-      <main className="flex flex-col min-h-full">
-        <div className="flex-1">
+      <div className="flex min-h-full">
+        <main className="flex-1">
           <div className="flex justify-between my-4">
             <div className="flex-1 lg:max-w-sm lg:mr-2 lg:ml-1">
               <Input
@@ -59,43 +58,42 @@ export function EngagementCohortsView({ engagement }: Props) {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="flex items-center mr-1">
-              <Button
-                type="button"
-                theme="tertiary"
-                className="mx-2"
-                onClick={() => setShowAddModal(true)}
-              >
-                <PlusIcon
-                  className="-ml-2 mr-1 h-5 w-5 text-gray-400"
-                  aria-hidden="true"
-                />
-                <span>Add</span>
-              </Button>
-              <UploadCsvButton />
-            </div>
+
+            <Button
+              type="button"
+              theme="tertiary"
+              className="mx-2"
+              onClick={() => setShowAddModal(true)}
+            >
+              <PlusIcon
+                className="-ml-2 mr-1 h-5 w-5 text-gray-400"
+                aria-hidden="true"
+              />
+              <span>Add</span>
+            </Button>
+            {/* <UploadCsvButton /> */}
           </div>
-        </div>
 
-        <CohortsTable
-          organizationId={engagement.organization.id}
-          cohorts={filteredCohorts}
-          onRowClick={(id) => setSelectedCohortId(id)}
-          selectedCohort={selectedCohort}
-        />
+          <CohortsTable
+            organizationId={engagement.organization.id}
+            cohorts={filteredCohorts}
+            onRowClick={(id) => setSelectedCohortId(id)}
+            selectedCohort={selectedCohort}
+          />
 
-        <AddNewCohortModal
-          engagementId={engagement.id}
-          show={showAddModal}
-          onCancel={() => setShowAddModal(false)}
-          onSuccess={() => setShowAddModal(false)}
-        />
+          <AddNewCohortModal
+            engagementId={engagement.id}
+            show={showAddModal}
+            onCancel={() => setShowAddModal(false)}
+            onSuccess={() => setShowAddModal(false)}
+          />
+        </main>
 
         <DetailsSidebar
           selectedCohort={selectedCohort}
           onClose={() => setSelectedCohortId(null)}
         />
-      </main>
+      </div>
     </ErrorBoundary>
   );
 }
@@ -106,6 +104,7 @@ type DetailsSidebarProps = {
 };
 
 function DetailsSidebar({ selectedCohort, onClose }: DetailsSidebarProps) {
+  console.log("selectedCohort", selectedCohort);
   if (!selectedCohort) {
     return <DetailsAside isOpen={false} onClose={onClose} />;
   }
