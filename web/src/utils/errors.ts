@@ -20,4 +20,5 @@ export enum CsvValidationErrorMessage {
   missingRequiredColumn = "One or more of the required column headers is missing.",
   rowLengthMismatch = "Row length does not match headers.",
   unexpectedParseError = "An unexpected error was encountered during CSV parsing.",
+  unrecognizedSubject = "Encountered an unrecognized subject.",
 }
