@@ -1,4 +1,7 @@
-import { EngagementDetailsPageQuery } from "@generated/graphql";
+import {
+  EngagementDetailsPageCohortsFragment,
+  EngagementDetailsPageCsvUploadFragment,
+} from "@generated/graphql";
 import { gql } from "@apollo/client";
 import { PageHeader } from "components/PageHeader";
 import { Routes } from "@utils/routes";
@@ -34,16 +37,29 @@ EngagementDetailsPage.fragments = {
     }
     ${EngagementCohortsView.fragments.cohortsList}
   `,
+  csvUploadView: gql`
+    fragment EngagementDetailsPageCsvUpload on Engagement {
+      id
+      name
+      organization {
+        id
+        name
+      }
+      cohorts {
+        id
+      }
+    }
+  `,
 };
 
 export type TabEngagement =
   | {
       tab: Tab.Cohorts;
-      engagement: NonNullable<EngagementDetailsPageQuery["engagement"]>;
+      engagement: EngagementDetailsPageCohortsFragment;
     }
   | {
       tab: Tab.UploadCsv;
-      engagement: NonNullable<EngagementDetailsPageQuery["engagement"]>;
+      engagement: EngagementDetailsPageCsvUploadFragment;
     };
 
 type Props = {

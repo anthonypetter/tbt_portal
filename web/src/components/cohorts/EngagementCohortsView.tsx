@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { EngagementDetailPageQuery } from "@generated/graphql";
+import { EngagementDetailsPageCohortsFragment } from "@generated/graphql";
 import { PlusIcon, SearchIcon } from "@heroicons/react/outline";
 import { DateText } from "components/Date";
 import { Input } from "components/Input";
@@ -22,12 +22,8 @@ EngagementCohortsView.fragments = {
   `,
 };
 
-export type QueryEngagement = NonNullable<
-  EngagementDetailPageQuery["engagement"]
->;
-
 type Props = {
-  engagement: QueryEngagement;
+  engagement: EngagementDetailsPageCohortsFragment;
 };
 
 export function EngagementCohortsView({ engagement }: Props) {
@@ -71,7 +67,6 @@ export function EngagementCohortsView({ engagement }: Props) {
               />
               <span>Add</span>
             </Button>
-            {/* <UploadCsvButton /> */}
           </div>
 
           <CohortsTable
@@ -99,7 +94,9 @@ export function EngagementCohortsView({ engagement }: Props) {
 }
 
 type DetailsSidebarProps = {
-  selectedCohort: QueryEngagement["cohorts"][number] | null;
+  selectedCohort:
+    | EngagementDetailsPageCohortsFragment["cohorts"][number]
+    | null;
   onClose: () => void;
 };
 
