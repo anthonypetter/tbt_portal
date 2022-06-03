@@ -12,8 +12,6 @@
       "webRoot": "${workspaceFolder}/web"
     },
     {
-      // For macOS launch the browser with:
-      // `/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9223`
       "name": "/web: Chrome (attach)",
       "port": 9223,
       "request": "attach",
@@ -28,8 +26,6 @@
       "webRoot": "${workspaceFolder}/web"
     },
     {
-      // For macOS launch the browser with:
-      // `/Applications/Microsoft\ Edge.app/Contents/MacOS/Microsoft\ Edge --remote-debugging-port=9222`
       "name": "/web: Edge (attach)",
       "port": 9222,
       "request": "attach",

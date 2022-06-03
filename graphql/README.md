@@ -60,6 +60,7 @@ It should look like this:
 | Authorization | Bearer {your_token} |
 
 An example query you can run to confirm things are running correctly:
+
 ```graphql
 query getCurrentUser {
   currentUser {
@@ -69,3 +70,9 @@ query getCurrentUser {
   }
 }
 ```
+
+## Debugging
+
+### VSCode
+
+When running the `dev` script you can have VSCode attach to the Node inspection port using the _Run and Debug_ configuration "/graphql: Node (attach)". It will attach on port 9229.
