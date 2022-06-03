@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { OrgDetailPageCohortsQuery } from "@generated/graphql";
+import { Cohort, OrgDetailPageCohortsQuery } from "@generated/graphql";
 import { SearchIcon } from "@heroicons/react/outline";
 import clsx from "clsx";
 import { DateText } from "components/Date";
@@ -11,6 +11,7 @@ import { DetailsAside } from "components/DetailsAside";
 import { AssignmentSubjectBadge } from "components/AssignmentSubjectBadge";
 import { ErrorBoundary } from "components/ErrorBoundary";
 import { ErrorBox } from "components/ErrorBox";
+import { CohortDetailsSidebar } from "./CohortDetailsSidebar";
 
 OrganizationCohortsView.fragments = {
   cohortsList: gql`
@@ -93,8 +94,12 @@ export function OrganizationCohortsView({ organization }: Props) {
               />
             </main>
 
-            <DetailsSidebar
+            {/* <DetailsSidebar
               selectedCohort={selectedCohort}
+              onClose={() => setSelectedCohortId(null)}
+            /> */}
+            <CohortDetailsSidebar
+              selectedCohort={selectedCohort as Cohort}
               onClose={() => setSelectedCohortId(null)}
             />
           </div>
