@@ -166,7 +166,7 @@ function usePrepCohortData({
         Header: "Ends",
         accessor: "endDate",
         Cell: ({ row }: Cell<CohortTableData>) => {
-          return <DateText timeMs={row.original.startDate} />;
+          return <DateText timeMs={row.original.endDate} />;
         },
       },
       {

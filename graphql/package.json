@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npm run generate:prisma && tsc -project tsconfig.json",
     "start": "doppler run -- node build/src/server.js",
-    "dev": "doppler run -- npx ts-node-dev -r tsconfig-paths/register src/server.ts",
+    "dev": "doppler run -- npx ts-node-dev --inspect=9229 -r tsconfig-paths/register src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:migrate": "doppler run -- npx prisma migrate dev",
     "db:reset": "doppler run -- npx prisma migrate reset",
