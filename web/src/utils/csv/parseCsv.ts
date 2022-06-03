@@ -154,7 +154,7 @@ function parseSubjectSchedules(csvDayInput: string): SubjectSchedule[] {
     const timeAndZone = restTime.join(":");
     const [timeRange, timezone] = timeAndZone.split(" ");
     const [startTime, endTime] = timeRange.split("-");
-    return { subject, startTime, endTime, timezone };
+    return { subject: parseSubject(subject), startTime, endTime, timezone };
   });
 
   return subjectSchedule;
@@ -196,4 +196,24 @@ function parseTeacher(tupleString: string): {
     throw new Error(`Invalid email: ${email}`);
   }
   return { fullName, email };
+}
+
+function parseSubject(subject: string) {
+  switch (subject.toLowerCase()) {
+    case "math":
+      return AssignmentSubject.Math;
+
+    case "ela":
+      return AssignmentSubject.Ela;
+
+    case "gen":
+    case "general":
+      return AssignmentSubject.General;
+
+    default:
+      throw new CsvValidationError(
+        CsvValidationErrorMessage.unrecognizedSubject,
+        subject
+      );
+  }
 }
