@@ -72,7 +72,7 @@ export const typeDefs = gql`
     hostKey: String
     meetingRoom: String
     meetingId: String
-    newStaffAssignments: [NewStaffAssignment!]!
+    newStaffAssignments: [NewCohortStaffAssignment!]!
   }
 
   extend type Query {
