@@ -102,4 +102,15 @@ describe("csvValidation", () => {
     const { errors } = await validateCsvFile(readstream);
     expect(errors.length).toEqual(0);
   });
+
+  test("should fail due to mismatched column data", async () => {
+    const readstream = fs.createReadStream(
+      path.resolve(__dirname, "./invalid-mismatched-column-data.csv")
+    );
+
+    const { errors } = await validateCsvFile(readstream);
+    expect(errors.length).toBeGreaterThan(0);
+    const error = errors[0];
+    expect(error.message).toBe(CsvValidationErrorMessage.missingTeacherEmail);
+  });
 });
