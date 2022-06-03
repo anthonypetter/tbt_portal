@@ -57,3 +57,37 @@ npm run db:seed
 ```
 
 4. At this point, you should be ready to log in. Use your temporary password to log in. You should be requested to change your password after authenticating.
+
+### Resetting a Password
+
+Until we add support for resetting a password there is an [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) command that will do it:
+
+```bash
+aws cognito-idp admin-set-user-password --user-pool-id <poolIdFoundOnAWS> --username <userEmail> --password <someTempPassword>
+```
+
+You'll find the pool ID by visiting the Cognito page for the group your user account belongs to.
+
+After that has completed, log in with that temporary password and then write yourself a new password (it can be the same).
+
+## Debugging
+
+### VSCode
+
+There are pre-made VSCode debug launch and attach configurations provided so you can debug the code running in a browser inside VSCode.
+
+(Easier): Launch a new browser instance from the "Run and Debug" dropdown by selecting the configuration with "(launch)" in the title.
+
+(Advanced): If you'd prefer to work with your main browser instance you can launch your browser in the terminal with the remote debugging port opened. Then from the "Run and Debug" dropdown select the configuration with "(attach)" in the title.
+
+On macOS, you can use these aliases in your bash/zsh profile and you can more readily launch your browser with a single word.
+
+```bash
+alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9223"
+alias edge="/Applications/Microsoft\ Edge.app/Contents/MacOS/Microsoft\ Edge --remote-debugging-port=9222"
+```
+
+Chrome is set in the launch config to use port 9223, Edge uses 9222.
+
+[Chromium Projects: Run Chromium with flags](https://www.chromium.org/developers/how-tos/run-chromium-with-flags/)
+[List of Chromium Command Line Switches: remote-debugging-port](https://peter.sh/experiments/chromium-command-line-switches/#remote-debugging-port)
