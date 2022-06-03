@@ -5,6 +5,8 @@ import {
   MutationEditCohortArgs,
   MutationDeleteCohortArgs,
   MutationAddCohortArgs,
+  QueryCohortMockScheduleArgs,
+  CohortMockSchedule,
 } from "../__generated__/graphql";
 import { parseId } from "../../utils/numbers";
 import { CohortResolver } from "./CohortResolver";
@@ -45,6 +47,40 @@ export const typeDefs = gql`
     staffAssignments: [CohortStaffAssignment!]!
   }
 
+  ########## FOR MOCKING PURPOSES ONLY ##########
+  type SubjectSchedule {
+    subject: AssignmentSubject!
+    startTime: String!
+    endTime: String!
+    timezone: String!
+  }
+  type WeeklySchedule {
+    monday: [SubjectSchedule!]!
+    tuesday: [SubjectSchedule!]!
+    wednesday: [SubjectSchedule!]!
+    thursday: [SubjectSchedule!]!
+    friday: [SubjectSchedule!]!
+    saturday: [SubjectSchedule!]!
+    sunday: [SubjectSchedule!]!
+  }
+  type CohortMockSchedule {
+    id: ID!
+    createdAt: Date!
+    name: String!
+    grade: String
+    meetingRoom: String
+    hostKey: String
+    exempt: String
+    startDate: Date
+    endDate: Date
+
+    engagementId: ID!
+    staffAssignments: [CohortStaffAssignment!]!
+
+    weeklySchedule: WeeklySchedule! # ONLY ADDED BIT
+  }
+  ########## FOR MOCKING PURPOSES ONLY ##########
+
   input NewCohortStaffAssignment {
     userId: ID!
     subject: AssignmentSubject!
@@ -74,6 +110,7 @@ export const typeDefs = gql`
 
   extend type Query {
     cohorts(organizationId: ID!): [Cohort!]!
+    cohortMockSchedule(cohortId: ID!): CohortMockSchedule
   }
 
   extend type Mutation {
@@ -95,6 +132,73 @@ async function cohorts(
   AuthorizationService.assertIsAdmin(authedUser);
   return CohortService.getCohortsForOrg(parseId(organizationId));
 }
+
+//////////// FOR MOCKING PURPOSES ONLY ////////////
+async function cohortMockSchedule(
+  _parent: undefined,
+  { cohortId }: QueryCohortMockScheduleArgs,
+  { authedUser, AuthorizationService, CohortService }: Context
+) {
+  AuthorizationService.assertIsAdmin(authedUser);
+  const cohort = await CohortService.getCohort(parseId(cohortId));
+  if (cohort == null) {
+    return null;
+  }
+
+  return {
+    ...cohort,
+    __typename: "CohortMockSchedule",
+    weeklySchedule: {
+      monday: [
+        {
+          subject: "MATH",
+          startTime: "11:30",
+          endTime: "12:30",
+          timezone: "EST",
+        },
+        {
+          subject: "ELA",
+          startTime: "12:30",
+          endTime: "13:30",
+          timezone: "EST",
+        },
+      ],
+      tuesday: [
+        {
+          subject: "MATH",
+          startTime: "11:30",
+          endTime: "12:30",
+          timezone: "EST",
+        },
+        {
+          subject: "ELA",
+          startTime: "12:30",
+          endTime: "13:30",
+          timezone: "EST",
+        },
+      ],
+      wednesday: [
+        {
+          subject: "MATH",
+          startTime: "11:30",
+          endTime: "12:30",
+          timezone: "EST",
+        },
+        {
+          subject: "ELA",
+          startTime: "12:30",
+          endTime: "13:30",
+          timezone: "EST",
+        },
+      ],
+      thursday: [],
+      friday: [],
+      saturday: [],
+      sunday: [],
+    },
+  };
+}
+//////////// FOR MOCKING PURPOSES ONLY ////////////
 
 /**
  * Mutation resolvers
@@ -175,6 +279,7 @@ async function addCohort(
 export const resolvers = {
   Query: {
     cohorts,
+    cohortMockSchedule, //////////// FOR MOCKING PURPOSES ONLY ////////////
   },
   Mutation: {
     editCohort,

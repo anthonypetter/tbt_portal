@@ -75,6 +75,22 @@ export type Cohort = {
   startDate?: Maybe<Scalars['Date']>;
 };
 
+export type CohortMockSchedule = {
+  __typename?: 'CohortMockSchedule';
+  createdAt: Scalars['Date'];
+  endDate?: Maybe<Scalars['Date']>;
+  engagementId: Scalars['ID'];
+  exempt?: Maybe<Scalars['String']>;
+  grade?: Maybe<Scalars['String']>;
+  hostKey?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  meetingRoom?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  staffAssignments: Array<CohortStaffAssignment>;
+  startDate?: Maybe<Scalars['Date']>;
+  weeklySchedule: WeeklySchedule;
+};
+
 export type CohortStaffAssignment = {
   __typename?: 'CohortStaffAssignment';
   subject: AssignmentSubject;
@@ -222,6 +238,7 @@ export type Organization = {
 export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']>;
+  cohortMockSchedule?: Maybe<CohortMockSchedule>;
   cohorts: Array<Cohort>;
   currentUser?: Maybe<User>;
   engagement?: Maybe<Engagement>;
@@ -230,6 +247,11 @@ export type Query = {
   organizations: Array<Organization>;
   searchUsers: SearchResults;
   users: Array<User>;
+};
+
+
+export type QueryCohortMockScheduleArgs = {
+  cohortId: Scalars['ID'];
 };
 
 
@@ -258,6 +280,14 @@ export type SearchResults = {
   results: Array<User>;
 };
 
+export type SubjectSchedule = {
+  __typename?: 'SubjectSchedule';
+  endTime: Scalars['String'];
+  startTime: Scalars['String'];
+  subject: AssignmentSubject;
+  timezone: Scalars['String'];
+};
+
 export type User = {
   __typename?: 'User';
   accountStatus: AccountStatus;
@@ -272,6 +302,17 @@ export enum UserRole {
   MentorTeacher = 'MENTOR_TEACHER',
   TutorTeacher = 'TUTOR_TEACHER'
 }
+
+export type WeeklySchedule = {
+  __typename?: 'WeeklySchedule';
+  friday: Array<SubjectSchedule>;
+  monday: Array<SubjectSchedule>;
+  saturday: Array<SubjectSchedule>;
+  sunday: Array<SubjectSchedule>;
+  thursday: Array<SubjectSchedule>;
+  tuesday: Array<SubjectSchedule>;
+  wednesday: Array<SubjectSchedule>;
+};
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
