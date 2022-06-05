@@ -5,7 +5,7 @@ import {
 import {
   ProcessedCohort,
   SubjectSchedule,
-  StaffAssignments,
+  StaffAssignment,
 } from "@utils/csv/parseCsv";
 import { assertUnreachable } from "@utils/types";
 import clsx from "clsx";
@@ -210,7 +210,7 @@ function StaffCell({
   assignments,
 }: {
   cohortName: string;
-  assignments: StaffAssignments[];
+  assignments: StaffAssignment[];
 }) {
   if (assignments.length === 0) {
     return <span className="mx-1">None Assigned</span>;

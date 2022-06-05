@@ -44,7 +44,7 @@ export type SubjectSchedule = {
   timeZone: string;
 };
 
-export type StaffAssignments = {
+export type StaffAssignment = {
   subject: AssignmentSubject;
   teacher: { fullName: string; email: string };
 };
@@ -62,7 +62,7 @@ export type ProcessedCohort = {
   saturday: SubjectSchedule[];
   sunday: SubjectSchedule[];
 
-  staffAssignments: StaffAssignments[];
+  staffAssignments: StaffAssignment[];
 };
 
 export async function parseCsv(data: ReadStream) {
