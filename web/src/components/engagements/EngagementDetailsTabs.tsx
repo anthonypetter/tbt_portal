@@ -1,5 +1,6 @@
 import { Routes } from "@utils/routes";
 import { assertUnreachable } from "@utils/types";
+import { CsvUploadView } from "components/cohorts/csv-upload/CsvUploadView";
 import { EngagementCohortsView } from "components/cohorts/EngagementCohortsView";
 import { LinkTabs } from "components/LinkTabs";
 import { TabEngagement } from "./EngagementDetailsPage";
@@ -52,9 +53,8 @@ function TabView({ tabEng }: TabViewProps) {
     case Tab.Cohorts:
       return <EngagementCohortsView engagement={tabEng.engagement} />;
 
-    //TODO: Repalce
     case Tab.UploadCsv:
-      return <div>hello upload</div>;
+      return <CsvUploadView engagement={tabEng.engagement} />;
 
     default:
       assertUnreachable(tabEng, "tabEng.tab");
