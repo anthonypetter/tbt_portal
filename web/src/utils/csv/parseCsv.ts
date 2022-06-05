@@ -37,14 +37,14 @@ export type CohortCsvRow = { [key in RequiredHeaders]: string } & {
   [key in OptionalHeaders]?: string;
 };
 
-type SubjectSchedule = {
-  subject: string;
+export type SubjectSchedule = {
+  subject: AssignmentSubject;
   startTime: string;
   endTime: string;
   timeZone: string;
 };
 
-type StaffAssignments = {
+export type StaffAssignments = {
   subject: AssignmentSubject;
   teacher: { fullName: string; email: string };
 };
