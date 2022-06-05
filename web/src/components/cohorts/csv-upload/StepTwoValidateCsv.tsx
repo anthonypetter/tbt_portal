@@ -118,16 +118,18 @@ function ValidateFile({
         <Button theme="tertiary" onClick={() => validate()}>
           Validate CSV
         </Button>
-        {validationState.status === Status.Validating && (
-          <div className="ml-4">
-            <Spinner color="border-blue-500" />
-          </div>
-        )}
-        {validationState.status === Status.ValidationPassed && (
-          <div className="ml-4 mt-[6px]">
-            <span className="text-sm text-green-600">Validation passed!</span>
-          </div>
-        )}
+        <div className="ml-4">
+          {validationState.status === Status.Validating && (
+            <div className="mt-3">
+              <Spinner color="border-blue-500" />
+            </div>
+          )}
+          {validationState.status === Status.ValidationPassed && (
+            <div className="mt-[6px]">
+              <span className="text-sm text-green-600">Validation passed!</span>
+            </div>
+          )}
+        </div>
       </div>
       <div className="mt-4">
         {validationState.status === Status.ErrorWhileValidating && (
