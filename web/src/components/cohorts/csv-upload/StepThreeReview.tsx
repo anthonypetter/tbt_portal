@@ -28,11 +28,13 @@ export function StepThreeReview({
   }
 
   return (
-    <div className="my-4">
+    <div className="my-4 max-w-full">
       <p className="text-sm text-gray-900 pb-2">
         Engagement: {engagement.name}
       </p>
-      <ReviewTable processedCsv={processedCsv} />
+      <div className="overflow-x-auto">
+        <ReviewTable processedCsv={processedCsv} />
+      </div>
       <div className="mt-4">
         <Button theme="tertiary" onClick={() => onApprove()}>
           Approve
@@ -48,10 +50,10 @@ type ReviewTableProps = {
 
 export default function ReviewTable({ processedCsv }: ReviewTableProps) {
   return (
-    <div className="mt-2 flex flex-col">
+    <div className="mt-2 flex flex-col overflow-x-auto">
       <div className="overflow-x-auto">
-        <div className="inline-block min-w-full">
-          <table className="min-w-full divide-y divide-gray-300">
+        <div className="inline-block min-w-full overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-300 overflow-x-auto">
             <thead>
               <tr>
                 <CondensedTh>Cohort</CondensedTh>
