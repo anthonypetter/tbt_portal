@@ -21,7 +21,7 @@ type Props = {
 
 export function Stepper({ steps }: Props) {
   return (
-    <nav aria-label="CSV Upload Progress">
+    <nav>
       <ol role="list" className="overflow-hidden">
         {steps.map((step, stepIdx) => (
           <li
