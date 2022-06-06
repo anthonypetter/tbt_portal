@@ -71,7 +71,13 @@ export function CsvUploadView({ engagement }: Props) {
     },
     {
       name: "Submit",
-      body: <StepFourSubmit disabled={currentStep !== Step.Submit} />,
+      body: (
+        <StepFourSubmit
+          engagementId={engagement.id}
+          disabled={currentStep !== Step.Submit}
+          processedCsv={processedCsv}
+        />
+      ),
       status: calculateStepStatus(Step.Submit, currentStep),
     },
   ];
