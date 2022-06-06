@@ -1,10 +1,11 @@
-import { localizedWeekdays } from "@utils/dateTime";
+import { LocalizedWeekday, localizedWeekdays } from "@utils/dateTime";
 import clsx from "clsx";
 import { useEffect, useMemo, useRef, useState } from "react"
 
 
 export function WeekCalendar() {
-  const [selectedDay, setSelectedDay] = useState(new Date().getDay());
+  const currentDay = new Date().getDay();
+  const [selectedDay, setSelectedDay] = useState(currentDay);
 
   const container = useRef<HTMLDivElement>(null);
   const containerNav = useRef<HTMLDivElement>(null);
@@ -31,55 +32,15 @@ export function WeekCalendar() {
           ref={containerNav}
           className="sticky top-0 z-30 flex-none bg-white shadow ring-1 ring-black ring-opacity-5 sm:pr-8"
         >
-          {/* Mobile Collapsed Days Nav Row */}
           <MobileNav
             onClickDay={(day: number) => setSelectedDay(day)}
             currentDay={selectedDay}
             startDay={0}
           />
-
-          {/* Desktop Days Nav Row */}
-          <div className="-mr-px hidden grid-cols-7 divide-x divide-gray-100 border-r border-gray-100 text-sm leading-6 text-gray-500 sm:grid">
-            <div className="col-end-1 w-14" />
-            <div className="flex items-center justify-center py-3">
-              <span>
-                Mon <span className="items-center justify-center font-semibold text-gray-900">10</span>
-              </span>
-            </div>
-            <div className="flex items-center justify-center py-3">
-              <span>
-                Tue <span className="items-center justify-center font-semibold text-gray-900">11</span>
-              </span>
-            </div>
-            <div className="flex items-center justify-center py-3">
-              <span className="flex items-baseline">
-                Wed{' '}
-                <span className="ml-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white">
-                  12
-                </span>
-              </span>
-            </div>
-            <div className="flex items-center justify-center py-3">
-              <span>
-                Thu <span className="items-center justify-center font-semibold text-gray-900">13</span>
-              </span>
-            </div>
-            <div className="flex items-center justify-center py-3">
-              <span>
-                Fri <span className="items-center justify-center font-semibold text-gray-900">14</span>
-              </span>
-            </div>
-            <div className="flex items-center justify-center py-3">
-              <span>
-                Sat <span className="items-center justify-center font-semibold text-gray-900">15</span>
-              </span>
-            </div>
-            <div className="flex items-center justify-center py-3">
-              <span>
-                Sun <span className="items-center justify-center font-semibold text-gray-900">16</span>
-              </span>
-            </div>
-          </div>
+          <FullNav
+            currentDay={currentDay}
+            startDay={0}
+          />
         </div>
 
         {/* Events Grid Section */}
@@ -181,24 +142,39 @@ function HourLines({ mode24Hour = false }: HourLinesProps) {
   );
 }
 
-type MobileNavProps = {
-  onClickDay: (day: number) => void;
-  currentDay: number; // index of day in nav; meaning 0 doesn't always mean Sunday.
-  startDay?: 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0 = Sunday start, which is the default.
-}
-function MobileNav({ onClickDay, currentDay, startDay = 0 }: MobileNavProps) {
+/**
+ * Small helper takes the desired start day of the week and returns an array
+ * of weekdays sorted in a row with the first item [0] being the start day of
+ * the week.
+ * @param startDay
+ * @returns
+ */
+function getWeekdays(startDay: number) {
   const weekdays = localizedWeekdays();
-  const labels: string[] = [];
+  const orderedWeekdays: LocalizedWeekday[] = [];
 
   for (let d = 0; d < 7; ++d) {
-    labels.push(weekdays[(d + startDay) % 7].narrow);
+    orderedWeekdays.push(weekdays[(d + startDay) % 7]);
   }
+  return orderedWeekdays;
+}
+
+type BaseNavProps = {
+  currentDay: number; // index of day in nav; meaning 0 doesn't always mean Sunday.
+  startDay?: 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0 = Sunday start, which is the default.
+};
+
+type MobileNavProps = BaseNavProps & {
+  onClickDay: (day: number) => void;
+}
+function MobileNav({ onClickDay, currentDay, startDay = 0 }: MobileNavProps) {
+  const weekdays = getWeekdays(startDay);
 
   return (
     <div className="grid grid-cols-7 text-sm leading-6 text-gray-900 sm:hidden">
-      {labels.map((label, i) => (
+      {weekdays.map((weekday, i) => (
         <button
-          key={`${i}_${label}`}
+          key={weekday.long}
           type="button"
           className="flex flex-col items-center pt-2 pb-3"
           onClick={() => onClickDay(i)}
@@ -208,11 +184,35 @@ function MobileNav({ onClickDay, currentDay, startDay = 0 }: MobileNavProps) {
             "mt-1 flex h-8 w-8 items-center justify-center font-semibold",
             currentDay === i && "rounded-full bg-indigo-600 text-white"
           )}>
-            {label}
+            {weekday.narrow}
           </span>
         </button>
       ))}
-
     </div>
-  )
+  );
+}
+
+type FullNavProps = BaseNavProps;
+function FullNav({ currentDay, startDay = 0 }: FullNavProps) {
+  const weekdays = getWeekdays(startDay);
+
+  return (
+    <div className="-mr-px hidden grid-cols-7 divide-x divide-gray-100 border-r border-gray-100 text-sm leading-6 text-gray-500 sm:grid">
+      <div className="col-end-1 w-14" />
+      {weekdays.map((weekday, i) => (
+        <div
+          key={weekday.long}
+          className="flex items-center justify-center py-3 text-gray-900"
+        >
+          <span className={clsx(
+            "items-center justify-center font-semibold ",
+            (currentDay + startDay) % 7 === i &&
+              "ml-1.5 flex h-8 w-10 rounded-full bg-indigo-600 text-white",
+          )}>
+            {weekday.short}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
 }
