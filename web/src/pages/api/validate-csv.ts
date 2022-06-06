@@ -16,7 +16,6 @@ type Data = {
 /**
  * Per Apollo's recommendation (https://www.apollographql.com/docs/apollo-server/data/file-uploads/)
  * We will handle file uploads outside of graphql. Instead we'll use the NextJS API feature to handle this.
- * It's a double hop, but we'll live with it for now. If performance problems arise, we can address it then.
  */
 
 export default async function handler(
