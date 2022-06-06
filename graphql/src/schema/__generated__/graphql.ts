@@ -26,6 +26,7 @@ export type AddCohortInput = {
   engagementId: Scalars['ID'];
   grade?: InputMaybe<Scalars['String']>;
   hostKey?: InputMaybe<Scalars['String']>;
+  meetingId?: InputMaybe<Scalars['String']>;
   meetingRoom?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   newStaffAssignments: Array<NewCohortStaffAssignment>;
@@ -68,6 +69,7 @@ export type Cohort = {
   grade?: Maybe<Scalars['String']>;
   hostKey?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
+  meetingId?: Maybe<Scalars['String']>;
   meetingRoom?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   staffAssignments: Array<CohortStaffAssignment>;
@@ -465,6 +467,7 @@ export type CohortResolvers<ContextType = any, ParentType extends ResolversParen
   grade?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hostKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  meetingId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   meetingRoom?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   staffAssignments?: Resolver<Array<ResolversTypes['CohortStaffAssignment']>, ParentType, ContextType>;

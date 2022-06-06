@@ -18,6 +18,7 @@ import {
   resolvers as CohortCsvResolvers,
 } from "./csv";
 import merge from "lodash/merge";
+import { WhereByService } from "../../services/whereby";
 
 /**
  * Type Defs
@@ -44,6 +45,7 @@ export const typeDefs = gql`
     grade: String
     meetingRoom: String
     hostKey: String
+    meetingId: String
     exempt: String
     startDate: Date
     endDate: Date
@@ -76,6 +78,7 @@ export const typeDefs = gql`
     grade: String
     hostKey: String
     meetingRoom: String
+    meetingId: String
     newStaffAssignments: [NewCohortStaffAssignment!]!
   }
 
@@ -153,7 +156,11 @@ async function deleteCohort(
   { authedUser, AuthorizationService, CohortService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
-  return CohortService.deleteCohort(parseId(id));
+  const cohortDeleted = await CohortService.deleteCohort(parseId(id));
+  if (cohortDeleted?.meetingId) {
+    await WhereByService.deleteWhereByRoom(cohortDeleted.meetingId);
+  }
+  return cohortDeleted;
 }
 
 async function addCohort(
@@ -162,17 +169,33 @@ async function addCohort(
   { authedUser, AuthorizationService, CohortService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
-
-  return CohortService.addCohort({
+  const newCohort = {
     name: input.name,
     engagementId: parseId(input.engagementId),
     startDate: input.startDate,
     endDate: input.endDate,
     grade: input.grade,
     hostKey: input.hostKey,
+    meetingId: input.meetingId,
     meetingRoom: input.meetingRoom,
     staff: input.newStaffAssignments.map((t) => fromNewToInput(t)),
-  });
+  };
+
+  // if meeting room url is specified, just create the cohort
+  if (newCohort.meetingRoom) {
+    return CohortService.addCohort(newCohort);
+  }
+
+  // else create meeting room on whereby and create the cohort
+  const wherebyResult = await WhereByService.createWhereByRoom(
+    new Date(input.startDate).toISOString(),
+    new Date(input.endDate).toISOString()
+  );
+
+  newCohort.meetingRoom = wherebyResult?.hostRoomUrl;
+  newCohort.meetingId = wherebyResult?.meetingId;
+
+  return CohortService.addCohort(newCohort);
 }
 
 /**
