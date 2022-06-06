@@ -51,7 +51,6 @@ const EngagementDetail: NextPage<Props> = ({ engagement }) => {
   const { data } = useQuery<EngagementDetailsPageQuery>(GET_ENGAGEMENT, {
     variables: { id: engagement.id },
     fetchPolicy: "network-only",
-    nextFetchPolicy: "cache-first",
     onError: (error) => {
       console.error(error);
       triggerErrorToast({
