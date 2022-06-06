@@ -118,7 +118,17 @@ function DetailsSidebar({ selectedCohort, onClose }: DetailsSidebarProps) {
         <DetailsAside.Line label="Grade" value={selectedCohort.grade} />
         <DetailsAside.Line
           label="Meeting Room"
-          value={selectedCohort.meetingRoom}
+          value={
+            selectedCohort?.meetingRoom ? (
+              <a href={selectedCohort.meetingRoom}>
+                <p className="text-ellipsis text-blue-400 truncate">
+                  {selectedCohort.name} room link
+                </p>
+              </a>
+            ) : (
+              ""
+            )
+          }
         />
         <DetailsAside.Line label="Host key" value={selectedCohort.hostKey} />
         <DetailsAside.Line
