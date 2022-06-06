@@ -1,4 +1,5 @@
 import { CohortMockSchedule } from "@generated/graphql"
+import { WeekCalendar } from "./WeekCalendar";
 
 type CohortsScheduleCalendarProps = {
   //////////// MOCK Schedule data for this Cohort ////////////
@@ -7,11 +8,6 @@ type CohortsScheduleCalendarProps = {
 
 export function CohortsScheduleCalendar({ cohorts }: CohortsScheduleCalendarProps) {
   return (
-    <div className="container mx-auto">
-      <h1 className="text-xl2">
-        CohortsScheduleCalendar!
-      </h1>
-      <span className="text-base">I received {cohorts.length} cohort(s)!</span>
-    </div>
+    <WeekCalendar />
   );
 }
