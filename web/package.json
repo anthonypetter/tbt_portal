@@ -18,6 +18,7 @@
     "aws-amplify": "^4.3.20",
     "clsx": "^1.1.1",
     "csv-parser": "^3.0.0",
+    "date-fns": "^2.28.0",
     "formidable": "^2.0.1",
     "graphql": "^16.4.0",
     "lodash": "^4.17.21",
