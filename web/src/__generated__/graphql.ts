@@ -75,6 +75,16 @@ export type Cohort = {
   startDate?: Maybe<Scalars['Date']>;
 };
 
+export type CohortCsvStaffAssignment = {
+  subject: AssignmentSubject;
+  teacher: CohortCsvTeacher;
+};
+
+export type CohortCsvTeacher = {
+  email: Scalars['String'];
+  fullName: Scalars['String'];
+};
+
 export type CohortStaffAssignment = {
   __typename?: 'CohortStaffAssignment';
   subject: AssignmentSubject;
@@ -146,6 +156,7 @@ export type Mutation = {
   editEngagement: Engagement;
   editOrganization: Organization;
   inviteUser: User;
+  saveCohortsCsvData: SaveCountsResult;
 };
 
 
@@ -198,6 +209,11 @@ export type MutationInviteUserArgs = {
   input: InviteUserInput;
 };
 
+
+export type MutationSaveCohortsCsvDataArgs = {
+  input: ProcessedCsv;
+};
+
 export type NewCohortStaffAssignment = {
   subject: AssignmentSubject;
   userId: Scalars['ID'];
@@ -217,6 +233,25 @@ export type Organization = {
   location?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   subDistrict?: Maybe<Scalars['String']>;
+};
+
+export type ProcessedCohort = {
+  cohortName: Scalars['String'];
+  friday: Array<SubjectSchedule>;
+  googleClassroomLink?: InputMaybe<Scalars['String']>;
+  grade: Scalars['String'];
+  monday: Array<SubjectSchedule>;
+  saturday: Array<SubjectSchedule>;
+  staffAssignments: Array<CohortCsvStaffAssignment>;
+  sunday: Array<SubjectSchedule>;
+  thursday: Array<SubjectSchedule>;
+  tuesday: Array<SubjectSchedule>;
+  wednesday: Array<SubjectSchedule>;
+};
+
+export type ProcessedCsv = {
+  cohorts: Array<ProcessedCohort>;
+  engagementId: Scalars['ID'];
 };
 
 export type Query = {
@@ -252,10 +287,23 @@ export type QuerySearchUsersArgs = {
   query: Scalars['String'];
 };
 
+export type SaveCountsResult = {
+  __typename?: 'SaveCountsResult';
+  newCohortCount: Scalars['Int'];
+  newTeacherCount: Scalars['Int'];
+};
+
 export type SearchResults = {
   __typename?: 'SearchResults';
   count: Scalars['Int'];
   results: Array<User>;
+};
+
+export type SubjectSchedule = {
+  endTime: Scalars['String'];
+  startTime: Scalars['String'];
+  subject: AssignmentSubject;
+  timeZone: Scalars['String'];
 };
 
 export type User = {
@@ -304,6 +352,13 @@ export type EditCohortMutation = { __typename?: 'Mutation', editCohort: { __type
 export type EngagementCohortsViewFragment = { __typename?: 'Engagement', cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
 export type CohortsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> }> };
+
+export type SaveCohortsCsvDataMutationVariables = Exact<{
+  input: ProcessedCsv;
+}>;
+
+
+export type SaveCohortsCsvDataMutation = { __typename?: 'Mutation', saveCohortsCsvData: { __typename?: 'SaveCountsResult', newTeacherCount: number, newCohortCount: number } };
 
 export type AddEngagementMutationVariables = Exact<{
   input: AddEngagementInput;
@@ -778,6 +833,40 @@ export function useEditCohortMutation(baseOptions?: Apollo.MutationHookOptions<E
 export type EditCohortMutationHookResult = ReturnType<typeof useEditCohortMutation>;
 export type EditCohortMutationResult = Apollo.MutationResult<EditCohortMutation>;
 export type EditCohortMutationOptions = Apollo.BaseMutationOptions<EditCohortMutation, EditCohortMutationVariables>;
+export const SaveCohortsCsvDataDocument = gql`
+    mutation SaveCohortsCsvData($input: ProcessedCsv!) {
+  saveCohortsCsvData(input: $input) {
+    newTeacherCount
+    newCohortCount
+  }
+}
+    `;
+export type SaveCohortsCsvDataMutationFn = Apollo.MutationFunction<SaveCohortsCsvDataMutation, SaveCohortsCsvDataMutationVariables>;
+
+/**
+ * __useSaveCohortsCsvDataMutation__
+ *
+ * To run a mutation, you first call `useSaveCohortsCsvDataMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSaveCohortsCsvDataMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [saveCohortsCsvDataMutation, { data, loading, error }] = useSaveCohortsCsvDataMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useSaveCohortsCsvDataMutation(baseOptions?: Apollo.MutationHookOptions<SaveCohortsCsvDataMutation, SaveCohortsCsvDataMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SaveCohortsCsvDataMutation, SaveCohortsCsvDataMutationVariables>(SaveCohortsCsvDataDocument, options);
+      }
+export type SaveCohortsCsvDataMutationHookResult = ReturnType<typeof useSaveCohortsCsvDataMutation>;
+export type SaveCohortsCsvDataMutationResult = Apollo.MutationResult<SaveCohortsCsvDataMutation>;
+export type SaveCohortsCsvDataMutationOptions = Apollo.BaseMutationOptions<SaveCohortsCsvDataMutation, SaveCohortsCsvDataMutationVariables>;
 export const AddEngagementDocument = gql`
     mutation AddEngagement($input: AddEngagementInput!) {
   addEngagement(input: $input) {
