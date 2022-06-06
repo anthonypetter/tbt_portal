@@ -6,7 +6,6 @@ import {
   MutationDeleteCohortArgs,
   MutationAddCohortArgs,
   QueryCohortMockScheduleArgs,
-  CohortMockSchedule,
 } from "../__generated__/graphql";
 import { parseId } from "../../utils/numbers";
 import { CohortResolver } from "./CohortResolver";

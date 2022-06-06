@@ -86,9 +86,14 @@ export function CohortsScheduleCalendarModal({
       title="Cohort Weekly Schedule"
       width="xlarge"
     >
-      <CohortsScheduleCalendar
-        cohorts={cohortsMockSchedule}
-      />
+      <div className="container mx-auto">
+        <h1 className="text-xl2 mb-3">
+          {cohorts.map(cohort => `${cohort.name} (Grade ${cohort.grade ?? "?"})`).join(", ")}
+        </h1>
+        <CohortsScheduleCalendar
+          cohorts={cohortsMockSchedule}
+        />
+      </div>
     </Modal>
   );
 }
