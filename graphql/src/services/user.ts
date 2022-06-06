@@ -4,7 +4,7 @@ import { createCognitoUser } from "../lib/cognito";
 
 export const UserService = {
   async getUserByCognitoSub(cognitoSub: string): Promise<User | null> {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
         cognitoSub,
       },
@@ -46,7 +46,7 @@ export const UserService = {
 
   async activateUser(user: User) {
     await prisma.user.update({
-      where: { cognitoSub: user.cognitoSub },
+      where: { email: user.email },
       data: { accountStatus: AccountStatus.ACTIVE },
     });
   },
