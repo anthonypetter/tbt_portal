@@ -31,8 +31,8 @@ type WeekCalendarProps = {
   startDay?: WeekdayNumber;
 };
 export function WeekCalendar({ events, viewingTimezone, startDay = 0 }: WeekCalendarProps) {
-  const currentDay = new Date().getDay();
-  const [selectedDay, setSelectedDay] = useState(currentDay);
+  const currentDayIndex = (new Date().getDay() + 7 - startDay) % 7;
+  const [selectedDayIndex, setSelectedDayIndex] = useState(currentDayIndex);
 
   const localizedWeekdaysList = localizedWeekdays();
 
@@ -63,13 +63,13 @@ export function WeekCalendar({ events, viewingTimezone, startDay = 0 }: WeekCale
         >
           <MobileNav
             localizedWeekdays={localizedWeekdaysList}
-            focusedDay={selectedDay}
+            focusedDayIndex={selectedDayIndex}
             startDay={startDay}
-            onClickDay={(day: number) => setSelectedDay(day)}
+            onClickDay={(navIndex: number) => setSelectedDayIndex(navIndex)}
           />
           <FullNav
             localizedWeekdays={localizedWeekdaysList}
-            focusedDay={currentDay}
+            focusedDayIndex={currentDayIndex}
             startDay={startDay}
           />
         </div>
@@ -103,7 +103,7 @@ export function WeekCalendar({ events, viewingTimezone, startDay = 0 }: WeekCale
             {/* Events */}
             <Events
               localizedWeekdays={localizedWeekdaysList}
-              focusedDay={selectedDay}
+              focusedDayIndex={selectedDayIndex}
               startDay={startDay}
               events={events}
               viewingTimezone={viewingTimezone}
@@ -168,14 +168,14 @@ function orderWeekdays(
 
 type BaseNavProps = {
   localizedWeekdays: LocalizedWeekday[];
-  focusedDay: number; // index of day in nav; meaning 0 doesn't always mean Sunday.
-  startDay?: WeekdayNumber; // 0 = Sunday start, which is the default.
+  focusedDayIndex: number; // index of day in nav; meaning 0 doesn't always mean Sunday.
+  startDay: WeekdayNumber; // 0 = Sunday start, which is the default.
 };
 
 type MobileNavProps = BaseNavProps & {
   onClickDay: (day: number) => void;
 }
-function MobileNav({ localizedWeekdays, focusedDay, startDay = 0, onClickDay }: MobileNavProps) {
+function MobileNav({ localizedWeekdays, focusedDayIndex, startDay, onClickDay }: MobileNavProps) {
   const orderedWeekdays = orderWeekdays(localizedWeekdays, startDay);
 
   return (
@@ -190,7 +190,7 @@ function MobileNav({ localizedWeekdays, focusedDay, startDay = 0, onClickDay }: 
           <span
           className={clsx(
             "mt-1 flex h-8 w-8 items-center justify-center font-semibold",
-            focusedDay === i && "rounded-full bg-indigo-600 text-white"
+            focusedDayIndex === i && "rounded-full bg-indigo-600 text-white"
           )}>
             {weekday.narrow}
           </span>
@@ -201,7 +201,7 @@ function MobileNav({ localizedWeekdays, focusedDay, startDay = 0, onClickDay }: 
 }
 
 type FullNavProps = BaseNavProps;
-function FullNav({ localizedWeekdays, focusedDay, startDay = 0 }: FullNavProps) {
+function FullNav({ localizedWeekdays, focusedDayIndex, startDay }: FullNavProps) {
   const orderedWeekdays = orderWeekdays(localizedWeekdays, startDay);
 
   return (
@@ -214,7 +214,7 @@ function FullNav({ localizedWeekdays, focusedDay, startDay = 0 }: FullNavProps) 
         >
           <span className={clsx(
             "items-center justify-center font-semibold ",
-            focusedDay === i &&
+            focusedDayIndex === i &&
               "ml-1.5 flex h-8 w-10 rounded-full bg-indigo-600 text-white",
           )}>
             {weekday.short}
@@ -230,7 +230,7 @@ type EventsProps = BaseNavProps & {
   events: WeekCalendarEvent[];
   viewingTimezone: string;
 };
-function Events({ localizedWeekdays, focusedDay, startDay = 0, events, viewingTimezone }: EventsProps) {
+function Events({ localizedWeekdays, focusedDayIndex, startDay, events, viewingTimezone }: EventsProps) {
 
   return (
     <ol
