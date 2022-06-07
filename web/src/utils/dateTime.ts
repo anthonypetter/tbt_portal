@@ -25,7 +25,7 @@ export type LocalizedWeekday = {
   long: string;
   short: string;
   narrow: string;
-  isoDate: string;
+  isoDateTime: string;
 };
 
 export const TimeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
@@ -37,13 +37,13 @@ export const TimeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
  *
  * For reference:
  * * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
- * @param targetDate Leave empty for today's date.
+ * @param targetDate Leave empty for the current time.
  * @param locales Leave empty for client's locale. See Intl documentation.
  * @returns
  */
 export function localizedWeekdays(
-  targetDate = new Date(), // Leave empty for today's date.
-  locales: string[] | string = [] // Leave empty for the client's locale.
+  targetDate = new Date(),
+  locales: string[] | string = []
 ): LocalizedWeekday[] {
   const date = startOfWeek(targetDate); // Gets Sunday of target date's week.
   const localizedWeekdays = [];
@@ -56,7 +56,7 @@ export function localizedWeekdays(
       long: long.format(date),
       short: short.format(date),
       narrow: narrow.format(date),
-      isoDate: formatISO(date, { representation: "date" }),
+      isoDateTime: formatISO(date),
     });
     date.setDate(date.getDate() + 1); // Increment one day.
   }
