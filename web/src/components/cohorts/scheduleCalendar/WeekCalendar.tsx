@@ -1,7 +1,8 @@
 import clsx from "clsx";
+import { toDate, format } from "date-fns-tz";
 import { useEffect, useMemo, useRef, useState } from "react"
 
-import { LocalizedWeekday, localizedWeekdays, Weekday, WeekdayNumber } from "@utils/dateTime";
+import { LocalizedWeekday, localizedWeekdays, Weekday, WeekdayNumber, findWeekdayNumberOffset } from "@utils/dateTime";
 
 // Consult https://date-fns.org/v2.28.0/docs/parse
 // and https://github.com/marnusw/date-fns-tz#formatintimezone
@@ -16,6 +17,14 @@ export type WeekCalendarEvent = {
   groupId: number;    // Used to color-coordinate.
 };
 
+type AdjustedWeekCalendarEvent = WeekCalendarEvent & {
+  dayIndex: WeekdayNumber;
+  adjustedStartTime: string;
+  adjustedEndTime: string;
+  adjustedStartTimeMinutes: number;
+  adjustedEndTimeMinutes: number;
+};
+
 type WeekCalendarProps = {
   events: WeekCalendarEvent[];
   viewingTimezone: string;
@@ -24,7 +33,8 @@ type WeekCalendarProps = {
 export function WeekCalendar({ events, viewingTimezone, startDay = 0 }: WeekCalendarProps) {
   const currentDay = new Date().getDay();
   const [selectedDay, setSelectedDay] = useState(currentDay);
-  const weekdays = getWeekdays(startDay);
+
+  const localizedWeekdaysList = localizedWeekdays();
 
   const container = useRef<HTMLDivElement>(null);
   const containerNav = useRef<HTMLDivElement>(null);
@@ -52,13 +62,13 @@ export function WeekCalendar({ events, viewingTimezone, startDay = 0 }: WeekCale
           className="sticky top-0 z-30 flex-none bg-white shadow ring-1 ring-black ring-opacity-5 sm:pr-8"
         >
           <MobileNav
-            weekdays={weekdays}
+            localizedWeekdays={localizedWeekdaysList}
             focusedDay={selectedDay}
             startDay={startDay}
             onClickDay={(day: number) => setSelectedDay(day)}
           />
           <FullNav
-            weekdays={weekdays}
+            localizedWeekdays={localizedWeekdaysList}
             focusedDay={currentDay}
             startDay={startDay}
           />
@@ -92,7 +102,7 @@ export function WeekCalendar({ events, viewingTimezone, startDay = 0 }: WeekCale
 
             {/* Events */}
             <Events
-              weekdays={weekdays}
+              localizedWeekdays={localizedWeekdaysList}
               focusedDay={selectedDay}
               startDay={startDay}
               events={events}
@@ -142,19 +152,22 @@ function HourLines({ mode24Hour = false }: HourLinesProps) {
  * @param startDay
  * @returns
  */
-function getWeekdays(startDay: number): LocalizedWeekday[] {
-  const weekdays = localizedWeekdays();
+function orderWeekdays(
+  localizedWeekdaysList: LocalizedWeekday[],
+  startDay: number,
+): LocalizedWeekday[] {
   const orderedWeekdays: LocalizedWeekday[] = [];
-
-  for (let d = 0; d < 7; ++d) {
-    orderedWeekdays.push(weekdays[(d + startDay) % 7]);
+  for (let d = 0; d < localizedWeekdaysList.length; ++d) {
+    orderedWeekdays.push(
+      localizedWeekdaysList[(d + startDay) % localizedWeekdaysList.length],
+    );
   }
   return orderedWeekdays;
 }
 
 
 type BaseNavProps = {
-  weekdays: LocalizedWeekday[];
+  localizedWeekdays: LocalizedWeekday[];
   focusedDay: number; // index of day in nav; meaning 0 doesn't always mean Sunday.
   startDay?: WeekdayNumber; // 0 = Sunday start, which is the default.
 };
@@ -162,10 +175,12 @@ type BaseNavProps = {
 type MobileNavProps = BaseNavProps & {
   onClickDay: (day: number) => void;
 }
-function MobileNav({ weekdays, focusedDay, startDay = 0, onClickDay }: MobileNavProps) {
+function MobileNav({ localizedWeekdays, focusedDay, startDay = 0, onClickDay }: MobileNavProps) {
+  const orderedWeekdays = orderWeekdays(localizedWeekdays, startDay);
+
   return (
     <div className="grid grid-cols-7 text-sm leading-6 text-gray-900 sm:hidden">
-      {weekdays.map((weekday, i) => (
+      {orderedWeekdays.map((weekday, i) => (
         <button
           key={weekday.long}
           type="button"
@@ -186,18 +201,20 @@ function MobileNav({ weekdays, focusedDay, startDay = 0, onClickDay }: MobileNav
 }
 
 type FullNavProps = BaseNavProps;
-function FullNav({ weekdays, focusedDay, startDay = 0 }: FullNavProps) {
+function FullNav({ localizedWeekdays, focusedDay, startDay = 0 }: FullNavProps) {
+  const orderedWeekdays = orderWeekdays(localizedWeekdays, startDay);
+
   return (
     <div className="-mr-px hidden grid-cols-7 divide-x divide-gray-100 border-r border-gray-100 text-sm leading-6 text-gray-500 sm:grid">
       <div className="col-end-1 w-14" />
-      {weekdays.map((weekday, i) => (
+      {orderedWeekdays.map((weekday, i) => (
         <div
           key={weekday.long}
           className="flex items-center justify-center py-3 text-gray-900"
         >
           <span className={clsx(
             "items-center justify-center font-semibold ",
-            (focusedDay + startDay) % 7 === i &&
+            focusedDay === i &&
               "ml-1.5 flex h-8 w-10 rounded-full bg-indigo-600 text-white",
           )}>
             {weekday.short}
@@ -213,8 +230,7 @@ type EventsProps = BaseNavProps & {
   events: WeekCalendarEvent[];
   viewingTimezone: string;
 };
-function Events({ weekdays, focusedDay, startDay = 0, events, viewingTimezone }: EventsProps) {
-
+function Events({ localizedWeekdays, focusedDay, startDay = 0, events, viewingTimezone }: EventsProps) {
 
   return (
     <ol

@@ -45,20 +45,24 @@ export function localizedWeekdays(
   targetDate = new Date(),
   locales: string[] | string = []
 ): LocalizedWeekday[] {
-  const date = startOfWeek(targetDate); // Gets Sunday of target date's week.
+  // Get the midnight of the given dateTime to set the calendar's days correctly.
+  const targetDateMidnight = new Date(targetDate.setHours(0, 0, 0, 0));
+  const workingDate = startOfWeek(targetDateMidnight); // Gets Sunday of target date's week.
+
   const localizedWeekdays = [];
-  const long = new Intl.DateTimeFormat(locales, { weekday: "long" });
-  const short = new Intl.DateTimeFormat(locales, { weekday: "short" });
-  const narrow = new Intl.DateTimeFormat(locales, { weekday: "narrow" });
+
+  const longFormat = new Intl.DateTimeFormat(locales, { weekday: "long" });
+  const shortFormat = new Intl.DateTimeFormat(locales, { weekday: "short" });
+  const narrowFormat = new Intl.DateTimeFormat(locales, { weekday: "narrow" });
 
   for (let d = 0; d < 7; ++d) {
     localizedWeekdays.push({
-      long: long.format(date),
-      short: short.format(date),
-      narrow: narrow.format(date),
-      isoDateTime: formatISO(date),
+      long: longFormat.format(workingDate),
+      short: shortFormat.format(workingDate),
+      narrow: narrowFormat.format(workingDate),
+      isoDateTime: formatISO(workingDate),
     });
-    date.setDate(date.getDate() + 1); // Increment one day.
+    workingDate.setDate(workingDate.getDate() + 1); // Increment one day.
   }
 
   return localizedWeekdays;
