@@ -1,9 +1,35 @@
-import { LocalizedWeekday, localizedWeekdays } from "@utils/dateTime";
 import clsx from "clsx";
 import { useEffect, useMemo, useRef, useState } from "react"
 
+import { LocalizedWeekday, localizedWeekdays, WeekdayNumber } from "@utils/dateTime";
 
-export function WeekCalendar() {
+// Consult https://date-fns.org/v2.28.0/docs/parse
+// and https://github.com/marnusw/date-fns-tz#formatintimezone
+
+export type WeekCalendarSchedule = {
+  sunday: WeekCalendarSchedule[];
+  monday: WeekCalendarSchedule[];
+  tuesday: WeekCalendarSchedule[];
+  wednesday: WeekCalendarSchedule[];
+  thursday: WeekCalendarSchedule[];
+  friday: WeekCalendarSchedule[];
+  saturday: WeekCalendarSchedule[];
+};
+
+export type WeekCalendarEntry = {
+  startTime: string;  // H:mm - 24 hour format
+  endTime: string;    // H:mm - 24 hour format
+  timezone: string;   // IANA time zone name
+  title: string;      // Event title
+  details?: string;   // Event details
+};
+
+type WeekCalendarProps = {
+  weeklySchedules: WeekCalendarSchedule[];
+  viewingTimezone: string;
+  startDay?: WeekdayNumber;
+};
+export function WeekCalendar({ startDay = 0 }: WeekCalendarProps) {
   const currentDay = new Date().getDay();
   const [selectedDay, setSelectedDay] = useState(currentDay);
 
@@ -35,11 +61,11 @@ export function WeekCalendar() {
           <MobileNav
             onClickDay={(day: number) => setSelectedDay(day)}
             currentDay={selectedDay}
-            startDay={0}
+            startDay={startDay}
           />
           <FullNav
             currentDay={currentDay}
-            startDay={0}
+            startDay={startDay}
           />
         </div>
 
@@ -84,6 +110,7 @@ export function WeekCalendar() {
                   </p>
                 </a>
               </li>
+
               <li className="relative mt-px flex sm:col-start-3" style={{ gridRow: '92 / span 30' }}>
                 <a
                   href="#"
@@ -95,6 +122,7 @@ export function WeekCalendar() {
                   </p>
                 </a>
               </li>
+
               <li className="relative mt-px hidden sm:col-start-6 sm:flex" style={{ gridRow: '122 / span 24' }}>
                 <a
                   href="#"
@@ -161,7 +189,7 @@ function getWeekdays(startDay: number) {
 
 type BaseNavProps = {
   currentDay: number; // index of day in nav; meaning 0 doesn't always mean Sunday.
-  startDay?: 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0 = Sunday start, which is the default.
+  startDay?: WeekdayNumber; // 0 = Sunday start, which is the default.
 };
 
 type MobileNavProps = BaseNavProps & {
