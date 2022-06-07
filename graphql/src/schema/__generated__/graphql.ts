@@ -74,22 +74,6 @@ export type Cohort = {
   startDate?: Maybe<Scalars['Date']>;
 };
 
-export type CohortMockSchedule = {
-  __typename?: 'CohortMockSchedule';
-  createdAt: Scalars['Date'];
-  endDate?: Maybe<Scalars['Date']>;
-  engagementId: Scalars['ID'];
-  exempt?: Maybe<Scalars['String']>;
-  grade?: Maybe<Scalars['String']>;
-  hostKey?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  meetingRoom?: Maybe<Scalars['String']>;
-  name: Scalars['String'];
-  staffAssignments: Array<CohortStaffAssignment>;
-  startDate?: Maybe<Scalars['Date']>;
-  weeklySchedule: WeeklySchedule;
-};
-
 export type CohortStaffAssignment = {
   __typename?: 'CohortStaffAssignment';
   subject: AssignmentSubject;
@@ -237,7 +221,6 @@ export type Organization = {
 export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']>;
-  cohortMockSchedule?: Maybe<CohortMockSchedule>;
   cohorts: Array<Cohort>;
   currentUser?: Maybe<User>;
   engagement?: Maybe<Engagement>;
@@ -246,11 +229,6 @@ export type Query = {
   organizations: Array<Organization>;
   searchUsers: SearchResults;
   users: Array<User>;
-};
-
-
-export type QueryCohortMockScheduleArgs = {
-  cohortId: Scalars['ID'];
 };
 
 
@@ -279,14 +257,6 @@ export type SearchResults = {
   results: Array<User>;
 };
 
-export type SubjectSchedule = {
-  __typename?: 'SubjectSchedule';
-  endTime: Scalars['String'];
-  startTime: Scalars['String'];
-  subject: AssignmentSubject;
-  timezone: Scalars['String'];
-};
-
 export type User = {
   __typename?: 'User';
   accountStatus: AccountStatus;
@@ -301,17 +271,6 @@ export enum UserRole {
   MentorTeacher = 'MENTOR_TEACHER',
   TutorTeacher = 'TUTOR_TEACHER'
 }
-
-export type WeeklySchedule = {
-  __typename?: 'WeeklySchedule';
-  friday: Array<SubjectSchedule>;
-  monday: Array<SubjectSchedule>;
-  saturday: Array<SubjectSchedule>;
-  sunday: Array<SubjectSchedule>;
-  thursday: Array<SubjectSchedule>;
-  tuesday: Array<SubjectSchedule>;
-  wednesday: Array<SubjectSchedule>;
-};
 
 
 
@@ -390,7 +349,6 @@ export type ResolversTypes = {
   AssignmentSubject: AssignmentSubject;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Cohort: ResolverTypeWrapper<Cohort>;
-  CohortMockSchedule: ResolverTypeWrapper<CohortMockSchedule>;
   CohortStaffAssignment: ResolverTypeWrapper<CohortStaffAssignment>;
   Date: ResolverTypeWrapper<Scalars['Date']>;
   EditCohortInput: EditCohortInput;
@@ -408,10 +366,8 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   SearchResults: ResolverTypeWrapper<SearchResults>;
   String: ResolverTypeWrapper<Scalars['String']>;
-  SubjectSchedule: ResolverTypeWrapper<SubjectSchedule>;
   User: ResolverTypeWrapper<User>;
   UserRole: UserRole;
-  WeeklySchedule: ResolverTypeWrapper<WeeklySchedule>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -421,7 +377,6 @@ export type ResolversParentTypes = {
   AddOrganizationInput: AddOrganizationInput;
   Boolean: Scalars['Boolean'];
   Cohort: Cohort;
-  CohortMockSchedule: CohortMockSchedule;
   CohortStaffAssignment: CohortStaffAssignment;
   Date: Scalars['Date'];
   EditCohortInput: EditCohortInput;
@@ -439,9 +394,7 @@ export type ResolversParentTypes = {
   Query: {};
   SearchResults: SearchResults;
   String: Scalars['String'];
-  SubjectSchedule: SubjectSchedule;
   User: User;
-  WeeklySchedule: WeeklySchedule;
 };
 
 export type CohortResolvers<ContextType = any, ParentType extends ResolversParentTypes['Cohort'] = ResolversParentTypes['Cohort']> = {
@@ -456,22 +409,6 @@ export type CohortResolvers<ContextType = any, ParentType extends ResolversParen
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   staffAssignments?: Resolver<Array<ResolversTypes['CohortStaffAssignment']>, ParentType, ContextType>;
   startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type CohortMockScheduleResolvers<ContextType = any, ParentType extends ResolversParentTypes['CohortMockSchedule'] = ResolversParentTypes['CohortMockSchedule']> = {
-  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  endDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  engagementId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  exempt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  grade?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  hostKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  meetingRoom?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  staffAssignments?: Resolver<Array<ResolversTypes['CohortStaffAssignment']>, ParentType, ContextType>;
-  startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  weeklySchedule?: Resolver<ResolversTypes['WeeklySchedule'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -531,7 +468,6 @@ export type OrganizationResolvers<ContextType = any, ParentType extends Resolver
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  cohortMockSchedule?: Resolver<Maybe<ResolversTypes['CohortMockSchedule']>, ParentType, ContextType, RequireFields<QueryCohortMockScheduleArgs, 'cohortId'>>;
   cohorts?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType, RequireFields<QueryCohortsArgs, 'organizationId'>>;
   currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   engagement?: Resolver<Maybe<ResolversTypes['Engagement']>, ParentType, ContextType, RequireFields<QueryEngagementArgs, 'id'>>;
@@ -548,14 +484,6 @@ export type SearchResultsResolvers<ContextType = any, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SubjectScheduleResolvers<ContextType = any, ParentType extends ResolversParentTypes['SubjectSchedule'] = ResolversParentTypes['SubjectSchedule']> = {
-  endTime?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  startTime?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  subject?: Resolver<ResolversTypes['AssignmentSubject'], ParentType, ContextType>;
-  timezone?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   accountStatus?: Resolver<ResolversTypes['AccountStatus'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -565,20 +493,8 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type WeeklyScheduleResolvers<ContextType = any, ParentType extends ResolversParentTypes['WeeklySchedule'] = ResolversParentTypes['WeeklySchedule']> = {
-  friday?: Resolver<Array<ResolversTypes['SubjectSchedule']>, ParentType, ContextType>;
-  monday?: Resolver<Array<ResolversTypes['SubjectSchedule']>, ParentType, ContextType>;
-  saturday?: Resolver<Array<ResolversTypes['SubjectSchedule']>, ParentType, ContextType>;
-  sunday?: Resolver<Array<ResolversTypes['SubjectSchedule']>, ParentType, ContextType>;
-  thursday?: Resolver<Array<ResolversTypes['SubjectSchedule']>, ParentType, ContextType>;
-  tuesday?: Resolver<Array<ResolversTypes['SubjectSchedule']>, ParentType, ContextType>;
-  wednesday?: Resolver<Array<ResolversTypes['SubjectSchedule']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type Resolvers<ContextType = any> = {
   Cohort?: CohortResolvers<ContextType>;
-  CohortMockSchedule?: CohortMockScheduleResolvers<ContextType>;
   CohortStaffAssignment?: CohortStaffAssignmentResolvers<ContextType>;
   Date?: GraphQLScalarType;
   Engagement?: EngagementResolvers<ContextType>;
@@ -587,8 +503,6 @@ export type Resolvers<ContextType = any> = {
   Organization?: OrganizationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   SearchResults?: SearchResultsResolvers<ContextType>;
-  SubjectSchedule?: SubjectScheduleResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
-  WeeklySchedule?: WeeklyScheduleResolvers<ContextType>;
 };
 

@@ -1,37 +1,30 @@
 import clsx from "clsx";
 import { useEffect, useMemo, useRef, useState } from "react"
 
-import { LocalizedWeekday, localizedWeekdays, WeekdayNumber } from "@utils/dateTime";
+import { LocalizedWeekday, localizedWeekdays, Weekday, WeekdayNumber } from "@utils/dateTime";
 
 // Consult https://date-fns.org/v2.28.0/docs/parse
 // and https://github.com/marnusw/date-fns-tz#formatintimezone
 
-export type WeekCalendarSchedule = {
-  sunday: WeekCalendarSchedule[];
-  monday: WeekCalendarSchedule[];
-  tuesday: WeekCalendarSchedule[];
-  wednesday: WeekCalendarSchedule[];
-  thursday: WeekCalendarSchedule[];
-  friday: WeekCalendarSchedule[];
-  saturday: WeekCalendarSchedule[];
-};
-
-export type WeekCalendarEntry = {
+export type WeekCalendarEvent = {
+  weekday: Weekday;
   startTime: string;  // H:mm - 24 hour format
   endTime: string;    // H:mm - 24 hour format
   timezone: string;   // IANA time zone name
   title: string;      // Event title
   details?: string;   // Event details
+  groupId: number;    // Used to color-coordinate.
 };
 
 type WeekCalendarProps = {
-  weeklySchedules: WeekCalendarSchedule[];
+  events: WeekCalendarEvent[];
   viewingTimezone: string;
   startDay?: WeekdayNumber;
 };
 export function WeekCalendar({ startDay = 0 }: WeekCalendarProps) {
   const currentDay = new Date().getDay();
   const [selectedDay, setSelectedDay] = useState(currentDay);
+  const weekdays = getWeekdays(startDay);
 
   const container = useRef<HTMLDivElement>(null);
   const containerNav = useRef<HTMLDivElement>(null);
@@ -59,11 +52,13 @@ export function WeekCalendar({ startDay = 0 }: WeekCalendarProps) {
           className="sticky top-0 z-30 flex-none bg-white shadow ring-1 ring-black ring-opacity-5 sm:pr-8"
         >
           <MobileNav
+            weekdays={weekdays}
             onClickDay={(day: number) => setSelectedDay(day)}
             currentDay={selectedDay}
             startDay={startDay}
           />
           <FullNav
+            weekdays={weekdays}
             currentDay={currentDay}
             startDay={startDay}
           />
@@ -73,6 +68,7 @@ export function WeekCalendar({ startDay = 0 }: WeekCalendarProps) {
         <div className="flex flex-auto">
           <div className="sticky left-0 z-10 w-14 flex-none bg-white ring-1 ring-gray-100" />
           <div className="grid flex-auto grid-cols-1 grid-rows-1">
+
             {/* Horizontal lines */}
             <div
               className="col-start-1 col-end-2 row-start-1 grid divide-y divide-gray-100"
@@ -142,6 +138,7 @@ export function WeekCalendar({ startDay = 0 }: WeekCalendarProps) {
   );
 }
 
+
 type HourLinesProps = {
   mode24Hour?: boolean;
 };
@@ -170,6 +167,7 @@ function HourLines({ mode24Hour = false }: HourLinesProps) {
   );
 }
 
+
 /**
  * Small helper takes the desired start day of the week and returns an array
  * of weekdays sorted in a row with the first item [0] being the start day of
@@ -177,7 +175,7 @@ function HourLines({ mode24Hour = false }: HourLinesProps) {
  * @param startDay
  * @returns
  */
-function getWeekdays(startDay: number) {
+function getWeekdays(startDay: number): LocalizedWeekday[] {
   const weekdays = localizedWeekdays();
   const orderedWeekdays: LocalizedWeekday[] = [];
 
@@ -187,7 +185,9 @@ function getWeekdays(startDay: number) {
   return orderedWeekdays;
 }
 
+
 type BaseNavProps = {
+  weekdays: LocalizedWeekday[];
   currentDay: number; // index of day in nav; meaning 0 doesn't always mean Sunday.
   startDay?: WeekdayNumber; // 0 = Sunday start, which is the default.
 };
@@ -223,6 +223,7 @@ function MobileNav({ onClickDay, currentDay, startDay = 0 }: MobileNavProps) {
 type FullNavProps = BaseNavProps;
 function FullNav({ currentDay, startDay = 0 }: FullNavProps) {
   const weekdays = getWeekdays(startDay);
+  console.table(weekdays);
 
   return (
     <div className="-mr-px hidden grid-cols-7 divide-x divide-gray-100 border-r border-gray-100 text-sm leading-6 text-gray-500 sm:grid">
@@ -244,3 +245,22 @@ function FullNav({ currentDay, startDay = 0 }: FullNavProps) {
     </div>
   );
 }
+
+type EventColor = {
+  bgClass: string;
+  bgHoverClass: string;
+  textClass: string;
+}
+export const EventColors: EventColor[] = [
+  { bgClass: "bg-green-50", bgHoverClass: "bg-green-100", textClass: "text-green-700" },
+  { bgClass: "bg-yellow-50", bgHoverClass: "bg-yellow-100", textClass: "text-yellow-700" },
+  { bgClass: "bg-teal-50", bgHoverClass: "bg-teal-100", textClass: "text-teal-700" },
+  { bgClass: "bg-indigo-50", bgHoverClass: "bg-indigo-100", textClass: "text-indigo-700" },
+  { bgClass: "bg-emerald-50", bgHoverClass: "bg-emerald-100", textClass: "text-emerald-700" },
+  { bgClass: "bg-orange-50", bgHoverClass: "bg-orange-100", textClass: "text-orange-700" },
+  { bgClass: "bg-blue-50", bgHoverClass: "bg-blue-100", textClass: "text-blue-700" },
+  { bgClass: "bg-fuchsia-50", bgHoverClass: "bg-fuchsia-100", textClass: "text-fuchsia-700" },
+  { bgClass: "bg-pink-50", bgHoverClass: "bg-pink-100", textClass: "text-pink-700" },
+  { bgClass: "bg-amber-50", bgHoverClass: "bg-amber-100", textClass: "text-amber-700" },
+  { bgClass: "bg-slate-50", bgHoverClass: "bg-slate-100", textClass: "text-slate-700" },
+];

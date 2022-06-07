@@ -2,6 +2,14 @@ import startOfWeek from "date-fns/startOfWeek";
 import formatISO from "date-fns/formatISO";
 
 export type WeekdayNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+export type Weekday =
+  | "sunday"
+  | "monday"
+  | "tuesday"
+  | "wednesday"
+  | "thursday"
+  | "friday"
+  | "saturday";
 
 export type LocalizedWeekday = {
   long: string;
@@ -38,7 +46,7 @@ export function localizedWeekdays(
       narrow: narrow.format(date),
       isoDate: formatISO(date, { representation: "date" }),
     });
-    date.setDate(date.getDate() + 1);
+    date.setDate(date.getDate() + 1); // Increment one day.
   }
 
   return localizedWeekdays;
