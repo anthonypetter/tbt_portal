@@ -8,11 +8,11 @@ import { LocalizedWeekday, localizedWeekdays, Weekday, WeekdayNumber } from "@ut
 
 export type WeekCalendarEvent = {
   weekday: Weekday;
-  startTime: string;  // H:mm - 24 hour format
-  endTime: string;    // H:mm - 24 hour format
-  timeZone: string;   // IANA time zone name
-  title: string;      // Event title
-  details?: string;   // Event details
+  startTime: string;  // H:mm - 24 hour format.
+  endTime: string;    // H:mm - 24 hour format.
+  timeZone: string;   // IANA time zone name.
+  title: string;      // Event title.
+  details?: string;   // Event details.
   groupId: number;    // Used to color-coordinate.
 };
 
@@ -53,9 +53,9 @@ export function WeekCalendar({ events, viewingTimezone, startDay = 0 }: WeekCale
         >
           <MobileNav
             weekdays={weekdays}
-            onClickDay={(day: number) => setSelectedDay(day)}
             currentDay={selectedDay}
             startDay={startDay}
+            onClickDay={(day: number) => setSelectedDay(day)}
           />
           <FullNav
             weekdays={weekdays}
@@ -91,46 +91,13 @@ export function WeekCalendar({ events, viewingTimezone, startDay = 0 }: WeekCale
             </div>
 
             {/* Events */}
-            <ol
-              className="col-start-1 col-end-2 row-start-1 grid grid-cols-1 sm:grid-cols-7 sm:pr-8"
-              style={{ gridTemplateRows: '1.75rem repeat(288, minmax(0, 1fr)) auto' }}
-            >
-              <li className="relative mt-px flex sm:col-start-3" style={{ gridRow: '74 / span 12' }}>
-                <a
-                  href="#"
-                  className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100"
-                >
-                  <p className="order-1 font-semibold text-blue-700">Breakfast</p>
-                  <p className="text-blue-500 group-hover:text-blue-700">
-                    <time dateTime="2022-01-12T06:00">6:00 AM</time>
-                  </p>
-                </a>
-              </li>
-
-              <li className="relative mt-px flex sm:col-start-3" style={{ gridRow: '92 / span 30' }}>
-                <a
-                  href="#"
-                  className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-pink-50 p-2 text-xs leading-5 hover:bg-pink-100"
-                >
-                  <p className="order-1 font-semibold text-pink-700">Flight to Paris</p>
-                  <p className="text-pink-500 group-hover:text-pink-700">
-                    <time dateTime="2022-01-12T07:30">7:30 AM</time>
-                  </p>
-                </a>
-              </li>
-
-              <li className="relative mt-px hidden sm:col-start-6 sm:flex" style={{ gridRow: '122 / span 24' }}>
-                <a
-                  href="#"
-                  className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-gray-100 p-2 text-xs leading-5 hover:bg-gray-200"
-                >
-                  <p className="order-1 font-semibold text-gray-700">Meeting with design team at Disney</p>
-                  <p className="text-gray-500 group-hover:text-gray-700">
-                    <time dateTime="2022-01-15T10:00">10:00 AM</time>
-                  </p>
-                </a>
-              </li>
-            </ol>
+            <Events
+              weekdays={weekdays}
+              currentDay={currentDay}
+              startDay={startDay}
+              events={events}
+              viewingTimezone={viewingTimezone}
+            />
           </div>
         </div>
       </div>
@@ -195,9 +162,7 @@ type BaseNavProps = {
 type MobileNavProps = BaseNavProps & {
   onClickDay: (day: number) => void;
 }
-function MobileNav({ onClickDay, currentDay, startDay = 0 }: MobileNavProps) {
-  const weekdays = getWeekdays(startDay);
-
+function MobileNav({ weekdays, currentDay, startDay = 0, onClickDay }: MobileNavProps) {
   return (
     <div className="grid grid-cols-7 text-sm leading-6 text-gray-900 sm:hidden">
       {weekdays.map((weekday, i) => (
@@ -221,10 +186,7 @@ function MobileNav({ onClickDay, currentDay, startDay = 0 }: MobileNavProps) {
 }
 
 type FullNavProps = BaseNavProps;
-function FullNav({ currentDay, startDay = 0 }: FullNavProps) {
-  const weekdays = getWeekdays(startDay);
-  console.table(weekdays);
-
+function FullNav({ weekdays, currentDay, startDay = 0 }: FullNavProps) {
   return (
     <div className="-mr-px hidden grid-cols-7 divide-x divide-gray-100 border-r border-gray-100 text-sm leading-6 text-gray-500 sm:grid">
       <div className="col-end-1 w-14" />
@@ -245,6 +207,59 @@ function FullNav({ currentDay, startDay = 0 }: FullNavProps) {
     </div>
   );
 }
+
+
+type EventsProps = BaseNavProps & {
+  events: WeekCalendarEvent[];
+  viewingTimezone: string;
+};
+function Events({ weekdays, currentDay, startDay = 0, events, viewingTimezone }: EventsProps) {
+
+
+  return (
+    <ol
+      className="col-start-1 col-end-2 row-start-1 grid grid-cols-1 sm:grid-cols-7 sm:pr-8"
+      style={{ gridTemplateRows: '1.75rem repeat(288, minmax(0, 1fr)) auto' }}
+    >
+      <li className="relative mt-px flex sm:col-start-3" style={{ gridRow: '74 / span 12' }}>
+        <a
+          href="#"
+          className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100"
+        >
+          <p className="order-1 font-semibold text-blue-700">Breakfast</p>
+          <p className="text-blue-500 group-hover:text-blue-700">
+            <time dateTime="2022-01-12T06:00">6:00 AM</time>
+          </p>
+        </a>
+      </li>
+
+      <li className="relative mt-px flex sm:col-start-3" style={{ gridRow: '92 / span 30' }}>
+        <a
+          href="#"
+          className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-pink-50 p-2 text-xs leading-5 hover:bg-pink-100"
+        >
+          <p className="order-1 font-semibold text-pink-700">Flight to Paris</p>
+          <p className="text-pink-500 group-hover:text-pink-700">
+            <time dateTime="2022-01-12T07:30">7:30 AM</time>
+          </p>
+        </a>
+      </li>
+
+      <li className="relative mt-px hidden sm:col-start-6 sm:flex" style={{ gridRow: '122 / span 24' }}>
+        <a
+          href="#"
+          className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-gray-100 p-2 text-xs leading-5 hover:bg-gray-200"
+        >
+          <p className="order-1 font-semibold text-gray-700">Meeting with design team at Disney</p>
+          <p className="text-gray-500 group-hover:text-gray-700">
+            <time dateTime="2022-01-15T10:00">10:00 AM</time>
+          </p>
+        </a>
+      </li>
+    </ol>
+  );
+}
+
 
 type EventColor = {
   bgClass: string;
