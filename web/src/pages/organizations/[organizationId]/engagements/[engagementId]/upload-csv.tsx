@@ -2,21 +2,21 @@ import type { NextPage, GetServerSidePropsContext } from "next";
 import { AuthedLayout } from "components/AuthedLayout";
 import { getServerSideAuth } from "@utils/auth/server-side-auth";
 import { gql, useQuery, ApolloQueryResult } from "@apollo/client";
-import { EngagementDetailPageQuery } from "@generated/graphql";
+import { EngagementCsvUploadPageQuery } from "@generated/graphql";
 import { triggerErrorToast } from "components/Toast";
 import { getSession } from "@lib/apollo-client";
 import { processResult } from "@utils/apollo";
 import { parseEngagementId } from "@utils/parsing";
-import { EngagementDetailPage } from "components/engagements/EngagementDetailPage";
-import { Tab } from "components/engagements/EngagementTabs";
+import { EngagementDetailsPage } from "components/engagements/EngagementDetailsPage";
+import { Tab } from "components/engagements/EngagementDetailsTabs";
 
-const GET_ENGAGEMENT = gql`
-  query EngagementDetailPage($id: ID!) {
+const GET_ENGAGEMENT_FOR_CSV_COHORT_UPLOAD = gql`
+  query EngagementCsvUploadPage($id: ID!) {
     engagement(id: $id) {
-      ...EngagementDetailPageCohorts
+      ...EngagementDetailsPageCsvUpload
     }
   }
-  ${EngagementDetailPage.fragments.cohortsView}
+  ${EngagementDetailsPage.fragments.csvUploadView}
 `;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -29,9 +29,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { engagementId } = parseEngagementId(context.params);
   const { client } = getSession(auth.token);
 
-  const result: ApolloQueryResult<EngagementDetailPageQuery> =
+  const result: ApolloQueryResult<EngagementCsvUploadPageQuery> =
     await client.query({
-      query: GET_ENGAGEMENT,
+      query: GET_ENGAGEMENT_FOR_CSV_COHORT_UPLOAD,
       variables: { id: engagementId },
       fetchPolicy: "no-cache",
     });
@@ -44,28 +44,30 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 type Props = {
-  engagement: NonNullable<EngagementDetailPageQuery["engagement"]>;
+  engagement: NonNullable<EngagementCsvUploadPageQuery["engagement"]>;
 };
 
 const EngagementDetail: NextPage<Props> = ({ engagement }) => {
-  const { data } = useQuery<EngagementDetailPageQuery>(GET_ENGAGEMENT, {
-    variables: { id: engagement.id },
-    fetchPolicy: "network-only",
-    nextFetchPolicy: "cache-first",
-    onError: (error) => {
-      console.error(error);
-      triggerErrorToast({
-        message: "Looks like something went wrong.",
-        sub: "We weren't able to fetch this engagement.",
-      });
-    },
-  });
+  const { data } = useQuery<EngagementCsvUploadPageQuery>(
+    GET_ENGAGEMENT_FOR_CSV_COHORT_UPLOAD,
+    {
+      variables: { id: engagement.id },
+      fetchPolicy: "network-only",
+      onError: (error) => {
+        console.error(error);
+        triggerErrorToast({
+          message: "Looks like something went wrong.",
+          sub: "We weren't able to fetch this engagement.",
+        });
+      },
+    }
+  );
 
   return (
     <AuthedLayout>
-      <EngagementDetailPage
+      <EngagementDetailsPage
         tabEng={{
-          tab: Tab.Cohorts,
+          tab: Tab.UploadCsv,
           engagement: data?.engagement ?? engagement,
         }}
       />
