@@ -55,7 +55,9 @@ export function AssignEngagementTeachers({ staff, onAdd, onRemove }: Props) {
               const keys = staff.map((t) => `${t.userId}_${t.role}`);
 
               if (keys.includes(selectionKey)) {
-                setError("This teacher has already been assigned!");
+                setError(
+                  "This teacher has already been assigned to this role!"
+                );
                 return;
               }
 
