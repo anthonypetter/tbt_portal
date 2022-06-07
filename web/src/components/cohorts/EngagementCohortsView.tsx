@@ -13,6 +13,8 @@ import { AddNewCohortModal } from "./AddNewCohortModal";
 import { ErrorBox } from "components/ErrorBox";
 import { ErrorBoundary } from "components/ErrorBoundary";
 import { UploadCsvButton } from "./UploadCsvButton";
+import { Link } from "components/Link";
+import { Routes } from "@utils/routes";
 
 EngagementCohortsView.fragments = {
   cohortsList: gql`
@@ -125,11 +127,15 @@ function DetailsSidebar({ selectedCohort, onClose }: DetailsSidebarProps) {
           label="Meeting Room"
           value={
             selectedCohort?.meetingRoom ? (
-              <a href={selectedCohort.meetingRoom}>
+              <Link
+                href={`${Routes.liveView.href()}?roomUrl=${
+                  selectedCohort.meetingRoom
+                }`}
+              >
                 <p className="text-ellipsis text-blue-400 truncate">
                   {selectedCohort.name} room link
                 </p>
-              </a>
+              </Link>
             ) : (
               ""
             )
