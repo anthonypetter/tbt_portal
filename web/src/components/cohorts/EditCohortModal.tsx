@@ -19,7 +19,7 @@ import {
 } from "../staffAssignments/AssignCohortTeachers";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import {
-  ENGAGEMENT_DETAIL_PAGE_QUERY_NAME,
+  ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
   ORG_DETAIL_PAGE_COHORTS_NAME,
 } from "./constants";
 
@@ -131,7 +131,7 @@ export function EditCohortModalBody({
         },
       },
       refetchQueries: [
-        ENGAGEMENT_DETAIL_PAGE_QUERY_NAME,
+        ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
         ORG_DETAIL_PAGE_COHORTS_NAME,
       ],
       onQueryUpdated(observableQuery) {
