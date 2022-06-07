@@ -1,6 +1,8 @@
 import startOfWeek from "date-fns/startOfWeek";
 import formatISO from "date-fns/formatISO";
 
+export type WeekdayNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
 export type LocalizedWeekday = {
   long: string;
   short: string;

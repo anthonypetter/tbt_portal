@@ -8,6 +8,10 @@ type CohortsScheduleCalendarProps = {
 
 export function CohortsScheduleCalendar({ cohorts }: CohortsScheduleCalendarProps) {
   return (
-    <WeekCalendar />
+    <WeekCalendar
+      weeklySchedules={[]}
+      viewingTimezone={Intl.DateTimeFormat().resolvedOptions().timeZone}
+      startDay={0}
+    />
   );
 }
