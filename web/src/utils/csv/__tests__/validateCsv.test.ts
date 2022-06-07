@@ -94,7 +94,7 @@ describe("csvValidation", () => {
     expect(error.hint).toBe("Columns: grade, monday, tuesday, wednesday");
   });
 
-  test("should passing validation when optional columns are missing", async () => {
+  test("should pass validation when optional columns are missing", async () => {
     const readstream = fs.createReadStream(
       path.resolve(__dirname, "./valid-missing-optional-columns.csv")
     );
