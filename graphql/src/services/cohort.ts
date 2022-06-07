@@ -280,7 +280,7 @@ async function saveCsvCohortsData(
       const staffAssignments = compact(
         cohort.staffAssignments.map((sa) => {
           const teacher = createdTeachers.find(
-            (t) => t.email == sa.teacher.email
+            (t) => t.email === sa.teacher.email
           );
           if (!teacher) {
             return undefined;
