@@ -11,12 +11,24 @@ export type Weekday =
   | "friday"
   | "saturday";
 
+export const weekdays: Weekday[] = [
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+];
+
 export type LocalizedWeekday = {
   long: string;
   short: string;
   narrow: string;
   isoDate: string;
 };
+
+export const TimeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
 
 /**
  * Uses Intl.DateTimeFormat() to create a list of weekday titles that will match
@@ -50,4 +62,30 @@ export function localizedWeekdays(
   }
 
   return localizedWeekdays;
+}
+
+/**
+ * When you have the option to change the start day of a week it's important to
+ * be able to smoothly adjust and find the newly adjusted index for any day you
+ * need.
+ * Ex 1: If the start day of the week is Sunday (0)... [S M T W T F S]
+ *  Then Sunday will be at index 0. Monday will be at index 1.
+ * Ex 2: If the start day of the week is Monday (1)... [M T W T F S S]
+ *  Then Sunday will be at index 6. Monday will be at index 0.
+ * Ex 3: if the start of the week is Saturday (6)... [S S M T W T F]
+ *  Then Sunday will be at index 1. Monday will be at index 2.
+ * @param weekday
+ * @param startDay
+ * @returns
+ */
+export function findWeekdayNumberOffset(
+  weekday: Weekday,
+  startDay: WeekdayNumber
+): WeekdayNumber {
+  const dayIndex = weekdays.indexOf(weekday);
+  if (dayIndex < 0) {
+    return 0; // Bad weekday. Weird failure in type checking happened.
+  } else {
+    return ((weekdays.indexOf(weekday) + 7 - startDay) % 7) as WeekdayNumber;
+  }
 }

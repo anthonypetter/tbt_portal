@@ -1,4 +1,5 @@
-import { localizedWeekdays } from "../dateTime";
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import { localizedWeekdays, findWeekdayNumberOffset } from "../dateTime";
 
 describe("dateTime", () => {
   describe("localizedWeekdays", () => {
@@ -158,6 +159,35 @@ describe("dateTime", () => {
             isoDate: "2022-01-01",
           },
         ]);
+      });
+    });
+  });
+
+  describe("weekdayStartDayOffset", () => {
+    describe("happy path", () => {
+      test("should return correct indexes for Sunday (0) start day week", () => {
+        expect(findWeekdayNumberOffset("sunday", 0)).toBe(0);
+        expect(findWeekdayNumberOffset("monday", 0)).toBe(1);
+        expect(findWeekdayNumberOffset("saturday", 0)).toBe(6);
+      });
+
+      test("should return correct indexes for Monday (1) start day week", () => {
+        expect(findWeekdayNumberOffset("sunday", 1)).toBe(6);
+        expect(findWeekdayNumberOffset("monday", 1)).toBe(0);
+        expect(findWeekdayNumberOffset("saturday", 1)).toBe(5);
+      });
+
+      test("should return correct indexes for Saturday (6) start day week", () => {
+        expect(findWeekdayNumberOffset("sunday", 6)).toBe(1);
+        expect(findWeekdayNumberOffset("monday", 6)).toBe(2);
+        expect(findWeekdayNumberOffset("saturday", 6)).toBe(0);
+      });
+    });
+
+    describe("sad path", () => {
+      test("should correctly handle a non-existent day", () => {
+        // @ts-ignore
+        expect(findWeekdayNumberOffset("blah", 0)).toBe(0);
       });
     });
   });

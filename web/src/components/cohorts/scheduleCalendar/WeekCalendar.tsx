@@ -53,13 +53,13 @@ export function WeekCalendar({ events, viewingTimezone, startDay = 0 }: WeekCale
         >
           <MobileNav
             weekdays={weekdays}
-            currentDay={selectedDay}
+            focusedDay={selectedDay}
             startDay={startDay}
             onClickDay={(day: number) => setSelectedDay(day)}
           />
           <FullNav
             weekdays={weekdays}
-            currentDay={currentDay}
+            focusedDay={currentDay}
             startDay={startDay}
           />
         </div>
@@ -93,7 +93,7 @@ export function WeekCalendar({ events, viewingTimezone, startDay = 0 }: WeekCale
             {/* Events */}
             <Events
               weekdays={weekdays}
-              currentDay={currentDay}
+              focusedDay={selectedDay}
               startDay={startDay}
               events={events}
               viewingTimezone={viewingTimezone}
@@ -155,14 +155,14 @@ function getWeekdays(startDay: number): LocalizedWeekday[] {
 
 type BaseNavProps = {
   weekdays: LocalizedWeekday[];
-  currentDay: number; // index of day in nav; meaning 0 doesn't always mean Sunday.
+  focusedDay: number; // index of day in nav; meaning 0 doesn't always mean Sunday.
   startDay?: WeekdayNumber; // 0 = Sunday start, which is the default.
 };
 
 type MobileNavProps = BaseNavProps & {
   onClickDay: (day: number) => void;
 }
-function MobileNav({ weekdays, currentDay, startDay = 0, onClickDay }: MobileNavProps) {
+function MobileNav({ weekdays, focusedDay, startDay = 0, onClickDay }: MobileNavProps) {
   return (
     <div className="grid grid-cols-7 text-sm leading-6 text-gray-900 sm:hidden">
       {weekdays.map((weekday, i) => (
@@ -175,7 +175,7 @@ function MobileNav({ weekdays, currentDay, startDay = 0, onClickDay }: MobileNav
           <span
           className={clsx(
             "mt-1 flex h-8 w-8 items-center justify-center font-semibold",
-            currentDay === i && "rounded-full bg-indigo-600 text-white"
+            focusedDay === i && "rounded-full bg-indigo-600 text-white"
           )}>
             {weekday.narrow}
           </span>
@@ -186,7 +186,7 @@ function MobileNav({ weekdays, currentDay, startDay = 0, onClickDay }: MobileNav
 }
 
 type FullNavProps = BaseNavProps;
-function FullNav({ weekdays, currentDay, startDay = 0 }: FullNavProps) {
+function FullNav({ weekdays, focusedDay, startDay = 0 }: FullNavProps) {
   return (
     <div className="-mr-px hidden grid-cols-7 divide-x divide-gray-100 border-r border-gray-100 text-sm leading-6 text-gray-500 sm:grid">
       <div className="col-end-1 w-14" />
@@ -197,7 +197,7 @@ function FullNav({ weekdays, currentDay, startDay = 0 }: FullNavProps) {
         >
           <span className={clsx(
             "items-center justify-center font-semibold ",
-            (currentDay + startDay) % 7 === i &&
+            (focusedDay + startDay) % 7 === i &&
               "ml-1.5 flex h-8 w-10 rounded-full bg-indigo-600 text-white",
           )}>
             {weekday.short}
@@ -213,7 +213,7 @@ type EventsProps = BaseNavProps & {
   events: WeekCalendarEvent[];
   viewingTimezone: string;
 };
-function Events({ weekdays, currentDay, startDay = 0, events, viewingTimezone }: EventsProps) {
+function Events({ weekdays, focusedDay, startDay = 0, events, viewingTimezone }: EventsProps) {
 
 
   return (
