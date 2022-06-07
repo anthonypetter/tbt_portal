@@ -84,8 +84,7 @@ model EngagementStaffAssignment {
   user       User       @relation(fields: [userId], references: [id])
   engagement Engagement @relation(fields: [engagementId], references: [id])
 
-  //TODO: Add role to compound key? Is it expected to have staff members take on multiple roles?
-  @@id([userId, engagementId])
+  @@id([userId, engagementId, role])
 }
 
 model Cohort {
