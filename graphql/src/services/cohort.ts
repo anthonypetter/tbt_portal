@@ -64,7 +64,7 @@ type EditInput = {
   grade?: string | null;
   hostKey?: string | null;
   meetingRoom?: string | null;
-  staffChangeSet?: Omit<ChangeSet, "updates">;
+  staffChangeSet?: ChangeSet;
 };
 
 async function editCohort({
