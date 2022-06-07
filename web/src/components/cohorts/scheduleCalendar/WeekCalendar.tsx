@@ -10,7 +10,7 @@ export type WeekCalendarEvent = {
   weekday: Weekday;
   startTime: string;  // H:mm - 24 hour format
   endTime: string;    // H:mm - 24 hour format
-  timezone: string;   // IANA time zone name
+  timeZone: string;   // IANA time zone name
   title: string;      // Event title
   details?: string;   // Event details
   groupId: number;    // Used to color-coordinate.
@@ -21,7 +21,7 @@ type WeekCalendarProps = {
   viewingTimezone: string;
   startDay?: WeekdayNumber;
 };
-export function WeekCalendar({ startDay = 0 }: WeekCalendarProps) {
+export function WeekCalendar({ events, viewingTimezone, startDay = 0 }: WeekCalendarProps) {
   const currentDay = new Date().getDay();
   const [selectedDay, setSelectedDay] = useState(currentDay);
   const weekdays = getWeekdays(startDay);

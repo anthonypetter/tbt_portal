@@ -37,7 +37,8 @@ export function CohortsScheduleCalendarModal({
           {cohorts.map(cohort => `${cohort.name} (Grade ${cohort.grade ?? "?"})`).join(", ")}
         </h1>
         <CohortsScheduleCalendar
-          cohorts={cohorts}
+          // MOCKING //
+          cohorts={cohorts.concat(cohorts).concat(cohorts)}
         />
       </div>
     </Modal>
