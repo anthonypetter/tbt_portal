@@ -118,7 +118,7 @@ model CohortStaffAssignment {
   cohortId Int
   cohort   Cohort @relation(fields: [cohortId], references: [id])
 
-  @@id([userId, cohortId])
+  @@id([userId, cohortId, subject])
 }
 
 enum Weekday {
