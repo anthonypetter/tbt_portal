@@ -1,9 +1,14 @@
 import { prisma } from "../lib/prisma-client";
-import type { Prisma } from "@prisma/client";
+import { AccountStatus, Prisma } from "@prisma/client";
 import {
   ChangeSet,
   CohortStaffAssignmentInput,
 } from "../utils/cohortStaffAssignments";
+import { AssignmentSubject } from "../schema/__generated__/graphql";
+import flatten from "lodash/flatten";
+import compact from "lodash/compact";
+import uniqBy from "lodash/uniqBy";
+import { extractSchedules } from "../utils/schedules";
 
 /**
  * Gets a cohort
@@ -175,6 +180,141 @@ async function addCohort({
   });
 }
 
+/**
+ * CSV
+ */
+
+type CsvCohortStaff = {
+  subject: AssignmentSubject;
+  teacher: { fullName: string; email: string };
+};
+
+export type CsvCohortInput = {
+  cohortName: string;
+  grade: string;
+
+  monday: SubjectScheduleInput[];
+  tuesday: SubjectScheduleInput[];
+  wednesday: SubjectScheduleInput[];
+  thursday: SubjectScheduleInput[];
+  friday: SubjectScheduleInput[];
+  saturday: SubjectScheduleInput[];
+  sunday: SubjectScheduleInput[];
+
+  staffAssignments: CsvCohortStaff[];
+};
+
+export type SubjectScheduleInput = {
+  subject: AssignmentSubject;
+  startTime: string;
+  endTime: string;
+  timeZone: string;
+};
+
+async function saveCsvCohortsData(
+  engagementId: number,
+  inputCohorts: CsvCohortInput[]
+) {
+  const allStaff: CsvCohortStaff[][] = [];
+  const cohorts = inputCohorts.map((cohort) => {
+    allStaff.push(cohort.staffAssignments);
+    return {
+      name: cohort.cohortName,
+      engagementId,
+      grade: cohort.grade,
+      staffAssignments: cohort.staffAssignments,
+      schedules: extractSchedules(cohort),
+    };
+  });
+
+  /**
+   * Find unrecognized teacher emails and create users for them.
+   */
+  const uniqueTeachers = uniqBy(
+    flatten(allStaff).map((s) => s.teacher),
+    (t) => t.email
+  );
+
+  const existingTeachers = await prisma.user.findMany({
+    where: {
+      OR: uniqueTeachers.map((t) => ({ email: t.email })),
+    },
+  });
+
+  const newTeachers = uniqueTeachers.filter(
+    (teacher) => !existingTeachers.map((t) => t.email).includes(teacher.email)
+  );
+
+  const { count: newTeacherCount } = await prisma.user.createMany({
+    data: newTeachers.map((newTeacher) => {
+      return {
+        email: newTeacher.email,
+        fullName: newTeacher.fullName,
+        accountStatus: AccountStatus.PENDING,
+        inviteSentAt: null,
+      };
+    }),
+    skipDuplicates: true,
+  });
+
+  /**
+   * Create cohorts, staff, and schedules
+   *
+   * Since
+   *  - cohorts come with multiple staff assignments and schedules
+   *  - cohorts don't exist yet (no cohortId is available)
+   *  - prisma's createMany does not support accessing relations
+   *
+   * We will loop through each cohort and use prisma's `create` to
+   * individually create a cohort and relations.
+   */
+
+  const createdTeachers = await prisma.user.findMany({
+    where: {
+      OR: uniqueTeachers.map((t) => ({ email: t.email })),
+    },
+  });
+
+  const cohortsCreated = await Promise.all(
+    cohorts.map((cohort) => {
+      const staffAssignments = compact(
+        cohort.staffAssignments.map((sa) => {
+          const teacher = createdTeachers.find(
+            (t) => t.email === sa.teacher.email
+          );
+          if (!teacher) {
+            return undefined;
+          }
+
+          return {
+            subject: sa.subject,
+            userId: teacher.id,
+          };
+        })
+      );
+
+      return prisma.cohort.create({
+        data: {
+          name: cohort.name,
+          grade: cohort.grade,
+          engagementId: cohort.engagementId,
+          staffAssignments: {
+            createMany: { data: staffAssignments },
+          },
+          cohortSchedule: {
+            createMany: { data: cohort.schedules },
+          },
+        },
+      });
+    })
+  );
+
+  return {
+    newTeacherCount,
+    newCohortCount: cohortsCreated.length,
+  };
+}
+
 export const CohortService = {
   getCohort,
   getCohorts,
@@ -182,4 +322,5 @@ export const CohortService = {
   editCohort,
   deleteCohort,
   addCohort,
+  saveCsvCohortsData,
 };

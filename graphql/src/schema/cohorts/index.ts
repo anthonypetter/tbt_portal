@@ -13,13 +13,20 @@ import {
   calcStaffChanges,
   fromNewToInput,
 } from "../../utils/cohortStaffAssignments";
-import { WhereByService } from "../../services/whereby"
+import {
+  typeDefs as CohortCsvDefs,
+  resolvers as CohortCsvResolvers,
+} from "./csv";
+import merge from "lodash/merge";
+import { WhereByService } from "../../services/whereby";
 
 /**
  * Type Defs
  */
 
 export const typeDefs = gql`
+  ${CohortCsvDefs}
+
   enum AssignmentSubject {
     MATH
     ELA
@@ -195,14 +202,17 @@ async function addCohort(
  * Resolvers
  */
 
-export const resolvers = {
-  Query: {
-    cohorts,
+export const resolvers = merge(
+  {
+    Query: {
+      cohorts,
+    },
+    Mutation: {
+      editCohort,
+      deleteCohort,
+      addCohort,
+    },
+    Cohort: CohortResolver,
   },
-  Mutation: {
-    editCohort,
-    deleteCohort,
-    addCohort,
-  },
-  Cohort: CohortResolver,
-};
+  CohortCsvResolvers
+);

@@ -36,6 +36,12 @@ export const Routes = {
       path: () =>
         "/organizations/[organizationId]/engagements/[engagementId]/cohorts",
     },
+    uploadCsv: {
+      href: (orgId: string, engagementId: string) =>
+        `/organizations/${orgId}/engagements/${engagementId}/upload-csv`,
+      path: () =>
+        "/organizations/[organizationId]/engagements/[engagementId]/upload-csv",
+    },
   },
 
   cohort: {
