@@ -1,17 +1,24 @@
-import { CohortMockSchedule } from "@generated/graphql"
-import { WeekCalendar } from "./WeekCalendar";
+import { Cohort } from "@generated/graphql";
+import { WeekCalendar, WeekCalendarEvent } from "./WeekCalendar";
 
 type CohortsScheduleCalendarProps = {
-  //////////// MOCK Schedule data for this Cohort ////////////
-  cohorts: CohortMockSchedule[],  // Multiple cohorts with schedule data
+  cohorts: Cohort[],  // Multiple cohorts with schedule data
 };
 
 export function CohortsScheduleCalendar({ cohorts }: CohortsScheduleCalendarProps) {
+  const weekCalendarSchedule = buildWeekCalendarSchedule(cohorts);
+
   return (
     <WeekCalendar
-      weeklySchedules={[]}
+      events={weekCalendarSchedule}
       viewingTimezone={Intl.DateTimeFormat().resolvedOptions().timeZone}
       startDay={0}
     />
   );
+}
+
+function buildWeekCalendarSchedule(cohorts: Cohort[]): WeekCalendarEvent[] {
+  const weekCalendarEvents: WeekCalendarEvent[] = [];
+
+  return weekCalendarEvents;
 }
