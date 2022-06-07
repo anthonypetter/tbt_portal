@@ -2133,6 +2133,9 @@ describe("parseCsv", () => {
     expect(getErrorMsg(() => parseHhMm("09:68"))).toEqual(
       CsvValidationErrorMessage.invalidTimeFormat
     );
+    expect(getErrorMsg(() => parseHhMm("12:"))).toEqual(
+      CsvValidationErrorMessage.invalidTimeFormat
+    );
   });
 });
 
