@@ -160,9 +160,12 @@ export function EditEngagementModalBody({
             <AssignEngagementTeachers
               staff={staff}
               onAdd={(teacher) => setStaff([...staff, teacher])}
-              onRemove={(teacher) =>
-                setStaff(staff.filter((t) => t.userId !== teacher.userId))
-              }
+              onRemove={(teacher) => {
+                const isTeacherToRemove = (t: EngagementStaffTeacher) =>
+                  t.role === teacher.role && t.userId === teacher.userId;
+
+                setStaff(staff.filter((t) => !isTeacherToRemove(t)));
+              }}
             />
           </div>
         </div>
