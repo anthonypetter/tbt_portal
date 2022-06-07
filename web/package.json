@@ -9,7 +9,8 @@
     "start:server": "doppler run -- node server.js",
     "lint": "next lint",
     "generate": "DOTENV_CONFIG_PATH=./.env graphql-codegen -r dotenv/config --config codegen.yml",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watchAll"
   },
   "dependencies": {
     "@apollo/client": "^3.6.3",
