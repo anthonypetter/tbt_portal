@@ -62,18 +62,27 @@ export function WeekCalendar(
   const containerNav = useRef<HTMLDivElement>(null);
   const containerOffset = useRef<HTMLDivElement>(null);
 
-  // useEffect(() => {
-  //   if (container != null && containerNav != null && containerOffset != null) {
-  //     // Set the container scroll position based on the current time.
-  //     const currentMinute = new Date().getHours() * 60;
-  //     container.current.scrollTop =
-  //       ((container.current.scrollHeight -
-  //         containerNav.current.offsetHeight -
-  //         containerOffset.current.offsetHeight) *
-  //         currentMinute) /
-  //       1440;
-  //       }
-  // }, [])
+  useEffect(() => {
+    if (container?.current != null &&
+      containerNav?.current != null &&
+      containerOffset?.current != null
+    ) {
+      // Set the container scroll position based on the current viewing tz hour.
+      // Cannot use currentViewerTime above without causing additional calls.
+      const currentHourMinute = utcToZonedTime(new Date(), viewingTimeZone).getHours() * 60;
+      const newScrollPosition =
+        ((container.current.scrollHeight -
+          containerNav.current.offsetHeight -
+          containerOffset.current.offsetHeight) *
+          currentHourMinute) /
+        1440;
+
+      // Give the component time to mount.
+      setTimeout(() => {
+        container?.current?.scrollTo({ top: newScrollPosition, behavior: "smooth" });
+      }, 100);
+    }
+  }, [])
 
   return (
     <div ref={container} className="h-[70vh] flex flex-auto flex-col overflow-auto bg-white">
@@ -267,6 +276,7 @@ function Events({
       return;
     }
 
+    // Adjust start Date+Time+Weekday to viewing time zone.
     const adjustedEventStartDateTime = utcToZonedTime(eventStartDateTime, viewingTimeZone);
     const adjustedStartIsoDate = formatISO(
       adjustedEventStartDateTime,
@@ -276,14 +286,15 @@ function Events({
     const adjustedStartTime = formatISO(
       adjustedEventStartDateTime,
       { representation: "time" }
-    ).slice(0, 5);
+    ).slice(0, 5);  // Grab "00:00" from "00:00Z"
 
+    // Adjust end Time+Weekday to viewing time zone.
     const adjustedEventEndDateTime = utcToZonedTime(eventEndDateTime, viewingTimeZone);
+    const adjustedEndWeekdayNumber = adjustedEventEndDateTime.getDay() as WeekdayNumber;
     const adjustedEndTime = formatISO(
       adjustedEventEndDateTime,
       { representation: "time" },
-    ).slice(0, 5);
-    const adjustedEndWeekdayNumber = adjustedEventEndDateTime.getDay() as WeekdayNumber;
+    ).slice(0, 5);  // Grab "00:00" from "00:00Z"
 
     const adjustedStartMinute = calculateMinutesElapsedInDay(adjustedStartTime);
     const adjustedEndMinute = calculateMinutesElapsedInDay(adjustedEndTime);
