@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { Cohort, EngagementDetailPageQuery, EngagementDetailsPageCohortsFragment } from "@generated/graphql";
+import { Cohort, EngagementDetailsPageCohortsFragment } from "@generated/graphql";
 import { PlusIcon, SearchIcon } from "@heroicons/react/outline";
 import { Input } from "components/Input";
 import { useState } from "react";
@@ -9,7 +9,6 @@ import { Button } from "components/Button";
 import { AddNewCohortModal } from "./AddNewCohortModal";
 import { ErrorBox } from "components/ErrorBox";
 import { ErrorBoundary } from "components/ErrorBoundary";
-import { UploadCsvButton } from "./UploadCsvButton";
 import { CohortDetailsSidebar } from "./CohortDetailsSidebar";
 
 EngagementCohortsView.fragments = {
