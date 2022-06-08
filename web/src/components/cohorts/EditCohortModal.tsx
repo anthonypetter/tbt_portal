@@ -19,7 +19,7 @@ import {
 } from "../staffAssignments/AssignCohortTeachers";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import {
-  ENGAGEMENT_DETAIL_PAGE_QUERY_NAME,
+  ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
   ORG_DETAIL_PAGE_COHORTS_NAME,
 } from "./constants";
 
@@ -131,7 +131,7 @@ export function EditCohortModalBody({
         },
       },
       refetchQueries: [
-        ENGAGEMENT_DETAIL_PAGE_QUERY_NAME,
+        ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
         ORG_DETAIL_PAGE_COHORTS_NAME,
       ],
       onQueryUpdated(observableQuery) {
@@ -205,9 +205,12 @@ export function EditCohortModalBody({
             <AssignCohortTeachers
               staff={staff}
               onAdd={(teacher) => setStaff([...staff, teacher])}
-              onRemove={(teacher) =>
-                setStaff(staff.filter((t) => t.userId !== teacher.userId))
-              }
+              onRemove={(teacher) => {
+                const isTeacherToRemove = (t: CohortStaffTeacher) =>
+                  t.subject === teacher.subject && t.userId === teacher.userId;
+
+                setStaff(staff.filter((t) => !isTeacherToRemove(t)));
+              }}
             />
           </div>
         </div>

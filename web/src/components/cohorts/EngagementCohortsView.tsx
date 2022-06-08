@@ -104,6 +104,7 @@ function DetailsSidebar({ selectedCohort, onClose }: DetailsSidebarProps) {
   if (!selectedCohort) {
     return <DetailsAside isOpen={false} onClose={onClose} />;
   }
+
   return (
     <DetailsAside isOpen={true} onClose={onClose} title={selectedCohort.name}>
       <DetailsAside.Section title="Details">
@@ -144,7 +145,7 @@ function DetailsSidebar({ selectedCohort, onClose }: DetailsSidebarProps) {
         ) : (
           selectedCohort.staffAssignments.map((assignment) => (
             <DetailsAside.Line
-              key={assignment.user.id}
+              key={`${assignment.user.id}-${assignment.subject}`}
               label={assignment.user.fullName}
               value={<AssignmentSubjectBadge subject={assignment.subject} />}
             />

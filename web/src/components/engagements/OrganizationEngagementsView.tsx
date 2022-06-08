@@ -152,7 +152,7 @@ function DetailsSidebar({ selectedEngagement, onClose }: DetailsSidebarProps) {
         ) : (
           selectedEngagement.staffAssignments.map((assignment) => (
             <DetailsAside.Line
-              key={assignment.user.id}
+              key={`${assignment.user.id}-${assignment.role}`}
               label={assignment.user.fullName}
               value={<AssignmentRoleBadge role={assignment.role} />}
             />
