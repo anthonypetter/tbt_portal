@@ -57,7 +57,11 @@ export function OrganizationDetailPage({ tabOrg }: Props) {
     <>
       <PageHeader
         title={tabOrg.organization.name}
-        description={`Organization: ${tabOrg.organization.description}`}
+        description={`Organization${
+          tabOrg.organization.description
+            ? `: ${tabOrg.organization.description}`
+            : ""
+        }`}
         breadcrumbs={[
           breadcrumbs.home(),
           breadcrumbs.organizations(),

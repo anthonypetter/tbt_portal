@@ -27,76 +27,94 @@ import { UserRole } from "@generated/graphql";
 import { fromJust } from "@utils/types";
 import sortBy from "lodash/sortBy";
 
+type SidebarLink = {
+  name: string;
+  href: string;
+  icon: (props: React.ComponentProps<"svg">) => JSX.Element;
+  current: boolean;
+  order: number;
+  disabled: boolean;
+};
+
 function getNavigation(role: UserRole, currentPathname: string) {
-  const commonLinks = [
+  const commonLinks: SidebarLink[] = [
     {
       name: "Home",
       href: Routes.home.href(),
       icon: HomeIcon,
       current: Routes.home.path() === currentPathname,
       order: 10,
+      disabled: true,
     },
   ];
 
-  const commonTeacherLinks = [
+  const commonTeacherLinks: SidebarLink[] = [
     {
       name: "My Schedule",
       href: Routes.mySchedule.href(),
       icon: CalendarIcon,
       current: Routes.mySchedule.path() === currentPathname,
       order: 20,
+      disabled: false,
     },
   ];
 
-  const adminOnlyLinks = [
+  const adminOnlyLinks: SidebarLink[] = [
     {
       name: "Live View",
       href: Routes.liveView.href(),
       icon: RiSignalTowerFill,
       current: Routes.liveView.path() === currentPathname,
       order: 30,
-    },
-    {
-      name: "Schedules",
-      href: Routes.mySchedule.href(),
-      icon: CalendarIcon,
-      current: Routes.mySchedule.path() === currentPathname,
-      order: 40,
+      disabled: true,
     },
     {
       name: "Organizations",
       href: Routes.organizations.href(),
       icon: FaRegBuilding,
-      current: Routes.organizations.path() === currentPathname,
-      order: 50,
+      current: currentPathname.includes(Routes.organizations.path()),
+      order: 40,
+      disabled: false,
     },
     {
       name: "Engagements",
       href: Routes.engagements.href(),
       icon: MdWorkspacesOutline,
       current: Routes.engagements.path() === currentPathname,
-      order: 60,
+      order: 50,
+      disabled: false,
     },
     {
       name: "Cohorts",
       href: Routes.cohorts.href(),
       icon: SiGoogleclassroom,
       current: Routes.cohorts.path() === currentPathname,
-      order: 70,
-    },
-    {
-      name: "Users",
-      href: Routes.users.href(),
-      icon: FiUsers,
-      current: Routes.users.path() === currentPathname,
-      order: 80,
+      order: 60,
+      disabled: false,
     },
     {
       name: "Teachers",
       href: Routes.teachers.href(),
       icon: FaGraduationCap,
       current: Routes.teachers.path() === currentPathname,
+      order: 70,
+      disabled: false,
+    },
+    {
+      name: "Schedules",
+      href: Routes.mySchedule.href(),
+      icon: CalendarIcon,
+      current: Routes.mySchedule.path() === currentPathname,
+      order: 80,
+      disabled: false,
+    },
+    {
+      name: "Users",
+      href: Routes.users.href(),
+      icon: FiUsers,
+      current: Routes.users.path() === currentPathname,
       order: 90,
+      disabled: false,
     },
     {
       name: "Recordings",
@@ -104,18 +122,25 @@ function getNavigation(role: UserRole, currentPathname: string) {
       icon: BiVideoRecording,
       current: Routes.recordings.path() === currentPathname,
       order: 100,
+      disabled: true,
     },
   ];
 
   switch (role) {
     case UserRole.Admin:
-      return sortBy([...commonLinks, ...adminOnlyLinks], (n) => n.order);
+      return sortBy([...commonLinks, ...adminOnlyLinks], (n) => n.order).filter(
+        (link) => link.disabled === false
+      );
 
     case UserRole.MentorTeacher:
-      return [...commonLinks, ...commonTeacherLinks];
+      return [...commonLinks, ...commonTeacherLinks].filter(
+        (link) => link.disabled === false
+      );
 
     case UserRole.TutorTeacher:
-      return [...commonLinks, ...commonTeacherLinks];
+      return [...commonLinks, ...commonTeacherLinks].filter(
+        (link) => link.disabled === false
+      );
 
     default:
       break;

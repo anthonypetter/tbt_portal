@@ -15,6 +15,7 @@ import { ChangePasswordPage } from "./ChangePasswordPage";
 import { CognitoUser } from "@aws-amplify/auth";
 import { FieldError } from "../FieldError";
 import { Container } from "components/Container";
+import { UserRole } from "@generated/graphql";
 
 type LoginInputs = {
   email: string;
@@ -42,7 +43,7 @@ export function LoginPage() {
     try {
       setStatus("loading");
       setLoginFailure(null);
-      const { status, message, cognitoUser } = await auth.login(
+      const { status, message, cognitoUser, userRole } = await auth.login(
         email,
         password
       );
@@ -50,7 +51,8 @@ export function LoginPage() {
       switch (status) {
         case LoginStatus.Success:
           setStatus("success");
-          router.push(Routes.home.href());
+          router.push(getPostLoginHref(userRole));
+
           break;
 
         case LoginStatus.ChangePassword:
@@ -265,4 +267,14 @@ export function ButtonAndIcon({
       {status === "idle" && <span className="ml-2">{text}</span>}
     </Button>
   );
+}
+
+function getPostLoginHref(role?: UserRole) {
+  switch (role) {
+    case UserRole.Admin:
+      return Routes.organizations.href();
+
+    default:
+      return Routes.mySchedule.href();
+  }
 }

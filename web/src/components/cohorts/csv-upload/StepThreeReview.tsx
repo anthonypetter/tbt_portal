@@ -48,7 +48,7 @@ type ReviewTableProps = {
   processedCsv: ProcessedCohort[];
 };
 
-export default function ReviewTable({ processedCsv }: ReviewTableProps) {
+function ReviewTable({ processedCsv }: ReviewTableProps) {
   return (
     <div className="mt-2 flex flex-col overflow-x-auto">
       <div className="overflow-x-auto">
