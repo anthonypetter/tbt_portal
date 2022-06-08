@@ -89,20 +89,15 @@ async function editCohort({
     const createMany =
       newAssignments.length > 0 ? { data: newAssignments } : undefined;
 
-    const updateMany = staffChangeSet.updates.map((teacher) => ({
-      where: { userId: teacher.userId },
-      data: { subject: teacher.subject },
-    }));
-
     const deleteMany = staffChangeSet.removals.map((teacher) => ({
       userId: teacher.userId,
       cohortId: id,
+      subject: teacher.subject,
     }));
 
-    if (createMany || updateMany.length > 0 || deleteMany.length > 0) {
+    if (createMany || deleteMany.length > 0) {
       staffAssignments = {
         ...(createMany ? { createMany } : {}),
-        ...(updateMany ? { updateMany } : {}),
         ...(deleteMany ? { deleteMany } : {}),
       };
     }

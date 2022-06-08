@@ -1,14 +1,11 @@
 import { CohortStaffAssignment, AssignmentSubject } from "@prisma/client";
-import { intersectionBy } from "lodash";
+import differenceWith from "lodash/differenceWith";
 import { NewCohortStaffAssignment } from "src/schema/__generated__/graphql";
 import { parseId } from "./numbers";
-import { findToAdd, findToDelete } from "./staffAssignments";
-import { fromJust } from "./types";
 
 export type ChangeSet = {
   additions: CohortStaffAssignmentInput[];
   removals: CohortStaffAssignmentInput[];
-  updates: CohortStaffAssignmentInput[];
 };
 
 export type CohortStaffAssignmentInput = {
@@ -26,7 +23,6 @@ export function calcStaffChanges(
   return {
     additions: findToAdd({ existingStaff, newStaff }),
     removals: findToDelete({ existingStaff, newStaff }),
-    updates: findToUpdate({ existingStaff, newStaff }),
   };
 }
 
@@ -48,33 +44,38 @@ export function fromNewToInput(
   };
 }
 
-function findToUpdate({
+export function findToDelete({
   existingStaff,
   newStaff,
 }: {
   existingStaff: CohortStaffAssignmentInput[];
   newStaff: CohortStaffAssignmentInput[];
 }) {
-  const staffInBothArrays = intersectionBy(
-    newStaff,
-    existingStaff,
-    (teacher) => teacher.userId
+  const assignmentsToDelete = differenceWith(
+    existingStaff, //The array to inspect
+    newStaff, //The values to exclude
+    (teacherA, teacherB) =>
+      teacherA.userId === teacherB.userId &&
+      teacherA.subject === teacherB.subject
   );
 
-  //Now lets figure out if their subject changed.
-  const assignmentsToUpdate = staffInBothArrays.filter((assignment) => {
-    const existingTeacher = fromJust(
-      existingStaff.find((t) => t.userId === assignment.userId),
-      "existingTeacher"
-    );
+  return assignmentsToDelete;
+}
 
-    const newTeacher = fromJust(
-      newStaff.find((t) => t.userId === assignment.userId),
-      "newTeacher"
-    );
+export function findToAdd({
+  existingStaff,
+  newStaff,
+}: {
+  existingStaff: CohortStaffAssignmentInput[];
+  newStaff: CohortStaffAssignmentInput[];
+}) {
+  const assignmentsToAdd = differenceWith(
+    newStaff, //The array to inspect
+    existingStaff, //The values to exclude
+    (teacherA, teacherB) =>
+      teacherA.userId === teacherB.userId &&
+      teacherA.subject === teacherB.subject
+  );
 
-    return existingTeacher.subject !== newTeacher.subject;
-  });
-
-  return assignmentsToUpdate;
+  return assignmentsToAdd;
 }
