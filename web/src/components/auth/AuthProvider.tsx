@@ -158,6 +158,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           cognitoUser,
           status: LoginStatus.Success,
           message: "Login successful",
+          userRole: user.role,
         };
       } else {
         setAuthState(unauthenticated());
