@@ -44,6 +44,7 @@ async function upsertUsers(env: string): Promise<User[]> {
       createdAt: new Date(),
       role: "ADMIN",
       accountStatus: "ACTIVE",
+      inviteSentAt: new Date(),
     },
     {
       email: "victor+mt@tutored.live",
@@ -52,6 +53,7 @@ async function upsertUsers(env: string): Promise<User[]> {
       createdAt: new Date(),
       role: "MENTOR_TEACHER",
       accountStatus: "ACTIVE",
+      inviteSentAt: new Date(),
     },
     {
       email: "victor+tt@tutored.live",
@@ -60,6 +62,7 @@ async function upsertUsers(env: string): Promise<User[]> {
       createdAt: new Date(),
       role: "TUTOR_TEACHER",
       accountStatus: "ACTIVE",
+      inviteSentAt: new Date(),
     },
     {
       email: "victor+st@tutored.live",
@@ -68,6 +71,7 @@ async function upsertUsers(env: string): Promise<User[]> {
       createdAt: new Date(),
       role: "TUTOR_TEACHER",
       accountStatus: "ACTIVE",
+      inviteSentAt: new Date(),
     },
     {
       email: "scottk@tutored.live",
@@ -76,6 +80,7 @@ async function upsertUsers(env: string): Promise<User[]> {
       createdAt: new Date(),
       role: "ADMIN",
       accountStatus: "ACTIVE",
+      inviteSentAt: new Date(),
     },
     {
       email: "kyle@tutored.live",
@@ -84,6 +89,7 @@ async function upsertUsers(env: string): Promise<User[]> {
       createdAt: new Date(),
       role: "ADMIN",
       accountStatus: "ACTIVE",
+      inviteSentAt: new Date(),
     },
   ];
 
@@ -95,6 +101,7 @@ async function upsertUsers(env: string): Promise<User[]> {
       createdAt: new Date(),
       role: "ADMIN",
       accountStatus: "ACTIVE",
+      inviteSentAt: new Date(),
     },
     {
       email: "victor+mt@tutored.live",
@@ -103,6 +110,7 @@ async function upsertUsers(env: string): Promise<User[]> {
       createdAt: new Date(),
       role: "MENTOR_TEACHER",
       accountStatus: "ACTIVE",
+      inviteSentAt: new Date(),
     },
     {
       email: "victor+tt@tutored.live",
@@ -111,6 +119,7 @@ async function upsertUsers(env: string): Promise<User[]> {
       createdAt: new Date(),
       role: "TUTOR_TEACHER",
       accountStatus: "ACTIVE",
+      inviteSentAt: new Date(),
     },
     {
       email: "victor+st@tutored.live",
@@ -119,6 +128,7 @@ async function upsertUsers(env: string): Promise<User[]> {
       createdAt: new Date(),
       role: "TUTOR_TEACHER",
       accountStatus: "ACTIVE",
+      inviteSentAt: new Date(),
     },
     {
       email: "rafik@tutored.live",
@@ -127,6 +137,7 @@ async function upsertUsers(env: string): Promise<User[]> {
       createdAt: new Date(),
       role: "ADMIN",
       accountStatus: "ACTIVE",
+      inviteSentAt: new Date(),
     },
   ];
 
