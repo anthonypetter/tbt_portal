@@ -14,6 +14,9 @@ export type IANAtzName = string;
  */
 export type ISODate = string;
 
+export type Hour = number;
+export type Minute = number;
+
 export type WeekdayNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 export type Weekday =
   | "sunday"
@@ -46,22 +49,22 @@ export const timeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
 /**
  * Helper function normalizes time input to be HH:mm when it could be H:mm. In
  * the case of malformed data it will return "00:00".
- * @param time
+ * @param timeString
  * @returns
  */
-export function normalizeTime(time: Time24Hour) {
-  const paddedString = time.padStart(5, "0"); // 6:30 --> 06:30.
+export function normalizeTime(timeString: string): Time24Hour {
+  const paddedString = timeString.padStart(5, "0"); // 6:30 --> 06:30.
   return timeRegex.test(paddedString) ? paddedString : "00:00";
 }
 
 /**
  * Takes a HH:mm or H:mm time string and returns the number of minutes since
  * the start of the day. In the case of malformed data it will return 0.
- * @param time
+ * @param timeString
  * @returns
  */
-export function calculateMinutesElapsedInDay(time: Time24Hour) {
-  const [hours, minutes] = normalizeTime(time)
+export function calculateMinutesElapsedInDay(timeString: Time24Hour): Minute {
+  const [hours, minutes] = normalizeTime(timeString)
     .split(":")
     .map((num) => parseInt(num));
   return hours * 60 + minutes;
