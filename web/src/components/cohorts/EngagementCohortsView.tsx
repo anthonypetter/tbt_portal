@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { Cohort, EngagementDetailPageQuery } from "@generated/graphql";
+import { Cohort, EngagementDetailPageQuery, EngagementDetailsPageCohortsFragment } from "@generated/graphql";
 import { PlusIcon, SearchIcon } from "@heroicons/react/outline";
 import { Input } from "components/Input";
 import { useState } from "react";
@@ -21,12 +21,8 @@ EngagementCohortsView.fragments = {
   `,
 };
 
-export type QueryEngagement = NonNullable<
-  EngagementDetailPageQuery["engagement"]
->;
-
 type Props = {
-  engagement: QueryEngagement;
+  engagement: EngagementDetailsPageCohortsFragment;
 };
 
 export function EngagementCohortsView({ engagement }: Props) {
@@ -45,9 +41,9 @@ export function EngagementCohortsView({ engagement }: Props) {
 
   return (
     <ErrorBoundary fallbackRender={() => <ErrorBox className="mt-4" />}>
-      <div className="flex min-h-[500px]">
+      <div className="flex min-h-full">
         <main className="flex-1">
-          <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 justify-between my-4">
+          <div className="flex justify-between my-4">
             <div className="flex-1 lg:max-w-sm lg:mr-2 lg:ml-1">
               <Input
                 id="cohorts-search"
@@ -57,21 +53,19 @@ export function EngagementCohortsView({ engagement }: Props) {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="flex items-center">
-              <Button
-                type="button"
-                theme="tertiary"
-                className="mr-2 sm:mx-2"
-                onClick={() => setShowAddModal(true)}
-              >
-                <PlusIcon
-                  className="-ml-2 mr-1 h-5 w-5 text-gray-400"
-                  aria-hidden="true"
-                />
-                <span>Add</span>
-              </Button>
-              <UploadCsvButton />
-            </div>
+
+            <Button
+              type="button"
+              theme="tertiary"
+              className="mx-2"
+              onClick={() => setShowAddModal(true)}
+            >
+              <PlusIcon
+                className="-ml-2 mr-1 h-5 w-5 text-gray-400"
+                aria-hidden="true"
+              />
+              <span>Add</span>
+            </Button>
           </div>
 
           <CohortsTable

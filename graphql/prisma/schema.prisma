@@ -24,10 +24,11 @@ model User {
   id            Int           @id @default(autoincrement())
   email         String        @unique
   createdAt     DateTime      @default(now())
-  cognitoSub    String        @unique
+  cognitoSub    String?
   fullName      String
   role          UserRole      @default(TUTOR_TEACHER)
   accountStatus AccountStatus @default(PENDING)
+  inviteSentAt  DateTime?
 
   //relation fields
   engagementAssignments EngagementStaffAssignment[]
@@ -94,6 +95,7 @@ model Cohort {
   grade       String?
   meetingRoom String?
   hostKey     String?
+  meetingId   String?
   exempt      Boolean   @default(false)
   startDate   DateTime?
   endDate     DateTime?
@@ -103,6 +105,7 @@ model Cohort {
   engagement       Engagement              @relation(fields: [engagementId], references: [id])
   staffAssignments CohortStaffAssignment[]
   sessions         CohortSession[]
+  cohortSchedule   CohortSchedule[]
 }
 
 model CohortStaffAssignment {
@@ -116,6 +119,30 @@ model CohortStaffAssignment {
   cohort   Cohort @relation(fields: [cohortId], references: [id])
 
   @@id([userId, cohortId])
+}
+
+enum Weekday {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model CohortSchedule {
+  id        Int               @id @default(autoincrement())
+  createdAt DateTime          @default(now())
+  weekday   Weekday
+  subject   AssignmentSubject
+  startTime String
+  endTime   String
+  timeZone  String
+
+  // relation fields
+  cohortId Int
+  cohort   Cohort @relation(fields: [cohortId], references: [id])
 }
 
 model CohortSession {

@@ -1,15 +1,22 @@
-import { EngagementDetailPageQuery } from "@generated/graphql";
+import {
+  EngagementDetailsPageCohortsFragment,
+  EngagementDetailsPageCsvUploadFragment,
+} from "@generated/graphql";
 import { gql } from "@apollo/client";
 import { PageHeader } from "components/PageHeader";
 import { Routes } from "@utils/routes";
-import { getDisplayName, EngagementTabs, Tab } from "./EngagementTabs";
+import {
+  getDisplayName,
+  EngagementDetailsTabs,
+  Tab,
+} from "./EngagementDetailsTabs";
 import { Container } from "components/Container";
 import { EngagementCohortsView } from "components/cohorts/EngagementCohortsView";
 import { breadcrumbs } from "@utils/breadcrumbs";
 
-EngagementDetailPage.fragments = {
+EngagementDetailsPage.fragments = {
   cohortsView: gql`
-    fragment EngagementDetailPageCohorts on Engagement {
+    fragment EngagementDetailsPageCohorts on Engagement {
       id
       name
       startDate
@@ -30,23 +37,36 @@ EngagementDetailPage.fragments = {
     }
     ${EngagementCohortsView.fragments.cohortsList}
   `,
+  csvUploadView: gql`
+    fragment EngagementDetailsPageCsvUpload on Engagement {
+      id
+      name
+      organization {
+        id
+        name
+      }
+      cohorts {
+        id
+      }
+    }
+  `,
 };
 
 export type TabEngagement =
   | {
       tab: Tab.Cohorts;
-      engagement: NonNullable<EngagementDetailPageQuery["engagement"]>;
+      engagement: EngagementDetailsPageCohortsFragment;
     }
   | {
-      tab: Tab.Sessions;
-      engagement: NonNullable<EngagementDetailPageQuery["engagement"]>;
+      tab: Tab.UploadCsv;
+      engagement: EngagementDetailsPageCsvUploadFragment;
     };
 
 type Props = {
   tabEng: TabEngagement;
 };
 
-export function EngagementDetailPage({ tabEng }: Props) {
+export function EngagementDetailsPage({ tabEng }: Props) {
   const { tab, engagement } = tabEng;
   return (
     <>
@@ -73,7 +93,7 @@ export function EngagementDetailPage({ tabEng }: Props) {
 
       <div className="mt-8">
         <Container padding="md">
-          <EngagementTabs tabEng={tabEng} />
+          <EngagementDetailsTabs tabEng={tabEng} />
         </Container>
       </div>
     </>
