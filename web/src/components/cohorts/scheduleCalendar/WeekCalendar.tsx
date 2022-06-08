@@ -4,16 +4,16 @@ import toDate from "date-fns-tz/toDate";
 import utcToZonedTime from "date-fns-tz/utcToZonedTime";
 import { useEffect, useMemo, useRef, useState } from "react"
 
-import { LocalizedWeekday, localizedWeekdays, Weekday, WeekdayNumber } from "@utils/dateTime";
+import { IANAtzName, ISODate, LocalizedWeekday, localizedWeekdays, Time24Hour, Weekday, WeekdayNumber } from "@utils/dateTime";
 
 // Consult https://date-fns.org/v2.28.0/docs/parse
 // and https://github.com/marnusw/date-fns-tz#formatintimezone
 
 export type WeekCalendarEvent = {
   weekday: Weekday;
-  startTime: string;  // H:mm - 24 hour format.
-  endTime: string;    // H:mm - 24 hour format.
-  timeZone: string;   // IANA time zone name.
+  startTime: Time24Hour;  // H:mm - 24 hour format.
+  endTime: Time24Hour;    // H:mm - 24 hour format.
+  timeZone: IANAtzName;   // IANA time zone name.
   title: string;      // Event title.
   details?: string;   // Event details.
   groupId: number;    // Used to color-coordinate.
@@ -21,16 +21,16 @@ export type WeekCalendarEvent = {
 
 type AdjustedWeekCalendarEvent = WeekCalendarEvent & {
   adjustedWeekday: Weekday;
-  adjustedStartTime: string;
-  adjustedEndTime: string;
+  adjustedStartTime: Time24Hour;
+  adjustedEndTime: Time24Hour;
   adjustedStartTimeMinutes: number;
   adjustedEndTimeMinutes: number;
 };
 
 type WeekCalendarProps = {
   events: WeekCalendarEvent[];
-  targetDate: string;
-  viewingTimeZone: string;
+  targetDate: ISODate;
+  viewingTimeZone: IANAtzName;
 };
 export function WeekCalendar({ events, targetDate, viewingTimeZone }: WeekCalendarProps) {
   // Get the current time of the viewingTimezone (allows for simulating different time zones).
@@ -206,7 +206,7 @@ function FullNav({ localizedWeekdays, focusedDay }: FullNavProps) {
 
 type EventsProps = BaseNavProps & {
   events: WeekCalendarEvent[];
-  viewingTimeZone: string;
+  viewingTimeZone: IANAtzName;
 };
 function Events({ localizedWeekdays, focusedDay, events, viewingTimeZone }: EventsProps) {
   const adjustedEvents: AdjustedWeekCalendarEvent[] = [];
