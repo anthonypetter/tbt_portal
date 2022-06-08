@@ -24,10 +24,11 @@ model User {
   id            Int           @id @default(autoincrement())
   email         String        @unique
   createdAt     DateTime      @default(now())
-  cognitoSub    String        @unique
+  cognitoSub    String?
   fullName      String
   role          UserRole      @default(TUTOR_TEACHER)
   accountStatus AccountStatus @default(PENDING)
+  inviteSentAt  DateTime?
 
   //relation fields
   engagementAssignments EngagementStaffAssignment[]
@@ -83,8 +84,7 @@ model EngagementStaffAssignment {
   user       User       @relation(fields: [userId], references: [id])
   engagement Engagement @relation(fields: [engagementId], references: [id])
 
-  //TODO: Add role to compound key? Is it expected to have staff members take on multiple roles?
-  @@id([userId, engagementId])
+  @@id([userId, engagementId, role])
 }
 
 model Cohort {
@@ -104,6 +104,7 @@ model Cohort {
   engagement       Engagement              @relation(fields: [engagementId], references: [id])
   staffAssignments CohortStaffAssignment[]
   sessions         CohortSession[]
+  cohortSchedule   CohortSchedule[]
 }
 
 model CohortStaffAssignment {
@@ -116,7 +117,31 @@ model CohortStaffAssignment {
   cohortId Int
   cohort   Cohort @relation(fields: [cohortId], references: [id])
 
-  @@id([userId, cohortId])
+  @@id([userId, cohortId, subject])
+}
+
+enum Weekday {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model CohortSchedule {
+  id        Int               @id @default(autoincrement())
+  createdAt DateTime          @default(now())
+  weekday   Weekday
+  subject   AssignmentSubject
+  startTime String
+  endTime   String
+  timeZone  String
+
+  // relation fields
+  cohortId Int
+  cohort   Cohort @relation(fields: [cohortId], references: [id])
 }
 
 model CohortSession {

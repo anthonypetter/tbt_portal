@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { EngagementDetailPageQuery } from "@generated/graphql";
+import { EngagementDetailsPageCohortsFragment } from "@generated/graphql";
 import { PlusIcon, SearchIcon } from "@heroicons/react/outline";
 import { DateText } from "components/Date";
 import { Input } from "components/Input";
@@ -12,7 +12,6 @@ import { Button } from "components/Button";
 import { AddNewCohortModal } from "./AddNewCohortModal";
 import { ErrorBox } from "components/ErrorBox";
 import { ErrorBoundary } from "components/ErrorBoundary";
-import { UploadCsvButton } from "./UploadCsvButton";
 import { Link } from "components/Link";
 import { Routes } from "@utils/routes";
 
@@ -25,12 +24,8 @@ EngagementCohortsView.fragments = {
   `,
 };
 
-export type QueryEngagement = NonNullable<
-  EngagementDetailPageQuery["engagement"]
->;
-
 type Props = {
-  engagement: QueryEngagement;
+  engagement: EngagementDetailsPageCohortsFragment;
 };
 
 export function EngagementCohortsView({ engagement }: Props) {
@@ -49,9 +44,9 @@ export function EngagementCohortsView({ engagement }: Props) {
 
   return (
     <ErrorBoundary fallbackRender={() => <ErrorBox className="mt-4" />}>
-      <div className="flex min-h-[500px]">
+      <div className="flex min-h-full">
         <main className="flex-1">
-          <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 justify-between my-4">
+          <div className="flex justify-between my-4">
             <div className="flex-1 lg:max-w-sm lg:mr-2 lg:ml-1">
               <Input
                 id="cohorts-search"
@@ -61,21 +56,19 @@ export function EngagementCohortsView({ engagement }: Props) {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="flex items-center">
-              <Button
-                type="button"
-                theme="tertiary"
-                className="mr-2 sm:mx-2"
-                onClick={() => setShowAddModal(true)}
-              >
-                <PlusIcon
-                  className="-ml-2 mr-1 h-5 w-5 text-gray-400"
-                  aria-hidden="true"
-                />
-                <span>Add</span>
-              </Button>
-              <UploadCsvButton />
-            </div>
+
+            <Button
+              type="button"
+              theme="tertiary"
+              className="mx-2"
+              onClick={() => setShowAddModal(true)}
+            >
+              <PlusIcon
+                className="-ml-2 mr-1 h-5 w-5 text-gray-400"
+                aria-hidden="true"
+              />
+              <span>Add</span>
+            </Button>
           </div>
 
           <CohortsTable
@@ -103,7 +96,9 @@ export function EngagementCohortsView({ engagement }: Props) {
 }
 
 type DetailsSidebarProps = {
-  selectedCohort: QueryEngagement["cohorts"][number] | null;
+  selectedCohort:
+    | EngagementDetailsPageCohortsFragment["cohorts"][number]
+    | null;
   onClose: () => void;
 };
 
@@ -111,6 +106,7 @@ function DetailsSidebar({ selectedCohort, onClose }: DetailsSidebarProps) {
   if (!selectedCohort) {
     return <DetailsAside isOpen={false} onClose={onClose} />;
   }
+
   return (
     <DetailsAside isOpen={true} onClose={onClose} title={selectedCohort.name}>
       <DetailsAside.Section title="Details">
@@ -155,7 +151,7 @@ function DetailsSidebar({ selectedCohort, onClose }: DetailsSidebarProps) {
         ) : (
           selectedCohort.staffAssignments.map((assignment) => (
             <DetailsAside.Line
-              key={assignment.user.id}
+              key={`${assignment.user.id}-${assignment.subject}`}
               label={assignment.user.fullName}
               value={<AssignmentSubjectBadge subject={assignment.subject} />}
             />

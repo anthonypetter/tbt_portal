@@ -20,6 +20,7 @@
     "csv-parser": "^3.0.0",
     "formidable": "^2.0.1",
     "graphql": "^16.4.0",
+    "isemail": "^3.2.0",
     "lodash": "^4.17.21",
     "next": "12.1.4",
     "pluralize": "^8.0.0",

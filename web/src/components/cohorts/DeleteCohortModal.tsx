@@ -4,7 +4,7 @@ import { DeleteCohortMutation, CohortsTableFragment } from "@generated/graphql";
 import { triggerSuccessToast } from "components/Toast";
 import {
   ORG_DETAIL_PAGE_COHORTS_NAME,
-  ENGAGEMENT_DETAIL_PAGE_QUERY_NAME,
+  ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
 } from "./constants";
 import { ExclamationIcon } from "@heroicons/react/outline";
 import { Modal } from "components/Modal";
@@ -82,7 +82,7 @@ export function DeleteCohortModalBody({
     {
       refetchQueries: [
         ORG_DETAIL_PAGE_COHORTS_NAME,
-        ENGAGEMENT_DETAIL_PAGE_QUERY_NAME,
+        ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
       ],
       onQueryUpdated(observableQuery) {
         observableQuery.refetch();

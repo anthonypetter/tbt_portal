@@ -1,17 +1,14 @@
 import { EngagementStaffAssignment, AssignmentRole } from "@prisma/client";
-import intersectionBy from "lodash/intersectionBy";
+import differenceWith from "lodash/differenceWith";
 import { NewEngagementStaffAssignment } from "src/schema/__generated__/graphql";
 import { parseId } from "./numbers";
-import { findToAdd, findToDelete } from "./staffAssignments";
-import { fromJust } from "./types";
 
 export type ChangeSet = {
-  additions: StaffAssignmentInput[];
-  removals: StaffAssignmentInput[];
-  updates: StaffAssignmentInput[];
+  additions: EngagementStaffAssignmentInput[];
+  removals: EngagementStaffAssignmentInput[];
 };
 
-export type StaffAssignmentInput = {
+export type EngagementStaffAssignmentInput = {
   userId: number;
   role: AssignmentRole;
 };
@@ -26,13 +23,12 @@ export function calcStaffChanges(
   return {
     additions: findToAdd({ existingStaff, newStaff }),
     removals: findToDelete({ existingStaff, newStaff }),
-    updates: findToUpdate({ existingStaff, newStaff }),
   };
 }
 
 function fromExistingToInput(
   existingAssignment: EngagementStaffAssignment
-): StaffAssignmentInput {
+): EngagementStaffAssignmentInput {
   return {
     userId: existingAssignment.userId,
     role: existingAssignment.role,
@@ -41,40 +37,43 @@ function fromExistingToInput(
 
 export function fromNewToInput(
   newAssignment: NewEngagementStaffAssignment
-): StaffAssignmentInput {
+): EngagementStaffAssignmentInput {
   return {
     userId: parseId(newAssignment.userId),
     role: newAssignment.role,
   };
 }
 
-function findToUpdate({
+export function findToAdd({
   existingStaff,
   newStaff,
 }: {
-  existingStaff: StaffAssignmentInput[];
-  newStaff: StaffAssignmentInput[];
+  existingStaff: EngagementStaffAssignmentInput[];
+  newStaff: EngagementStaffAssignmentInput[];
 }) {
-  const staffInBothArrays = intersectionBy(
-    newStaff,
-    existingStaff,
-    (teacher) => teacher.userId
+  const assignmentsToAdd = differenceWith(
+    newStaff, //The array to inspect
+    existingStaff, //The values to exclude
+    (teacherA, teacherB) =>
+      teacherA.userId === teacherB.userId && teacherA.role === teacherB.role
   );
 
-  //Now lets figure out if their role changed.
-  const assignmentsToUpdate = staffInBothArrays.filter((assignment) => {
-    const existingTeacher = fromJust(
-      existingStaff.find((t) => t.userId === assignment.userId),
-      "existingTeacher"
-    );
+  return assignmentsToAdd;
+}
 
-    const newTeacher = fromJust(
-      newStaff.find((t) => t.userId === assignment.userId),
-      "newTeacher"
-    );
+export function findToDelete({
+  existingStaff,
+  newStaff,
+}: {
+  existingStaff: EngagementStaffAssignmentInput[];
+  newStaff: EngagementStaffAssignmentInput[];
+}) {
+  const assignmentsToDelete = differenceWith(
+    existingStaff, //The array to inspect
+    newStaff, //The values to exclude
+    (teacherA, teacherB) =>
+      teacherA.userId === teacherB.userId && teacherA.role === teacherB.role
+  );
 
-    return existingTeacher.role !== newTeacher.role;
-  });
-
-  return assignmentsToUpdate;
+  return assignmentsToDelete;
 }
