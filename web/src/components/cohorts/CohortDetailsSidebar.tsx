@@ -63,7 +63,7 @@ export function CohortDetailsSidebar({ selectedCohort, onClose }: DetailsSidebar
           ) : (
             selectedCohort.staffAssignments.map((assignment) => (
               <DetailsAside.Line
-                key={assignment.user.id}
+                key={`${assignment.user.id}-${assignment.subject}`}
                 label={assignment.user.fullName}
                 value={<AssignmentSubjectBadge subject={assignment.subject} />}
               />

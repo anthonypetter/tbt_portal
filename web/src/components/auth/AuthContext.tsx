@@ -1,6 +1,6 @@
 import { createContext } from "react";
 import { CognitoUser } from "@aws-amplify/auth";
-import { CurrentUserQuery } from "@generated/graphql";
+import { CurrentUserQuery, UserRole } from "@generated/graphql";
 
 /**
  * AuthContext
@@ -18,6 +18,7 @@ interface LoginResult {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cognitoUser: CognitoUser | any;
   message: string;
+  userRole?: UserRole;
 }
 
 interface AuthContextT {
