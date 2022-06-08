@@ -1,35 +1,33 @@
 import clsx from "clsx";
-import formatISO from "date-fns/formatISO";
 import toDate from "date-fns-tz/toDate";
 import utcToZonedTime from "date-fns-tz/utcToZonedTime";
-import { useEffect, useMemo, useRef, useState } from "react"
+import format from "date-fns-tz/format";
+import { useEffect, useMemo, useRef, useState, Fragment } from "react"
 
-import { IANAtzName, ISODate, LocalizedWeekday, localizedWeekdays, Time24Hour, Weekday, WeekdayNumber } from "@utils/dateTime";
-
-// Consult https://date-fns.org/v2.28.0/docs/parse
-// and https://github.com/marnusw/date-fns-tz#formatintimezone
+import { findWeekdayNumber, IANAtzName, ISODate, LocalizedWeekday, localizedWeekdays, normalizeTime, Time24Hour, Weekday, WeekdayNumber } from "@utils/dateTime";
 
 export type WeekCalendarEvent = {
   weekday: Weekday;
   startTime: Time24Hour;  // H:mm - 24 hour format.
   endTime: Time24Hour;    // H:mm - 24 hour format.
   timeZone: IANAtzName;   // IANA time zone name.
-  title: string;      // Event title.
-  details?: string;   // Event details.
-  groupId: number;    // Used to color-coordinate.
+  title: string;          // Event title.
+  details?: string;       // Event details.
+  groupId: number;        // Used to color-coordinate.
+  startDate: number;      // Used to filter out events outside the targetDate.
+  endDate: number;        // ''
 };
 
 type AdjustedWeekCalendarEvent = WeekCalendarEvent & {
-  adjustedWeekday: Weekday;
+  adjustedStartWeekday: Weekday;
   adjustedStartTime: Time24Hour;
+  adjustedEndWeekday: Weekday;
   adjustedEndTime: Time24Hour;
-  adjustedStartTimeMinutes: number;
-  adjustedEndTimeMinutes: number;
 };
 
 type WeekCalendarProps = {
   events: WeekCalendarEvent[];
-  targetDate: ISODate;
+  targetDate: ISODate;  // Any date whose week will show in the calendar.
   viewingTimeZone: IANAtzName;
 };
 export function WeekCalendar({ events, targetDate, viewingTimeZone }: WeekCalendarProps) {
@@ -133,14 +131,14 @@ function HourLines({ mode24Hour = false }: HourLinesProps) {
   return (
     <>
       {hourLabels.map(hour => (
-        <>
-        <div key={hour}>
-          <div className="sticky left-0 z-20 -mt-2.5 -ml-14 w-14 pr-2 text-right text-xs leading-5 text-gray-400">
-            {hour}
+        <Fragment key={hour}>
+          <div>
+            <div className="sticky left-0 z-20 -mt-2.5 -ml-14 w-14 pr-2 text-right text-xs leading-5 text-gray-400">
+              {hour}
+            </div>
           </div>
-        </div>
-        <div />
-      </>
+          <div />
+        </Fragment >
       ))}
     </>
   );
@@ -211,8 +209,58 @@ type EventsProps = BaseNavProps & {
 function Events({ localizedWeekdays, focusedDay, events, viewingTimeZone }: EventsProps) {
   const adjustedEvents: AdjustedWeekCalendarEvent[] = [];
   events.forEach(event => {
-    return;
+    // Get the local date of the event.
+    const eventLocalIsoDate = localizedWeekdays[findWeekdayNumber(event.weekday)].isoDate;
+
+    // Get the local dates of the start+end boundaries of the event.
+    const eventLocalStartIsoDate = format(
+      event.startDate,
+      "yyyy-MM-dd",
+      { timeZone: event.timeZone },
+    );
+    const eventLocalEndIsoDate = format(
+      event.endDate,
+      "yyyy-MM-dd",
+      { timeZone: event.timeZone },
+    );
+
+    // Don't show events that have not started or have since ended.
+    if (eventLocalIsoDate < eventLocalStartIsoDate ||
+      eventLocalIsoDate > eventLocalEndIsoDate) {
+        console.log("rejected", `${eventLocalStartIsoDate} > ${eventLocalIsoDate} > ${eventLocalEndIsoDate}`, event);
+      return;
+    }
+
+    // Get the Date objects adjusted to the event's given timeZone.
+    const eventStartDateTime = toDate(
+      `${eventLocalIsoDate}T${normalizeTime(event.startTime)}`,
+      { timeZone: event.timeZone },
+    );
+    const eventEndDateTime = toDate(
+      `${eventLocalIsoDate}T${normalizeTime(event.endTime)}`,
+      { timeZone: event.timeZone },
+    );
+
+    // Adjust the time/weekday to the viewing timeZone.
+    const [adjustedStartWeekday, adjustedStartTime] = format(
+      utcToZonedTime(eventStartDateTime, viewingTimeZone),
+      'EEEE,HH:mm',
+    ).split(",").map(val => val.toLowerCase());
+    const [adjustedEndWeekday, adjustedEndTime] = format(
+      utcToZonedTime(eventEndDateTime, viewingTimeZone),
+      'EEEE,HH:mm',
+    ).split(",").map(val => val.toLowerCase());
+
+    adjustedEvents.push({
+      ...event,
+      adjustedStartWeekday: adjustedStartWeekday as Weekday,
+      adjustedStartTime,
+      adjustedEndWeekday: adjustedEndWeekday as Weekday,
+      adjustedEndTime,
+    });
   });
+
+  console.table(adjustedEvents);
 
   return (
     <ol

@@ -66,6 +66,8 @@ function buildWeekCalendarSchedule(cohorts: Cohort[]): WeekCalendarEvent[] {
       title: `${randomSubject}${cohort.grade && " ("+ cohort.grade +")"}`,
       details: `${cohort.name} (${randomTimeZone})`,
       groupId: i,
+      startDate: cohort.startDate,
+      endDate: cohort.endDate,
     };
     const eventB: WeekCalendarEvent = {
       weekday: randomDayB,
@@ -75,8 +77,33 @@ function buildWeekCalendarSchedule(cohorts: Cohort[]): WeekCalendarEvent[] {
       title: `${randomSubject}${cohort.grade && " (Grade "+ cohort.grade +")"}`,
       details: `${cohort.name} (${randomTimeZone})`,
       groupId: i,
+      startDate: cohort.startDate,
+      endDate: cohort.endDate,
     };
     weekCalendarEvents.push(eventA, eventB);
+  });
+
+  weekCalendarEvents.push({
+    weekday: "sunday",
+    startTime: "23:00",
+    endTime: "23:30",
+    timeZone: "America/Los_Angeles",
+    title: "Late night #1 in Los Angeles",
+    details: "Should go over midnight to Monday",
+    groupId: 999,
+    startDate: Number(new Date("2022-01-01")),
+    endDate: Number(new Date("2032-01-01")),
+  });
+  weekCalendarEvents.push({
+    weekday: "saturday",
+    startTime: "20:00",
+    endTime: "23:30",
+    timeZone: "America/Los_Angeles",
+    title: "Late night #2 in Los Angeles",
+    details: "Should go over midnight to Sunday next week",
+    groupId: 999,
+    startDate: Number(new Date("2022-01-01")),
+    endDate: Number(new Date("2032-01-01")),
   });
 
   return weekCalendarEvents;
