@@ -2,6 +2,8 @@ import { prisma } from "../lib/prisma-client";
 import { AccountStatus, User, UserRole } from "@prisma/client";
 import { createCognitoUser } from "../lib/cognito";
 
+const TAKE_LIMIT = 100;
+
 export const UserService = {
   async getUserByCognitoSub(cognitoSub: string): Promise<User | null> {
     const user = await prisma.user.findFirst({
@@ -14,8 +16,8 @@ export const UserService = {
   },
 
   // TODO: Fix pagination
-  async getUsers(take: number): Promise<User[]> {
-    const users = await prisma.user.findMany({ take });
+  async getUsers(): Promise<User[]> {
+    const users = await prisma.user.findMany({ take: TAKE_LIMIT });
     return users;
   },
 
