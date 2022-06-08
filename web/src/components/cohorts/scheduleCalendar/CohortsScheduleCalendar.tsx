@@ -108,6 +108,50 @@ function buildWeekCalendarSchedule(cohorts: Cohort[]): WeekCalendarEvent[] {
     startDate: new Date("2022-01-01"),
     endDate: new Date("2032-01-01"),
   });
+  weekCalendarEvents.push({
+    weekday: "monday",
+    startTime: "04:00",
+    endTime: "05:00",
+    timeZone: "America/Los_Angeles",
+    title: "4am PT",
+    details: "",
+    groupId: 888,
+    startDate: new Date("2022-01-01"),
+    endDate: new Date("2032-01-01"),
+  });
+  weekCalendarEvents.push({
+    weekday: "tuesday",
+    startTime: "04:00",
+    endTime: "05:00",
+    timeZone: "America/Denver",
+    title: "4am MT",
+    details: "",
+    groupId: 888,
+    startDate: new Date("2022-01-01"),
+    endDate: new Date("2032-01-01"),
+  });
+  weekCalendarEvents.push({
+    weekday: "wednesday",
+    startTime: "04:00",
+    endTime: "05:00",
+    timeZone: "America/Chicago",
+    title: "4am CT",
+    details: "",
+    groupId: 888,
+    startDate: new Date("2022-01-01"),
+    endDate: new Date("2032-01-01"),
+  });
+  weekCalendarEvents.push({
+    weekday: "thursday",
+    startTime: "04:00",
+    endTime: "05:00",
+    timeZone: "America/New_York",
+    title: "4am ET",
+    details: "",
+    groupId: 888,
+    startDate: new Date("2022-01-01"),
+    endDate: new Date("2032-01-01"),
+  });
 
   return weekCalendarEvents;
 }
