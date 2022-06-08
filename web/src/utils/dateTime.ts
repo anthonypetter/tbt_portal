@@ -52,7 +52,7 @@ export const timeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
  * @param timeString
  * @returns
  */
-export function normalizeTime(timeString: string): Time24Hour {
+export function normalizeTime(timeString: Time24Hour): Time24Hour {
   const paddedString = timeString.padStart(5, "0"); // 6:30 --> 06:30.
   return timeRegex.test(paddedString) ? paddedString : "00:00";
 }
@@ -71,20 +71,45 @@ export function calculateMinutesElapsedInDay(timeString: Time24Hour): Minute {
 }
 
 /**
+ * Takes a 24 hour time string (HH:mm/H:mm) and returns a localized version of
+ * the 12 hour string (when desired). If mode24Hour is true it simply returns
+ * the normalized timeString.
+ * @param timeString
+ * @param mode24Hour
+ * @param locale  Leave empty for client's locale. See Intl documentation.
+ * @returns
+ */
+export function localizedTime(
+  timeString: Time24Hour,
+  mode24Hour: boolean,
+  locale = ""
+): string {
+  const normalizedTime = normalizeTime(timeString);
+  if (mode24Hour) {
+    return normalizedTime;
+  }
+  const iLocale = !locale ? [] : locale;
+  const mode12HourFormat = new Intl.DateTimeFormat(iLocale, {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
+
+  return mode12HourFormat.format(new Date(`2022-01-01T${normalizedTime}`));
+}
+
+/**
  * Uses Intl.DateTimeFormat() to create a list of weekday titles that will match
  * the language and locale of the client.
  * Returns seven days of the week, always with Sunday as the first entry.
  * Time zone is not a factor.
- *
- * For reference:
- * * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
- * @param targetDate yyyy-MM-dd date string of any date within the desired week.
- * @param locales Leave empty for client's locale. See Intl documentation.
+ * @param targetDate
+ * @param locale Leave empty for client's locale. See Intl documentation.
  * @returns
  */
 export function localizedWeekdays(
   targetDate: ISODate,
-  locales: string[] | string = []
+  locale = ""
 ): LocalizedWeekday[] {
   const parsedTargetDate = new Date(`${targetDate}T00:00:00`);
 
@@ -94,9 +119,10 @@ export function localizedWeekdays(
 
   const localizedWeekdays = [];
 
-  const longFormat = new Intl.DateTimeFormat(locales, { weekday: "long" });
-  const shortFormat = new Intl.DateTimeFormat(locales, { weekday: "short" });
-  const narrowFormat = new Intl.DateTimeFormat(locales, { weekday: "narrow" });
+  const iLocale = !locale ? [] : locale;
+  const longFormat = new Intl.DateTimeFormat(iLocale, { weekday: "long" });
+  const shortFormat = new Intl.DateTimeFormat(iLocale, { weekday: "short" });
+  const narrowFormat = new Intl.DateTimeFormat(iLocale, { weekday: "narrow" });
 
   for (let d = 0; d < 7; ++d) {
     localizedWeekdays.push({

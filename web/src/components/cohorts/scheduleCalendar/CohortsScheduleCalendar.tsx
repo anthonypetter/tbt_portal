@@ -1,5 +1,5 @@
 import random from "lodash/random";
-import format from "date-fns-tz/format";
+import formatISO from "date-fns/formatISO";
 
 import { Cohort } from "@generated/graphql";
 import { WeekCalendar, WeekCalendarEvent } from "./WeekCalendar";
@@ -15,9 +15,12 @@ export function CohortsScheduleCalendar({ cohorts }: CohortsScheduleCalendarProp
   return (
     <WeekCalendar
       events={weekCalendarSchedule}
-      targetDate={format(new Date(), 'yyyy-MM-dd')}
+      targetDate={formatISO(new Date(), { representation: "date" })}
+      locale={Intl.NumberFormat().resolvedOptions().locale}
+      // locale="ja-JP" // Good for testing: Shows how flexible the locale can be
       viewingTimeZone={Intl.DateTimeFormat().resolvedOptions().timeZone}
       // viewingTimeZone="Asia/Tokyo" // Good for testing: Often the next day
+      mode24Hour={false}
     />
   );
 }
