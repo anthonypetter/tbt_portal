@@ -38,7 +38,7 @@ export type LocalizedWeekday = {
   long: string;
   short: string;
   narrow: string;
-  isoDateTime: string;
+  isoDate: ISODate;
 };
 
 export const timeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
@@ -99,7 +99,7 @@ export function localizedWeekdays(
       long: longFormat.format(workingDate),
       short: shortFormat.format(workingDate),
       narrow: narrowFormat.format(workingDate),
-      isoDateTime: formatISO(workingDate),
+      isoDate: formatISO(workingDate, { representation: "date" }),
     });
     workingDate.setDate(workingDate.getDate() + 1); // Increment one day.
   }
