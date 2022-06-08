@@ -1,13 +1,10 @@
 import { gql } from "@apollo/client";
 import { Cohort, EngagementDetailPageQuery } from "@generated/graphql";
 import { PlusIcon, SearchIcon } from "@heroicons/react/outline";
-import { DateText } from "components/Date";
 import { Input } from "components/Input";
 import { useState } from "react";
 import { CohortsTable } from "./CohortsTable";
 import filter from "lodash/filter";
-import { DetailsAside } from "components/DetailsAside";
-import { AssignmentSubjectBadge } from "components/AssignmentSubjectBadge";
 import { Button } from "components/Button";
 import { AddNewCohortModal } from "./AddNewCohortModal";
 import { ErrorBox } from "components/ErrorBox";
