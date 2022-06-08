@@ -29,16 +29,17 @@ type AdjustedWeekCalendarEvent = WeekCalendarEvent & {
 
 type WeekCalendarProps = {
   events: WeekCalendarEvent[];
+  targetDate: string;
   viewingTimeZone: string;
 };
-export function WeekCalendar({ events, viewingTimeZone }: WeekCalendarProps) {
+export function WeekCalendar({ events, targetDate, viewingTimeZone }: WeekCalendarProps) {
   // Get the current time of the viewingTimezone (allows for simulating different time zones).
   const currentViewerTime = utcToZonedTime(new Date(), viewingTimeZone);
 
   const currentDay = currentViewerTime.getDay();
   const [selectedDay, setSelectedDay] = useState(currentDay);
 
-  const localizedWeekdaysList = localizedWeekdays(viewingTimeZone);
+  const localizedWeekdaysList = localizedWeekdays(targetDate);
 
   const container = useRef<HTMLDivElement>(null);
   const containerNav = useRef<HTMLDivElement>(null);
