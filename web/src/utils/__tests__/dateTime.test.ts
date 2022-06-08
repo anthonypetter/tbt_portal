@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { localizedWeekdays, findWeekdayNumberOffset } from "../dateTime";
+import { findWeekdayNumber, localizedWeekdays } from "../dateTime";
 
 describe("dateTime", () => {
   describe("localizedWeekdays", () => {
     describe("happy path", () => {
-      test("should work with default values", () => {
-        const weekDays = localizedWeekdays();
+      test("should work with basic arguments", () => {
+        const weekDays = localizedWeekdays("2022-06-01");
         expect(weekDays.length).toBe(7);
       });
 
       test("should work with English (US) locale", () => {
-        const weekDays = localizedWeekdays(new Date(), "en-US");
+        const weekDays = localizedWeekdays("2022-06-01", "en-US");
         expect(weekDays.length).toBe(7);
         expect(weekDays).toEqual(
           expect.objectContaining([
@@ -61,7 +61,7 @@ describe("dateTime", () => {
       });
 
       test("should work with Spanish (Mexico) locale", () => {
-        const weekDays = localizedWeekdays(new Date(), "es-MX");
+        const weekDays = localizedWeekdays("2022-06-01", "es-MX");
         expect(weekDays.length).toBe(7);
         expect(weekDays).toEqual([
           {
@@ -111,7 +111,7 @@ describe("dateTime", () => {
 
       test("should work with English (US) locale and specific date", () => {
         const weekDays = localizedWeekdays(
-          new Date(Date.UTC(2022, 0, 1)), // 0 = January, just FYI.
+          "2022-01-01", // A Saturday.
           "en-US"
         );
         expect(weekDays.length).toBe(7);
@@ -163,31 +163,23 @@ describe("dateTime", () => {
     });
   });
 
-  describe("weekdayStartDayOffset", () => {
+  describe("findWeekdayNumber", () => {
     describe("happy path", () => {
-      test("should return correct indexes for Sunday (0) start day week", () => {
-        expect(findWeekdayNumberOffset("sunday", 0)).toBe(0);
-        expect(findWeekdayNumberOffset("monday", 0)).toBe(1);
-        expect(findWeekdayNumberOffset("saturday", 0)).toBe(6);
-      });
-
-      test("should return correct indexes for Monday (1) start day week", () => {
-        expect(findWeekdayNumberOffset("sunday", 1)).toBe(6);
-        expect(findWeekdayNumberOffset("monday", 1)).toBe(0);
-        expect(findWeekdayNumberOffset("saturday", 1)).toBe(5);
-      });
-
-      test("should return correct indexes for Saturday (6) start day week", () => {
-        expect(findWeekdayNumberOffset("sunday", 6)).toBe(1);
-        expect(findWeekdayNumberOffset("monday", 6)).toBe(2);
-        expect(findWeekdayNumberOffset("saturday", 6)).toBe(0);
+      test("should find any day of the week", () => {
+        expect(findWeekdayNumber("sunday")).toBe(0);
+        expect(findWeekdayNumber("monday")).toBe(1);
+        expect(findWeekdayNumber("tuesday")).toBe(2);
+        expect(findWeekdayNumber("wednesday")).toBe(3);
+        expect(findWeekdayNumber("thursday")).toBe(4);
+        expect(findWeekdayNumber("friday")).toBe(5);
+        expect(findWeekdayNumber("saturday")).toBe(6);
       });
     });
 
-    describe("sad path", () => {
-      test("should correctly handle a non-existent day", () => {
+    describe("problem path", () => {
+      test("should handle a bad input and return 0", () => {
         // @ts-ignore
-        expect(findWeekdayNumberOffset("blah", 0)).toBe(0);
+        expect(findWeekdayNumber("blah")).toBe(0);
       });
     });
   });

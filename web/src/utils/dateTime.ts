@@ -1,5 +1,8 @@
 import startOfWeek from "date-fns/startOfWeek";
 import formatISO from "date-fns/formatISO";
+import parse from "date-fns/parse";
+import utcToZonedTime from "date-fns-tz/utcToZonedTime";
+import format from "date-fns-tz/format";
 
 export type WeekdayNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 export type Weekday =
@@ -37,16 +40,18 @@ export const TimeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
  *
  * For reference:
  * * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
- * @param targetDate Leave empty for the current time.
+ * @param targetDate yyyy-MM-dd date string of any date within the desired week.
  * @param locales Leave empty for client's locale. See Intl documentation.
  * @returns
  */
 export function localizedWeekdays(
-  targetDate = new Date(),
+  targetDate: string,
   locales: string[] | string = []
 ): LocalizedWeekday[] {
+  const parsedTargetDate = new Date(`${targetDate}T00:00:00`);
+
   // Get the midnight of the given dateTime to set the calendar's days correctly.
-  const targetDateMidnight = new Date(targetDate.setHours(0, 0, 0, 0));
+  const targetDateMidnight = new Date(parsedTargetDate.setHours(0, 0, 0, 0));
   const workingDate = startOfWeek(targetDateMidnight); // Gets Sunday of target date's week.
 
   const localizedWeekdays = [];
@@ -64,32 +69,16 @@ export function localizedWeekdays(
     });
     workingDate.setDate(workingDate.getDate() + 1); // Increment one day.
   }
-
   return localizedWeekdays;
 }
 
 /**
- * When you have the option to change the start day of a week it's important to
- * be able to smoothly adjust and find the newly adjusted index for any day you
- * need.
- * Ex 1: If the start day of the week is Sunday (0)... [S M T W T F S]
- *  Then Sunday will be at index 0. Monday will be at index 1.
- * Ex 2: If the start day of the week is Monday (1)... [M T W T F S S]
- *  Then Sunday will be at index 6. Monday will be at index 0.
- * Ex 3: if the start of the week is Saturday (6)... [S S M T W T F]
- *  Then Sunday will be at index 1. Monday will be at index 2.
+ * Simple helper function takes a weekday name (ex: "monday") and returns
+ * the weekday number (ex: 1) in a safe manner.
  * @param weekday
- * @param startDay
  * @returns
  */
-export function findWeekdayNumberOffset(
-  weekday: Weekday,
-  startDay: WeekdayNumber
-): WeekdayNumber {
+export function findWeekdayNumber(weekday: Weekday): WeekdayNumber {
   const dayIndex = weekdays.indexOf(weekday);
-  if (dayIndex < 0) {
-    return 0; // Bad weekday. Weird failure in type checking happened.
-  } else {
-    return ((weekdays.indexOf(weekday) + 7 - startDay) % 7) as WeekdayNumber;
-  }
+  return dayIndex < 0 ? 0 : (dayIndex as WeekdayNumber);
 }

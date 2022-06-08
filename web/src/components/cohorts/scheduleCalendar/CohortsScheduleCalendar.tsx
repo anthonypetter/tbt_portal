@@ -14,8 +14,8 @@ export function CohortsScheduleCalendar({ cohorts }: CohortsScheduleCalendarProp
   return (
     <WeekCalendar
       events={weekCalendarSchedule}
-      viewingTimezone={Intl.DateTimeFormat().resolvedOptions().timeZone}
-      startDay={0}
+      viewingTimeZone={Intl.DateTimeFormat().resolvedOptions().timeZone}
+      // viewingTimeZone="Asia/Tokyo" // Good for testing: Often the next day
     />
   );
 }
