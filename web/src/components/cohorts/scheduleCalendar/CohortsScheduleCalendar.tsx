@@ -94,8 +94,8 @@ function buildWeekCalendarSchedule(cohorts: Cohort[]): WeekCalendarEvent[] {
     title: "Late night #1 in Los Angeles",
     details: "Should go over midnight to Monday",
     groupId: 999,
-    startDate: Number(new Date("2022-01-01")),
-    endDate: Number(new Date("2032-01-01")),
+    startDate: new Date("2022-01-01"),
+    endDate: new Date("2032-01-01"),
   });
   weekCalendarEvents.push({
     weekday: "saturday",
@@ -105,8 +105,8 @@ function buildWeekCalendarSchedule(cohorts: Cohort[]): WeekCalendarEvent[] {
     title: "Late night #2 in Los Angeles",
     details: "Should go over midnight to Sunday next week",
     groupId: 999,
-    startDate: Number(new Date("2022-01-01")),
-    endDate: Number(new Date("2032-01-01")),
+    startDate: new Date("2022-01-01"),
+    endDate: new Date("2032-01-01"),
   });
 
   return weekCalendarEvents;

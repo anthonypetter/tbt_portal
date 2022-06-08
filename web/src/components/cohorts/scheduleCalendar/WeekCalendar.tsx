@@ -1,9 +1,8 @@
 import clsx from "clsx";
 import toDate from "date-fns-tz/toDate";
 import utcToZonedTime from "date-fns-tz/utcToZonedTime";
-import format from "date-fns-tz/format";
+import formatISO from "date-fns/formatISO";
 import { useEffect, useRef, useState, Fragment } from "react"
-
 import {
   calculateMinutesElapsedInDay,
   findWeekdayNumber,
@@ -27,15 +26,15 @@ export type WeekCalendarEvent = {
   title: string;          // Event title.
   details?: string;       // Event details.
   groupId: number;        // Used to color-coordinate.
-  startDate: number;      // Used to filter out events outside the targetDate.
-  endDate: number;        // ''
+  startDate: Date;        // Used to filter out events outside the targetDate.
+  endDate: Date;          // ''
 };
 
 type AdjustedWeekCalendarEvent = WeekCalendarEvent & {
   adjustedStartIsoDate: ISODate;
-  adjustedStartWeekday: Weekday;
+  adjustedStartWeekdayNumber: WeekdayNumber;
   adjustedStartTime: Time24Hour;
-  adjustedEndWeekday: Weekday;
+  adjustedEndWeekdayNumber: WeekdayNumber;
   adjustedEndTime: Time24Hour;
   adjustedStartMinute: Minute;
   eventMinuteLength: Minute;
@@ -235,16 +234,15 @@ function Events({
     // Get the local date of the event.
     const eventLocalIsoDate = localizedWeekdays[findWeekdayNumber(event.weekday)].isoDate;
 
-    // Get the local dates of the start+end boundaries of the event.
-    const eventLocalStartIsoDate = format(
-      event.startDate,
-      "yyyy-MM-dd",
-      { timeZone: event.timeZone },
+    // Get the local start+end DATE boundaries of the event group.
+    // Note that these are DIFFERENT from event start+end TIMES.
+    const eventLocalStartIsoDate = formatISO(
+      toDate(event.startDate, { timeZone: event.timeZone }),
+      { representation: "date" }
     );
-    const eventLocalEndIsoDate = format(
-      event.endDate,
-      "yyyy-MM-dd",
-      { timeZone: event.timeZone },
+    const eventLocalEndIsoDate = formatISO(
+      toDate(event.endDate, { timeZone: event.timeZone }),
+      { representation: "date" }
     );
 
     // Don't show events that have not started or have since ended.
@@ -269,15 +267,23 @@ function Events({
       return;
     }
 
-    // Adjust the time/weekday to the viewing timeZone.
-    const [adjustedStartIsoDate, adjustedStartWeekday, adjustedStartTime] = format(
-      utcToZonedTime(eventStartDateTime, viewingTimeZone),
-      'yyyy-MM-dd,EEEE,HH:mm',
-    ).split(",").map(val => val.toLowerCase());
-    const [adjustedEndWeekday, adjustedEndTime] = format(
-      utcToZonedTime(eventEndDateTime, viewingTimeZone),
-      'EEEE,HH:mm',
-    ).split(",").map(val => val.toLowerCase());
+    const adjustedEventStartDateTime = utcToZonedTime(eventStartDateTime, viewingTimeZone);
+    const adjustedStartIsoDate = formatISO(
+      adjustedEventStartDateTime,
+      { representation: "date" }
+    );
+    const adjustedStartWeekdayNumber = adjustedEventStartDateTime.getDay() as WeekdayNumber;
+    const adjustedStartTime = formatISO(
+      adjustedEventStartDateTime,
+      { representation: "time" }
+    ).slice(0, 5);
+
+    const adjustedEventEndDateTime = utcToZonedTime(eventEndDateTime, viewingTimeZone);
+    const adjustedEndTime = formatISO(
+      adjustedEventEndDateTime,
+      { representation: "time" },
+    ).slice(0, 5);
+    const adjustedEndWeekdayNumber = adjustedEventEndDateTime.getDay() as WeekdayNumber;
 
     const adjustedStartMinute = calculateMinutesElapsedInDay(adjustedStartTime);
     const adjustedEndMinute = calculateMinutesElapsedInDay(adjustedEndTime);
@@ -285,9 +291,9 @@ function Events({
     adjustedEvents.push({
       ...event,
       adjustedStartIsoDate,
-      adjustedStartWeekday: adjustedStartWeekday as Weekday,
+      adjustedStartWeekdayNumber,
       adjustedStartTime,
-      adjustedEndWeekday: adjustedEndWeekday as Weekday,
+      adjustedEndWeekdayNumber,
       adjustedEndTime,
       adjustedStartMinute,
       eventMinuteLength:
@@ -321,7 +327,6 @@ type EventProps = {
   mode24Hour: boolean;
 };
 function Event({ adjustedEvent, focusedDay, locale, mode24Hour }: EventProps) {
-  const weekdayIndex = findWeekdayNumber(adjustedEvent.adjustedStartWeekday);
   const startGridRow = adjustedEvent.adjustedStartMinute / 5 + 2;
   const gridSpan = Math.max(adjustedEvent.eventMinuteLength / 5, 3);
   const eventColor = EVENT_COLORS[adjustedEvent.groupId % EVENT_COLORS.length];
@@ -342,8 +347,8 @@ function Event({ adjustedEvent, focusedDay, locale, mode24Hour }: EventProps) {
     <li
       className={clsx(
         "relative mt-px",
-        weekdayIndex !== focusedDay && "hidden",
-        weekColStartClasses[weekdayIndex],
+        adjustedEvent.adjustedStartWeekdayNumber !== focusedDay && "hidden",
+        weekColStartClasses[adjustedEvent.adjustedStartWeekdayNumber],
         "sm:flex",
       )}
       style={{ gridRow: `${startGridRow} / span ${gridSpan}` }}
