@@ -31,6 +31,7 @@ export type WeekCalendarEvent = {
 };
 
 type AdjustedWeekCalendarEvent = WeekCalendarEvent & {
+  adjustedStartIsoDate: ISODate;
   adjustedStartWeekday: Weekday;
   adjustedStartTime: Time24Hour;
   adjustedEndWeekday: Weekday;
@@ -259,9 +260,9 @@ function Events({ localizedWeekdays, focusedDay, events, viewingTimeZone }: Even
     }
 
     // Adjust the time/weekday to the viewing timeZone.
-    const [adjustedStartWeekday, adjustedStartTime] = format(
+    const [adjustedStartIsoDate, adjustedStartWeekday, adjustedStartTime] = format(
       utcToZonedTime(eventStartDateTime, viewingTimeZone),
-      'EEEE,HH:mm',
+      'yyyy-MM-dd,EEEE,HH:mm',
     ).split(",").map(val => val.toLowerCase());
     const [adjustedEndWeekday, adjustedEndTime] = format(
       utcToZonedTime(eventEndDateTime, viewingTimeZone),
@@ -269,81 +270,109 @@ function Events({ localizedWeekdays, focusedDay, events, viewingTimeZone }: Even
     ).split(",").map(val => val.toLowerCase());
 
     const adjustedStartMinute = calculateMinutesElapsedInDay(adjustedStartTime);
-    const adjustedEndMinute = calculateMinutesElapsedInDay(adjustedStartTime);
+    const adjustedEndMinute = calculateMinutesElapsedInDay(adjustedEndTime);
 
     adjustedEvents.push({
       ...event,
+      adjustedStartIsoDate,
       adjustedStartWeekday: adjustedStartWeekday as Weekday,
       adjustedStartTime,
       adjustedEndWeekday: adjustedEndWeekday as Weekday,
       adjustedEndTime,
       adjustedStartMinute,
-      eventMinuteLength: adjustedEndMinute - adjustedStartMinute,
+      eventMinuteLength:
+        // Hacky way to extend an event that goes past midnight to span to the bottom.
+        Math.abs(adjustedEndMinute - adjustedStartMinute),
     });
   });
-
-  console.table(adjustedEvents);
 
   return (
     <ol
       className="col-start-1 col-end-2 row-start-1 grid grid-cols-1 sm:grid-cols-7 sm:pr-8"
       style={{ gridTemplateRows: '1.75rem repeat(288, minmax(0, 1fr)) auto' }}
     >
-      <li className="relative mt-px flex sm:col-start-3" style={{ gridRow: '74 / span 12' }}>
-        <a
-          href="#"
-          className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-blue-50 p-2 text-xs leading-5 hover:bg-blue-100"
-        >
-          <p className="order-1 font-semibold text-blue-700">Breakfast</p>
-          <p className="text-blue-500 group-hover:text-blue-700">
-            <time dateTime="2022-01-12T06:00">6:00 AM</time>
-          </p>
-        </a>
-      </li>
-
-      <li className="relative mt-px flex sm:col-start-3" style={{ gridRow: '92 / span 30' }}>
-        <a
-          href="#"
-          className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-pink-50 p-2 text-xs leading-5 hover:bg-pink-100"
-        >
-          <p className="order-1 font-semibold text-pink-700">Flight to Paris</p>
-          <p className="text-pink-500 group-hover:text-pink-700">
-            <time dateTime="2022-01-12T07:30">7:30 AM</time>
-          </p>
-        </a>
-      </li>
-
-      <li className="relative mt-px hidden sm:col-start-6 sm:flex" style={{ gridRow: '122 / span 24' }}>
-        <a
-          href="#"
-          className="group absolute inset-1 flex flex-col overflow-y-auto rounded-lg bg-gray-100 p-2 text-xs leading-5 hover:bg-gray-200"
-        >
-          <p className="order-1 font-semibold text-gray-700">Meeting with design team at Disney</p>
-          <p className="text-gray-500 group-hover:text-gray-700">
-            <time dateTime="2022-01-15T10:00">10:00 AM</time>
-          </p>
-        </a>
-      </li>
+      {adjustedEvents.map((adjustedEvent, i) => (
+        <Event
+          key={`${adjustedEvent.groupId}_${i}`}
+          adjustedEvent={adjustedEvent}
+          focusedDay={focusedDay}
+        />
+      ))}
     </ol>
   );
 }
 
+type EventProps = {
+  adjustedEvent: AdjustedWeekCalendarEvent;
+  focusedDay: WeekdayNumber;
+};
+function Event({
+  adjustedEvent,
+  focusedDay,
+}: EventProps) {
+  const weekdayIndex = findWeekdayNumber(adjustedEvent.adjustedStartWeekday);
+  const startGridRow = adjustedEvent.adjustedStartMinute / 5 + 2;
+  const gridSpan = Math.max(adjustedEvent.eventMinuteLength / 5, 3);
+  const eventColor = EVENT_COLORS[adjustedEvent.groupId % EVENT_COLORS.length];
+
+  // Need this array defined because we're using the `sm:` prefix, cannot just
+  // define the `gridColumnStart: weekdayIndex + 1` in the li's style prop.
+  const weekColStartClasses = [
+    "sm:col-start-1", // sunday...
+    "sm:col-start-2",
+    "sm:col-start-3",
+    "sm:col-start-4", // ...wednesday...
+    "sm:col-start-5",
+    "sm:col-start-6",
+    "sm:col-start-7", // ...saturday
+  ];
+
+  return (
+    <li
+      className={clsx(
+        "relative mt-px",
+        weekdayIndex !== focusedDay && "hidden",
+        weekColStartClasses[weekdayIndex],
+        "sm:flex",
+      )}
+      style={{ gridRow: `${startGridRow} / span ${gridSpan}` }}
+    >
+      <a
+        href="#"
+        className={`group absolute inset-1 flex flex-col overflow-y-auto rounded-lg ${eventColor.bg} p-2 text-xs leading-5 ${eventColor.bgHover}`}
+      >
+        <p className={`${eventColor.text} ${eventColor.textHover}`}>
+          <time dateTime={`${adjustedEvent.adjustedStartIsoDate}T${adjustedEvent.adjustedStartTime}`}>
+            {adjustedEvent.adjustedStartTime}
+          </time>
+        </p>
+        <p className={`font-semibold ${eventColor.text}`}>
+          {adjustedEvent.title}
+        </p>
+        <p className={`font-normal ${eventColor.text}`}>
+          {adjustedEvent.details}
+        </p>
+      </a>
+    </li>
+  );
+}
 
 type EventColor = {
-  bgClass: string;
-  bgHoverClass: string;
-  textClass: string;
+  bg: string;
+  bgHover: string;
+  text: string;
+  textHover: string;
 }
-export const EventColors: EventColor[] = [
-  { bgClass: "bg-green-50", bgHoverClass: "bg-green-100", textClass: "text-green-700" },
-  { bgClass: "bg-yellow-50", bgHoverClass: "bg-yellow-100", textClass: "text-yellow-700" },
-  { bgClass: "bg-teal-50", bgHoverClass: "bg-teal-100", textClass: "text-teal-700" },
-  { bgClass: "bg-indigo-50", bgHoverClass: "bg-indigo-100", textClass: "text-indigo-700" },
-  { bgClass: "bg-emerald-50", bgHoverClass: "bg-emerald-100", textClass: "text-emerald-700" },
-  { bgClass: "bg-orange-50", bgHoverClass: "bg-orange-100", textClass: "text-orange-700" },
-  { bgClass: "bg-blue-50", bgHoverClass: "bg-blue-100", textClass: "text-blue-700" },
-  { bgClass: "bg-fuchsia-50", bgHoverClass: "bg-fuchsia-100", textClass: "text-fuchsia-700" },
-  { bgClass: "bg-pink-50", bgHoverClass: "bg-pink-100", textClass: "text-pink-700" },
-  { bgClass: "bg-amber-50", bgHoverClass: "bg-amber-100", textClass: "text-amber-700" },
-  { bgClass: "bg-slate-50", bgHoverClass: "bg-slate-100", textClass: "text-slate-700" },
+const EVENT_COLORS: EventColor[] = [
+  { bg: "bg-green-50", bgHover: "hover:bg-green-100", text: "text-green-500", textHover: "group-hover:text-green-700" },
+  { bg: "bg-yellow-50", bgHover: "hover:bg-yellow-100", text: "text-yellow-500", textHover: "group-hover:text-yellow-700" },
+  { bg: "bg-teal-50", bgHover: "hover:bg-teal-100", text: "text-teal-500", textHover: "group-hover:text-teal-700" },
+  { bg: "bg-indigo-50", bgHover: "hover:bg-indigo-100", text: "text-indigo-500", textHover: "group-hover:text-indigo-700" },
+  { bg: "bg-emerald-50", bgHover: "hover:bg-emerald-100", text: "text-emerald-500", textHover: "group-hover:text-emerald-700" },
+  { bg: "bg-orange-50", bgHover: "hover:bg-orange-100", text: "text-orange-500", textHover: "group-hover:text-orange-700" },
+  { bg: "bg-blue-50", bgHover: "hover:bg-blue-100", text: "text-blue-500", textHover: "group-hover:text-blue-700" },
+  { bg: "bg-fuchsia-50", bgHover: "hover:bg-fuchsia-100", text: "text-fuchsia-500", textHover: "group-hover:text-fuchsia-700" },
+  { bg: "bg-pink-50", bgHover: "hover:bg-pink-100", text: "text-pink-500", textHover: "group-hover:text-pink-700" },
+  { bg: "bg-amber-50", bgHover: "hover:bg-amber-100", text: "text-amber-500", textHover: "group-hover:text-amber-700" },
+  { bg: "bg-slate-50", bgHover: "hover:bg-slate-100", text: "text-slate-500", textHover: "group-hover:text-slate-700" },
 ];
