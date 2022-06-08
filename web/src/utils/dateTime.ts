@@ -1,6 +1,19 @@
 import startOfWeek from "date-fns/startOfWeek";
 import formatISO from "date-fns/formatISO";
 
+/**
+ * H:mm or HH:mm time stamp. (ex: 13:05, 6:43, 06:43)
+ */
+export type Time24Hour = string;
+/**
+ * IANA Time Zone DB Name.  (ex: "America/New_York")
+ */
+export type IANAtzName = string;
+/**
+ * yyyy-MM-dd format date.  (ex: 2022-06-20)
+ */
+export type ISODate = string;
+
 export type WeekdayNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 export type Weekday =
   | "sunday"
@@ -28,7 +41,31 @@ export type LocalizedWeekday = {
   isoDateTime: string;
 };
 
-export const TimeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
+export const timeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
+
+/**
+ * Helper function normalizes time input to be HH:mm when it could be H:mm. In
+ * the case of malformed data it will return "00:00".
+ * @param time
+ * @returns
+ */
+export function normalizeTime(time: Time24Hour) {
+  const paddedString = time.padStart(5, "0"); // 6:30 --> 06:30.
+  return timeRegex.test(paddedString) ? paddedString : "00:00";
+}
+
+/**
+ * Takes a HH:mm or H:mm time string and returns the number of minutes since
+ * the start of the day. In the case of malformed data it will return 0.
+ * @param time
+ * @returns
+ */
+export function calculateMinutesElapsedInDay(time: Time24Hour) {
+  const [hours, minutes] = normalizeTime(time)
+    .split(":")
+    .map((num) => parseInt(num));
+  return hours * 60 + minutes;
+}
 
 /**
  * Uses Intl.DateTimeFormat() to create a list of weekday titles that will match
@@ -42,7 +79,7 @@ export const TimeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
  * @returns
  */
 export function localizedWeekdays(
-  targetDate: string,
+  targetDate: ISODate,
   locales: string[] | string = []
 ): LocalizedWeekday[] {
   const parsedTargetDate = new Date(`${targetDate}T00:00:00`);

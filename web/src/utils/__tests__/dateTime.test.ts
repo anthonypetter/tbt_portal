@@ -1,8 +1,59 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { findWeekdayNumber, localizedWeekdays } from "../dateTime";
+import {
+  calculateMinutesElapsedInDay,
+  findWeekdayNumber,
+  localizedWeekdays,
+  normalizeTime,
+} from "../dateTime";
 
 describe("dateTime", () => {
-  describe("localizedWeekdays", () => {
+  describe("normalizeTime()", () => {
+    describe("happy path", () => {
+      test("should work with HH:mm", () => {
+        expect(normalizeTime("12:30")).toBe("12:30");
+      });
+
+      test("should work with H:mm", () => {
+        expect(normalizeTime("7:30")).toBe("07:30");
+      });
+    });
+
+    describe("sad path", () => {
+      test("should handle bad input gracefully", () => {
+        expect(normalizeTime("")).toBe("00:00");
+        expect(normalizeTime("blah")).toBe("00:00");
+        expect(normalizeTime("99:99")).toBe("00:00");
+      });
+    });
+  });
+
+  describe("calculateMinutesElapsedInDay()", () => {
+    describe("happy path", () => {
+      test("should calculate HH:mm times correctly", () => {
+        expect(calculateMinutesElapsedInDay("00:00")).toBe(0);
+        expect(calculateMinutesElapsedInDay("00:01")).toBe(1);
+        expect(calculateMinutesElapsedInDay("01:00")).toBe(60);
+        expect(calculateMinutesElapsedInDay("23:59")).toBe(1439);
+      });
+
+      test("should calculate H:mm times correctly", () => {
+        expect(calculateMinutesElapsedInDay("0:00")).toBe(0);
+        expect(calculateMinutesElapsedInDay("0:01")).toBe(1);
+        expect(calculateMinutesElapsedInDay("1:00")).toBe(60);
+        expect(calculateMinutesElapsedInDay("9:59")).toBe(599);
+      });
+    });
+
+    describe("sad path", () => {
+      test("should handle bad input gracefully", () => {
+        expect(calculateMinutesElapsedInDay("")).toBe(0);
+        expect(calculateMinutesElapsedInDay("blah")).toBe(0);
+        expect(calculateMinutesElapsedInDay("99:99")).toBe(0);
+      });
+    });
+  });
+
+  describe("localizedWeekdays()", () => {
     describe("happy path", () => {
       test("should work with basic arguments", () => {
         const weekDays = localizedWeekdays("2022-06-01");
@@ -163,7 +214,7 @@ describe("dateTime", () => {
     });
   });
 
-  describe("findWeekdayNumber", () => {
+  describe("findWeekdayNumber()", () => {
     describe("happy path", () => {
       test("should find any day of the week", () => {
         expect(findWeekdayNumber("sunday")).toBe(0);
