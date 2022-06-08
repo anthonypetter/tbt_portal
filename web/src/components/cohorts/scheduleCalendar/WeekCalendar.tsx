@@ -4,7 +4,19 @@ import utcToZonedTime from "date-fns-tz/utcToZonedTime";
 import format from "date-fns-tz/format";
 import { useEffect, useMemo, useRef, useState, Fragment } from "react"
 
-import { findWeekdayNumber, IANAtzName, ISODate, LocalizedWeekday, localizedWeekdays, normalizeTime, Time24Hour, Weekday, WeekdayNumber } from "@utils/dateTime";
+import {
+  calculateMinutesElapsedInDay,
+  findWeekdayNumber,
+  IANAtzName,
+  ISODate,
+  LocalizedWeekday,
+  localizedWeekdays,
+  Minute,
+  normalizeTime,
+  Time24Hour,
+  Weekday,
+  WeekdayNumber,
+} from "@utils/dateTime";
 
 export type WeekCalendarEvent = {
   weekday: Weekday;
@@ -23,6 +35,8 @@ type AdjustedWeekCalendarEvent = WeekCalendarEvent & {
   adjustedStartTime: Time24Hour;
   adjustedEndWeekday: Weekday;
   adjustedEndTime: Time24Hour;
+  adjustedStartMinute: Minute;
+  eventMinuteLength: Minute;
 };
 
 type WeekCalendarProps = {
@@ -34,7 +48,7 @@ export function WeekCalendar({ events, targetDate, viewingTimeZone }: WeekCalend
   // Get the current time of the viewingTimezone (allows for simulating different time zones).
   const currentViewerTime = utcToZonedTime(new Date(), viewingTimeZone);
 
-  const currentDay = currentViewerTime.getDay();
+  const currentDay = currentViewerTime.getDay() as WeekdayNumber;
   const [selectedDay, setSelectedDay] = useState(currentDay);
 
   const localizedWeekdaysList = localizedWeekdays(targetDate);
@@ -67,7 +81,7 @@ export function WeekCalendar({ events, targetDate, viewingTimeZone }: WeekCalend
           <MobileNav
             localizedWeekdays={localizedWeekdaysList}
             focusedDay={selectedDay}
-            onClickDay={(navIndex: number) => setSelectedDay(navIndex)}
+            onClickDay={(navIndex: number) => setSelectedDay(navIndex as WeekdayNumber)}
           />
           <FullNav
             localizedWeekdays={localizedWeekdaysList}
@@ -147,14 +161,13 @@ function HourLines({ mode24Hour = false }: HourLinesProps) {
 
 type BaseNavProps = {
   localizedWeekdays: LocalizedWeekday[];
-  focusedDay: number;
+  focusedDay: WeekdayNumber;
 };
 
 type MobileNavProps = BaseNavProps & {
-  onClickDay: (day: number) => void;
+  onClickDay: (day: WeekdayNumber) => void;
 }
 function MobileNav({ localizedWeekdays, focusedDay, onClickDay }: MobileNavProps) {
-
   return (
     <div className="grid grid-cols-7 text-sm leading-6 text-gray-900 sm:hidden">
       {localizedWeekdays.map((weekday, i) => (
@@ -162,7 +175,7 @@ function MobileNav({ localizedWeekdays, focusedDay, onClickDay }: MobileNavProps
           key={weekday.long}
           type="button"
           className="flex flex-col items-center pt-2 pb-3"
-          onClick={() => onClickDay(i)}
+          onClick={() => onClickDay(i as WeekdayNumber)}
         >
           <span
           className={clsx(
@@ -179,7 +192,6 @@ function MobileNav({ localizedWeekdays, focusedDay, onClickDay }: MobileNavProps
 
 type FullNavProps = BaseNavProps;
 function FullNav({ localizedWeekdays, focusedDay }: FullNavProps) {
-
   return (
     <div className="-mr-px hidden grid-cols-7 divide-x divide-gray-100 border-r border-gray-100 text-sm leading-6 text-gray-500 sm:grid">
       <div className="col-end-1 w-14" />
@@ -227,7 +239,6 @@ function Events({ localizedWeekdays, focusedDay, events, viewingTimeZone }: Even
     // Don't show events that have not started or have since ended.
     if (eventLocalIsoDate < eventLocalStartIsoDate ||
       eventLocalIsoDate > eventLocalEndIsoDate) {
-        console.log("rejected", `${eventLocalStartIsoDate} > ${eventLocalIsoDate} > ${eventLocalEndIsoDate}`, event);
       return;
     }
 
@@ -241,6 +252,12 @@ function Events({ localizedWeekdays, focusedDay, events, viewingTimeZone }: Even
       { timeZone: event.timeZone },
     );
 
+    // Don't even bother with events that have start and end times in reverse order
+    // or zero length.
+    if (eventStartDateTime >= eventEndDateTime) {
+      return;
+    }
+
     // Adjust the time/weekday to the viewing timeZone.
     const [adjustedStartWeekday, adjustedStartTime] = format(
       utcToZonedTime(eventStartDateTime, viewingTimeZone),
@@ -251,12 +268,17 @@ function Events({ localizedWeekdays, focusedDay, events, viewingTimeZone }: Even
       'EEEE,HH:mm',
     ).split(",").map(val => val.toLowerCase());
 
+    const adjustedStartMinute = calculateMinutesElapsedInDay(adjustedStartTime);
+    const adjustedEndMinute = calculateMinutesElapsedInDay(adjustedStartTime);
+
     adjustedEvents.push({
       ...event,
       adjustedStartWeekday: adjustedStartWeekday as Weekday,
       adjustedStartTime,
       adjustedEndWeekday: adjustedEndWeekday as Weekday,
       adjustedEndTime,
+      adjustedStartMinute,
+      eventMinuteLength: adjustedEndMinute - adjustedStartMinute,
     });
   });
 
