@@ -71,6 +71,7 @@ export function calculateMinutesElapsedInDay(time: Time24Hour) {
  * Uses Intl.DateTimeFormat() to create a list of weekday titles that will match
  * the language and locale of the client.
  * Returns seven days of the week, always with Sunday as the first entry.
+ * Time zone is not a factor.
  *
  * For reference:
  * * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
@@ -109,6 +110,7 @@ export function localizedWeekdays(
 /**
  * Simple helper function takes a weekday name (ex: "monday") and returns
  * the weekday number (ex: 1) in a safe manner.
+ * Works with Sunday as the start of the week.
  * @param weekday
  * @returns
  */
