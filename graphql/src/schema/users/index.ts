@@ -61,7 +61,7 @@ async function users(
   { authedUser, UserService, AuthorizationService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
-  return UserService.getUsers(10);
+  return UserService.getUsers();
 }
 
 /**
