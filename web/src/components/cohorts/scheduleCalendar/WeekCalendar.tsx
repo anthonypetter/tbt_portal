@@ -2,13 +2,14 @@ import clsx from "clsx";
 import toDate from "date-fns-tz/toDate";
 import utcToZonedTime from "date-fns-tz/utcToZonedTime";
 import format from "date-fns-tz/format";
-import { useEffect, useMemo, useRef, useState, Fragment } from "react"
+import { useEffect, useRef, useState, Fragment } from "react"
 
 import {
   calculateMinutesElapsedInDay,
   findWeekdayNumber,
   IANAtzName,
   ISODate,
+  localizedTime,
   LocalizedWeekday,
   localizedWeekdays,
   Minute,
@@ -43,16 +44,20 @@ type AdjustedWeekCalendarEvent = WeekCalendarEvent & {
 type WeekCalendarProps = {
   events: WeekCalendarEvent[];
   targetDate: ISODate;  // Any date whose week will show in the calendar.
+  locale: string;
   viewingTimeZone: IANAtzName;
+  mode24Hour?: boolean;
 };
-export function WeekCalendar({ events, targetDate, viewingTimeZone }: WeekCalendarProps) {
+export function WeekCalendar(
+  { events, targetDate, locale, viewingTimeZone, mode24Hour = false }: WeekCalendarProps
+) {
   // Get the current time of the viewingTimezone (allows for simulating different time zones).
   const currentViewerTime = utcToZonedTime(new Date(), viewingTimeZone);
 
   const currentDay = currentViewerTime.getDay() as WeekdayNumber;
   const [selectedDay, setSelectedDay] = useState(currentDay);
 
-  const localizedWeekdaysList = localizedWeekdays(targetDate);
+  const localizedWeekdaysList = localizedWeekdays(targetDate, locale);
 
   const container = useRef<HTMLDivElement>(null);
   const containerNav = useRef<HTMLDivElement>(null);
@@ -101,7 +106,7 @@ export function WeekCalendar({ events, targetDate, viewingTimeZone }: WeekCalend
               style={{ gridTemplateRows: 'repeat(48, minmax(3.5rem, 1fr))' }}
             >
               <div ref={containerOffset} className="row-end-1 h-7" />
-              <HourLines mode24Hour={false} />
+              <HourLines locale={locale} mode24Hour={mode24Hour} />
             </div>
 
             {/* Vertical lines */}
@@ -121,7 +126,9 @@ export function WeekCalendar({ events, targetDate, viewingTimeZone }: WeekCalend
               localizedWeekdays={localizedWeekdaysList}
               focusedDay={selectedDay}
               events={events}
+              locale={locale}
               viewingTimeZone={viewingTimeZone}
+              mode24Hour={mode24Hour}
             />
           </div>
         </div>
@@ -132,24 +139,18 @@ export function WeekCalendar({ events, targetDate, viewingTimeZone }: WeekCalend
 
 
 type HourLinesProps = {
-  mode24Hour?: boolean;
+  locale: string;
+  mode24Hour: boolean;
 };
-function HourLines({ mode24Hour = false }: HourLinesProps) {
-  const hourLabels = useMemo(
-    () => Array(24).fill(0).map((_, h) =>
-      mode24Hour ?
-        `${String(h).padStart(2, "0")}:00` :
-        `${h % 12 ? h % 12 : 12}${h < 12 ? "AM" : "PM"}`,
-    ),
-    [mode24Hour]);
-
+function HourLines({ locale, mode24Hour }: HourLinesProps) {
+  const hourLabels = Array(24).fill(0).map((_, h) => `${String(h).padStart(2, "0")}:00`);
   return (
     <>
       {hourLabels.map(hour => (
         <Fragment key={hour}>
           <div>
-            <div className="sticky left-0 z-20 -mt-2.5 -ml-14 w-14 pr-2 text-right text-xs leading-5 text-gray-400">
-              {hour}
+            <div className="sticky whitespace-nowrap left-0 z-20 -mt-2.5 -ml-14 w-14 pr-1 text-right text-xs leading-5 text-gray-400">
+              {localizedTime(hour, mode24Hour, locale)}
             </div>
           </div>
           <div />
@@ -160,12 +161,12 @@ function HourLines({ mode24Hour = false }: HourLinesProps) {
 }
 
 
-type BaseNavProps = {
+type BaseWeekdayProps = {
   localizedWeekdays: LocalizedWeekday[];
   focusedDay: WeekdayNumber;
 };
 
-type MobileNavProps = BaseNavProps & {
+type MobileNavProps = BaseWeekdayProps & {
   onClickDay: (day: WeekdayNumber) => void;
 }
 function MobileNav({ localizedWeekdays, focusedDay, onClickDay }: MobileNavProps) {
@@ -180,7 +181,7 @@ function MobileNav({ localizedWeekdays, focusedDay, onClickDay }: MobileNavProps
         >
           <span
           className={clsx(
-            "mt-1 flex h-8 w-8 items-center justify-center font-semibold",
+            "mt-1 flex h-8 w-8 items-center justify-center font-semibold uppercase",
             focusedDay === i && "rounded-full bg-indigo-600 text-white"
           )}>
             {weekday.narrow}
@@ -191,7 +192,7 @@ function MobileNav({ localizedWeekdays, focusedDay, onClickDay }: MobileNavProps
   );
 }
 
-type FullNavProps = BaseNavProps;
+type FullNavProps = BaseWeekdayProps;
 function FullNav({ localizedWeekdays, focusedDay }: FullNavProps) {
   return (
     <div className="-mr-px hidden grid-cols-7 divide-x divide-gray-100 border-r border-gray-100 text-sm leading-6 text-gray-500 sm:grid">
@@ -202,7 +203,7 @@ function FullNav({ localizedWeekdays, focusedDay }: FullNavProps) {
           className="flex items-center justify-center py-3 text-gray-900"
         >
           <span className={clsx(
-            "items-center justify-center font-semibold ",
+            "items-center justify-center font-semibold capitalize",
             focusedDay === i &&
               "ml-1.5 flex h-8 w-10 rounded-full bg-indigo-600 text-white",
           )}>
@@ -215,11 +216,20 @@ function FullNav({ localizedWeekdays, focusedDay }: FullNavProps) {
 }
 
 
-type EventsProps = BaseNavProps & {
+type EventsProps = BaseWeekdayProps & {
   events: WeekCalendarEvent[];
+  locale: string;
   viewingTimeZone: IANAtzName;
+  mode24Hour: boolean;
 };
-function Events({ localizedWeekdays, focusedDay, events, viewingTimeZone }: EventsProps) {
+function Events({
+  localizedWeekdays,
+  focusedDay,
+  events,
+  locale,
+  viewingTimeZone,
+  mode24Hour,
+}: EventsProps) {
   const adjustedEvents: AdjustedWeekCalendarEvent[] = [];
   events.forEach(event => {
     // Get the local date of the event.
@@ -296,6 +306,8 @@ function Events({ localizedWeekdays, focusedDay, events, viewingTimeZone }: Even
           key={`${adjustedEvent.groupId}_${i}`}
           adjustedEvent={adjustedEvent}
           focusedDay={focusedDay}
+          locale={locale}
+          mode24Hour={mode24Hour}
         />
       ))}
     </ol>
@@ -305,11 +317,10 @@ function Events({ localizedWeekdays, focusedDay, events, viewingTimeZone }: Even
 type EventProps = {
   adjustedEvent: AdjustedWeekCalendarEvent;
   focusedDay: WeekdayNumber;
+  locale: string;
+  mode24Hour: boolean;
 };
-function Event({
-  adjustedEvent,
-  focusedDay,
-}: EventProps) {
+function Event({ adjustedEvent, focusedDay, locale, mode24Hour }: EventProps) {
   const weekdayIndex = findWeekdayNumber(adjustedEvent.adjustedStartWeekday);
   const startGridRow = adjustedEvent.adjustedStartMinute / 5 + 2;
   const gridSpan = Math.max(adjustedEvent.eventMinuteLength / 5, 3);
@@ -339,11 +350,11 @@ function Event({
     >
       <a
         href="#"
-        className={`group absolute inset-1 flex flex-col overflow-y-auto rounded-lg ${eventColor.bg} p-2 text-xs leading-5 ${eventColor.bgHover}`}
+        className={`group absolute inset-1 flex flex-col hover:z-20 overflow-y-auto rounded-lg ${eventColor.bg} p-2 text-xs leading-5 ${eventColor.bgHover}`}
       >
         <p className={`${eventColor.text} ${eventColor.textHover}`}>
           <time dateTime={`${adjustedEvent.adjustedStartIsoDate}T${adjustedEvent.adjustedStartTime}`}>
-            {adjustedEvent.adjustedStartTime}
+            {localizedTime(adjustedEvent.adjustedStartTime, mode24Hour, locale)}
           </time>
         </p>
         <p className={`font-semibold ${eventColor.text}`}>

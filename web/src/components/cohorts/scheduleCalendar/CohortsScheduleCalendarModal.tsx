@@ -38,7 +38,7 @@ export function CohortsScheduleCalendarModal({
         </h1>
         <CohortsScheduleCalendar
           // MOCKING //
-          cohorts={cohorts.concat(cohorts).concat(cohorts)}
+          cohorts={cohorts.concat(cohorts).concat(cohorts).concat(cohorts).concat(cohorts)}
         />
       </div>
     </Modal>

@@ -2,6 +2,7 @@
 import {
   calculateMinutesElapsedInDay,
   findWeekdayNumber,
+  localizedTime,
   localizedWeekdays,
   normalizeTime,
 } from "../dateTime";
@@ -23,6 +24,31 @@ describe("dateTime", () => {
         expect(normalizeTime("")).toBe("00:00");
         expect(normalizeTime("blah")).toBe("00:00");
         expect(normalizeTime("99:99")).toBe("00:00");
+      });
+    });
+  });
+
+  describe("localizedTime()", () => {
+    describe("happy path", () => {
+      test("should return 24 hour mode for any locale", () => {
+        expect(localizedTime("13:54", true)).toBe("13:54");
+        expect(localizedTime("13:54", true, "en-US")).toBe("13:54");
+        expect(localizedTime("13:54", true, "ro-RO")).toBe("13:54");
+      });
+      test("should return 12 hour mode for en-US locale", () => {
+        expect(localizedTime("13:54", false, "en-US")).toBe("1:54 PM");
+        expect(localizedTime("00:00", false, "en-US")).toBe("12:00 AM");
+        expect(localizedTime("00:01", false, "en-US")).toBe("12:01 AM");
+      });
+      test("should return 12 hour mode for es-MX locale", () => {
+        expect(localizedTime("13:54", false, "es-MX")).toMatch(/1:54 p.\sm./);
+        expect(localizedTime("00:00", false, "es-MX")).toMatch(/0:00 a.\sm./);
+        expect(localizedTime("00:01", false, "es-MX")).toMatch(/0:01 a.\sm./);
+      });
+      test("should return 12 hour mode for ro-RO locale", () => {
+        expect(localizedTime("13:54", false, "ro-RO")).toBe("1:54 p.m.");
+        expect(localizedTime("00:00", false, "ro-RO")).toBe("0:00 a.m.");
+        expect(localizedTime("00:01", false, "ro-RO")).toBe("0:01 a.m.");
       });
     });
   });
