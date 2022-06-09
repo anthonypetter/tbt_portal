@@ -7,7 +7,7 @@ import { WeekCalendar, WeekCalendarEvent } from "./WeekCalendar";
 import { Weekday } from "@utils/dateTime";
 
 CohortsScheduleCalendar.fragments = {
-  cohortForSchedule: gql`
+  cohortForScheduleCalendar: gql`
     fragment CohortForScheduleCalendar on Cohort {
       name
       grade

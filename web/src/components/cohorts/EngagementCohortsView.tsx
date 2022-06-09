@@ -14,9 +14,13 @@ import { CohortDetailsSidebar } from "./CohortDetailsSidebar";
 EngagementCohortsView.fragments = {
   cohortsList: gql`
     fragment EngagementCohortsView on Engagement {
-      ...CohortsTable
+      cohorts {
+      ...CohortsForTable
+      ...CohortForDetailsSidebar
+      }
     }
-    ${CohortsTable.fragments.cohortsTable}
+    ${CohortsTable.fragments.cohortsForTable}
+    ${CohortDetailsSidebar.fragments.cohortForDetailsSidebar}
   `,
 };
 

@@ -10,7 +10,7 @@ import { CohortsScheduleCalendarModal } from "./scheduleCalendar/CohortsSchedule
 const DEV_SHOW_SCHEDULE_BUTTON = false;
 
 CohortDetailsSidebar.fragments = {
-  selectedCohort: gql`
+  cohortForDetailsSidebar: gql`
     fragment CohortForDetailsSidebar on Cohort {
       name
       startDate
@@ -27,9 +27,8 @@ CohortDetailsSidebar.fragments = {
         subject
       }
     }
-  `
+  `,
 };
-
 
 type DetailsSidebarProps = {
   selectedCohort: CohortForDetailsSidebarFragment | null;
