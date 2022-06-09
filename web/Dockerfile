@@ -10,6 +10,7 @@ RUN npm ci
 FROM node:16-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+RUN mkdir ./temp
 COPY . .
 
 # Next.js collects completely anonymous telemetry data about general usage.
@@ -41,7 +42,7 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # You only need to copy next.config.js if you are NOT using the default configuration
-# COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 
@@ -49,6 +50,7 @@ COPY --from=builder /app/package.json ./package.json
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/temp ./temp
 
 USER nextjs
 

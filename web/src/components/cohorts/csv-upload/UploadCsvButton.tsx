@@ -6,9 +6,10 @@ export const COHORTS_CSV_FILE_NAME = "csvCohorts";
 
 type Props = {
   onFileUpload: (file: File) => void;
+  disabled?: boolean;
 };
 
-export function UploadCsvButton({ onFileUpload }: Props) {
+export function UploadCsvButton({ onFileUpload, disabled = false }: Props) {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   return (
@@ -19,7 +20,8 @@ export function UploadCsvButton({ onFileUpload }: Props) {
           "px-4 py-2",
           "flex",
           "bg-white text-gray-700 text-base font-medium sm:text-sm",
-          "cursor-pointer"
+          "cursor-pointer",
+          disabled && "opacity-50 cursor-not-allowed"
         )}
       >
         <UploadIcon
@@ -29,6 +31,7 @@ export function UploadCsvButton({ onFileUpload }: Props) {
         <span className="lg:hidden">CSV</span>
         <span className="hidden lg:block">Upload CSV</span>
         <input
+          disabled={disabled}
           ref={inputRef}
           type="file"
           className="hidden"
