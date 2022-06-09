@@ -38,9 +38,11 @@ OrganizationCohortsView.fragments = {
             }
             subject
           }
+          ...CohortForDetailsSidebar
         }
       }
     }
+    ${CohortDetailsSidebar.fragments.cohortForDetailsSidebar}
   `,
 };
 

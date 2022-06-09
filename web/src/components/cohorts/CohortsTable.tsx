@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { CohortsTableFragment } from "@generated/graphql";
+import { CohortsForTableFragment } from "@generated/graphql";
 import { DateText } from "components/Date";
 import { CONTEXT_MENU_ID, Table } from "components/Table";
 import { Column, Cell } from "react-table";
@@ -9,27 +9,25 @@ import { DeleteCohortModal } from "./DeleteCohortModal";
 import { gql } from "@apollo/client";
 
 CohortsTable.fragments = {
-  cohortsTable: gql`
-    fragment CohortsTable on Engagement {
-      cohorts {
-        id
-        createdAt
-        name
-        grade
-        meetingRoom
-        hostKey
-        exempt
-        startDate
-        endDate
-        engagementId
-        staffAssignments {
-          user {
-            id
-            fullName
-            email
-          }
-          subject
+  cohortsForTable: gql`
+    fragment CohortsForTable on Cohort {
+      id
+      createdAt
+      name
+      grade
+      meetingRoom
+      hostKey
+      exempt
+      startDate
+      endDate
+      engagementId
+      staffAssignments {
+        user {
+          id
+          fullName
+          email
         }
+        subject
       }
     }
   `,
@@ -37,9 +35,9 @@ CohortsTable.fragments = {
 
 type Props = {
   organizationId: string;
-  cohorts: CohortsTableFragment["cohorts"];
+  cohorts: CohortsForTableFragment[];
   onRowClick: (cohortId: string) => void;
-  selectedCohort: CohortsTableFragment["cohorts"][number] | null;
+  selectedCohort: CohortsForTableFragment | null;
 };
 
 export function CohortsTable({
@@ -122,7 +120,7 @@ function usePrepCohortData({
   contextMenu,
 }: {
   organizationId: string;
-  cohorts: CohortsTableFragment["cohorts"];
+  cohorts: CohortsForTableFragment[];
   contextMenu: {
     onClickEdit: (cohort: CohortTableData) => void;
     onClickDelete: (cohort: CohortTableData) => void;
