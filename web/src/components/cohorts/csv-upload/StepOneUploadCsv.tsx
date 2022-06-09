@@ -1,6 +1,8 @@
 import { UploadCsvButton } from "./UploadCsvButton";
 import { PaperClipIcon } from "@heroicons/react/solid";
 
+const UPLOAD_IS_DISABLED = false;
+
 export function StepOneUploadCsv({
   file,
   onFileUpload,
@@ -18,7 +20,10 @@ export function StepOneUploadCsv({
     </div>
   ) : (
     <div className="mt-4">
-      <UploadCsvButton onFileUpload={onFileUpload} />
+      <UploadCsvButton
+        onFileUpload={onFileUpload}
+        disabled={UPLOAD_IS_DISABLED}
+      />
     </div>
   );
 }
