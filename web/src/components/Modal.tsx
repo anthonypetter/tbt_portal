@@ -1,15 +1,17 @@
 import React from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import clsx from "clsx";
+import { XIcon } from "@heroicons/react/outline";
 import { Button, ThemeT } from "./Button";
 import { assertUnreachable } from "@utils/types";
 
-type WidthOptions = "medium" | "large";
+type WidthOptions = "medium" | "large" | "xlarge";
 
 type Props = {
   show: boolean;
   children: React.ReactNode;
   onClose: () => void;
+  onDismissClick?: () => void;  // Adds X button to corner when defined.
   icon: React.ReactNode;
   title: string;
   initialFocus?: React.MutableRefObject<HTMLElement | null> | undefined;
@@ -20,6 +22,7 @@ type Props = {
 export function Modal({
   show,
   onClose,
+  onDismissClick,
   icon,
   title,
   children,
@@ -84,6 +87,14 @@ export function Modal({
                 "transform transition-all"
               )}
             >
+              {onDismissClick && (
+                <div
+                  className="absolute top-8 right-8 text-gray-400 hover:text-gray-900 cursor-pointer"
+                  onClick={onDismissClick}
+                >
+                  <XIcon className="mr-3 w-6 h-6" aria-hidden="true" />
+                </div>
+              )}
               <div className="sm:flex items-center">
                 <div>{icon}</div>
                 <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
@@ -111,6 +122,9 @@ function getModalWidth(options: WidthOptions) {
 
     case "large":
       return "w-full sm:max-w-2xl";
+
+    case "xlarge":
+      return "w-full sm:max-w-4xl";
 
     default:
       return "w-full sm:max-w-lg";

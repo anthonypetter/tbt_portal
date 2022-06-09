@@ -2,15 +2,13 @@ import { gql } from "@apollo/client";
 import { OrgDetailPageCohortsQuery } from "@generated/graphql";
 import { SearchIcon } from "@heroicons/react/outline";
 import clsx from "clsx";
-import { DateText } from "components/Date";
 import { Input } from "components/Input";
 import { useState } from "react";
 import { CohortsTable } from "./CohortsTable";
 import filter from "lodash/filter";
-import { DetailsAside } from "components/DetailsAside";
-import { AssignmentSubjectBadge } from "components/AssignmentSubjectBadge";
 import { ErrorBoundary } from "components/ErrorBoundary";
 import { ErrorBox } from "components/ErrorBox";
+import { CohortDetailsSidebar } from "./CohortDetailsSidebar";
 
 OrganizationCohortsView.fragments = {
   cohortsList: gql`
@@ -40,9 +38,11 @@ OrganizationCohortsView.fragments = {
             }
             subject
           }
+          ...CohortForDetailsSidebar
         }
       }
     }
+    ${CohortDetailsSidebar.fragments.cohort}
   `,
 };
 
@@ -93,7 +93,7 @@ export function OrganizationCohortsView({ organization }: Props) {
               />
             </main>
 
-            <DetailsSidebar
+            <CohortDetailsSidebar
               selectedCohort={selectedCohort}
               onClose={() => setSelectedCohortId(null)}
             />
@@ -101,55 +101,5 @@ export function OrganizationCohortsView({ organization }: Props) {
         </div>
       </div>
     </ErrorBoundary>
-  );
-}
-
-type DetailsSidebarProps = {
-  selectedCohort: QueryCohorts[number] | null;
-  onClose: () => void;
-};
-
-function DetailsSidebar({ selectedCohort, onClose }: DetailsSidebarProps) {
-  if (!selectedCohort) {
-    return <DetailsAside isOpen={false} onClose={onClose} />;
-  }
-  return (
-    <DetailsAside isOpen={true} onClose={onClose} title={selectedCohort.name}>
-      <DetailsAside.Section title="Details">
-        <DetailsAside.Line
-          label="Starts"
-          value={<DateText timeMs={selectedCohort.startDate} />}
-        />
-        <DetailsAside.Line
-          label="Ends"
-          value={<DateText timeMs={selectedCohort.endDate} />}
-        />
-        <DetailsAside.Line label="Grade" value={selectedCohort.grade} />
-        <DetailsAside.Line
-          label="Meeting Room"
-          value={selectedCohort.meetingRoom}
-        />
-        <DetailsAside.Line label="Host key" value={selectedCohort.hostKey} />
-        <DetailsAside.Line
-          label="Created"
-          value={<DateText timeMs={selectedCohort.createdAt} />}
-        />
-      </DetailsAside.Section>
-      <DetailsAside.Section title="Staff">
-        {selectedCohort.staffAssignments.length === 0 ? (
-          <p className="py-2 text-sm font-medium text-gray-500 italic">
-            Teachers not yet assigned.
-          </p>
-        ) : (
-          selectedCohort.staffAssignments.map((assignment) => (
-            <DetailsAside.Line
-              key={`${assignment.user.id}-${assignment.subject}`}
-              label={assignment.user.fullName}
-              value={<AssignmentSubjectBadge subject={assignment.subject} />}
-            />
-          ))
-        )}
-      </DetailsAside.Section>
-    </DetailsAside>
   );
 }
