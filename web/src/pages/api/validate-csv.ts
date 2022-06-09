@@ -7,6 +7,8 @@ import { ProcessedCohort } from "@utils/csv/parseCsv";
 
 export const COHORTS_CSV_FILE_NAME = "csvCohorts";
 
+const TEMP_UPLOAD_DIR = "./temp";
+
 type Data = {
   message: string;
   validationErrors?: { message: string; hint?: string }[];
@@ -58,7 +60,7 @@ function parseRequestForCsv(
     try {
       const form = new formidable.IncomingForm({
         keepExtensions: true,
-        uploadDir: "./",
+        uploadDir: TEMP_UPLOAD_DIR,
       });
 
       form.parse(req, async (err: unknown, fields, files) => {
