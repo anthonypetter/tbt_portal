@@ -11,7 +11,6 @@ type Props = {
   show: boolean;
   children: React.ReactNode;
   onClose: () => void;
-  onOutsideClick?: () => void;  // Fires when dimmed BG is clicked.
   onDismissClick?: () => void;  // Adds X button to corner when defined.
   icon: React.ReactNode;
   title: string;
@@ -23,7 +22,6 @@ type Props = {
 export function Modal({
   show,
   onClose,
-  onOutsideClick,
   onDismissClick,
   icon,
   title,
@@ -57,10 +55,7 @@ export function Modal({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay
-              className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-              onClick={onOutsideClick}
-            />
+            <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}

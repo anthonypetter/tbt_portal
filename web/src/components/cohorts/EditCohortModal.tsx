@@ -5,7 +5,7 @@ import { ErrorBox } from "components/ErrorBox";
 import { ApolloError, gql, useMutation } from "@apollo/client";
 import {
   EditEngagementMutation,
-  CohortsTableFragment,
+  CohortForTableFragment,
 } from "@generated/graphql";
 import { fromJust } from "@utils/types";
 import { Input } from "components/Input";
@@ -35,7 +35,7 @@ const EDIT_COHORT = gql`
 type Props = {
   show: boolean;
   closeModal: () => void;
-  cohort: CohortsTableFragment["cohorts"][number] | null;
+  cohort: CohortForTableFragment | null;
   afterLeave: () => void;
 };
 
@@ -77,7 +77,7 @@ export function EditCohortModal({
 type EditCohortModalBodyProps = {
   onCancel: () => void;
   onSuccess: () => void;
-  cohort: CohortsTableFragment["cohorts"][number];
+  cohort: CohortForTableFragment;
 };
 
 export function EditCohortModalBody({
