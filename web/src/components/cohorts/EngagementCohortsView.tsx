@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { Cohort, EngagementDetailsPageCohortsFragment } from "@generated/graphql";
+import { EngagementDetailsPageCohortsFragment } from "@generated/graphql";
 import { PlusIcon, SearchIcon } from "@heroicons/react/outline";
 import { Input } from "components/Input";
 import { useState } from "react";
@@ -14,9 +14,13 @@ import { CohortDetailsSidebar } from "./CohortDetailsSidebar";
 EngagementCohortsView.fragments = {
   cohortsList: gql`
     fragment EngagementCohortsView on Engagement {
-      ...CohortsTable
+      cohorts {
+      ...CohortForTable
+      ...CohortForDetailsSidebar
+      }
     }
-    ${CohortsTable.fragments.cohortsTable}
+    ${CohortsTable.fragments.cohort}
+    ${CohortDetailsSidebar.fragments.cohort}
   `,
 };
 
@@ -83,7 +87,7 @@ export function EngagementCohortsView({ engagement }: Props) {
         </main>
 
         <CohortDetailsSidebar
-          selectedCohort={selectedCohort as Cohort}
+          selectedCohort={selectedCohort}
           onClose={() => setSelectedCohortId(null)}
         />
       </div>
