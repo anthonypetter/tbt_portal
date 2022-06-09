@@ -41,7 +41,7 @@ export type SubjectSchedule = {
   subject: AssignmentSubject;
   startTime: string;
   endTime: string;
-  timeZone: string;
+  timeZone: SupportedIanaTimeZone;
 };
 
 export type StaffAssignment = {
@@ -264,13 +264,51 @@ export function parseHhMm(time: string) {
   );
 }
 
-// As per legacy app. Will likely change later.
-const SUPPORTED_ZONES = ["EST", "EDT", "PST", "PDT"];
+enum SupportedIanaTimeZone {
+  PacificHonolulu = "Pacific/Honolulu",
+  AmericaAnchorage = "America/Anchorage",
+  AmericaLosAngeles = "America/Los_Angeles",
+  AmericaDenver = "America/Denver",
+  AmericaChicago = "America/Chicago",
+  AmericaNewYork = "America/New_York",
+  AmericaPuertoRico = "America/Puerto_Rico",
+}
 
 function parseTimeZone(timeZone: string) {
-  if (SUPPORTED_ZONES.includes(timeZone.toUpperCase())) {
-    return timeZone.toUpperCase();
-  } else {
-    throw new CsvValidationError(CsvValidationErrorMessage.unsupportedTimezone);
+  switch (timeZone) {
+    case "HT":
+    case "HST":
+      return SupportedIanaTimeZone.PacificHonolulu;
+
+    case "AKST":
+    case "AKDT":
+    case "AKT":
+      return SupportedIanaTimeZone.AmericaAnchorage;
+
+    case "PST":
+    case "PDT":
+    case "PT":
+      return SupportedIanaTimeZone.AmericaLosAngeles;
+
+    case "MST":
+    case "MDT":
+    case "MT":
+      return SupportedIanaTimeZone.AmericaDenver;
+
+    case "CST":
+    case "CDT":
+    case "CT":
+      return SupportedIanaTimeZone.AmericaChicago;
+
+    case "EST":
+    case "EDT":
+    case "ET":
+      return SupportedIanaTimeZone.AmericaNewYork;
+
+    default:
+      throw new CsvValidationError(
+        CsvValidationErrorMessage.unsupportedTimezone,
+        timeZone
+      );
   }
 }
