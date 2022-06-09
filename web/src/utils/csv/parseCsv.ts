@@ -264,7 +264,7 @@ export function parseHhMm(time: string) {
   );
 }
 
-enum SupportedIanaTimeZone {
+export enum SupportedIanaTimeZone {
   PacificHonolulu = "Pacific/Honolulu",
   AmericaAnchorage = "America/Anchorage",
   AmericaLosAngeles = "America/Los_Angeles",
