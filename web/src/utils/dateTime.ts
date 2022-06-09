@@ -147,3 +147,34 @@ export function findWeekdayNumber(weekday: Weekday): WeekdayNumber {
   const dayIndex = weekdays.indexOf(weekday);
   return dayIndex < 0 ? 0 : (dayIndex as WeekdayNumber);
 }
+
+/**
+ * Give it a number of minutes and it'll return an English, human-readable
+ * string.
+ *
+ * Examples:
+ *  * (50, 60) => "50 min"
+ *  * (60, 60) => "1 hr"
+ *  * (70, 60) => "1 hr 10 min"
+ *  * (120, 60) => "2 hrs"
+ *  * (121, 60) => "2 hr 1 min"
+ * @param minutes
+ * @param minimumToHoursCutoff minimum minutes value before printing hours
+ * @returns
+ */
+export function printDuration(
+  minutes: Minute,
+  minimumToHoursCutoff: Minute
+): string {
+  if (minutes < minimumToHoursCutoff) {
+    return `${minutes} min`;
+  }
+  const hr = Math.floor(minutes / 60);
+  const min = minutes % 60;
+
+  return (
+    (hr > 0 ? hr + " hr" : "") +
+    (hr > 1 && min === 0 ? "s" : "") +
+    (min ? " " + min + " min" : "")
+  );
+}
