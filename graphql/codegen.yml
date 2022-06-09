@@ -5,6 +5,10 @@ generates:
     plugins:
       - "typescript"
       - "typescript-resolvers"
+    config:
+      mapperTypeSuffix: Model
+      mappers:
+        Cohort: "src/services/cohort#CohortsWithBaseRelations"
   ./graphql.schema.json:
     plugins:
       - "introspection"
