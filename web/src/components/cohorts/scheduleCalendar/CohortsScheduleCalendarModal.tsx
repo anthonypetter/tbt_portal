@@ -1,4 +1,4 @@
-import { Cohort } from "@generated/graphql";
+import { CohortForScheduleCalendarFragment } from "@generated/graphql";
 import { CalendarIcon } from "@heroicons/react/outline";
 import { Modal } from "components/Modal";
 import { CohortsScheduleCalendar } from "./CohortsScheduleCalendar";
@@ -6,7 +6,7 @@ import { CohortsScheduleCalendar } from "./CohortsScheduleCalendar";
 type CohortsScheduleCalendarModalProps = {
   show: boolean;
   closeModal: () => void;
-  cohorts: Cohort[];
+  cohorts: CohortForScheduleCalendarFragment[];
 };
 
 export function CohortsScheduleCalendarModal({

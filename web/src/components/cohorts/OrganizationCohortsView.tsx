@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { Cohort, OrgDetailPageCohortsQuery } from "@generated/graphql";
+import { OrgDetailPageCohortsQuery } from "@generated/graphql";
 import { SearchIcon } from "@heroicons/react/outline";
 import clsx from "clsx";
 import { Input } from "components/Input";
@@ -92,7 +92,7 @@ export function OrganizationCohortsView({ organization }: Props) {
             </main>
 
             <CohortDetailsSidebar
-              selectedCohort={selectedCohort as Cohort}
+              selectedCohort={selectedCohort}
               onClose={() => setSelectedCohortId(null)}
             />
           </div>
