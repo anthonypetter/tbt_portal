@@ -3,7 +3,7 @@ import toDate from "date-fns-tz/toDate";
 import utcToZonedTime from "date-fns-tz/utcToZonedTime";
 import formatISO from "date-fns/formatISO";
 import { useEffect, useRef, useState, Fragment } from "react"
-import { Popover } from "@headlessui/react";
+import { Popover, Transition } from "@headlessui/react";
 import {
   calculateMinutesElapsedInDay,
   findWeekdayNumber,
@@ -389,9 +389,20 @@ function Event({ adjustedEvent, focusedDay, locale, mode24Hour }: EventProps) {
               {adjustedEvent.details}
             </p>
           </Popover.Button>
-          <Popover.Panel className="absolute z-30">
-            <EventPopover />
-          </Popover.Panel>
+
+          <Transition
+            as={Fragment}
+            enter="transition ease-out duration-200"
+            enterFrom="opacity-0 translate-y-1"
+            enterTo="opacity-100 translate-y-0"
+            leave="transition ease-in duration-150"
+            leaveFrom="opacity-100 translate-y-0"
+            leaveTo="opacity-0 translate-y-1"
+          >
+            <Popover.Panel className="absolute z-30">
+              <EventPopover />
+            </Popover.Panel>
+          </Transition>
         </>
       )}
     </Popover>
