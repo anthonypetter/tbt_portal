@@ -1,7 +1,6 @@
 import { Cohort } from "@generated/graphql";
 import { CalendarIcon } from "@heroicons/react/outline";
 import { Modal } from "components/Modal";
-import noop from "lodash/noop";
 import { CohortsScheduleCalendar } from "./CohortsScheduleCalendar";
 
 type CohortsScheduleCalendarModalProps = {
@@ -18,8 +17,7 @@ export function CohortsScheduleCalendarModal({
   return (
     <Modal
       show={show}
-      onClose={noop}
-      onOutsideClick={() => closeModal()}
+      onClose={() => closeModal()}
       onDismissClick={() => closeModal()}
       icon={
         <Modal.Icon className="bg-blue-100">
