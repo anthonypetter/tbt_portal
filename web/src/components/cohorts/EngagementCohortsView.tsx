@@ -15,12 +15,12 @@ EngagementCohortsView.fragments = {
   cohortsList: gql`
     fragment EngagementCohortsView on Engagement {
       cohorts {
-      ...CohortsForTable
+      ...CohortForTable
       ...CohortForDetailsSidebar
       }
     }
-    ${CohortsTable.fragments.cohortsForTable}
-    ${CohortDetailsSidebar.fragments.cohortForDetailsSidebar}
+    ${CohortsTable.fragments.cohort}
+    ${CohortDetailsSidebar.fragments.cohort}
   `,
 };
 

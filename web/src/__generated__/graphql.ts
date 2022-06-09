@@ -337,7 +337,7 @@ export type AddCohortMutation = { __typename?: 'Mutation', addCohort: { __typena
 
 export type CohortForDetailsSidebarFragment = { __typename?: 'Cohort', name: string, startDate?: any | null, endDate?: any | null, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, createdAt: any, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string } }> };
 
-export type CohortsForTableFragment = { __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> };
+export type CohortForTableFragment = { __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> };
 
 export type DeleteCohortMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -495,8 +495,8 @@ export const CohortForScheduleCalendarFragmentDoc = gql`
   endDate
 }
     `;
-export const CohortsForTableFragmentDoc = gql`
-    fragment CohortsForTable on Cohort {
+export const CohortForTableFragmentDoc = gql`
+    fragment CohortForTable on Cohort {
   id
   createdAt
   name
@@ -538,11 +538,11 @@ export const CohortForDetailsSidebarFragmentDoc = gql`
 export const EngagementCohortsViewFragmentDoc = gql`
     fragment EngagementCohortsView on Engagement {
   cohorts {
-    ...CohortsForTable
+    ...CohortForTable
     ...CohortForDetailsSidebar
   }
 }
-    ${CohortsForTableFragmentDoc}
+    ${CohortForTableFragmentDoc}
 ${CohortForDetailsSidebarFragmentDoc}`;
 export const EngagementDetailsPageCohortsFragmentDoc = gql`
     fragment EngagementDetailsPageCohorts on Engagement {
