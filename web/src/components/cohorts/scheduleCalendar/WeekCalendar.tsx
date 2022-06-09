@@ -14,6 +14,7 @@ import {
   localizedWeekdays,
   Minute,
   normalizeTime,
+  printDuration,
   Time24Hour,
   Weekday,
   WeekdayNumber,
@@ -308,9 +309,8 @@ function Events({
       adjustedEndWeekdayNumber,
       adjustedEndTime,
       adjustedStartMinute,
-      eventMinuteLength:
-        // Hacky way to extend an event that goes past midnight to span to the bottom.
-        Math.abs(adjustedEndMinute - adjustedStartMinute),
+      eventMinuteLength: adjustedEndMinute - adjustedStartMinute +
+        (adjustedEndMinute < adjustedStartMinute ? 1440 : 0),
     });
   });
 
@@ -400,7 +400,12 @@ function Event({ adjustedEvent, focusedDay, locale, mode24Hour }: EventProps) {
             leaveTo="opacity-0 translate-y-1"
           >
             <Popover.Panel className="absolute z-30">
-              <EventPopover />
+              <EventPopover
+                adjustedEvent={adjustedEvent}
+                locale={locale}
+                mode24Hour={mode24Hour}
+                eventColor={eventColor}
+              />
             </Popover.Panel>
           </Transition>
         </>
@@ -409,14 +414,31 @@ function Event({ adjustedEvent, focusedDay, locale, mode24Hour }: EventProps) {
   );
 }
 
-function EventPopover() {
+
+type EventPopoverProps = Pick<EventProps, "adjustedEvent" | "locale" | "mode24Hour"> & {
+  eventColor: EventColor;
+};
+function EventPopover({ adjustedEvent, locale, mode24Hour, eventColor }: EventPopoverProps) {
   return (
     <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
-      <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
-        <a className="-m-3 p-3 block rounded-md hover:bg-gray-50 transition ease-in-out duration-150">
-          <p className="text-base font-medium text-gray-900">Name</p>
-          <p className="mt-1 text-sm text-gray-500">Description</p>
-        </a>
+      <div className="flex flex-row bg-white gap-3 px-2 py-3 sm:p-3">
+        <div className="w-auto mt-1">
+          <p className={`font-semibold text-sm whitespace-nowrap ${eventColor.text}`}>
+            {localizedTime(adjustedEvent.adjustedStartTime, mode24Hour, locale)}
+          </p>
+          <p className={`font-normal text-xs whitespace-nowrap ${eventColor.text}`}>
+            {localizedTime(adjustedEvent.adjustedEndTime, mode24Hour, locale)}
+          </p>
+          <p className={`font-normal text-xs mt-1 whitespace-nowrap italic ${eventColor.text}`}>
+            {printDuration(adjustedEvent.eventMinuteLength, 60)}
+          </p>
+        </div>
+        <div className={`w-0.5 h-auto rounded-sm ${eventColor.accent}`}></div>
+        <div className="grow">
+          <span className="w-32 text-normal whitespace-nowrap">
+            Right area blah blah
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -427,17 +449,18 @@ type EventColor = {
   bgHover: string;
   text: string;
   textHover: string;
+  accent: string;
 }
 const EVENT_COLORS: EventColor[] = [
-  { bg: "bg-green-50", bgHover: "hover:bg-green-100", text: "text-green-500", textHover: "group-hover:text-green-700" },
-  { bg: "bg-yellow-50", bgHover: "hover:bg-yellow-100", text: "text-yellow-500", textHover: "group-hover:text-yellow-700" },
-  { bg: "bg-teal-50", bgHover: "hover:bg-teal-100", text: "text-teal-500", textHover: "group-hover:text-teal-700" },
-  { bg: "bg-indigo-50", bgHover: "hover:bg-indigo-100", text: "text-indigo-500", textHover: "group-hover:text-indigo-700" },
-  { bg: "bg-emerald-50", bgHover: "hover:bg-emerald-100", text: "text-emerald-500", textHover: "group-hover:text-emerald-700" },
-  { bg: "bg-orange-50", bgHover: "hover:bg-orange-100", text: "text-orange-500", textHover: "group-hover:text-orange-700" },
-  { bg: "bg-blue-50", bgHover: "hover:bg-blue-100", text: "text-blue-500", textHover: "group-hover:text-blue-700" },
-  { bg: "bg-fuchsia-50", bgHover: "hover:bg-fuchsia-100", text: "text-fuchsia-500", textHover: "group-hover:text-fuchsia-700" },
-  { bg: "bg-pink-50", bgHover: "hover:bg-pink-100", text: "text-pink-500", textHover: "group-hover:text-pink-700" },
-  { bg: "bg-amber-50", bgHover: "hover:bg-amber-100", text: "text-amber-500", textHover: "group-hover:text-amber-700" },
-  { bg: "bg-slate-50", bgHover: "hover:bg-slate-100", text: "text-slate-500", textHover: "group-hover:text-slate-700" },
+  { bg: "bg-green-50", bgHover: "hover:bg-green-100", text: "text-green-500", textHover: "group-hover:text-green-700", accent: "bg-green-700" },
+  { bg: "bg-yellow-50", bgHover: "hover:bg-yellow-100", text: "text-yellow-500", textHover: "group-hover:text-yellow-700", accent: "bg-yellow-700" },
+  { bg: "bg-teal-50", bgHover: "hover:bg-teal-100", text: "text-teal-500", textHover: "group-hover:text-teal-700", accent: "bg-teal-700" },
+  { bg: "bg-indigo-50", bgHover: "hover:bg-indigo-100", text: "text-indigo-500", textHover: "group-hover:text-indigo-700", accent: "bg-indigo-700" },
+  { bg: "bg-emerald-50", bgHover: "hover:bg-emerald-100", text: "text-emerald-500", textHover: "group-hover:text-emerald-700", accent: "bg-emerald-700" },
+  { bg: "bg-orange-50", bgHover: "hover:bg-orange-100", text: "text-orange-500", textHover: "group-hover:text-orange-700", accent: "bg-orange-700" },
+  { bg: "bg-blue-50", bgHover: "hover:bg-blue-100", text: "text-blue-500", textHover: "group-hover:text-blue-700", accent: "bg-blue-700" },
+  { bg: "bg-fuchsia-50", bgHover: "hover:bg-fuchsia-100", text: "text-fuchsia-500", textHover: "group-hover:text-fuchsia-700", accent: "bg-fuchsia-700" },
+  { bg: "bg-pink-50", bgHover: "hover:bg-pink-100", text: "text-pink-500", textHover: "group-hover:text-pink-700", accent: "bg-pink-700" },
+  { bg: "bg-amber-50", bgHover: "hover:bg-amber-100", text: "text-amber-500", textHover: "group-hover:text-amber-700", accent: "bg-amber-700" },
+  { bg: "bg-slate-50", bgHover: "hover:bg-slate-100", text: "text-slate-500", textHover: "group-hover:text-slate-700", accent: "bg-slate-700" },
 ];

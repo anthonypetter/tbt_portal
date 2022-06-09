@@ -5,6 +5,7 @@ import {
   localizedTime,
   localizedWeekdays,
   normalizeTime,
+  printDuration,
 } from "../dateTime";
 
 describe("dateTime", () => {
@@ -257,6 +258,26 @@ describe("dateTime", () => {
       test("should handle a bad input and return 0", () => {
         // @ts-ignore
         expect(findWeekdayNumber("blah")).toBe(0);
+      });
+    });
+  });
+
+  describe("printDuration()", () => {
+    describe("happy path", () => {
+      test("should return correct output for 60 minimum to hours cutoff", () => {
+        expect(printDuration(0, 60)).toBe("0 min");
+        expect(printDuration(5, 60)).toBe("5 min");
+        expect(printDuration(60, 60)).toBe("1 hr");
+        expect(printDuration(61, 60)).toBe("1 hr 1 min");
+        expect(printDuration(120, 60)).toBe("2 hrs");
+        expect(printDuration(121, 60)).toBe("2 hr 1 min");
+      });
+
+      test("should return correct output for 90 minimum to hours cutoff", () => {
+        expect(printDuration(0, 90)).toBe("0 min");
+        expect(printDuration(89, 90)).toBe("89 min");
+        expect(printDuration(90, 90)).toBe("1 hr 30 min");
+        expect(printDuration(91, 90)).toBe("1 hr 31 min");
       });
     });
   });
