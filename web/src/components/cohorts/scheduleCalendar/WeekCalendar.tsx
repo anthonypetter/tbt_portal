@@ -82,7 +82,7 @@ export function WeekCalendar(
         container?.current?.scrollTo({ top: newScrollPosition, behavior: "smooth" });
       }, 100);
     }
-  }, [])
+  });
 
   return (
     <div ref={container} className="h-[70vh] flex flex-auto flex-col overflow-auto bg-white">
