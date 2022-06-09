@@ -3,6 +3,7 @@ import toDate from "date-fns-tz/toDate";
 import utcToZonedTime from "date-fns-tz/utcToZonedTime";
 import formatISO from "date-fns/formatISO";
 import { useEffect, useRef, useState, Fragment } from "react"
+import { Popover } from "@headlessui/react";
 import {
   calculateMinutesElapsedInDay,
   findWeekdayNumber,
@@ -90,7 +91,7 @@ export function WeekCalendar(
         {/* Days Nav Row */}
         <div
           ref={containerNav}
-          className="sticky top-0 z-30 flex-none bg-white shadow ring-1 ring-black ring-opacity-5 sm:pr-8"
+          className="sticky top-0 z-40 flex-none bg-white shadow ring-1 ring-black ring-opacity-5 sm:pr-8"
         >
           <MobileNav
             localizedWeekdays={localizedWeekdaysList}
@@ -355,7 +356,8 @@ function Event({ adjustedEvent, focusedDay, locale, mode24Hour }: EventProps) {
   ];
 
   return (
-    <li
+    <Popover
+      as="li"
       className={clsx(
         "relative mt-px",
         adjustedEvent.adjustedStartWeekdayNumber !== focusedDay && "hidden",
@@ -364,23 +366,48 @@ function Event({ adjustedEvent, focusedDay, locale, mode24Hour }: EventProps) {
       )}
       style={{ gridRow: `${startGridRow} / span ${gridSpan}` }}
     >
-      <a
-        href="#"
-        className={`group absolute inset-1 flex flex-col hover:z-20 overflow-y-auto rounded-lg ${eventColor.bg} p-2 text-xs leading-5 ${eventColor.bgHover}`}
-      >
-        <p className={`${eventColor.text} ${eventColor.textHover}`}>
-          <time dateTime={`${adjustedEvent.adjustedStartIsoDate}T${adjustedEvent.adjustedStartTime}`}>
-            {localizedTime(adjustedEvent.adjustedStartTime, mode24Hour, locale)}
-          </time>
-        </p>
-        <p className={`font-semibold ${eventColor.text}`}>
-          {adjustedEvent.title}
-        </p>
-        <p className={`font-normal ${eventColor.text}`}>
-          {adjustedEvent.details}
-        </p>
-      </a>
-    </li>
+      {({ open }) => (
+        <>
+          <Popover.Button
+            as="a"
+            href="#"
+            className={clsx(
+              "group absolute inset-1 flex flex-col hover:z-20 overflow-y-auto rounded-lg p-2 text-xs leading-5",
+              `${eventColor.bg} ${eventColor.bgHover}`,
+              open && "border-2 border-indigo-300 z-20"
+            )}
+          >
+            <p className={`${eventColor.text} ${eventColor.textHover}`}>
+              <time dateTime={`${adjustedEvent.adjustedStartIsoDate}T${adjustedEvent.adjustedStartTime}`}>
+                {localizedTime(adjustedEvent.adjustedStartTime, mode24Hour, locale)}
+              </time>
+            </p>
+            <p className={`font-semibold ${eventColor.text}`}>
+              {adjustedEvent.title}
+            </p>
+            <p className={`font-normal ${eventColor.text}`}>
+              {adjustedEvent.details}
+            </p>
+          </Popover.Button>
+          <Popover.Panel className="absolute z-30">
+            <EventPopover />
+          </Popover.Panel>
+        </>
+      )}
+    </Popover>
+  );
+}
+
+function EventPopover() {
+  return (
+    <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
+      <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
+        <a className="-m-3 p-3 block rounded-md hover:bg-gray-50 transition ease-in-out duration-150">
+          <p className="text-base font-medium text-gray-900">Name</p>
+          <p className="mt-1 text-sm text-gray-500">Description</p>
+        </a>
+      </div>
+    </div>
   );
 }
 
