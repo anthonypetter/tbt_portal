@@ -11,6 +11,25 @@ import uniqBy from "lodash/uniqBy";
 import { extractSchedules } from "../utils/schedules";
 
 /**
+ * Cohort Types with relations
+ *
+ * Read more here: https://www.prisma.io/docs/concepts/components/prisma-client/advanced-type-safety/operating-against-partial-structures-of-model-types#problem-using-variations-of-the-generated-model-type
+ *
+ * CohortsWithBaseRelations is referenced in codegen.yml
+ */
+
+export const cohortWithBaseRelations = Prisma.validator<Prisma.CohortArgs>()({
+  include: {
+    schedule: true,
+    staffAssignments: { include: { user: true } },
+  },
+});
+
+export type CohortsWithBaseRelations = Prisma.CohortGetPayload<
+  typeof cohortWithBaseRelations
+>;
+
+/**
  * Gets a cohort
  * @param cohortId cohortId
  * @returns Prisma Cohort
@@ -18,7 +37,7 @@ import { extractSchedules } from "../utils/schedules";
 async function getCohort(cohortId: number) {
   return prisma.cohort.findFirst({
     where: { id: cohortId },
-    include: { staffAssignments: { include: { user: true } } },
+    include: cohortWithBaseRelations.include,
   });
 }
 
@@ -32,7 +51,7 @@ async function getCohorts(engagementId: number) {
   return prisma.cohort.findMany({
     take: 100,
     where: { engagementId },
-    include: { staffAssignments: { include: { user: true } } },
+    include: cohortWithBaseRelations.include,
     orderBy: [{ name: "asc" }],
   });
 }
@@ -47,6 +66,7 @@ async function getCohortsForOrg(orgId: number) {
   return prisma.cohort.findMany({
     take: 100,
     where: { engagement: { organizationId: orgId } },
+    include: cohortWithBaseRelations.include,
   });
 }
 
@@ -296,7 +316,7 @@ async function saveCsvCohortsData(
           staffAssignments: {
             createMany: { data: staffAssignments },
           },
-          cohortSchedule: {
+          schedule: {
             createMany: { data: cohort.schedules },
           },
         },
@@ -310,6 +330,19 @@ async function saveCsvCohortsData(
   };
 }
 
+async function getSchedule(cohortId: number) {
+  return prisma.cohortSchedule.findMany({
+    where: { cohortId },
+  });
+}
+
+async function getStaffAssignments(cohortId: number) {
+  return prisma.cohortStaffAssignment.findMany({
+    where: { cohortId },
+    include: { user: true },
+  });
+}
+
 export const CohortService = {
   getCohort,
   getCohorts,
@@ -318,4 +351,6 @@ export const CohortService = {
   deleteCohort,
   addCohort,
   saveCsvCohortsData,
+  getSchedule,
+  getStaffAssignments,
 };
