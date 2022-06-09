@@ -42,7 +42,7 @@ OrganizationCohortsView.fragments = {
         }
       }
     }
-    ${CohortDetailsSidebar.fragments.cohortForDetailsSidebar}
+    ${CohortDetailsSidebar.fragments.cohort}
   `,
 };
 
