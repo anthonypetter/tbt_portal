@@ -1,12 +1,24 @@
 import random from "lodash/random";
 import formatISO from "date-fns/formatISO";
+import { gql } from "@apollo/client";
 
-import { Cohort } from "@generated/graphql";
+import { CohortForScheduleCalendarFragment } from "@generated/graphql";
 import { WeekCalendar, WeekCalendarEvent } from "./WeekCalendar";
 import { Weekday } from "@utils/dateTime";
 
+CohortsScheduleCalendar.fragments = {
+  cohortForSchedule: gql`
+    fragment CohortForScheduleCalendar on Cohort {
+      name
+      grade
+      startDate
+      endDate
+    }
+  `
+};
+
 type CohortsScheduleCalendarProps = {
-  cohorts: Cohort[],  // Multiple cohorts with schedule data
+  cohorts: CohortForScheduleCalendarFragment[],  // Multiple cohorts with schedule data
 };
 
 export function CohortsScheduleCalendar({ cohorts }: CohortsScheduleCalendarProps) {
@@ -26,7 +38,7 @@ export function CohortsScheduleCalendar({ cohorts }: CohortsScheduleCalendarProp
 }
 
 // HEAVY MOCKING ZONE! SUBJECT TO CHANGE WHEN BACKEND IS COMPLETE! //
-function buildWeekCalendarSchedule(cohorts: Cohort[]): WeekCalendarEvent[] {
+function buildWeekCalendarSchedule(cohorts: CohortForScheduleCalendarFragment[]): WeekCalendarEvent[] {
   const weekdays: Weekday[] = [
     "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday",
   ];
