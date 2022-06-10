@@ -1,7 +1,8 @@
 import { gql } from "apollo-server";
 import { Context } from "../../context";
 import {
-  QueryCohortsArgs,
+  QueryCohortArgs,
+  QueryCohortsForOrgArgs,
   MutationEditCohortArgs,
   MutationDeleteCohortArgs,
   MutationAddCohortArgs,
@@ -103,7 +104,9 @@ export const typeDefs = gql`
   }
 
   extend type Query {
-    cohorts(organizationId: ID!): [Cohort!]!
+    cohortsForOrg(organizationId: ID!): [Cohort!]!
+    cohorts: [Cohort!]!
+    cohort(cohortId: ID!): Cohort!
   }
 
   extend type Mutation {
@@ -116,10 +119,27 @@ export const typeDefs = gql`
 /**
  * Query Resolvers
  */
-
-async function cohorts(
+async function cohorts (
   _parent: undefined,
-  { organizationId }: QueryCohortsArgs,
+  {authedUser, AuthorizationService, CohortService}: Context
+) {
+  AuthorizationService.assertIsAdmin(authedUser);
+  return CohortService.getAllCohorts()
+}
+
+async function cohort (
+  _parent: undefined,
+  {cohortId}: QueryCohortArgs,
+  {authedUser, AuthorizationService, CohortService}: Context
+
+){
+  AuthorizationService.assertIsAdmin(authedUser);
+  return CohortService.getCohort(parseId(cohortId))
+}
+
+async function cohortsForOrg(
+  _parent: undefined,
+  { organizationId }: QueryCohortsForOrgArgs,
   { authedUser, AuthorizationService, CohortService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
@@ -226,6 +246,8 @@ export const resolvers = merge(
   {
     Query: {
       cohorts,
+      cohort,
+      cohortsForOrg,
     },
     Mutation: {
       editCohort,
