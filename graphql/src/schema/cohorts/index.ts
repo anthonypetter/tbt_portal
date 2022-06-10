@@ -121,6 +121,7 @@ export const typeDefs = gql`
  */
 async function cohorts (
   _parent: undefined,
+  _args: undefined,
   {authedUser, AuthorizationService, CohortService}: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
