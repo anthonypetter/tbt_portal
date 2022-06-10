@@ -268,6 +268,7 @@ export enum SupportedIanaTimeZone {
   PacificHonolulu = "Pacific/Honolulu",
   AmericaAnchorage = "America/Anchorage",
   AmericaLosAngeles = "America/Los_Angeles",
+  AmericaPhoenix = "America/Phoenix",
   AmericaDenver = "America/Denver",
   AmericaChicago = "America/Chicago",
   AmericaNewYork = "America/New_York",
@@ -278,32 +279,48 @@ function parseTimeZone(timeZone: string) {
   switch (timeZone) {
     case "HT":
     case "HST":
+    case "Pacific/Honolulu":
       return SupportedIanaTimeZone.PacificHonolulu;
 
     case "AKST":
     case "AKDT":
     case "AKT":
+    case "America/Anchorage":
       return SupportedIanaTimeZone.AmericaAnchorage;
 
     case "PST":
     case "PDT":
     case "PT":
+    case "America/Los_Angeles":
       return SupportedIanaTimeZone.AmericaLosAngeles;
+
+    case "PHX":
+    case "America/Phoenix":
+      return SupportedIanaTimeZone.AmericaPhoenix;
 
     case "MST":
     case "MDT":
     case "MT":
+    case "America/Denver":
       return SupportedIanaTimeZone.AmericaDenver;
 
     case "CST":
     case "CDT":
     case "CT":
+    case "America/Chicago":
       return SupportedIanaTimeZone.AmericaChicago;
 
     case "EST":
     case "EDT":
     case "ET":
+    case "America/New_York":
       return SupportedIanaTimeZone.AmericaNewYork;
+
+    case "AST":
+    case "ADT":
+    case "AT":
+    case "America/Puerto_Rico":
+      return SupportedIanaTimeZone.AmericaPuertoRico;
 
     default:
       throw new CsvValidationError(
