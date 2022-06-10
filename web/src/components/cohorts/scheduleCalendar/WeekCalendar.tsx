@@ -342,7 +342,13 @@ type EventProps = {
   locale: string;
   mode24Hour: boolean;
 };
-function Event({ adjustedEvent, localizedWeekdays, focusedDay, locale, mode24Hour }: EventProps) {
+function Event({
+  adjustedEvent,
+  localizedWeekdays,
+  focusedDay,
+  locale,
+  mode24Hour,
+}: EventProps) {
   const startGridRow = adjustedEvent.adjustedStartMinute / 5 + 2;
   const gridSpan = Math.max(Math.ceil(adjustedEvent.eventMinuteLength / 5), 3);
   const eventColor = EVENT_COLORS[adjustedEvent.groupId % EVENT_COLORS.length];
@@ -438,7 +444,7 @@ function EventPopover({
     <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
       <div className="flex flex-row bg-white gap-3 px-2 py-3 sm:p-3 w-[350px]">
         {/* Left section */}
-        <div className="flex flex-col place-content-between w-auto">
+        <div className="flex flex-col place-content-between w-auto my-1">
           <div>
             <p className={`font-semibold text-sm whitespace-nowrap ${eventColor.text}`}>
               {localizedTime(adjustedEvent.adjustedStartTime, mode24Hour, locale)}
@@ -458,10 +464,10 @@ function EventPopover({
         </div>
 
         {/* Vertical line */}
-        <div className={`w-1 h-auto rounded-sm ${eventColor.accent}`}></div>
+        <div className={`shrink-0 w-0.5 h-auto rounded-sm ${eventColor.accent}`}></div>
 
         {/* Right section */}
-        <div className="grow">
+        <div className="grow my-1">
           <p className={`font-semibold text-sm leading-tight ${eventColor.text}`}>
             {adjustedEvent.title || "Untitled Event"}
           </p>
@@ -481,7 +487,9 @@ function EventPopover({
           </div>
           {adjustedEvent.adjustedTimeZone !== adjustedEvent.timeZone && (
             <p className="font-normal text-xs text-gray-400 italic">
-              {localizedTime(adjustedEvent.startTime, mode24Hour, locale)} ({adjustedEvent.timeZone.replace("_", " ")})
+              {localizedTime(adjustedEvent.startTime, mode24Hour, locale)}
+              {" "}
+              ({adjustedEvent.timeZone.replace("_", " ")})
             </p>
           )}
         </div>
