@@ -33,6 +33,7 @@ export type WeekCalendarEvent = {
 };
 
 type AdjustedWeekCalendarEvent = WeekCalendarEvent & {
+  adjustedTimeZone: IANAtzName;
   adjustedStartIsoDate: ISODate;
   adjustedStartWeekdayNumber: WeekdayNumber;
   adjustedStartTime: Time24Hour;
@@ -303,6 +304,7 @@ function Events({
 
     adjustedEvents.push({
       ...event,
+      adjustedTimeZone: viewingTimeZone,
       adjustedStartIsoDate,
       adjustedStartWeekdayNumber,
       adjustedStartTime,
@@ -323,6 +325,7 @@ function Events({
         <Event
           key={`${adjustedEvent.groupId}_${i}`}
           adjustedEvent={adjustedEvent}
+          localizedWeekdays={localizedWeekdays}
           focusedDay={focusedDay}
           locale={locale}
           mode24Hour={mode24Hour}
@@ -334,13 +337,14 @@ function Events({
 
 type EventProps = {
   adjustedEvent: AdjustedWeekCalendarEvent;
+  localizedWeekdays: LocalizedWeekday[];
   focusedDay: WeekdayNumber;
   locale: string;
   mode24Hour: boolean;
 };
-function Event({ adjustedEvent, focusedDay, locale, mode24Hour }: EventProps) {
+function Event({ adjustedEvent, localizedWeekdays, focusedDay, locale, mode24Hour }: EventProps) {
   const startGridRow = adjustedEvent.adjustedStartMinute / 5 + 2;
-  const gridSpan = Math.max(adjustedEvent.eventMinuteLength / 5, 3);
+  const gridSpan = Math.max(Math.ceil(adjustedEvent.eventMinuteLength / 5), 3);
   const eventColor = EVENT_COLORS[adjustedEvent.groupId % EVENT_COLORS.length];
 
   // Need this array defined because we're using the `sm:` prefix, cannot just
@@ -382,12 +386,14 @@ function Event({ adjustedEvent, focusedDay, locale, mode24Hour }: EventProps) {
                 {localizedTime(adjustedEvent.adjustedStartTime, mode24Hour, locale)}
               </time>
             </p>
-            <p className={`font-semibold ${eventColor.text}`}>
-              {adjustedEvent.title}
+            <p className={`font-semibold leading-tight ${eventColor.text}`}>
+              {adjustedEvent.title || "Untitled Event"}
             </p>
-            <p className={`font-normal ${eventColor.text}`}>
-              {adjustedEvent.details}
-            </p>
+            {adjustedEvent.details && (
+              <p className={`font-normal leading-tight ${eventColor.text}`}>
+                {adjustedEvent.details}
+              </p>
+            )}
           </Popover.Button>
 
           <Transition
@@ -402,6 +408,7 @@ function Event({ adjustedEvent, focusedDay, locale, mode24Hour }: EventProps) {
             <Popover.Panel className="absolute z-30">
               <EventPopover
                 adjustedEvent={adjustedEvent}
+                localizedWeekdays={localizedWeekdays}
                 locale={locale}
                 mode24Hour={mode24Hour}
                 eventColor={eventColor}
@@ -415,29 +422,68 @@ function Event({ adjustedEvent, focusedDay, locale, mode24Hour }: EventProps) {
 }
 
 
-type EventPopoverProps = Pick<EventProps, "adjustedEvent" | "locale" | "mode24Hour"> & {
+type EventPopoverProps = Pick<
+  EventProps, "adjustedEvent" | "localizedWeekdays" | "locale" | "mode24Hour"
+> & {
   eventColor: EventColor;
 };
-function EventPopover({ adjustedEvent, locale, mode24Hour, eventColor }: EventPopoverProps) {
+function EventPopover({
+  adjustedEvent,
+  localizedWeekdays,
+  locale,
+  mode24Hour,
+  eventColor,
+}: EventPopoverProps) {
   return (
     <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
-      <div className="flex flex-row bg-white gap-3 px-2 py-3 sm:p-3">
-        <div className="w-auto mt-1">
-          <p className={`font-semibold text-sm whitespace-nowrap ${eventColor.text}`}>
-            {localizedTime(adjustedEvent.adjustedStartTime, mode24Hour, locale)}
-          </p>
-          <p className={`font-normal text-xs whitespace-nowrap ${eventColor.text}`}>
-            {localizedTime(adjustedEvent.adjustedEndTime, mode24Hour, locale)}
-          </p>
-          <p className={`font-normal text-xs mt-1 whitespace-nowrap italic ${eventColor.text}`}>
-            {printDuration(adjustedEvent.eventMinuteLength, 60)}
-          </p>
+      <div className="flex flex-row bg-white gap-3 px-2 py-3 sm:p-3 w-[350px]">
+        {/* Left section */}
+        <div className="flex flex-col place-content-between w-auto">
+          <div>
+            <p className={`font-semibold text-sm whitespace-nowrap ${eventColor.text}`}>
+              {localizedTime(adjustedEvent.adjustedStartTime, mode24Hour, locale)}
+            </p>
+            <p className={`font-normal text-xs whitespace-nowrap ${eventColor.text}`}>
+              {localizedTime(adjustedEvent.adjustedEndTime, mode24Hour, locale)}
+            </p>
+            <p className={`justify-self-end font-normal text-xs whitespace-nowrap ${eventColor.text}`}>
+              {localizedWeekdays[adjustedEvent.adjustedStartWeekdayNumber].long}
+            </p>
+          </div>
+          <div>
+            <p className={`font-normal text-xs mt-1 whitespace-nowrap italic ${eventColor.text}`}>
+              {printDuration(adjustedEvent.eventMinuteLength, 60)}
+            </p>
+          </div>
         </div>
-        <div className={`w-0.5 h-auto rounded-sm ${eventColor.accent}`}></div>
+
+        {/* Vertical line */}
+        <div className={`w-1 h-auto rounded-sm ${eventColor.accent}`}></div>
+
+        {/* Right section */}
         <div className="grow">
-          <span className="w-32 text-normal whitespace-nowrap">
-            Right area blah blah
-          </span>
+          <p className={`font-semibold text-sm leading-tight ${eventColor.text}`}>
+            {adjustedEvent.title || "Untitled Event"}
+          </p>
+          {adjustedEvent.details && (
+            <p className="font-normal text-xs leading-snug mt-1 text-gray-500">
+              {adjustedEvent.details}
+            </p>
+          )}
+          <div className="my-2">
+            <span className="w-auto text-normal ">
+              Right area blah blah
+              blah blah blah blah
+              blah blah blah blah
+              blah blah blah blah
+              blah blah blah blah
+            </span>
+          </div>
+          {adjustedEvent.adjustedTimeZone !== adjustedEvent.timeZone && (
+            <p className="font-normal text-xs text-gray-400 italic">
+              {localizedTime(adjustedEvent.startTime, mode24Hour, locale)} ({adjustedEvent.timeZone.replace("_", " ")})
+            </p>
+          )}
         </div>
       </div>
     </div>
