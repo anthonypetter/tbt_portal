@@ -5,6 +5,7 @@ import {
   ChangeSet,
   EngagementStaffAssignmentInput,
 } from "../utils/engagementStaffAssignments";
+import { cohortWithBaseRelations } from "./cohort";
 
 const TAKE_LIMIT = 100;
 
@@ -16,7 +17,7 @@ async function getEngagement(id: number) {
     where: { id },
     include: {
       staffAssignments: { include: { user: true } },
-      cohorts: { include: { staffAssignments: { include: { user: true } } } },
+      cohorts: cohortWithBaseRelations,
       organization: true,
     },
   });

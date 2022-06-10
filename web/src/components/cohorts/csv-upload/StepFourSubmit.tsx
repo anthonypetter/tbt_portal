@@ -9,7 +9,7 @@ import { Spinner } from "components/Spinner";
 import { CSV_UPLOAD_PAGE_QUERY_NAME } from "./constants";
 
 const SAVE_COHORTS_CSV_DATA = gql`
-  mutation SaveCohortsCsvData($input: ProcessedCsv!) {
+  mutation SaveCohortsCsvData($input: CsvProcessedData!) {
     saveCohortsCsvData(input: $input) {
       newTeacherCount
       newCohortCount
