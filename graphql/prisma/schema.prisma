@@ -104,7 +104,7 @@ model Cohort {
   engagement       Engagement              @relation(fields: [engagementId], references: [id])
   staffAssignments CohortStaffAssignment[]
   sessions         CohortSession[]
-  cohortSchedule   CohortSchedule[]
+  schedule         CohortSchedule[]
 }
 
 model CohortStaffAssignment {

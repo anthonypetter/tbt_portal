@@ -8,51 +8,51 @@ import { MutationSaveCohortsCsvDataArgs } from "../__generated__/graphql";
  */
 
 export const typeDefs = gql`
-  input SubjectSchedule {
+  input CsvSubjectSchedule {
     subject: AssignmentSubject!
     startTime: String!
     endTime: String!
     timeZone: String!
   }
 
-  input CohortCsvTeacher {
+  input CsvCohortTeacher {
     fullName: String!
     email: String!
   }
 
-  input CohortCsvStaffAssignment {
+  input CsvCohortStaffAssignment {
     subject: AssignmentSubject!
-    teacher: CohortCsvTeacher!
+    teacher: CsvCohortTeacher!
   }
 
-  input ProcessedCohort {
+  input CsvProcessedCohort {
     cohortName: String!
     grade: String!
     googleClassroomLink: String
 
-    monday: [SubjectSchedule!]!
-    tuesday: [SubjectSchedule!]!
-    wednesday: [SubjectSchedule!]!
-    thursday: [SubjectSchedule!]!
-    friday: [SubjectSchedule!]!
-    saturday: [SubjectSchedule!]!
-    sunday: [SubjectSchedule!]!
+    monday: [CsvSubjectSchedule!]!
+    tuesday: [CsvSubjectSchedule!]!
+    wednesday: [CsvSubjectSchedule!]!
+    thursday: [CsvSubjectSchedule!]!
+    friday: [CsvSubjectSchedule!]!
+    saturday: [CsvSubjectSchedule!]!
+    sunday: [CsvSubjectSchedule!]!
 
-    staffAssignments: [CohortCsvStaffAssignment!]!
+    staffAssignments: [CsvCohortStaffAssignment!]!
   }
 
-  input ProcessedCsv {
+  input CsvProcessedData {
     engagementId: ID!
-    cohorts: [ProcessedCohort!]!
+    cohorts: [CsvProcessedCohort!]!
   }
 
-  type SaveCountsResult {
+  type CsvSaveCountsResult {
     newTeacherCount: Int!
     newCohortCount: Int!
   }
 
   extend type Mutation {
-    saveCohortsCsvData(input: ProcessedCsv!): SaveCountsResult!
+    saveCohortsCsvData(input: CsvProcessedData!): CsvSaveCountsResult!
   }
 `;
 

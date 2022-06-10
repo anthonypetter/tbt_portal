@@ -73,24 +73,57 @@ export type Cohort = {
   meetingId?: Maybe<Scalars['String']>;
   meetingRoom?: Maybe<Scalars['String']>;
   name: Scalars['String'];
+  schedule: Array<ScheduledMeeting>;
   staffAssignments: Array<CohortStaffAssignment>;
   startDate?: Maybe<Scalars['Date']>;
-};
-
-export type CohortCsvStaffAssignment = {
-  subject: AssignmentSubject;
-  teacher: CohortCsvTeacher;
-};
-
-export type CohortCsvTeacher = {
-  email: Scalars['String'];
-  fullName: Scalars['String'];
 };
 
 export type CohortStaffAssignment = {
   __typename?: 'CohortStaffAssignment';
   subject: AssignmentSubject;
   user: User;
+};
+
+export type CsvCohortStaffAssignment = {
+  subject: AssignmentSubject;
+  teacher: CsvCohortTeacher;
+};
+
+export type CsvCohortTeacher = {
+  email: Scalars['String'];
+  fullName: Scalars['String'];
+};
+
+export type CsvProcessedCohort = {
+  cohortName: Scalars['String'];
+  friday: Array<CsvSubjectSchedule>;
+  googleClassroomLink?: InputMaybe<Scalars['String']>;
+  grade: Scalars['String'];
+  monday: Array<CsvSubjectSchedule>;
+  saturday: Array<CsvSubjectSchedule>;
+  staffAssignments: Array<CsvCohortStaffAssignment>;
+  sunday: Array<CsvSubjectSchedule>;
+  thursday: Array<CsvSubjectSchedule>;
+  tuesday: Array<CsvSubjectSchedule>;
+  wednesday: Array<CsvSubjectSchedule>;
+};
+
+export type CsvProcessedData = {
+  cohorts: Array<CsvProcessedCohort>;
+  engagementId: Scalars['ID'];
+};
+
+export type CsvSaveCountsResult = {
+  __typename?: 'CsvSaveCountsResult';
+  newCohortCount: Scalars['Int'];
+  newTeacherCount: Scalars['Int'];
+};
+
+export type CsvSubjectSchedule = {
+  endTime: Scalars['String'];
+  startTime: Scalars['String'];
+  subject: AssignmentSubject;
+  timeZone: Scalars['String'];
 };
 
 export type EditCohortInput = {
@@ -158,7 +191,7 @@ export type Mutation = {
   editEngagement: Engagement;
   editOrganization: Organization;
   inviteUser: User;
-  saveCohortsCsvData: SaveCountsResult;
+  saveCohortsCsvData: CsvSaveCountsResult;
 };
 
 
@@ -213,7 +246,7 @@ export type MutationInviteUserArgs = {
 
 
 export type MutationSaveCohortsCsvDataArgs = {
-  input: ProcessedCsv;
+  input: CsvProcessedData;
 };
 
 export type NewCohortStaffAssignment = {
@@ -235,25 +268,6 @@ export type Organization = {
   location?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   subDistrict?: Maybe<Scalars['String']>;
-};
-
-export type ProcessedCohort = {
-  cohortName: Scalars['String'];
-  friday: Array<SubjectSchedule>;
-  googleClassroomLink?: InputMaybe<Scalars['String']>;
-  grade: Scalars['String'];
-  monday: Array<SubjectSchedule>;
-  saturday: Array<SubjectSchedule>;
-  staffAssignments: Array<CohortCsvStaffAssignment>;
-  sunday: Array<SubjectSchedule>;
-  thursday: Array<SubjectSchedule>;
-  tuesday: Array<SubjectSchedule>;
-  wednesday: Array<SubjectSchedule>;
-};
-
-export type ProcessedCsv = {
-  cohorts: Array<ProcessedCohort>;
-  engagementId: Scalars['ID'];
 };
 
 export type Query = {
@@ -289,23 +303,20 @@ export type QuerySearchUsersArgs = {
   query: Scalars['String'];
 };
 
-export type SaveCountsResult = {
-  __typename?: 'SaveCountsResult';
-  newCohortCount: Scalars['Int'];
-  newTeacherCount: Scalars['Int'];
+export type ScheduledMeeting = {
+  __typename?: 'ScheduledMeeting';
+  createdAt: Scalars['Date'];
+  endTime: Scalars['String'];
+  startTime: Scalars['String'];
+  subject: AssignmentSubject;
+  timeZone: Scalars['String'];
+  weekday: Weekday;
 };
 
 export type SearchResults = {
   __typename?: 'SearchResults';
   count: Scalars['Int'];
   results: Array<User>;
-};
-
-export type SubjectSchedule = {
-  endTime: Scalars['String'];
-  startTime: Scalars['String'];
-  subject: AssignmentSubject;
-  timeZone: Scalars['String'];
 };
 
 export type User = {
@@ -321,6 +332,16 @@ export enum UserRole {
   Admin = 'ADMIN',
   MentorTeacher = 'MENTOR_TEACHER',
   TutorTeacher = 'TUTOR_TEACHER'
+}
+
+export enum Weekday {
+  Friday = 'FRIDAY',
+  Monday = 'MONDAY',
+  Saturday = 'SATURDAY',
+  Sunday = 'SUNDAY',
+  Thursday = 'THURSDAY',
+  Tuesday = 'TUESDAY',
+  Wednesday = 'WEDNESDAY'
 }
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
@@ -358,11 +379,11 @@ export type EngagementCohortsViewFragment = { __typename?: 'Engagement', cohorts
 export type CohortsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> }> };
 
 export type SaveCohortsCsvDataMutationVariables = Exact<{
-  input: ProcessedCsv;
+  input: CsvProcessedData;
 }>;
 
 
-export type SaveCohortsCsvDataMutation = { __typename?: 'Mutation', saveCohortsCsvData: { __typename?: 'SaveCountsResult', newTeacherCount: number, newCohortCount: number } };
+export type SaveCohortsCsvDataMutation = { __typename?: 'Mutation', saveCohortsCsvData: { __typename?: 'CsvSaveCountsResult', newTeacherCount: number, newCohortCount: number } };
 
 export type CohortForScheduleCalendarFragment = { __typename?: 'Cohort', name: string, grade?: string | null, startDate?: any | null, endDate?: any | null };
 
@@ -869,7 +890,7 @@ export type EditCohortMutationHookResult = ReturnType<typeof useEditCohortMutati
 export type EditCohortMutationResult = Apollo.MutationResult<EditCohortMutation>;
 export type EditCohortMutationOptions = Apollo.BaseMutationOptions<EditCohortMutation, EditCohortMutationVariables>;
 export const SaveCohortsCsvDataDocument = gql`
-    mutation SaveCohortsCsvData($input: ProcessedCsv!) {
+    mutation SaveCohortsCsvData($input: CsvProcessedData!) {
   saveCohortsCsvData(input: $input) {
     newTeacherCount
     newCohortCount
