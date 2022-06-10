@@ -172,22 +172,21 @@ function SchedulesCell({
   }
 
   return (
-    <>
+    <div className="divide-y">
       {schedules.map((schedule, i) => {
         return (
-          <div key={`${weekday}-${i}`} className="flex flex-col mt-1">
+          <div key={`${weekday}-${i}`} className="flex flex-col py-1">
             <div className="flex px-2">
               <div>{getDisplayNameForSubject(schedule.subject)}:</div>
               <div>{schedule.startTime}</div>
               {"-"}
-              <div>
-                {schedule.endTime} {schedule.timeZone}
-              </div>
+              <div>{schedule.endTime}</div>
             </div>
+            <div className="px-2">Time zone: {schedule.timeZone}</div>
           </div>
         );
       })}
-    </>
+    </div>
   );
 }
 
@@ -219,12 +218,12 @@ function StaffCell({
   }
 
   return (
-    <>
+    <div className="divide-y">
       {assignments.map(({ subject, teacher }) => {
         return (
           <div
             key={`${cohortName}-${subject}-staff`}
-            className="flex flex-col text-left mt-1"
+            className="flex flex-col text-left py-1"
           >
             <div className="flex px-2 flex-col">
               <div>
@@ -236,6 +235,6 @@ function StaffCell({
           </div>
         );
       })}
-    </>
+    </div>
   );
 }

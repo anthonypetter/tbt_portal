@@ -15,6 +15,7 @@ import {
 } from "./cohorts";
 import { typeDefs as SearchDefs, resolvers as SearchResolvers } from "./search";
 import { dateScalar } from "./scalars/date";
+import { Resolvers } from "./__generated__/graphql";
 
 import merge from "lodash/merge";
 
@@ -35,7 +36,7 @@ export const typeDefs = gql`
   }
 `;
 
-export const resolvers = merge(
+export const resolvers: Resolvers = merge(
   { Date: dateScalar },
   UserResolvers,
   OrganizationResolvers,
