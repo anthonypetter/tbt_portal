@@ -10,6 +10,15 @@ import compact from "lodash/compact";
 import uniqBy from "lodash/uniqBy";
 import { extractSchedules } from "../utils/schedules";
 
+const TAKE_LIMIT = 100;
+
+async function getAllCohorts() {
+  return prisma.cohort.findMany({
+    take: TAKE_LIMIT,
+    orderBy: [{ name: "asc" }],
+  });
+}
+
 /**
  * Cohort Types with relations
  *
@@ -47,7 +56,7 @@ async function getCohort(cohortId: number) {
  * @returns cohorts associated with Engagement
  */
 
-async function getCohorts(engagementId: number) {
+async function getCohortsForEngagement(engagementId: number) {
   return prisma.cohort.findMany({
     take: 100,
     where: { engagementId },
@@ -344,8 +353,9 @@ async function getStaffAssignments(cohortId: number) {
 }
 
 export const CohortService = {
+  getAllCohorts,
   getCohort,
-  getCohorts,
+  getCohortsForEngagement,
   getCohortsForOrg,
   editCohort,
   deleteCohort,

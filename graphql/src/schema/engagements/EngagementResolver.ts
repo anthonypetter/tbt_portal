@@ -9,7 +9,7 @@ export const EngagementResolver = {
     { authedUser, AuthorizationService, CohortService }: Context
   ) {
     AuthorizationService.assertIsAdmin(authedUser);
-    return CohortService.getCohorts(parseId(parent.id));
+    return CohortService.getCohortsForEngagement(parseId(parent.id));
   },
 
   async staffAssignments(

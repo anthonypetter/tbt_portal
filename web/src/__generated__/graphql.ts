@@ -273,7 +273,9 @@ export type Organization = {
 export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']>;
+  cohort: Cohort;
   cohorts: Array<Cohort>;
+  cohortsForOrg: Array<Cohort>;
   currentUser?: Maybe<User>;
   engagement?: Maybe<Engagement>;
   engagements: Array<Engagement>;
@@ -284,7 +286,12 @@ export type Query = {
 };
 
 
-export type QueryCohortsArgs = {
+export type QueryCohortArgs = {
+  cohortId: Scalars['ID'];
+};
+
+
+export type QueryCohortsForOrgArgs = {
   organizationId: Scalars['ID'];
 };
 
