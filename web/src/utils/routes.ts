@@ -51,6 +51,11 @@ export const Routes = {
       "/organizations/[organizationId]/engagements/[engagementId]/cohorts/[cohortId]",
   },
 
+  cohortRoom: {
+    href: (roomUrl: string) => `/cohorts/room?roomUrl=${roomUrl}`,
+    path: () => "cohorts/room",
+  },
+
   engagements: {
     href: () => "/engagements",
     path: () => "/engagements",
