@@ -21,6 +21,10 @@ CohortsTable.fragments = {
       startDate
       endDate
       engagementId
+      engagement {
+        id
+        name
+      }
       staffAssignments {
         user {
           id
