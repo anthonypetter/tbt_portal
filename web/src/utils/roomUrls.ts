@@ -3,10 +3,10 @@ const hostParams =
 const studentParams =
   "?video=on&audio=on&people=off&background=off&logo=off&leaveButton=off&timer=on&personality=off&roomIntegrations=on";
 
-  export function getRoomUrl(orignal: string) {
+export function getRoomUrl(original: string) {
   return {
-    backDoor: orignal,
-    host: origin + hostParams,
-    student: orignal + studentParams,
+    backDoor: original,
+    host: original + hostParams,
+    student: original + studentParams,
   };
 }

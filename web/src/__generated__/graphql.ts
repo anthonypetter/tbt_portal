@@ -363,14 +363,13 @@ export type AddCohortMutationVariables = Exact<{
 
 export type AddCohortMutation = { __typename?: 'Mutation', addCohort: { __typename?: 'Cohort', id: string, name: string } };
 
-export type CohortForDetailsSidebarFragment = { __typename?: 'Cohort', name: string, startDate?: any | null, endDate?: any | null, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, createdAt: any, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string } }> };
-
-export type CohortForTableFragment = { __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> };
 export type AllCohortsTableFragment = { __typename?: 'Query', cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
+
+export type CohortForDetailsSidebarFragment = { __typename?: 'Cohort', name: string, startDate?: any | null, endDate?: any | null, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, createdAt: any, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string } }> };
 
 export type CohortsFragment = { __typename?: 'Query', cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
-export type CohortsTableFragment = { __typename?: 'Engagement', cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
+export type CohortForTableFragment = { __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> };
 
 export type DeleteCohortMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -525,6 +524,35 @@ export type UsersPageQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type UsersPageQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, fullName: string, email: string, role: UserRole, accountStatus: AccountStatus }> };
 
+export const AllCohortsTableFragmentDoc = gql`
+    fragment AllCohortsTable on Query {
+  cohorts {
+    id
+    createdAt
+    name
+    grade
+    meetingRoom
+    hostKey
+    exempt
+    startDate
+    endDate
+    engagementId
+    staffAssignments {
+      user {
+        id
+        fullName
+        email
+      }
+      subject
+    }
+  }
+}
+    `;
+export const CohortsFragmentDoc = gql`
+    fragment Cohorts on Query {
+  ...AllCohortsTable
+}
+    ${AllCohortsTableFragmentDoc}`;
 export const CohortForScheduleCalendarFragmentDoc = gql`
     fragment CohortForScheduleCalendar on Cohort {
   name
@@ -568,55 +596,6 @@ export const CohortForDetailsSidebarFragmentDoc = gql`
     user {
       id
       fullName
-export const AllCohortsTableFragmentDoc = gql`
-    fragment AllCohortsTable on Query {
-  cohorts {
-    id
-    createdAt
-    name
-    grade
-    meetingRoom
-    hostKey
-    exempt
-    startDate
-    endDate
-    engagementId
-    staffAssignments {
-      user {
-        id
-        fullName
-        email
-      }
-      subject
-    }
-  }
-}
-    `;
-export const CohortsFragmentDoc = gql`
-    fragment Cohorts on Query {
-  ...AllCohortsTable
-}
-    ${AllCohortsTableFragmentDoc}`;
-export const CohortsTableFragmentDoc = gql`
-    fragment CohortsTable on Engagement {
-  cohorts {
-    id
-    createdAt
-    name
-    grade
-    meetingRoom
-    hostKey
-    exempt
-    startDate
-    endDate
-    engagementId
-    staffAssignments {
-      user {
-        id
-        fullName
-        email
-      }
-      subject
     }
     subject
   }
