@@ -66,6 +66,7 @@ export type Cohort = {
   __typename?: 'Cohort';
   createdAt: Scalars['Date'];
   endDate?: Maybe<Scalars['Date']>;
+  engagement?: Maybe<Engagement>;
   engagementId: Scalars['ID'];
   exempt?: Maybe<Scalars['String']>;
   grade?: Maybe<Scalars['String']>;
@@ -495,6 +496,7 @@ export type ResolversParentTypes = {
 export type CohortResolvers<ContextType = any, ParentType extends ResolversParentTypes['Cohort'] = ResolversParentTypes['Cohort']> = {
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   endDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  engagement?: Resolver<Maybe<ResolversTypes['Engagement']>, ParentType, ContextType>;
   engagementId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   exempt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   grade?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

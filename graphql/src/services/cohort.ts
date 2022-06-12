@@ -352,6 +352,13 @@ async function getStaffAssignments(cohortId: number) {
   });
 }
 
+async function getEngagement(engagementId: number) {
+  return prisma.engagement.findUnique({
+    where: { id: engagementId },
+    include: { organization: true },
+  });
+}
+
 export const CohortService = {
   getAllCohorts,
   getCohort,
@@ -363,4 +370,5 @@ export const CohortService = {
   saveCsvCohortsData,
   getSchedule,
   getStaffAssignments,
+  getEngagement,
 };

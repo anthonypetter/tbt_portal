@@ -41,4 +41,13 @@ export const CohortResolver = {
       timeZone: scheduledMeeting.timeZone,
     }));
   },
+
+  async engagement(
+    parent: ResolversParentTypes["Cohort"],
+    _args: undefined,
+    { authedUser, AuthorizationService, CohortService }: Context
+  ) {
+    AuthorizationService.assertIsAdmin(authedUser);
+    return CohortService.getEngagement(parent.engagementId);
+  },
 };
