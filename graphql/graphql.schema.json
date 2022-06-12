@@ -432,6 +432,18 @@
             "deprecationReason": null
           },
           {
+            "name": "engagement",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "Engagement",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "engagementId",
             "description": null,
             "args": [],

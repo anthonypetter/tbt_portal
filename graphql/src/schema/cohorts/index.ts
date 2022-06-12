@@ -70,7 +70,9 @@ export const typeDefs = gql`
     startDate: Date
     endDate: Date
 
+
     engagementId: ID!
+    engagement: Engagement
     staffAssignments: [CohortStaffAssignment!]!
     schedule: [ScheduledMeeting!]!
   }
