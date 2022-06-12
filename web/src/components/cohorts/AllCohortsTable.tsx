@@ -1,12 +1,11 @@
 import { gql } from "@apollo/client";
-import {
-  AllCohortsTableFragment,
-  CohortsPageQuery,
-} from "@generated/graphql";
+import { AllCohortsTableFragment, CohortsPageQuery } from "@generated/graphql";
 import { ContextMenu } from "components/ContextMenu";
 import { DateText } from "components/Date";
+import { EditCohortModal } from "components/cohorts/EditCohortModal";
+import { DeleteCohortModal } from "components/cohorts/DeleteCohortModal";
 import { CONTEXT_MENU_ID, Table } from "components/Table";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Cell, Column } from "react-table";
 
 AllCohortsTable.fragments = {
@@ -47,17 +46,20 @@ export function AllCohortsTable({
   onRowClick,
   selectedCohort,
 }: Props) {
+  const [cohortIdToEdit, setCohortIdToEdit] = useState<string | null>(null);
+  const [cohortIdToDelete, setCohortIdToDelete] = useState<string | null>(null);
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+
   const contextMenu = useMemo(() => {
     return {
       onClickDelete(cohort: CohortTableData) {
-        cohort.grade;
-        // setDeleteModaOrg({ id: org.id, name: org.name });
-        // setShowDeleteModal(true);
+        setCohortIdToDelete(cohort.id);
+        setShowDeleteModal(true);
       },
       onClickEdit(cohort: CohortTableData) {
-        cohort.grade;
-        // setEditModalOrg(org);
-        // setShowEditModal(true);
+        setCohortIdToEdit(cohort.id);
+        setShowEditModal(true);
       },
     };
   }, []);
@@ -72,6 +74,27 @@ export function AllCohortsTable({
         border={false}
         onRowClick={(row) => onRowClick(row.original.id)}
         selectedId={selectedCohort?.id}
+      />
+      <EditCohortModal
+        show={showEditModal}
+        closeModal={() => setShowEditModal(false)}
+        afterLeave={() => setCohortIdToEdit(null)}
+        cohort={
+          cohortIdToEdit
+            ? cohorts.find((e) => e.id === cohortIdToEdit) ?? null
+            : null
+        }
+      />
+
+      <DeleteCohortModal
+        show={showDeleteModal}
+        closeModal={() => setShowDeleteModal(false)}
+        cohort={
+          cohortIdToDelete
+            ? cohorts.find((e) => e.id === cohortIdToDelete) ?? null
+            : null
+        }
+        afterLeave={() => setCohortIdToDelete(null)}
       />
     </>
   );
