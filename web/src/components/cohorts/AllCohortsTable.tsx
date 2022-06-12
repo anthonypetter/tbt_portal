@@ -1,12 +1,10 @@
 import { gql } from "@apollo/client";
 import {
   AllCohortsTableFragment,
-  Cohort,
   CohortsPageQuery,
 } from "@generated/graphql";
 import { ContextMenu } from "components/ContextMenu";
 import { DateText } from "components/Date";
-import { Link } from "components/Link";
 import { CONTEXT_MENU_ID, Table } from "components/Table";
 import { useMemo } from "react";
 import { Cell, Column } from "react-table";
@@ -85,11 +83,6 @@ export type CohortTableData = {
   grade?: string | null;
   startDate?: number | null;
   endDate?: number | null;
-  meetUrl?: {
-    backdoorUrl?: string | null;
-    hostLink?: string | null;
-    studentLink?: string | null;
-  } | null;
   engagementId?: string | null;
 };
 

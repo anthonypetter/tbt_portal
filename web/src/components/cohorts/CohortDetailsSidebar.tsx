@@ -6,6 +6,9 @@ import { AssignmentSubjectBadge } from "components/AssignmentSubjectBadge";
 import { DateText } from "components/Date";
 import { DetailsAside } from "components/DetailsAside";
 import { CohortsScheduleCalendarModal } from "./scheduleCalendar/CohortsScheduleCalendarModal";
+import { Routes } from "@utils/routes";
+import { Link } from "components/Link";
+import { getRoomUrl } from "@utils/roomUrls";
 
 const DEV_SHOW_SCHEDULE_BUTTON = false;
 
@@ -35,7 +38,10 @@ type DetailsSidebarProps = {
   onClose: () => void;
 };
 
-export function CohortDetailsSidebar({ selectedCohort, onClose }: DetailsSidebarProps) {
+export function CohortDetailsSidebar({
+  selectedCohort,
+  onClose,
+}: DetailsSidebarProps) {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
 
   if (!selectedCohort) {
@@ -56,7 +62,42 @@ export function CohortDetailsSidebar({ selectedCohort, onClose }: DetailsSidebar
           <DetailsAside.Line label="Grade" value={selectedCohort.grade} />
           <DetailsAside.Line
             label="Meeting Room"
-            value={selectedCohort.meetingRoom}
+            value={
+              selectedCohort.meetingRoom ? (
+                <div>
+                  <Link href={getRoomUrl(selectedCohort.meetingRoom).backDoor}>
+                    <p className="text-ellipsis text-blue-400 truncate">
+                      Backdoor Link
+                    </p>
+                  </Link>
+
+                  <Link
+                    href={
+                      getRoomUrl(
+                        Routes.cohortRoom.href(selectedCohort.meetingRoom)
+                      ).host
+                    }
+                  >
+                    <p className="text-ellipsis text-blue-400 truncate">
+                      Host Link
+                    </p>
+                  </Link>
+                  <Link
+                    href={
+                      getRoomUrl(
+                        Routes.cohortRoom.href(selectedCohort.meetingRoom)
+                      ).student
+                    }
+                  >
+                    <p className="text-ellipsis text-blue-400 truncate">
+                      Student Link
+                    </p>
+                  </Link>
+                </div>
+              ) : (
+                ""
+              )
+            }
           />
           <DetailsAside.Line label="Host key" value={selectedCohort.hostKey} />
           <DetailsAside.Line
@@ -66,18 +107,15 @@ export function CohortDetailsSidebar({ selectedCohort, onClose }: DetailsSidebar
           {DEV_SHOW_SCHEDULE_BUTTON && (
             <DetailsAside.Line
               label="Schedule"
-              value={(
+              value={
                 <button
                   className="group flex items-center px-4 py-2 w-full text-sm font-medium"
                   onClick={() => setShowScheduleModal(true)}
                 >
-                  <CalendarIcon
-                    className="mr-3 w-4 h-4"
-                    aria-hidden="true"
-                  />
+                  <CalendarIcon className="mr-3 w-4 h-4" aria-hidden="true" />
                   Show
                 </button>
-              )}
+              }
             />
           )}
         </DetailsAside.Section>

@@ -1,23 +1,17 @@
 import { gql } from "@apollo/client";
 import { CohortsPageQuery } from "@generated/graphql";
-import { HomeIcon, PlusIcon, SearchIcon } from "@heroicons/react/solid";
+import {  SearchIcon } from "@heroicons/react/solid";
 import { breadcrumbs } from "@utils/breadcrumbs";
-import { getRoomUrl } from "@utils/roomUrls";
 import { Routes } from "@utils/routes";
-import clsx from "clsx";
-import { AssignmentSubjectBadge } from "components/AssignmentSubjectBadge";
-import { Button } from "components/Button";
 import { Container } from "components/Container";
-import { DateText } from "components/Date";
-import { DetailsAside } from "components/DetailsAside";
 import { ErrorBoundary } from "components/ErrorBoundary";
 import { ErrorBox } from "components/ErrorBox";
 import { Input } from "components/Input";
-import { Link } from "components/Link";
 import { PageHeader } from "components/PageHeader";
 import { filter } from "lodash";
 import { useState } from "react";
 import { AllCohortsTable } from "./AllCohortsTable";
+import { CohortDetailsSidebar } from "./CohortDetailsSidebar";
 
 CohortsPage.fragments = {
   cohorts: gql`
@@ -90,7 +84,7 @@ export function CohortsPage({ cohorts }: Props) {
               />
             </main>
 
-            <DetailsSidebar
+            <CohortDetailsSidebar
               selectedCohort={selectedCohort}
               onClose={() => setSelectedCohortId(null)}
             />
@@ -102,88 +96,3 @@ export function CohortsPage({ cohorts }: Props) {
 }
 
 export type QueryAllCohorts = NonNullable<CohortsPageQuery["cohorts"]>[number];
-
-type DetailsSidebarProps = {
-  selectedCohort: QueryAllCohorts | null;
-  onClose: () => void;
-};
-
-function DetailsSidebar({ selectedCohort, onClose }: DetailsSidebarProps) {
-  if (!selectedCohort) {
-    return <DetailsAside isOpen={false} onClose={onClose} />;
-  }
-  return (
-    <DetailsAside isOpen={true} onClose={onClose} title={selectedCohort.name}>
-      <DetailsAside.Section title="Details">
-        <DetailsAside.Line
-          label="Starts"
-          value={<DateText timeMs={selectedCohort.startDate} />}
-        />
-        <DetailsAside.Line
-          label="Ends"
-          value={<DateText timeMs={selectedCohort.endDate} />}
-        />
-        <DetailsAside.Line label="Grade" value={selectedCohort.grade} />
-        <DetailsAside.Line
-          label="Meeting Room"
-          value={
-            selectedCohort.meetingRoom ? (
-              <div>
-                <Link href={selectedCohort.meetingRoom}>
-                  <p className="text-ellipsis text-blue-400 truncate">
-                    Backdoor Link
-                  </p>
-                </Link>
-
-                <Link
-                  href={
-                    getRoomUrl(
-                      Routes.cohortRoom.href(selectedCohort.meetingRoom)
-                    ).host
-                  }
-                >
-                  <p className="text-ellipsis text-blue-400 truncate">
-                    Host Link
-                  </p>
-                </Link>
-                <Link
-                  href={
-                    getRoomUrl(
-                      Routes.cohortRoom.href(selectedCohort.meetingRoom)
-                    ).student
-                  }
-                >
-                  <p className="text-ellipsis text-blue-400 truncate">
-                    Student Link
-                  </p>
-                </Link>
-              </div>
-            ) : (
-              ""
-            )
-          }
-        />
-        <DetailsAside.Line label="Host key" value={selectedCohort.hostKey} />
-        <DetailsAside.Line
-          label="Created"
-          value={<DateText timeMs={selectedCohort.createdAt} />}
-        />
-      </DetailsAside.Section>
-      <DetailsAside.Section title="Staff">
-        {selectedCohort.staffAssignments.length === 0 ? (
-          <p className="py-2 text-sm font-medium text-gray-500 italic">
-            Teachers not yet assigned.
-          </p>
-        ) : (
-          selectedCohort.staffAssignments.map((assignment) => (
-            <DetailsAside.Line
-              key={`${assignment.user.id}-${assignment.subject}`}
-              label={assignment.user.fullName}
-              value={<AssignmentSubjectBadge subject={assignment.subject} />}
-            />
-          ))
-        )}
-      </DetailsAside.Section>
-    </DetailsAside>
-  );
-}
