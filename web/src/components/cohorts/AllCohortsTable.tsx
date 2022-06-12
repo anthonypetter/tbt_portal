@@ -21,7 +21,21 @@ AllCohortsTable.fragments = {
         exempt
         startDate
         endDate
-        engagementId
+        engagement {
+          id
+          name
+          organization {
+            id
+            name
+          }
+        }
+        schedule {
+          weekday
+          subject
+          startTime
+          endTime
+          timeZone
+        }
         staffAssignments {
           user {
             id
@@ -106,6 +120,8 @@ export type CohortTableData = {
   grade?: string | null;
   startDate?: number | null;
   endDate?: number | null;
+  organizationName?: string | null;
+  engagementName?: string | null;
   engagementId?: string | null;
 };
 
@@ -127,6 +143,14 @@ function usePrepCohortData(
         Cell: ({ row }: Cell<CohortTableData>) => {
           return <span className="font-semibold">{row.original.name}</span>;
         },
+      },
+      {
+        Header: "Organization",
+        accessor: "organizationName",
+      },
+      {
+        Header: "Engagement",
+        accessor: "engagementName",
       },
       {
         Header: "Grade",
@@ -172,6 +196,8 @@ function usePrepCohortData(
         grade: cohort.grade,
         startDate: cohort.startDate,
         endDate: cohort.endDate,
+        organizationName: cohort?.engagement?.organization?.name,
+        engagementName: cohort?.engagement?.name,
       };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
