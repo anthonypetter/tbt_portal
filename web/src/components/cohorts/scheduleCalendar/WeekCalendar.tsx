@@ -458,24 +458,26 @@ function EventPopover({
   mode24Hour,
   eventColor,
 }: EventPopoverProps) {
+  const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: "medium" });
   return (
     <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
       <div className="flex flex-row bg-white gap-3 px-2 py-3 sm:p-3 w-[350px]">
         {/* Left section */}
         <div className="flex flex-col place-content-between w-auto my-1">
-          <div>
+          <div className="flex flex-col gap-1">
             <p className={`font-semibold text-sm whitespace-nowrap ${eventColor.text}`}>
               {localizedTime(adjustedEvent.adjustedStartTime, mode24Hour, locale)}
             </p>
             <p className={`font-normal text-xs whitespace-nowrap ${eventColor.text}`}>
               {localizedTime(adjustedEvent.adjustedEndTime, mode24Hour, locale)}
             </p>
-            <p className={`justify-self-end font-normal text-xs whitespace-nowrap ${eventColor.text}`}>
+            <p className={`font-normal text-xs whitespace-nowrap ${eventColor.text}`}>
               {localizedWeekdays[adjustedEvent.adjustedStartWeekdayNumber].long}
             </p>
           </div>
+
           <div>
-            <p className={`font-normal text-xs mt-1 whitespace-nowrap italic ${eventColor.text}`}>
+            <p className={`font-normal text-xs whitespace-nowrap italic ${eventColor.text}`}>
               {printDuration(adjustedEvent.eventMinuteLength, 60)}
             </p>
           </div>
@@ -485,16 +487,21 @@ function EventPopover({
         <div className={`shrink-0 w-0.5 h-auto rounded-sm ${eventColor.accent}`}></div>
 
         {/* Right section */}
-        <div className="grow my-1">
-          <p className={`font-semibold text-sm leading-tight ${eventColor.text}`}>
-            {adjustedEvent.title || "Untitled Event"}
-          </p>
-          {adjustedEvent.details && (
-            <p className="font-normal text-xs leading-snug mt-1 text-gray-500">
-              {adjustedEvent.details}
+        <div className="grow flex flex-col gap-2 my-1">
+          <div className="flex flex-col gap-1">
+            <p className={`font-semibold text-sm leading-tight ${eventColor.text}`}>
+              {adjustedEvent.title || "Untitled Event"}
             </p>
-          )}
-          <div className="my-2">
+            <p className="font-normal text-xs text-gray-500 tabular-nums">
+              {dateFormat.format(adjustedEvent.startDate)} - {dateFormat.format(adjustedEvent.endDate)}
+            </p>
+            {adjustedEvent.details && (
+              <p className="font-normal text-xs leading-snug text-gray-500">
+                {adjustedEvent.details}
+              </p>
+            )}
+          </div>
+          <div>
             <span className="w-auto text-normal ">
               Right area blah blah
               blah blah blah blah
@@ -504,9 +511,11 @@ function EventPopover({
             </span>
           </div>
           {adjustedEvent.adjustedTimeZone !== adjustedEvent.timeZone && (
-            <p className="font-normal text-xs text-gray-400 italic">
+            <p className="font-normal text-xs leading-none text-gray-400 italic">
               {localizedTime(adjustedEvent.startTime, mode24Hour, locale)}
               {" "}
+              Local Start Time
+              <br />
               ({adjustedEvent.timeZone.replace("_", " ")})
             </p>
           )}
