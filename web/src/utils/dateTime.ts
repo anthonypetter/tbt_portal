@@ -1,5 +1,7 @@
-import startOfWeek from "date-fns/startOfWeek";
 import formatISO from "date-fns/formatISO";
+import startOfWeek from "date-fns/startOfWeek";
+
+import { Weekday } from "@generated/graphql";
 
 /**
  * H:mm or HH:mm time stamp. (ex: 13:05, 6:43, 06:43)
@@ -18,23 +20,14 @@ export type Hour = number;
 export type Minute = number;
 
 export type WeekdayNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6;
-export type Weekday =
-  | "sunday"
-  | "monday"
-  | "tuesday"
-  | "wednesday"
-  | "thursday"
-  | "friday"
-  | "saturday";
-
-export const weekdays: Weekday[] = [
-  "sunday",
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
+export const weekdaysOrdered: Weekday[] = [
+  Weekday.Sunday,
+  Weekday.Monday,
+  Weekday.Tuesday,
+  Weekday.Wednesday,
+  Weekday.Thursday,
+  Weekday.Friday,
+  Weekday.Saturday,
 ];
 
 export type LocalizedWeekday = {
@@ -144,6 +137,6 @@ export function localizedWeekdays(
  * @returns
  */
 export function findWeekdayNumber(weekday: Weekday): WeekdayNumber {
-  const dayIndex = weekdays.indexOf(weekday);
+  const dayIndex = weekdaysOrdered.indexOf(weekday);
   return dayIndex < 0 ? 0 : (dayIndex as WeekdayNumber);
 }

@@ -2,7 +2,9 @@ import clsx from "clsx";
 import toDate from "date-fns-tz/toDate";
 import utcToZonedTime from "date-fns-tz/utcToZonedTime";
 import formatISO from "date-fns/formatISO";
-import { useEffect, useRef, useState, Fragment } from "react"
+import { Fragment, useEffect, useRef, useState } from "react";
+
+import { Weekday } from "@generated/graphql";
 import {
   calculateMinutesElapsedInDay,
   findWeekdayNumber,
@@ -14,8 +16,7 @@ import {
   Minute,
   normalizeTime,
   Time24Hour,
-  Weekday,
-  WeekdayNumber,
+  WeekdayNumber
 } from "@utils/dateTime";
 
 export type WeekCalendarEvent = {
@@ -25,12 +26,13 @@ export type WeekCalendarEvent = {
   timeZone: IANAtzName;   // IANA time zone name.
   title: string;          // Event title.
   details?: string;       // Event details.
-  groupId: number;        // Used to color-coordinate.
-  startDate: Date;        // Used to filter out events outside the targetDate.
-  endDate: Date;          // ''
+  groupKey: string;       // Used to color-coordinate events.
+  startDate?: Date;       // Used to filter out events outside the targetDate...
+  endDate?: Date;         // ... if left blank event will not show.
 };
 
 type AdjustedWeekCalendarEvent = WeekCalendarEvent & {
+  groupNumber: number;
   adjustedStartIsoDate: ISODate;
   adjustedStartWeekdayNumber: WeekdayNumber;
   adjustedStartTime: Time24Hour;
@@ -239,9 +241,19 @@ function Events({
   mode24Hour,
 }: EventsProps) {
   const adjustedEvents: AdjustedWeekCalendarEvent[] = [];
+
+  // Organize events by an arbitrary group number based on their groupKey.
+  let groupNumber = 0;
+  const groups: {[groupKey: string]: number} = {};
+
   events.forEach(event => {
     // Get the local date of the event.
     const eventLocalIsoDate = localizedWeekdays[findWeekdayNumber(event.weekday)].isoDate;
+
+    // Don't show events that do not have start/end dates.
+    if (event.startDate == null || event.endDate == null) {
+      return;
+    }
 
     // Get the local start+end DATE boundaries of the event group.
     // Note that these are DIFFERENT from event start+end TIMES.
@@ -276,6 +288,11 @@ function Events({
       return;
     }
 
+    // If a new groupKey is encountered, give it a new number.
+    if (groups[event.groupKey] == null) {
+      groups[event.groupKey] = groupNumber++;
+    }
+
     // Adjust start Date+Time+Weekday to viewing time zone.
     const adjustedEventStartDateTime = utcToZonedTime(eventStartDateTime, viewingTimeZone);
     const adjustedStartIsoDate = formatISO(
@@ -301,6 +318,7 @@ function Events({
 
     adjustedEvents.push({
       ...event,
+      groupNumber: groups[event.groupKey] || 0,
       adjustedStartIsoDate,
       adjustedStartWeekdayNumber,
       adjustedStartTime,
@@ -320,7 +338,7 @@ function Events({
     >
       {adjustedEvents.map((adjustedEvent, i) => (
         <Event
-          key={`${adjustedEvent.groupId}_${i}`}
+          key={`${adjustedEvent.groupKey}_${i}`}
           adjustedEvent={adjustedEvent}
           focusedDay={focusedDay}
           locale={locale}
@@ -340,7 +358,7 @@ type EventProps = {
 function Event({ adjustedEvent, focusedDay, locale, mode24Hour }: EventProps) {
   const startGridRow = adjustedEvent.adjustedStartMinute / 5 + 2;
   const gridSpan = Math.max(adjustedEvent.eventMinuteLength / 5, 3);
-  const eventColor = EVENT_COLORS[adjustedEvent.groupId % EVENT_COLORS.length];
+  const eventColor = EVENT_COLORS[adjustedEvent.groupNumber % EVENT_COLORS.length];
 
   // Need this array defined because we're using the `sm:` prefix, cannot just
   // define the `gridColumnStart: weekdayIndex + 1` in the li's style prop.
