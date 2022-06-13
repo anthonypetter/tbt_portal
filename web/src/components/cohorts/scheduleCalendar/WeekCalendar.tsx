@@ -2,7 +2,7 @@ import clsx from "clsx";
 import toDate from "date-fns-tz/toDate";
 import utcToZonedTime from "date-fns-tz/utcToZonedTime";
 import formatISO from "date-fns/formatISO";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { FC, Fragment, useEffect, useRef, useState } from "react";
 import { Popover, Transition } from "@headlessui/react";
 
 import { Weekday } from "@generated/graphql";
@@ -21,6 +21,10 @@ import {
   WeekdayNumber
 } from "@utils/dateTime";
 
+export type ContentProps = {
+  eventColor?: EventColor;
+};
+
 export type WeekCalendarEvent = {
   weekday: Weekday;
   startTime: Time24Hour;  // H:mm - 24 hour format.
@@ -31,6 +35,7 @@ export type WeekCalendarEvent = {
   groupKey: string;       // Used to color-coordinate events.
   startDate?: Date;       // Used to filter out events outside the targetDate...
   endDate?: Date;         // ... if left blank event will not show.
+  content?: FC<ContentProps>; // Custom sub component to show content.
 };
 
 type AdjustedWeekCalendarEvent = WeekCalendarEvent & {
@@ -501,15 +506,7 @@ function EventPopover({
               </p>
             )}
           </div>
-          <div>
-            <span className="w-auto text-normal ">
-              Right area blah blah
-              blah blah blah blah
-              blah blah blah blah
-              blah blah blah blah
-              blah blah blah blah
-            </span>
-          </div>
+          {adjustedEvent.content && adjustedEvent.content({ eventColor })}
           {adjustedEvent.adjustedTimeZone !== adjustedEvent.timeZone && (
             <p className="font-normal text-xs leading-none text-gray-400 italic">
               {localizedTime(adjustedEvent.startTime, mode24Hour, locale)}

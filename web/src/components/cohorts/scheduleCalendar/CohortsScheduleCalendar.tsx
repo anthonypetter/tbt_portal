@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 import formatISO from "date-fns/formatISO";
 
 import { CohortForScheduleCalendarFragment } from "@generated/graphql";
-import { WeekCalendar, WeekCalendarEvent } from "./WeekCalendar";
+import { ContentProps, WeekCalendar, WeekCalendarEvent } from "./WeekCalendar";
 
 CohortsScheduleCalendar.fragments = {
   cohort: gql`
@@ -18,6 +18,18 @@ CohortsScheduleCalendar.fragments = {
         endTime
         timeZone
       }
+      staffAssignments {
+        user {
+          id
+          role
+          fullName
+          accountStatus
+        }
+        subject
+      }
+      meetingRoom
+      hostKey
+      meetingId
     }
   `
 };
@@ -47,6 +59,10 @@ function buildWeekCalendarSchedule(cohorts: CohortForScheduleCalendarFragment[])
 
   cohorts.forEach((cohort, i) => {
     cohort.schedule.forEach(day => {
+      const subjectStaff = cohort.staffAssignments.filter(
+        staffAssignment => staffAssignment.subject === day.subject,
+      );
+
       weekCalendarEvents.push({
         weekday: day.weekday,
         timeZone: day.timeZone,
@@ -57,9 +73,41 @@ function buildWeekCalendarSchedule(cohorts: CohortForScheduleCalendarFragment[])
         groupKey: `${i}+${day.subject}`,
         title: `${cohort.grade && cohort.grade + ": "}${day.subject}`,
         details: `${cohort.name}`,
+        content: ({ eventColor }) => (
+          <CohortEventDetails staffAssignments={subjectStaff} eventColor={eventColor} />
+        ),
       })
     });
   });
 
   return weekCalendarEvents;
+}
+
+type CohortEventDetailsProps = ContentProps & {
+  staffAssignments: CohortForScheduleCalendarFragment["staffAssignments"];
+};
+function CohortEventDetails({
+  staffAssignments,
+  eventColor,
+}: CohortEventDetailsProps) {
+  return (
+    <div className="flex flex-col bg-slate-400">
+      {staffAssignments.map(staffAssignment => (
+        <div key={staffAssignment.user.id} className="flex flex-col">
+          <p className="text-sm">
+            {staffAssignment.subject}
+          </p>
+          <p className="text-sm">
+            {staffAssignment.user.fullName}
+          </p>
+          <p className="text-sm">
+            {staffAssignment.user.role}
+          </p>
+          <p>
+            eventColor: &quot;{eventColor?.bg ?? "unknown"}&quot;
+          </p>
+        </div>
+      ))}
+    </div>
+  )
 }
