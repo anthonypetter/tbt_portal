@@ -65,6 +65,7 @@ export type Cohort = {
   __typename?: 'Cohort';
   createdAt: Scalars['Date'];
   endDate?: Maybe<Scalars['Date']>;
+  engagement: Engagement;
   engagementId: Scalars['ID'];
   exempt?: Maybe<Scalars['String']>;
   grade?: Maybe<Scalars['String']>;
@@ -280,6 +281,7 @@ export type Query = {
   organization?: Maybe<Organization>;
   organizations: Array<Organization>;
   searchUsers: SearchResults;
+  teacherCohorts: Array<Cohort>;
   users: Array<User>;
 };
 
@@ -469,6 +471,11 @@ export type FlatEngagementsPageQueryVariables = Exact<{ [key: string]: never; }>
 
 
 export type FlatEngagementsPageQuery = { __typename?: 'Query', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
+
+export type GetTeacherCohortsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetTeacherCohortsQuery = { __typename?: 'Query', teacherCohorts: Array<{ __typename?: 'Cohort', id: string, name: string, createdAt: any, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', email: string } }>, schedule: Array<{ __typename?: 'ScheduledMeeting', createdAt: any, weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }> }> };
 
 export type OrgDetailPageCohortsQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -1238,6 +1245,62 @@ export function useFlatEngagementsPageLazyQuery(baseOptions?: Apollo.LazyQueryHo
 export type FlatEngagementsPageQueryHookResult = ReturnType<typeof useFlatEngagementsPageQuery>;
 export type FlatEngagementsPageLazyQueryHookResult = ReturnType<typeof useFlatEngagementsPageLazyQuery>;
 export type FlatEngagementsPageQueryResult = Apollo.QueryResult<FlatEngagementsPageQuery, FlatEngagementsPageQueryVariables>;
+export const GetTeacherCohortsDocument = gql`
+    query GetTeacherCohorts {
+  teacherCohorts {
+    id
+    name
+    createdAt
+    grade
+    meetingRoom
+    hostKey
+    exempt
+    startDate
+    endDate
+    staffAssignments {
+      subject
+      user {
+        email
+      }
+    }
+    schedule {
+      createdAt
+      weekday
+      subject
+      startTime
+      endTime
+      timeZone
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetTeacherCohortsQuery__
+ *
+ * To run a query within a React component, call `useGetTeacherCohortsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTeacherCohortsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTeacherCohortsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetTeacherCohortsQuery(baseOptions?: Apollo.QueryHookOptions<GetTeacherCohortsQuery, GetTeacherCohortsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTeacherCohortsQuery, GetTeacherCohortsQueryVariables>(GetTeacherCohortsDocument, options);
+      }
+export function useGetTeacherCohortsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTeacherCohortsQuery, GetTeacherCohortsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTeacherCohortsQuery, GetTeacherCohortsQueryVariables>(GetTeacherCohortsDocument, options);
+        }
+export type GetTeacherCohortsQueryHookResult = ReturnType<typeof useGetTeacherCohortsQuery>;
+export type GetTeacherCohortsLazyQueryHookResult = ReturnType<typeof useGetTeacherCohortsLazyQuery>;
+export type GetTeacherCohortsQueryResult = Apollo.QueryResult<GetTeacherCohortsQuery, GetTeacherCohortsQueryVariables>;
 export const OrgDetailPageCohortsDocument = gql`
     query OrgDetailPageCohorts($id: ID!) {
   organization(id: $id) {

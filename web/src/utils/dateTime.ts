@@ -147,3 +147,20 @@ export function findWeekdayNumber(weekday: Weekday): WeekdayNumber {
   const dayIndex = weekdays.indexOf(weekday);
   return dayIndex < 0 ? 0 : (dayIndex as WeekdayNumber);
 }
+
+/**
+ * Ex
+ * @param originalDate
+ * @returns new construction of a date wherein the month, date, and year match the database regardless of current timezone.
+ */
+export function extractDateFromDateTime(originalDate: Date): Date {
+  const date = new Date(originalDate.getTime());
+
+  const extractedDate = new Date(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate()
+  );
+
+  return extractedDate;
+}
