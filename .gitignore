@@ -1,3 +1,4 @@
 node_modules
-
+web/src/__generated__/*
+graphql/src/schema/__generated__
 scratch.txt
