@@ -149,9 +149,9 @@ export function findWeekdayNumber(weekday: Weekday): WeekdayNumber {
 }
 
 /**
- * Ex
+ * Extracts date from dateTime by constructing a date wherein the month, date, and year match the database regardless of current timezone.
  * @param originalDate
- * @returns new construction of a date wherein the month, date, and year match the database regardless of current timezone.
+ * @returns new local date construction with original's date's month, day, and year.
  */
 export function extractDateFromDateTime(originalDate: Date): Date {
   const date = new Date(originalDate.getTime());
