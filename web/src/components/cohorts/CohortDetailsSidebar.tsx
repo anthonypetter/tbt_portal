@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { CalendarIcon } from "@heroicons/react/outline";
 import { gql } from "@apollo/client";
+import { CalendarIcon } from "@heroicons/react/outline";
+import { useState } from "react";
+
 import { CohortForDetailsSidebarFragment } from "@generated/graphql";
 import { AssignmentSubjectBadge } from "components/AssignmentSubjectBadge";
 import { DateText } from "components/Date";
@@ -26,7 +27,9 @@ CohortDetailsSidebar.fragments = {
         }
         subject
       }
+      ...CohortForScheduleCalendarModal
     }
+    ${CohortsScheduleCalendarModal.fragments.cohort}
   `,
 };
 
