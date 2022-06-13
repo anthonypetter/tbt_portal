@@ -281,6 +281,7 @@ export type Query = {
   organization?: Maybe<Organization>;
   organizations: Array<Organization>;
   searchUsers: SearchResults;
+  teachers: Array<User>;
   users: Array<User>;
 };
 
@@ -320,10 +321,24 @@ export type SearchResults = {
   results: Array<User>;
 };
 
+export type StaffCohortAssignment = {
+  __typename?: 'StaffCohortAssignment';
+  cohort: Cohort;
+  subject: AssignmentSubject;
+};
+
+export type StaffEngagementAssignment = {
+  __typename?: 'StaffEngagementAssignment';
+  engagement: Engagement;
+  role?: Maybe<AssignmentRole>;
+};
+
 export type User = {
   __typename?: 'User';
   accountStatus: AccountStatus;
+  cohortAssignments?: Maybe<Array<Maybe<StaffCohortAssignment>>>;
   email: Scalars['String'];
+  engagementAssignments?: Maybe<Array<Maybe<StaffEngagementAssignment>>>;
   fullName: Scalars['String'];
   id: Scalars['String'];
   role: UserRole;
@@ -422,7 +437,7 @@ export type ResolversTypes = {
   AssignmentSubject: AssignmentSubject;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Cohort: ResolverTypeWrapper<CohortsWithBaseRelationsModel>;
-  CohortStaffAssignment: ResolverTypeWrapper<CohortStaffAssignment>;
+  CohortStaffAssignment: ResolverTypeWrapper<Omit<CohortStaffAssignment, 'user'> & { user: ResolversTypes['User'] }>;
   CsvCohortStaffAssignment: CsvCohortStaffAssignment;
   CsvCohortTeacher: CsvCohortTeacher;
   CsvProcessedCohort: CsvProcessedCohort;
@@ -433,8 +448,8 @@ export type ResolversTypes = {
   EditCohortInput: EditCohortInput;
   EditEngagementInput: EditEngagementInput;
   EditOrganizationInput: EditOrganizationInput;
-  Engagement: ResolverTypeWrapper<Omit<Engagement, 'cohorts' | 'organization'> & { cohorts: Array<ResolversTypes['Cohort']>, organization: ResolversTypes['Organization'] }>;
-  EngagementStaffAssignment: ResolverTypeWrapper<EngagementStaffAssignment>;
+  Engagement: ResolverTypeWrapper<Omit<Engagement, 'cohorts' | 'organization' | 'staffAssignments'> & { cohorts: Array<ResolversTypes['Cohort']>, organization: ResolversTypes['Organization'], staffAssignments: Array<ResolversTypes['EngagementStaffAssignment']> }>;
+  EngagementStaffAssignment: ResolverTypeWrapper<Omit<EngagementStaffAssignment, 'user'> & { user: ResolversTypes['User'] }>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   InviteUserInput: InviteUserInput;
@@ -444,9 +459,11 @@ export type ResolversTypes = {
   Organization: ResolverTypeWrapper<Omit<Organization, 'engagements'> & { engagements: Array<ResolversTypes['Engagement']> }>;
   Query: ResolverTypeWrapper<{}>;
   ScheduledMeeting: ResolverTypeWrapper<ScheduledMeeting>;
-  SearchResults: ResolverTypeWrapper<SearchResults>;
+  SearchResults: ResolverTypeWrapper<Omit<SearchResults, 'results'> & { results: Array<ResolversTypes['User']> }>;
+  StaffCohortAssignment: ResolverTypeWrapper<Omit<StaffCohortAssignment, 'cohort'> & { cohort: ResolversTypes['Cohort'] }>;
+  StaffEngagementAssignment: ResolverTypeWrapper<Omit<StaffEngagementAssignment, 'engagement'> & { engagement: ResolversTypes['Engagement'] }>;
   String: ResolverTypeWrapper<Scalars['String']>;
-  User: ResolverTypeWrapper<User>;
+  User: ResolverTypeWrapper<Omit<User, 'cohortAssignments' | 'engagementAssignments'> & { cohortAssignments?: Maybe<Array<Maybe<ResolversTypes['StaffCohortAssignment']>>>, engagementAssignments?: Maybe<Array<Maybe<ResolversTypes['StaffEngagementAssignment']>>> }>;
   UserRole: UserRole;
   Weekday: Weekday;
 };
@@ -458,7 +475,7 @@ export type ResolversParentTypes = {
   AddOrganizationInput: AddOrganizationInput;
   Boolean: Scalars['Boolean'];
   Cohort: CohortsWithBaseRelationsModel;
-  CohortStaffAssignment: CohortStaffAssignment;
+  CohortStaffAssignment: Omit<CohortStaffAssignment, 'user'> & { user: ResolversParentTypes['User'] };
   CsvCohortStaffAssignment: CsvCohortStaffAssignment;
   CsvCohortTeacher: CsvCohortTeacher;
   CsvProcessedCohort: CsvProcessedCohort;
@@ -469,8 +486,8 @@ export type ResolversParentTypes = {
   EditCohortInput: EditCohortInput;
   EditEngagementInput: EditEngagementInput;
   EditOrganizationInput: EditOrganizationInput;
-  Engagement: Omit<Engagement, 'cohorts' | 'organization'> & { cohorts: Array<ResolversParentTypes['Cohort']>, organization: ResolversParentTypes['Organization'] };
-  EngagementStaffAssignment: EngagementStaffAssignment;
+  Engagement: Omit<Engagement, 'cohorts' | 'organization' | 'staffAssignments'> & { cohorts: Array<ResolversParentTypes['Cohort']>, organization: ResolversParentTypes['Organization'], staffAssignments: Array<ResolversParentTypes['EngagementStaffAssignment']> };
+  EngagementStaffAssignment: Omit<EngagementStaffAssignment, 'user'> & { user: ResolversParentTypes['User'] };
   ID: Scalars['ID'];
   Int: Scalars['Int'];
   InviteUserInput: InviteUserInput;
@@ -480,9 +497,11 @@ export type ResolversParentTypes = {
   Organization: Omit<Organization, 'engagements'> & { engagements: Array<ResolversParentTypes['Engagement']> };
   Query: {};
   ScheduledMeeting: ScheduledMeeting;
-  SearchResults: SearchResults;
+  SearchResults: Omit<SearchResults, 'results'> & { results: Array<ResolversParentTypes['User']> };
+  StaffCohortAssignment: Omit<StaffCohortAssignment, 'cohort'> & { cohort: ResolversParentTypes['Cohort'] };
+  StaffEngagementAssignment: Omit<StaffEngagementAssignment, 'engagement'> & { engagement: ResolversParentTypes['Engagement'] };
   String: Scalars['String'];
-  User: User;
+  User: Omit<User, 'cohortAssignments' | 'engagementAssignments'> & { cohortAssignments?: Maybe<Array<Maybe<ResolversParentTypes['StaffCohortAssignment']>>>, engagementAssignments?: Maybe<Array<Maybe<ResolversParentTypes['StaffEngagementAssignment']>>> };
 };
 
 export type CohortResolvers<ContextType = any, ParentType extends ResolversParentTypes['Cohort'] = ResolversParentTypes['Cohort']> = {
@@ -572,6 +591,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
   searchUsers?: Resolver<ResolversTypes['SearchResults'], ParentType, ContextType, RequireFields<QuerySearchUsersArgs, 'query'>>;
+  teachers?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
 };
 
@@ -591,9 +611,23 @@ export type SearchResultsResolvers<ContextType = any, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type StaffCohortAssignmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['StaffCohortAssignment'] = ResolversParentTypes['StaffCohortAssignment']> = {
+  cohort?: Resolver<ResolversTypes['Cohort'], ParentType, ContextType>;
+  subject?: Resolver<ResolversTypes['AssignmentSubject'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type StaffEngagementAssignmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['StaffEngagementAssignment'] = ResolversParentTypes['StaffEngagementAssignment']> = {
+  engagement?: Resolver<ResolversTypes['Engagement'], ParentType, ContextType>;
+  role?: Resolver<Maybe<ResolversTypes['AssignmentRole']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   accountStatus?: Resolver<ResolversTypes['AccountStatus'], ParentType, ContextType>;
+  cohortAssignments?: Resolver<Maybe<Array<Maybe<ResolversTypes['StaffCohortAssignment']>>>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  engagementAssignments?: Resolver<Maybe<Array<Maybe<ResolversTypes['StaffEngagementAssignment']>>>, ParentType, ContextType>;
   fullName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['UserRole'], ParentType, ContextType>;
@@ -612,6 +646,8 @@ export type Resolvers<ContextType = any> = {
   Query?: QueryResolvers<ContextType>;
   ScheduledMeeting?: ScheduledMeetingResolvers<ContextType>;
   SearchResults?: SearchResultsResolvers<ContextType>;
+  StaffCohortAssignment?: StaffCohortAssignmentResolvers<ContextType>;
+  StaffEngagementAssignment?: StaffEngagementAssignmentResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
 

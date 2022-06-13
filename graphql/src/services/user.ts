@@ -21,6 +21,16 @@ export const UserService = {
     return users;
   },
 
+  async getTeachers(): Promise<User[]> {
+    const teachers = await prisma.user.findMany({
+      take: TAKE_LIMIT,
+      where: {
+        role: { in: ["MENTOR_TEACHER", "TUTOR_TEACHER"] },
+      },
+    });
+    return teachers;
+  },
+
   async inviteUser({
     email,
     fullName,

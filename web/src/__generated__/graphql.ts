@@ -280,6 +280,7 @@ export type Query = {
   organization?: Maybe<Organization>;
   organizations: Array<Organization>;
   searchUsers: SearchResults;
+  teachers: Array<User>;
   users: Array<User>;
 };
 
@@ -319,10 +320,24 @@ export type SearchResults = {
   results: Array<User>;
 };
 
+export type StaffCohortAssignment = {
+  __typename?: 'StaffCohortAssignment';
+  cohort: Cohort;
+  subject: AssignmentSubject;
+};
+
+export type StaffEngagementAssignment = {
+  __typename?: 'StaffEngagementAssignment';
+  engagement: Engagement;
+  role?: Maybe<AssignmentRole>;
+};
+
 export type User = {
   __typename?: 'User';
   accountStatus: AccountStatus;
+  cohortAssignments?: Maybe<Array<Maybe<StaffCohortAssignment>>>;
   email: Scalars['String'];
+  engagementAssignments?: Maybe<Array<Maybe<StaffEngagementAssignment>>>;
   fullName: Scalars['String'];
   id: Scalars['String'];
   role: UserRole;
