@@ -1,0 +1,4 @@
+# Ignore everything in this directory.
+*
+# Except this file, so that we can keep this temp directory in the repo.
+!.gitignore
