@@ -1,7 +1,18 @@
-import { CohortForScheduleCalendarFragment } from "@generated/graphql";
 import { CalendarIcon } from "@heroicons/react/outline";
+
+import { gql } from "@apollo/client";
+import { CohortForScheduleCalendarFragment } from "@generated/graphql";
 import { Modal } from "components/Modal";
 import { CohortsScheduleCalendar } from "./CohortsScheduleCalendar";
+
+CohortsScheduleCalendarModal.fragments = {
+  cohort: gql`
+    fragment CohortForScheduleCalendarModal on Cohort {
+      ...CohortForScheduleCalendar
+    }
+    ${CohortsScheduleCalendar.fragments.cohort}
+  `,
+};
 
 type CohortsScheduleCalendarModalProps = {
   show: boolean;
@@ -35,8 +46,7 @@ export function CohortsScheduleCalendarModal({
           {cohorts.map(cohort => `${cohort.name} (Grade ${cohort.grade ?? "?"})`).join(", ")}
         </h1>
         <CohortsScheduleCalendar
-          // MOCKING //
-          cohorts={cohorts.concat(cohorts).concat(cohorts).concat(cohorts).concat(cohorts)}
+          cohorts={cohorts}
         />
       </div>
     </Modal>
