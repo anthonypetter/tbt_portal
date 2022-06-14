@@ -142,18 +142,32 @@ export function findWeekdayNumber(weekday: Weekday): WeekdayNumber {
 }
 
 /**
- * Extracts date from dateTime by constructing a date wherein the month, date, and year match the database regardless of current timezone.
- * @param originalDate
- * @returns new local date construction with original's date's month, day, and year.
+ * Takes a UTC dateTime and assures the returned local dateTime has the same
+ * calendar date. As a result, the returned dateTime will be different in terms
+ * of literal seconds since the Unix Epoch. But the displayed calendar date will
+ * be the same.
+ *
+ * Takes in a dateTime presumed to be in UTC at midnight (00:00:00). Because the
+ * calendar date is the only important piece of data, we must prevent that date
+ * from changing due to time zone conversions made by JavaScript.
+ *
+ * For example, a UTC dateTime of 2022-06-20 at midnight will become
+ * 2022-06-19 at 8pm if the client's time zone is in America/New_York. a whole
+ * day off despite there only being a 4 hour time zone difference.
+ *
+ * So, we take the UTC's calendar times and create a new dateTime object with
+ * that date in the local timezone.
+ *
+ * Using that June 20th example, that means, for a user in America/New_York,
+ * in will go 2022-06-20T00:00:00Z and out will come 2022-06-20T04:00:00Z.
+ * @param utcDateTime
+ * @returns new LOCAL dateTime with UTC date's month, day, and year.
  */
-export function extractDateFromDateTime(originalDate: Date): Date {
-  const date = new Date(originalDate.getTime());
-
-  const extractedDate = new Date(
-    date.getUTCFullYear(),
-    date.getUTCMonth(),
-    date.getUTCDate()
+export function normalizeDateFromUTCDateTime(utcDateTime: Date): Date {
+  // Hours, minutes, seconds, milliseconds are left at 0.
+  return new Date(
+    utcDateTime.getUTCFullYear(),
+    utcDateTime.getUTCMonth(),
+    utcDateTime.getUTCDate()
   );
-
-  return extractedDate;
 }
