@@ -65,6 +65,7 @@ export type Cohort = {
   __typename?: 'Cohort';
   createdAt: Scalars['Date'];
   endDate?: Maybe<Scalars['Date']>;
+  engagement: Engagement;
   engagementId: Scalars['ID'];
   exempt?: Maybe<Scalars['String']>;
   grade?: Maybe<Scalars['String']>;
@@ -280,6 +281,7 @@ export type Query = {
   organization?: Maybe<Organization>;
   organizations: Array<Organization>;
   searchUsers: SearchResults;
+  teacherCohorts: Array<Cohort>;
   users: Array<User>;
 };
 
