@@ -1,4 +1,4 @@
-import { extractDateFromDateTime } from "@utils/dateTime";
+import { normalizeDateFromUTCDateTime } from "@utils/dateTime";
 import React from "react";
 
 type Props = {
@@ -27,7 +27,7 @@ export function DateText({ timeMs }: Props) {
    *
    */
 
-  const date = extractDateFromDateTime(new Date(timeMs));
+  const date = normalizeDateFromUTCDateTime(new Date(timeMs));
 
   return <span>{date.toLocaleDateString()}</span>;
 }
