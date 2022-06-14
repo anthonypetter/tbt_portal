@@ -31,9 +31,8 @@ export type CohortsWithBaseRelations = Prisma.CohortGetPayload<
 
 /**
  * Gets a cohort
- * @param cohortId cohortId
- * @returns Prisma Cohort
  */
+
 async function getCohort(cohortId: number) {
   return prisma.cohort.findFirst({
     where: { id: cohortId },
@@ -43,8 +42,6 @@ async function getCohort(cohortId: number) {
 
 /**
  * Gets cohorts for a given engagementId
- * @param engagementId engagementId
- * @returns cohorts associated with Engagement
  */
 
 async function getCohorts(engagementId: number) {
@@ -58,8 +55,6 @@ async function getCohorts(engagementId: number) {
 
 /**
  * Gets all cohorts associates with an org
- * @param orgId organizationId
- * @returns All cohorts associated with the given orgId
  */
 
 async function getCohortsForOrg(orgId: number) {
@@ -72,8 +67,6 @@ async function getCohortsForOrg(orgId: number) {
 
 /**
  * Updates a cohort.
- * @param input EditInput
- * @returns the updated cohort
  */
 
 type EditInput = {
@@ -330,16 +323,44 @@ async function saveCsvCohortsData(
   };
 }
 
+/**
+ * Gets cohort schedule
+ */
+
 async function getSchedule(cohortId: number) {
   return prisma.cohortSchedule.findMany({
     where: { cohortId },
   });
 }
 
+/**
+ * Gets cohort staff assignments
+ */
+
 async function getStaffAssignments(cohortId: number) {
   return prisma.cohortStaffAssignment.findMany({
     where: { cohortId },
     include: { user: true },
+  });
+}
+
+/**
+ * Gets all cohorts where a particular teacher (userId) has been assigned
+ * and where the provided filters are satisfied.
+ */
+
+type TeacherCohortsFilter = {
+  endDate: Prisma.DateTimeNullableFilter;
+};
+
+async function getTeacherCohorts(userId: number, filter: TeacherCohortsFilter) {
+  return prisma.cohort.findMany({
+    where: {
+      AND: [
+        { staffAssignments: { some: { userId } } },
+        { endDate: filter.endDate },
+      ],
+    },
   });
 }
 
@@ -353,4 +374,5 @@ export const CohortService = {
   saveCsvCohortsData,
   getSchedule,
   getStaffAssignments,
+  getTeacherCohorts,
 };

@@ -2,6 +2,7 @@
 import { Weekday } from "@generated/graphql";
 import {
   calculateMinutesElapsedInDay,
+  normalizeDateFromUTCDateTime,
   findWeekdayNumber,
   localizedTime,
   localizedWeekdays,
@@ -258,6 +259,26 @@ describe("dateTime", () => {
       test("should handle a bad input and return 0", () => {
         // @ts-ignore
         expect(findWeekdayNumber("blah")).toBe(0);
+      });
+    });
+  });
+
+  describe("extractDateFromDateTime()", () => {
+    describe("happy path", () => {
+      test("should not convert to another date", () => {
+        // Test machine running behind UTC would break.
+        const midnight = new Date("2022-06-20T00:00:00Z");
+        expect(normalizeDateFromUTCDateTime(midnight).getDate()).toBe(20);
+        expect(normalizeDateFromUTCDateTime(midnight).getUTCDate()).toBe(20);
+
+        // Test machine running ahead of UTC would break.
+        const oneSecondToMidnight = new Date("2022-06-20T23:59:59Z");
+        expect(
+          normalizeDateFromUTCDateTime(oneSecondToMidnight).getDate()
+        ).toBe(20);
+        expect(
+          normalizeDateFromUTCDateTime(oneSecondToMidnight).getUTCDate()
+        ).toBe(20);
       });
     });
   });
