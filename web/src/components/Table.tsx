@@ -135,9 +135,10 @@ export function Table<D extends { id: string }>({
                 // eslint-disable-next-line react/jsx-key
                 <tr
                   {...row.getRowProps()}
-                  className={clsx(
-                    isRowSelected ? "bg-blue-100" : "hover:bg-gray-50"
-                  )}
+                  className={clsx([
+                    isRowSelected ? "bg-blue-100" : "hover:bg-gray-50",
+                    onClick ? "cursor-pointer" : "cursor-default",
+                  ])}
                   {...onClick}
                 >
                   {row.cells.map((cell) => {

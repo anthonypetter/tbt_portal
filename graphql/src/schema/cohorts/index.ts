@@ -17,6 +17,10 @@ import {
   typeDefs as CohortCsvDefs,
   resolvers as CohortCsvResolvers,
 } from "./csv";
+import {
+  typeDefs as TeacherDefs,
+  resolvers as TeacherResolvers,
+} from "./teacher";
 import merge from "lodash/merge";
 import { WhereByService } from "../../services/whereby";
 
@@ -26,6 +30,7 @@ import { WhereByService } from "../../services/whereby";
 
 export const typeDefs = gql`
   ${CohortCsvDefs}
+  ${TeacherDefs}
 
   enum AssignmentSubject {
     MATH
@@ -70,6 +75,7 @@ export const typeDefs = gql`
     endDate: Date
 
     engagementId: ID!
+    engagement: Engagement!
     staffAssignments: [CohortStaffAssignment!]!
     schedule: [ScheduledMeeting!]!
   }
@@ -234,5 +240,6 @@ export const resolvers = merge(
     },
     Cohort: CohortResolver,
   },
-  CohortCsvResolvers
+  CohortCsvResolvers,
+  TeacherResolvers
 );
