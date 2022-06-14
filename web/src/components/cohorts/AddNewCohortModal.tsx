@@ -182,9 +182,11 @@ export function AddCohortModalBody({
             <AssignCohortTeachers
               staff={staff}
               onAdd={(teacher) => setStaff([...staff, teacher])}
-              onRemove={(teacher) =>
-                setStaff(staff.filter((t) => t.userId !== teacher.userId))
-              }
+              onRemove={(teacher) => {
+                const isTeacherToRemove = (t: CohortStaffTeacher) =>
+                  t.subject === teacher.subject && t.userId === teacher.userId;
+                setStaff(staff.filter((t) => !isTeacherToRemove(t)));
+              }}
             />
           </div>
         </div>
