@@ -10,7 +10,7 @@ import { triggerErrorToast } from "components/Toast";
 
 const GET_ALL_ENGAGEMENTS = gql`
   query FlatEngagementsPage {
-    ...FlatEngagements
+    ...FlatEngagementsPage
   }
   ${FlatEngagementsPage.fragments.engagements}
 `;

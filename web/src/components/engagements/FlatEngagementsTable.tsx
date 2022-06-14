@@ -5,13 +5,45 @@ import { CONTEXT_MENU_ID, Table } from "components/Table";
 import { Link } from "components/Link";
 import { Column, Cell } from "react-table";
 import { EditEngagementModal } from "./EditEngagementModal";
-import { QueryEngagements } from "./OrganizationEngagementsView";
 import { ContextMenu } from "components/ContextMenu";
 import { DeleteEngagementModal } from "./DeleteEngagementModal";
+import { gql } from "@apollo/client";
+import { FlatEngagementsTableFragment } from "@generated/graphql";
 
 type Props = {
-  engagements: QueryEngagements;
-  selectedEngagement: QueryEngagements[number] | null;
+  engagements: NonNullable<FlatEngagementsTableFragment["engagements"]>;
+  selectedEngagement:
+    | FlatEngagementsTableFragment["engagements"][number]
+    | null;
+};
+
+FlatEngagementsTable.fragments = {
+  engagements: gql`
+    fragment FlatEngagementsTable on Query {
+      engagements {
+        id
+        name
+        startDate
+        endDate
+        organizationId
+        cohorts {
+          id
+          name
+          grade
+          startDate
+          endDate
+        }
+        staffAssignments {
+          user {
+            id
+            fullName
+            email
+          }
+          role
+        }
+      }
+    }
+  `,
 };
 
 export function FlatEngagementsTable({
@@ -86,7 +118,7 @@ export type EngagementTableData = {
 };
 
 export function usePrepEngagementData(
-  engagements: QueryEngagements,
+  engagements: NonNullable<FlatEngagementsTableFragment["engagements"]>,
   contextMenu: {
     onClickEdit: (engagement: EngagementTableData) => void;
     onClickDelete: (engagement: EngagementTableData) => void;
