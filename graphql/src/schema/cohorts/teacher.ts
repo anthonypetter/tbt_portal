@@ -1,7 +1,7 @@
 import { gql } from "apollo-server";
 import { Context } from "../../context";
 import { add } from "date-fns";
-import { extractDateFromDateTime } from "../../utils/dateTime";
+import { normalizeDateTimeToUTCDate } from "../../utils/dateTime";
 
 /**
  * Type Defs
@@ -34,11 +34,11 @@ async function teacherCohorts(
    */
 
   const currentDate = new Date();
-  const todaysDateNoTime = extractDateFromDateTime(currentDate);
-  const paddedCurrentDateNoTime = add(todaysDateNoTime, { hours: -24 });
+  const todaysUTCDate = normalizeDateTimeToUTCDate(currentDate);
+  const paddedCurrentUTCDate = add(todaysUTCDate, { hours: -24 });
 
   const endDateFilter = {
-    endDate: { gte: paddedCurrentDateNoTime },
+    endDate: { gte: paddedCurrentUTCDate },
   };
 
   const cohorts = await CohortService.getTeacherCohorts(
