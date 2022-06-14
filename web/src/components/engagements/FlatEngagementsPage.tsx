@@ -1,40 +1,20 @@
 import { gql } from "@apollo/client";
-import { FlatEngagementsPageQuery } from "@generated/graphql";
+import { FlatEngagementsPageFragment } from "@generated/graphql";
 import { PageHeader } from "components/PageHeader";
 import { breadcrumbs } from "@utils/breadcrumbs";
 import { FlatEngagementsTable } from "./FlatEngagementsTable";
 
 FlatEngagementsPage.fragments = {
   engagements: gql`
-    fragment FlatEngagements on Query {
-      engagements {
-        id
-        name
-        startDate
-        endDate
-        organizationId
-        cohorts {
-          id
-          name
-          grade
-          startDate
-          endDate
-        }
-        staffAssignments {
-          user {
-            id
-            fullName
-            email
-          }
-          role
-        }
-      }
+    fragment FlatEngagementsPage on Query {
+      ...FlatEngagementsTable
     }
+    ${FlatEngagementsTable.fragments.engagements}
   `,
 };
 
 type Props = {
-  engagements: NonNullable<FlatEngagementsPageQuery["engagements"]>;
+  engagements: NonNullable<FlatEngagementsPageFragment["engagements"]>;
 };
 
 export function FlatEngagementsPage({ engagements }: Props) {
