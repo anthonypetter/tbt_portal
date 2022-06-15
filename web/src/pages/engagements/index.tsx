@@ -54,8 +54,6 @@ const Engagements: NextPage<Props> = ({ engagements }) => {
     }
   );
 
-  console.log(data);
-
   return (
     <AuthedLayout>
       <FlatEngagementsPage
