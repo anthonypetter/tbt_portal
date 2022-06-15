@@ -41,7 +41,7 @@ async function searchUsers(
 
   return {
     count: results.length,
-    results: results,
+    results,
   };
 }
 
@@ -55,7 +55,7 @@ async function searchEngagements(
 
   return {
     count: results.length,
-    engagements: results,
+    results,
   };
 }
 
