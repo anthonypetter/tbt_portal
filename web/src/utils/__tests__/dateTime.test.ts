@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import { Weekday } from "@generated/graphql";
 import {
   calculateMinutesElapsedInDay,
+  normalizeDateFromUTCDateTime,
   findWeekdayNumber,
   localizedTime,
   localizedWeekdays,
@@ -243,13 +245,13 @@ describe("dateTime", () => {
   describe("findWeekdayNumber()", () => {
     describe("happy path", () => {
       test("should find any day of the week", () => {
-        expect(findWeekdayNumber("sunday")).toBe(0);
-        expect(findWeekdayNumber("monday")).toBe(1);
-        expect(findWeekdayNumber("tuesday")).toBe(2);
-        expect(findWeekdayNumber("wednesday")).toBe(3);
-        expect(findWeekdayNumber("thursday")).toBe(4);
-        expect(findWeekdayNumber("friday")).toBe(5);
-        expect(findWeekdayNumber("saturday")).toBe(6);
+        expect(findWeekdayNumber(Weekday.Sunday)).toBe(0);
+        expect(findWeekdayNumber(Weekday.Monday)).toBe(1);
+        expect(findWeekdayNumber(Weekday.Tuesday)).toBe(2);
+        expect(findWeekdayNumber(Weekday.Wednesday)).toBe(3);
+        expect(findWeekdayNumber(Weekday.Thursday)).toBe(4);
+        expect(findWeekdayNumber(Weekday.Friday)).toBe(5);
+        expect(findWeekdayNumber(Weekday.Saturday)).toBe(6);
       });
     });
 
@@ -257,6 +259,26 @@ describe("dateTime", () => {
       test("should handle a bad input and return 0", () => {
         // @ts-ignore
         expect(findWeekdayNumber("blah")).toBe(0);
+      });
+    });
+  });
+
+  describe("extractDateFromDateTime()", () => {
+    describe("happy path", () => {
+      test("should not convert to another date", () => {
+        // Test machine running behind UTC would break.
+        const midnight = new Date("2022-06-20T00:00:00Z");
+        expect(normalizeDateFromUTCDateTime(midnight).getDate()).toBe(20);
+        expect(normalizeDateFromUTCDateTime(midnight).getUTCDate()).toBe(20);
+
+        // Test machine running ahead of UTC would break.
+        const oneSecondToMidnight = new Date("2022-06-20T23:59:59Z");
+        expect(
+          normalizeDateFromUTCDateTime(oneSecondToMidnight).getDate()
+        ).toBe(20);
+        expect(
+          normalizeDateFromUTCDateTime(oneSecondToMidnight).getUTCDate()
+        ).toBe(20);
       });
     });
   });
