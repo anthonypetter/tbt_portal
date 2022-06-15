@@ -52,7 +52,7 @@ async function getEngagements(organizationId: number) {
     take: TAKE_LIMIT,
     where: { organizationId },
     include: engagementWithBaseRelations.include,
-    orderBy: [{ name: "asc" }],
+    orderBy: [{ startDate: "desc" }],
   });
 
   return engagements;
@@ -62,7 +62,7 @@ async function getAllEngagements() {
   return prisma.engagement.findMany({
     take: TAKE_LIMIT,
     include: engagementWithBaseRelations.include,
-    orderBy: [{ name: "asc" }],
+    orderBy: [{ startDate: "desc" }],
   });
 }
 
