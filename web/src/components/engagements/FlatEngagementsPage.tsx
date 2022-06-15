@@ -40,9 +40,10 @@ const SEARCH_ENGAGEMENTS = gql`
 
 type Props = {
   engagements: FlatEngagementsTableEngagementFragment[];
+  refetch: () => void;
 };
 
-export function FlatEngagementsPage({ engagements }: Props) {
+export function FlatEngagementsPage({ engagements, refetch }: Props) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchMode, setSearchMode] = useState(false);
   const { results, loading } = useEngagementsSearch(searchQuery);
@@ -84,6 +85,7 @@ export function FlatEngagementsPage({ engagements }: Props) {
           onClick={() => {
             setSearchQuery("");
             setSearchMode(false);
+            refetch();
           }}
         >
           Reset
