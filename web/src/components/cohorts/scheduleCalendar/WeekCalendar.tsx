@@ -461,7 +461,7 @@ function EventPopover({
             <p className={`font-normal text-xs whitespace-nowrap ${eventColor.text}`}>
               {localizedTime(adjustedEvent.adjustedEndTime, mode24Hour, locale)}
             </p>
-            <p className={`font-normal text-xs whitespace-nowrap ${eventColor.text}`}>
+            <p className={`font-normal text-xs whitespace-nowrap capitalize ${eventColor.text}`}>
               {localizedWeekdays[adjustedEvent.adjustedStartWeekdayNumber].long}
             </p>
           </div>
