@@ -8,39 +8,35 @@ import { EditEngagementModal } from "./EditEngagementModal";
 import { ContextMenu } from "components/ContextMenu";
 import { DeleteEngagementModal } from "./DeleteEngagementModal";
 import { gql } from "@apollo/client";
-import { FlatEngagementsTableFragment } from "@generated/graphql";
+import { FlatEngagementsTableEngagementFragment } from "@generated/graphql";
 
 type Props = {
-  engagements: NonNullable<FlatEngagementsTableFragment["engagements"]>;
-  selectedEngagement:
-    | FlatEngagementsTableFragment["engagements"][number]
-    | null;
+  engagements: FlatEngagementsTableEngagementFragment[];
+  selectedEngagement: FlatEngagementsTableEngagementFragment | null;
 };
 
 FlatEngagementsTable.fragments = {
-  engagements: gql`
-    fragment FlatEngagementsTable on Query {
-      engagements {
+  engagement: gql`
+    fragment FlatEngagementsTableEngagement on Engagement {
+      id
+      name
+      startDate
+      endDate
+      organizationId
+      cohorts {
         id
         name
+        grade
         startDate
         endDate
-        organizationId
-        cohorts {
+      }
+      staffAssignments {
+        user {
           id
-          name
-          grade
-          startDate
-          endDate
+          fullName
+          email
         }
-        staffAssignments {
-          user {
-            id
-            fullName
-            email
-          }
-          role
-        }
+        role
       }
     }
   `,
@@ -118,7 +114,7 @@ export type EngagementTableData = {
 };
 
 export function usePrepEngagementData(
-  engagements: NonNullable<FlatEngagementsTableFragment["engagements"]>,
+  engagements: FlatEngagementsTableEngagementFragment[],
   contextMenu: {
     onClickEdit: (engagement: EngagementTableData) => void;
     onClickDelete: (engagement: EngagementTableData) => void;

@@ -42,7 +42,6 @@ type Props = {
 const Engagements: NextPage<Props> = ({ engagements }) => {
   const { data } = useQuery<FlatEngagementsPageQuery>(GET_ALL_ENGAGEMENTS, {
     fetchPolicy: "network-only",
-    nextFetchPolicy: "cache-first",
     onError: (error) => {
       console.error(error);
       triggerErrorToast({

@@ -173,6 +173,12 @@ export type EngagementStaffAssignment = {
   user: User;
 };
 
+export type EngagementsSearchResults = {
+  __typename?: 'EngagementsSearchResults';
+  count: Scalars['Int'];
+  results: Array<Engagement>;
+};
+
 export type InviteUserInput = {
   email: Scalars['String'];
   fullName: Scalars['String'];
@@ -280,7 +286,8 @@ export type Query = {
   engagements: Array<Engagement>;
   organization?: Maybe<Organization>;
   organizations: Array<Organization>;
-  searchUsers: SearchResults;
+  searchEngagements: EngagementsSearchResults;
+  searchUsers: UsersSearchResults;
   teacherCohorts: Array<Cohort>;
   users: Array<User>;
 };
@@ -301,6 +308,11 @@ export type QueryOrganizationArgs = {
 };
 
 
+export type QuerySearchEngagementsArgs = {
+  query: Scalars['String'];
+};
+
+
 export type QuerySearchUsersArgs = {
   query: Scalars['String'];
 };
@@ -313,12 +325,6 @@ export type ScheduledMeeting = {
   subject: AssignmentSubject;
   timeZone: Scalars['String'];
   weekday: Weekday;
-};
-
-export type SearchResults = {
-  __typename?: 'SearchResults';
-  count: Scalars['Int'];
-  results: Array<User>;
 };
 
 export type User = {
@@ -335,6 +341,12 @@ export enum UserRole {
   MentorTeacher = 'MENTOR_TEACHER',
   TutorTeacher = 'TUTOR_TEACHER'
 }
+
+export type UsersSearchResults = {
+  __typename?: 'UsersSearchResults';
+  count: Scalars['Int'];
+  results: Array<User>;
+};
 
 export enum Weekday {
   Friday = 'FRIDAY',
@@ -416,7 +428,16 @@ export type EngagementDetailsPageCohortsFragment = { __typename?: 'Engagement', 
 
 export type EngagementDetailsPageCsvUploadFragment = { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string }, cohorts: Array<{ __typename?: 'Cohort', id: string }> };
 
-export type FlatEngagementsFragment = { __typename?: 'Query', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
+export type FlatEngagementsPageFragment = { __typename?: 'Query', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
+
+export type SearchEngagementsQueryVariables = Exact<{
+  query: Scalars['String'];
+}>;
+
+
+export type SearchEngagementsQuery = { __typename?: 'Query', searchEngagements: { __typename?: 'EngagementsSearchResults', count: number, results: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> } };
+
+export type FlatEngagementsTableEngagementFragment = { __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> };
 
 export type EngagementsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
@@ -456,7 +477,7 @@ export type SearchUsersQueryVariables = Exact<{
 }>;
 
 
-export type SearchUsersQuery = { __typename?: 'Query', searchUsers: { __typename?: 'SearchResults', count: number, results: Array<{ __typename?: 'User', id: string, fullName: string, email: string }> } };
+export type SearchUsersQuery = { __typename?: 'Query', searchUsers: { __typename?: 'UsersSearchResults', count: number, results: Array<{ __typename?: 'User', id: string, fullName: string, email: string }> } };
 
 export type InviteUserMutationVariables = Exact<{
   input: InviteUserInput;
@@ -616,32 +637,37 @@ export const EngagementDetailsPageCsvUploadFragmentDoc = gql`
   }
 }
     `;
-export const FlatEngagementsFragmentDoc = gql`
-    fragment FlatEngagements on Query {
-  engagements {
+export const FlatEngagementsTableEngagementFragmentDoc = gql`
+    fragment FlatEngagementsTableEngagement on Engagement {
+  id
+  name
+  startDate
+  endDate
+  organizationId
+  cohorts {
     id
     name
+    grade
     startDate
     endDate
-    organizationId
-    cohorts {
+  }
+  staffAssignments {
+    user {
       id
-      name
-      grade
-      startDate
-      endDate
+      fullName
+      email
     }
-    staffAssignments {
-      user {
-        id
-        fullName
-        email
-      }
-      role
-    }
+    role
   }
 }
     `;
+export const FlatEngagementsPageFragmentDoc = gql`
+    fragment FlatEngagementsPage on Query {
+  engagements {
+    ...FlatEngagementsTableEngagement
+  }
+}
+    ${FlatEngagementsTableEngagementFragmentDoc}`;
 export const NewOrgFragmentDoc = gql`
     fragment NewOrg on Organization {
   id
@@ -1042,6 +1068,44 @@ export function useEditEngagementMutation(baseOptions?: Apollo.MutationHookOptio
 export type EditEngagementMutationHookResult = ReturnType<typeof useEditEngagementMutation>;
 export type EditEngagementMutationResult = Apollo.MutationResult<EditEngagementMutation>;
 export type EditEngagementMutationOptions = Apollo.BaseMutationOptions<EditEngagementMutation, EditEngagementMutationVariables>;
+export const SearchEngagementsDocument = gql`
+    query SearchEngagements($query: String!) {
+  searchEngagements(query: $query) {
+    count
+    results {
+      ...FlatEngagementsTableEngagement
+    }
+  }
+}
+    ${FlatEngagementsTableEngagementFragmentDoc}`;
+
+/**
+ * __useSearchEngagementsQuery__
+ *
+ * To run a query within a React component, call `useSearchEngagementsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchEngagementsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchEngagementsQuery({
+ *   variables: {
+ *      query: // value for 'query'
+ *   },
+ * });
+ */
+export function useSearchEngagementsQuery(baseOptions: Apollo.QueryHookOptions<SearchEngagementsQuery, SearchEngagementsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchEngagementsQuery, SearchEngagementsQueryVariables>(SearchEngagementsDocument, options);
+      }
+export function useSearchEngagementsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchEngagementsQuery, SearchEngagementsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchEngagementsQuery, SearchEngagementsQueryVariables>(SearchEngagementsDocument, options);
+        }
+export type SearchEngagementsQueryHookResult = ReturnType<typeof useSearchEngagementsQuery>;
+export type SearchEngagementsLazyQueryHookResult = ReturnType<typeof useSearchEngagementsLazyQuery>;
+export type SearchEngagementsQueryResult = Apollo.QueryResult<SearchEngagementsQuery, SearchEngagementsQueryVariables>;
 export const AddOrganizationDocument = gql`
     mutation AddOrganization($input: AddOrganizationInput!) {
   addOrganization(input: $input) {
@@ -1225,9 +1289,9 @@ export type InviteUserMutationResult = Apollo.MutationResult<InviteUserMutation>
 export type InviteUserMutationOptions = Apollo.BaseMutationOptions<InviteUserMutation, InviteUserMutationVariables>;
 export const FlatEngagementsPageDocument = gql`
     query FlatEngagementsPage {
-  ...FlatEngagements
+  ...FlatEngagementsPage
 }
-    ${FlatEngagementsFragmentDoc}`;
+    ${FlatEngagementsPageFragmentDoc}`;
 
 /**
  * __useFlatEngagementsPageQuery__
