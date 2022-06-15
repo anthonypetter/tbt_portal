@@ -3,7 +3,6 @@ import toDate from "date-fns-tz/toDate";
 import utcToZonedTime from "date-fns-tz/utcToZonedTime";
 import formatISO from "date-fns/formatISO";
 import { FC, Fragment, useEffect, useRef, useState } from "react";
-import { Popover, Transition } from "@headlessui/react";
 
 import { Weekday } from "@generated/graphql";
 import {
@@ -20,6 +19,7 @@ import {
   Time24Hour,
   WeekdayNumber
 } from "@utils/dateTime";
+import { Popover } from "./Popover";
 
 export type ContentProps = {
   eventColor?: EventColor;
@@ -95,8 +95,8 @@ export function WeekCalendar(
   });
 
   return (
-    <div ref={container} className="h-[70vh] flex flex-auto flex-col overflow-auto bg-white">
-      <div className="w-[165%] flex max-w-full flex-none flex-col sm:max-w-none md:max-w-full">
+    <div ref={container} className="h-[70vh] flex flex-auto flex-col overflow-y-auto overflow-x-clip bg-white">
+      <div className="w-full flex max-w-full flex-none flex-col sm:max-w-none md:max-w-full">
         {/* Days Nav Row */}
         <div
           ref={containerNav}
@@ -232,7 +232,6 @@ function FullNav({ localizedWeekdays, focusedDay }: FullNavProps) {
     </div>
   );
 }
-
 
 type EventsProps = BaseWeekdayProps & {
   events: WeekCalendarEvent[];
@@ -389,8 +388,7 @@ function Event({
   ];
 
   return (
-    <Popover
-      as="li"
+    <li
       className={clsx(
         "relative mt-px",
         adjustedEvent.adjustedStartWeekdayNumber !== focusedDay && "hidden",
@@ -399,55 +397,42 @@ function Event({
       )}
       style={{ gridRow: `${startGridRow} / span ${gridSpan}` }}
     >
-      {({ open }) => (
-        <>
-          <Popover.Button
-            as="a"
-            href="#"
-            className={clsx(
-              "group absolute inset-1 flex flex-col hover:z-20 overflow-y-auto rounded-lg p-2 text-xs leading-5",
-              `${eventColor.bg} ${eventColor.bgHover}`,
-              open && "border-2 border-indigo-300 z-20"
-            )}
-          >
-            <p className={`${eventColor.text} ${eventColor.textHover}`}>
-              <time dateTime={`${adjustedEvent.adjustedStartIsoDate}T${adjustedEvent.adjustedStartTime}`}>
-                {localizedTime(adjustedEvent.adjustedStartTime, mode24Hour, locale)}
-              </time>
+      <Popover
+        placement="top-start"
+        render={() => (
+          <EventPopover
+            adjustedEvent={adjustedEvent}
+            localizedWeekdays={localizedWeekdays}
+            locale={locale}
+            mode24Hour={mode24Hour}
+            eventColor={eventColor}
+          />
+        )}
+      >
+        <a
+          href="#"
+          className={clsx(
+            "group absolute inset-1 flex flex-col hover:z-20 overflow-y-auto rounded-lg p-2 text-xs leading-5",
+            `${eventColor.bg} ${eventColor.bgHover}`
+          )}
+        >
+          <p className={`${eventColor.text} ${eventColor.textHover}`}>
+            <time dateTime={`${adjustedEvent.adjustedStartIsoDate}T${adjustedEvent.adjustedStartTime}`}>
+              {localizedTime(adjustedEvent.adjustedStartTime, mode24Hour, locale)}
+            </time>
+          </p>
+          <p className={`font-semibold leading-tight ${eventColor.text}`}>
+            {adjustedEvent.title || "Untitled Event"}
+          </p>
+          {adjustedEvent.details && (
+            <p className={`font-normal leading-tight ${eventColor.text}`}>
+              {adjustedEvent.details}
             </p>
-            <p className={`font-semibold leading-tight ${eventColor.text}`}>
-              {adjustedEvent.title || "Untitled Event"}
-            </p>
-            {adjustedEvent.details && (
-              <p className={`font-normal leading-tight ${eventColor.text}`}>
-                {adjustedEvent.details}
-              </p>
-            )}
-          </Popover.Button>
-
-          <Transition
-            as={Fragment}
-            enter="transition ease-out duration-200"
-            enterFrom="opacity-0 translate-y-1"
-            enterTo="opacity-100 translate-y-0"
-            leave="transition ease-in duration-150"
-            leaveFrom="opacity-100 translate-y-0"
-            leaveTo="opacity-0 translate-y-1"
-          >
-            <Popover.Panel className="absolute z-30">
-              <EventPopover
-                adjustedEvent={adjustedEvent}
-                localizedWeekdays={localizedWeekdays}
-                locale={locale}
-                mode24Hour={mode24Hour}
-                eventColor={eventColor}
-              />
-            </Popover.Panel>
-          </Transition>
-        </>
-      )}
-    </Popover>
-  );
+          )}
+        </a>
+      </Popover>
+    </li>
+  )
 }
 
 
@@ -465,7 +450,7 @@ function EventPopover({
 }: EventPopoverProps) {
   const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: "medium" });
   return (
-    <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
+    <div className="relative z-30 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
       <div className="flex flex-row bg-white gap-3 px-2 py-3 sm:p-3 w-[350px]">
         {/* Left section */}
         <div className="flex flex-col place-content-between w-auto my-1">
