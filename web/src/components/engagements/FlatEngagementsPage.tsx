@@ -45,14 +45,14 @@ type Props = {
 
 export function FlatEngagementsPage({ engagements, refetch }: Props) {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [searchMode, setSearchMode] = useState(false);
+  const [searchResultsMode, setSearchResultsMode] = useState(false);
   const { results, loading } = useEngagementsSearch(searchQuery);
 
   useEffect(() => {
-    if (searchQuery.length >= MIN_QUERY_LENGTH) {
-      setSearchMode(true);
+    if (searchQuery.length >= MIN_QUERY_LENGTH && !loading) {
+      setSearchResultsMode(true);
     }
-  }, [searchQuery]);
+  }, [searchQuery, loading]);
 
   return (
     <div>
@@ -84,7 +84,7 @@ export function FlatEngagementsPage({ engagements, refetch }: Props) {
           className="text-blue-500"
           onClick={() => {
             setSearchQuery("");
-            setSearchMode(false);
+            setSearchResultsMode(false);
             refetch();
           }}
         >
@@ -93,7 +93,7 @@ export function FlatEngagementsPage({ engagements, refetch }: Props) {
       </div>
 
       <FlatEngagementsTable
-        engagements={searchMode && results ? results : engagements}
+        engagements={searchResultsMode && results ? results : engagements}
         selectedEngagement={null}
       />
     </div>
@@ -102,17 +102,11 @@ export function FlatEngagementsPage({ engagements, refetch }: Props) {
 
 function useEngagementsSearch(query: string) {
   const [debouncedQuery] = useDebounce(query, 300);
-  const [results, setResults] = useState<
-    SearchEngagementsQuery["searchEngagements"]["results"]
-  >([]);
 
-  const [searchEngagements, { loading, error }] =
+  const [searchEngagements, { loading, data }] =
     useLazyQuery<SearchEngagementsQuery>(SEARCH_ENGAGEMENTS, {
       variables: { query },
       fetchPolicy: "no-cache",
-      onCompleted: ({ searchEngagements }) => {
-        setResults(searchEngagements.results ?? []);
-      },
       onError: (error) =>
         triggerErrorToast({
           message: "Something went wrong with this search.",
@@ -126,9 +120,5 @@ function useEngagementsSearch(query: string) {
     }
   }, [debouncedQuery, searchEngagements]);
 
-  return {
-    loading,
-    results: results,
-    error,
-  };
+  return { loading, results: data?.searchEngagements.results };
 }
