@@ -5,10 +5,8 @@ export const CohortResolver = {
   async staffAssignments(
     parent: ResolversParentTypes["Cohort"],
     _args: undefined,
-    { authedUser, AuthorizationService, CohortService }: Context
+    { CohortService }: Context
   ) {
-    AuthorizationService.assertIsAdmin(authedUser);
-
     const staffAssignments =
       parent.staffAssignments?.length > 0
         ? parent.staffAssignments
@@ -23,10 +21,8 @@ export const CohortResolver = {
   async schedule(
     parent: ResolversParentTypes["Cohort"],
     _args: undefined,
-    { authedUser, AuthorizationService, CohortService }: Context
+    { CohortService }: Context
   ) {
-    AuthorizationService.assertIsAdmin(authedUser);
-
     const scheduleMeetings =
       parent.schedule?.length > 0
         ? parent.schedule
@@ -45,9 +41,8 @@ export const CohortResolver = {
   async engagement(
     parent: ResolversParentTypes["Cohort"],
     _args: undefined,
-    { authedUser, AuthorizationService, CohortService }: Context
+    { EngagementService }: Context
   ) {
-    AuthorizationService.assertIsAdmin(authedUser);
-    return CohortService.getEngagement(parent.engagementId);
+    return EngagementService.getEngagement(parent.engagementId);
   },
 };

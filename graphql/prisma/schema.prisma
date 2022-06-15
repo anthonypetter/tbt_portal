@@ -52,8 +52,8 @@ model Engagement {
   id        Int       @id @default(autoincrement())
   createdAt DateTime  @default(now())
   name      String
-  startDate DateTime?
-  endDate   DateTime?
+  startDate DateTime? @db.Date
+  endDate   DateTime? @db.Date
 
   //relation fields
   staffAssignments EngagementStaffAssignment[]
@@ -96,8 +96,8 @@ model Cohort {
   hostKey     String?
   meetingId   String?
   exempt      Boolean   @default(false)
-  startDate   DateTime?
-  endDate     DateTime?
+  startDate   DateTime? @db.Date
+  endDate     DateTime? @db.Date
 
   // relation fields
   engagementId     Int
