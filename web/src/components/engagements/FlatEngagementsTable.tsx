@@ -22,7 +22,10 @@ FlatEngagementsTable.fragments = {
       name
       startDate
       endDate
-      organizationId
+      organization {
+        id
+        name
+      }
       cohorts {
         id
         name
@@ -111,6 +114,7 @@ export type EngagementTableData = {
   startDate?: number | null;
   endDate?: number | null;
   organizationId: string;
+  organizationName: string;
 };
 
 export function usePrepEngagementData(
@@ -141,6 +145,20 @@ export function usePrepEngagementData(
           );
         },
       },
+      {
+        Header: "Organization",
+        accessor: "organizationName",
+        Cell: ({ row }: Cell<EngagementTableData>) => {
+          return (
+            <Link
+              href={Routes.org.engagements.href(row.original.organizationId)}
+            >
+              {row.original.organizationName}
+            </Link>
+          );
+        },
+      },
+
       {
         Header: "Starts",
         accessor: "startDate",
@@ -181,7 +199,8 @@ export function usePrepEngagementData(
         name: engagement.name,
         startDate: engagement.startDate,
         endDate: engagement.endDate,
-        organizationId: engagement.organizationId,
+        organizationId: engagement.organization.id,
+        organizationName: engagement.organization.name,
       };
     });
 
