@@ -3,6 +3,7 @@ import formatISO from "date-fns/formatISO";
 
 import { CohortForScheduleCalendarFragment } from "@generated/graphql";
 import { ContentProps, WeekCalendar, WeekCalendarEvent } from "./WeekCalendar";
+import { RoleText } from "components/RoleText";
 
 CohortsScheduleCalendar.fragments = {
   cohort: gql`
@@ -23,7 +24,6 @@ CohortsScheduleCalendar.fragments = {
           id
           role
           fullName
-          accountStatus
         }
         subject
       }
@@ -91,23 +91,34 @@ function CohortEventDetails({
   eventColor,
 }: CohortEventDetailsProps) {
   return (
-    <div className="flex flex-col bg-slate-400">
-      {staffAssignments.map(staffAssignment => (
-        <div key={staffAssignment.user.id} className="flex flex-col">
-          <p className="text-sm">
-            {staffAssignment.subject}
-          </p>
-          <p className="text-sm">
-            {staffAssignment.user.fullName}
-          </p>
-          <p className="text-sm">
-            {staffAssignment.user.role}
-          </p>
-          <p>
-            eventColor: &quot;{eventColor?.bg ?? "unknown"}&quot;
-          </p>
-        </div>
-      ))}
+    <div className="flex flex-col gap-2">
+      {staffAssignments.length > 0 ? (
+        staffAssignments.sort(
+          (a, b) => {
+            if (a.user.role === b.user.role) {
+              // Sort by full name alphabetic if role is identical.
+              return a.user.fullName < b.user.fullName ? -1 : 1;
+            }
+            // Sort by role reverse alphabetic (Tutor before Mentor).
+            return a.user.role < b.user.role ? 1 : -1;
+          }
+        ).map(staffAssignment => (
+          <div key={staffAssignment.user.id} className="flex flex-col">
+            <p className={`text-sm text-semibold ${eventColor?.text}`}>
+              {staffAssignment.user.fullName}
+            </p>
+            <p className="text-xs italic text-gray-400">
+              <RoleText className="" role={staffAssignment.user.role} />
+              {" "}
+              ({staffAssignment.subject})
+            </p>
+          </div>
+        ))
+      ) : (
+        <p className="text-sm text-semibold">
+          No staff has been assigned to this subject.
+        </p>
+      )}
     </div>
   )
 }
