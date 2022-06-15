@@ -542,3 +542,11 @@ const EVENT_COLORS: EventColor[] = [
   { bg: "bg-amber-50", bgHover: "hover:bg-amber-100", text: "text-amber-500", textHover: "group-hover:text-amber-700", accent: "bg-amber-700" },
   { bg: "bg-slate-50", bgHover: "hover:bg-slate-100", text: "text-slate-500", textHover: "group-hover:text-slate-700", accent: "bg-slate-700" },
 ];
+
+export const DEFAULT_EVENT_COLOR: EventColor = {
+  bg: "bg-gray-50",
+  bgHover: "hover:bg-gray-100",
+  text: "text-gray-500",
+  textHover: "group-hover:text-gray-700",
+  accent: "bg-gray-700",
+};

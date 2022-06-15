@@ -1,9 +1,15 @@
 import { gql } from "@apollo/client";
+import { VideoCameraIcon } from "@heroicons/react/outline";
 import formatISO from "date-fns/formatISO";
 
 import { CohortForScheduleCalendarFragment } from "@generated/graphql";
-import { ContentProps, WeekCalendar, WeekCalendarEvent } from "./WeekCalendar";
 import { RoleText } from "components/RoleText";
+import {
+  ContentProps,
+  DEFAULT_EVENT_COLOR,
+  WeekCalendar,
+  WeekCalendarEvent
+} from "./WeekCalendar";
 
 CohortsScheduleCalendar.fragments = {
   cohort: gql`
@@ -31,7 +37,7 @@ CohortsScheduleCalendar.fragments = {
       hostKey
       meetingId
     }
-  `
+  `,
 };
 
 type CohortsScheduleCalendarProps = {
@@ -88,7 +94,7 @@ type CohortEventDetailsProps = ContentProps & {
 };
 function CohortEventDetails({
   staffAssignments,
-  eventColor,
+  eventColor = DEFAULT_EVENT_COLOR,
 }: CohortEventDetailsProps) {
   return (
     <div className="flex flex-col gap-2">
@@ -119,6 +125,15 @@ function CohortEventDetails({
           No staff has been assigned to this subject.
         </p>
       )}
+      <div className="flex flex-row">
+        <button
+          type="button"
+          className={`inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md ${eventColor.text} ${eventColor.bg} ${eventColor.bgHover} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500`}
+        >
+          Link to the Classroom
+          <VideoCameraIcon className="ml-2 -mr-0.5 h-4 w-4" aria-hidden="true" />
+        </button>
+      </div>
     </div>
   )
 }
