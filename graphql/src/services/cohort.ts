@@ -11,11 +11,11 @@ import uniqBy from "lodash/uniqBy";
 import { extractSchedules } from "../utils/schedules";
 
 /**
- * Cohort Types with relations
+ * Cohort Type with relations
  *
  * Read more here: https://www.prisma.io/docs/concepts/components/prisma-client/advanced-type-safety/operating-against-partial-structures-of-model-types#problem-using-variations-of-the-generated-model-type
  *
- * CohortsWithBaseRelations is referenced in codegen.yml
+ * CohortWithBaseRelations is referenced in codegen.yml
  */
 
 export const cohortWithBaseRelations = Prisma.validator<Prisma.CohortArgs>()({
@@ -25,7 +25,7 @@ export const cohortWithBaseRelations = Prisma.validator<Prisma.CohortArgs>()({
   },
 });
 
-export type CohortsWithBaseRelations = Prisma.CohortGetPayload<
+export type CohortWithBaseRelations = Prisma.CohortGetPayload<
   typeof cohortWithBaseRelations
 >;
 
