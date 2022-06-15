@@ -1,5 +1,6 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { CohortsWithBaseRelations as CohortsWithBaseRelationsModel } from 'src/services/cohort';
+import { CohortWithBaseRelations as CohortWithBaseRelationsModel } from 'src/services/cohort';
+import { EngagementWithBaseRelations as EngagementWithBaseRelationsModel } from 'src/services/engagement';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -174,6 +175,12 @@ export type EngagementStaffAssignment = {
   user: User;
 };
 
+export type EngagementsSearchResults = {
+  __typename?: 'EngagementsSearchResults';
+  count: Scalars['Int'];
+  results: Array<Engagement>;
+};
+
 export type InviteUserInput = {
   email: Scalars['String'];
   fullName: Scalars['String'];
@@ -281,7 +288,8 @@ export type Query = {
   engagements: Array<Engagement>;
   organization?: Maybe<Organization>;
   organizations: Array<Organization>;
-  searchUsers: SearchResults;
+  searchEngagements: EngagementsSearchResults;
+  searchUsers: UsersSearchResults;
   teacherCohorts: Array<Cohort>;
   users: Array<User>;
 };
@@ -302,6 +310,11 @@ export type QueryOrganizationArgs = {
 };
 
 
+export type QuerySearchEngagementsArgs = {
+  query: Scalars['String'];
+};
+
+
 export type QuerySearchUsersArgs = {
   query: Scalars['String'];
 };
@@ -314,12 +327,6 @@ export type ScheduledMeeting = {
   subject: AssignmentSubject;
   timeZone: Scalars['String'];
   weekday: Weekday;
-};
-
-export type SearchResults = {
-  __typename?: 'SearchResults';
-  count: Scalars['Int'];
-  results: Array<User>;
 };
 
 export type User = {
@@ -336,6 +343,12 @@ export enum UserRole {
   MentorTeacher = 'MENTOR_TEACHER',
   TutorTeacher = 'TUTOR_TEACHER'
 }
+
+export type UsersSearchResults = {
+  __typename?: 'UsersSearchResults';
+  count: Scalars['Int'];
+  results: Array<User>;
+};
 
 export enum Weekday {
   Friday = 'FRIDAY',
@@ -423,7 +436,7 @@ export type ResolversTypes = {
   AssignmentRole: AssignmentRole;
   AssignmentSubject: AssignmentSubject;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-  Cohort: ResolverTypeWrapper<CohortsWithBaseRelationsModel>;
+  Cohort: ResolverTypeWrapper<CohortWithBaseRelationsModel>;
   CohortStaffAssignment: ResolverTypeWrapper<CohortStaffAssignment>;
   CsvCohortStaffAssignment: CsvCohortStaffAssignment;
   CsvCohortTeacher: CsvCohortTeacher;
@@ -435,8 +448,9 @@ export type ResolversTypes = {
   EditCohortInput: EditCohortInput;
   EditEngagementInput: EditEngagementInput;
   EditOrganizationInput: EditOrganizationInput;
-  Engagement: ResolverTypeWrapper<Omit<Engagement, 'cohorts' | 'organization'> & { cohorts: Array<ResolversTypes['Cohort']>, organization: ResolversTypes['Organization'] }>;
+  Engagement: ResolverTypeWrapper<EngagementWithBaseRelationsModel>;
   EngagementStaffAssignment: ResolverTypeWrapper<EngagementStaffAssignment>;
+  EngagementsSearchResults: ResolverTypeWrapper<Omit<EngagementsSearchResults, 'results'> & { results: Array<ResolversTypes['Engagement']> }>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   InviteUserInput: InviteUserInput;
@@ -446,10 +460,10 @@ export type ResolversTypes = {
   Organization: ResolverTypeWrapper<Omit<Organization, 'engagements'> & { engagements: Array<ResolversTypes['Engagement']> }>;
   Query: ResolverTypeWrapper<{}>;
   ScheduledMeeting: ResolverTypeWrapper<ScheduledMeeting>;
-  SearchResults: ResolverTypeWrapper<SearchResults>;
   String: ResolverTypeWrapper<Scalars['String']>;
   User: ResolverTypeWrapper<User>;
   UserRole: UserRole;
+  UsersSearchResults: ResolverTypeWrapper<UsersSearchResults>;
   Weekday: Weekday;
 };
 
@@ -459,7 +473,7 @@ export type ResolversParentTypes = {
   AddEngagementInput: AddEngagementInput;
   AddOrganizationInput: AddOrganizationInput;
   Boolean: Scalars['Boolean'];
-  Cohort: CohortsWithBaseRelationsModel;
+  Cohort: CohortWithBaseRelationsModel;
   CohortStaffAssignment: CohortStaffAssignment;
   CsvCohortStaffAssignment: CsvCohortStaffAssignment;
   CsvCohortTeacher: CsvCohortTeacher;
@@ -471,8 +485,9 @@ export type ResolversParentTypes = {
   EditCohortInput: EditCohortInput;
   EditEngagementInput: EditEngagementInput;
   EditOrganizationInput: EditOrganizationInput;
-  Engagement: Omit<Engagement, 'cohorts' | 'organization'> & { cohorts: Array<ResolversParentTypes['Cohort']>, organization: ResolversParentTypes['Organization'] };
+  Engagement: EngagementWithBaseRelationsModel;
   EngagementStaffAssignment: EngagementStaffAssignment;
+  EngagementsSearchResults: Omit<EngagementsSearchResults, 'results'> & { results: Array<ResolversParentTypes['Engagement']> };
   ID: Scalars['ID'];
   Int: Scalars['Int'];
   InviteUserInput: InviteUserInput;
@@ -482,9 +497,9 @@ export type ResolversParentTypes = {
   Organization: Omit<Organization, 'engagements'> & { engagements: Array<ResolversParentTypes['Engagement']> };
   Query: {};
   ScheduledMeeting: ScheduledMeeting;
-  SearchResults: SearchResults;
   String: Scalars['String'];
   User: User;
+  UsersSearchResults: UsersSearchResults;
 };
 
 export type CohortResolvers<ContextType = any, ParentType extends ResolversParentTypes['Cohort'] = ResolversParentTypes['Cohort']> = {
@@ -540,6 +555,12 @@ export type EngagementStaffAssignmentResolvers<ContextType = any, ParentType ext
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type EngagementsSearchResultsResolvers<ContextType = any, ParentType extends ResolversParentTypes['EngagementsSearchResults'] = ResolversParentTypes['EngagementsSearchResults']> = {
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  results?: Resolver<Array<ResolversTypes['Engagement']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   addCohort?: Resolver<ResolversTypes['Cohort'], ParentType, ContextType, RequireFields<MutationAddCohortArgs, 'input'>>;
@@ -574,7 +595,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   engagements?: Resolver<Array<ResolversTypes['Engagement']>, ParentType, ContextType>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
-  searchUsers?: Resolver<ResolversTypes['SearchResults'], ParentType, ContextType, RequireFields<QuerySearchUsersArgs, 'query'>>;
+  searchEngagements?: Resolver<ResolversTypes['EngagementsSearchResults'], ParentType, ContextType, RequireFields<QuerySearchEngagementsArgs, 'query'>>;
+  searchUsers?: Resolver<ResolversTypes['UsersSearchResults'], ParentType, ContextType, RequireFields<QuerySearchUsersArgs, 'query'>>;
   teacherCohorts?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType>;
   users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
 };
@@ -589,18 +611,18 @@ export type ScheduledMeetingResolvers<ContextType = any, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SearchResultsResolvers<ContextType = any, ParentType extends ResolversParentTypes['SearchResults'] = ResolversParentTypes['SearchResults']> = {
-  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  results?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   accountStatus?: Resolver<ResolversTypes['AccountStatus'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   fullName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['UserRole'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UsersSearchResultsResolvers<ContextType = any, ParentType extends ResolversParentTypes['UsersSearchResults'] = ResolversParentTypes['UsersSearchResults']> = {
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  results?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -611,11 +633,12 @@ export type Resolvers<ContextType = any> = {
   Date?: GraphQLScalarType;
   Engagement?: EngagementResolvers<ContextType>;
   EngagementStaffAssignment?: EngagementStaffAssignmentResolvers<ContextType>;
+  EngagementsSearchResults?: EngagementsSearchResultsResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   ScheduledMeeting?: ScheduledMeetingResolvers<ContextType>;
-  SearchResults?: SearchResultsResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  UsersSearchResults?: UsersSearchResultsResolvers<ContextType>;
 };
 
