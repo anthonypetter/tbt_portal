@@ -1,20 +1,25 @@
-import { useMemo, useState } from "react";
-import { Routes } from "@utils/routes";
-import { DateText } from "components/Date";
-import { CONTEXT_MENU_ID, Table } from "components/Table";
-import { Link } from "components/Link";
-import { Column, Cell } from "react-table";
-import { EditEngagementModal } from "./EditEngagementModal";
-import { ContextMenu } from "components/ContextMenu";
-import { DeleteEngagementModal } from "./DeleteEngagementModal";
 import { gql } from "@apollo/client";
 import { FlatEngagementsTableEngagementFragment } from "@generated/graphql";
+import { Routes } from "@utils/routes";
+import { ContextMenu } from "components/ContextMenu";
+import { DateText } from "components/Date";
+import { Link } from "components/Link";
+import { CONTEXT_MENU_ID, Table } from "components/Table";
+import { useMemo, useState } from "react";
+import { Cell, Column } from "react-table";
+import { DeleteEngagementModal } from "./DeleteEngagementModal";
+import { EditEngagementModal } from "./EditEngagementModal";
 
 type Props = {
   engagements: FlatEngagementsTableEngagementFragment[];
   selectedEngagement: FlatEngagementsTableEngagementFragment | null;
 };
 
+/**
+ * Different versions of an engagement are needed by this component's children.
+ * Since fragments merge repeated fields during composition, the final fragment will
+ * represent the exact engagement needed by this parent component.
+ */
 FlatEngagementsTable.fragments = {
   engagement: gql`
     fragment FlatEngagementsTableEngagement on Engagement {
@@ -26,22 +31,11 @@ FlatEngagementsTable.fragments = {
         id
         name
       }
-      cohorts {
-        id
-        name
-        grade
-        startDate
-        endDate
-      }
-      staffAssignments {
-        user {
-          id
-          fullName
-          email
-        }
-        role
-      }
+      ...DeleteEngagementModalEngagement
+      ...EditEngagementModalEngagement
     }
+    ${DeleteEngagementModal.fragments.engagement}
+    ${EditEngagementModal.fragments.engagement}
   `,
 };
 
