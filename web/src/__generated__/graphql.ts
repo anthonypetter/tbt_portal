@@ -383,13 +383,7 @@ export type CohortForDetailsSidebarFragment = {
   staffAssignments: Array<{
     __typename?: "CohortStaffAssignment";
     subject: AssignmentSubject;
-    user: {
-      __typename?: "User";
-      id: string;
-      fullName: string;
-      role: UserRole;
-      accountStatus: AccountStatus;
-    };
+    user: { __typename?: "User"; id: string; fullName: string; role: UserRole };
   }>;
   schedule: Array<{
     __typename?: "ScheduledMeeting";
@@ -462,7 +456,6 @@ export type EngagementCohortsViewFragment = {
         fullName: string;
         email: string;
         role: UserRole;
-        accountStatus: AccountStatus;
       };
     }>;
     schedule: Array<{
@@ -507,7 +500,6 @@ export type CohortsViewListFFragment = {
           fullName: string;
           email: string;
           role: UserRole;
-          accountStatus: AccountStatus;
         };
       }>;
       schedule: Array<{
@@ -555,13 +547,7 @@ export type CohortForScheduleCalendarFragment = {
   staffAssignments: Array<{
     __typename?: "CohortStaffAssignment";
     subject: AssignmentSubject;
-    user: {
-      __typename?: "User";
-      id: string;
-      role: UserRole;
-      fullName: string;
-      accountStatus: AccountStatus;
-    };
+    user: { __typename?: "User"; id: string; role: UserRole; fullName: string };
   }>;
 };
 
@@ -585,13 +571,7 @@ export type CohortForScheduleCalendarModalFragment = {
   staffAssignments: Array<{
     __typename?: "CohortStaffAssignment";
     subject: AssignmentSubject;
-    user: {
-      __typename?: "User";
-      id: string;
-      role: UserRole;
-      fullName: string;
-      accountStatus: AccountStatus;
-    };
+    user: { __typename?: "User"; id: string; role: UserRole; fullName: string };
   }>;
 };
 
@@ -633,6 +613,19 @@ export type EditEngagementMutation = {
   editEngagement: { __typename?: "Engagement"; id: string; name: string };
 };
 
+export type EditEngagementModalEngagementFragment = {
+  __typename?: "Engagement";
+  id: string;
+  name: string;
+  startDate?: any | null;
+  endDate?: any | null;
+  staffAssignments: Array<{
+    __typename?: "EngagementStaffAssignment";
+    role: AssignmentRole;
+    user: { __typename?: "User"; id: string; fullName: string; email: string };
+  }>;
+};
+
 export type EngagementDetailsPageCohortsFragment = {
   __typename?: "Engagement";
   id: string;
@@ -667,7 +660,6 @@ export type EngagementDetailsPageCohortsFragment = {
         fullName: string;
         email: string;
         role: UserRole;
-        accountStatus: AccountStatus;
       };
     }>;
     schedule: Array<{
@@ -914,7 +906,6 @@ export type CohortsViewFFragment = {
           fullName: string;
           email: string;
           role: UserRole;
-          accountStatus: AccountStatus;
         };
       }>;
       schedule: Array<{
@@ -1076,7 +1067,6 @@ export type OrgDetailPageCohortsQuery = {
             fullName: string;
             email: string;
             role: UserRole;
-            accountStatus: AccountStatus;
           };
         }>;
         schedule: Array<{
@@ -1137,7 +1127,6 @@ export type EngagementDetailsPageQuery = {
           fullName: string;
           email: string;
           role: UserRole;
-          accountStatus: AccountStatus;
         };
       }>;
       schedule: Array<{
@@ -1280,7 +1269,6 @@ export const CohortForScheduleCalendarFragmentDoc = gql`
         id
         role
         fullName
-        accountStatus
       }
       subject
     }
