@@ -1,41 +1,40 @@
 import { Context } from "../../context";
-import { Engagement } from "../__generated__/graphql";
-import { parseId } from "../../utils/numbers";
+import { ResolversParentTypes } from "../__generated__/graphql";
 
 export const EngagementResolver = {
   async cohorts(
-    parent: Engagement,
+    parent: ResolversParentTypes["Engagement"],
     _args: undefined,
-    { authedUser, AuthorizationService, CohortService }: Context
+    { CohortService }: Context
   ) {
-    AuthorizationService.assertIsAdmin(authedUser);
-    return CohortService.getCohorts(parseId(parent.id));
+    return CohortService.getCohorts(parent.id);
   },
 
   async staffAssignments(
-    parent: Engagement,
+    parent: ResolversParentTypes["Engagement"],
     _args: undefined,
-    { authedUser, AuthorizationService }: Context
+    { EngagementService }: Context
   ) {
-    AuthorizationService.assertIsAdmin(authedUser);
+    const staffAssignments =
+      parent.staffAssignments?.length > 0
+        ? parent.staffAssignments
+        : await EngagementService.getStaffAssignments(parent.id);
 
-    return parent.staffAssignments.map((sa) => ({
+    return staffAssignments.map((sa) => ({
       user: sa.user,
       role: sa.role,
     }));
   },
 
   async organization(
-    parent: Engagement,
+    parent: ResolversParentTypes["Engagement"],
     _args: undefined,
-    { authedUser, AuthorizationService, OrganizationService }: Context
+    { OrganizationService }: Context
   ) {
-    AuthorizationService.assertIsAdmin(authedUser);
-
     if (parent.organization) {
       return parent.organization;
     }
 
-    return OrganizationService.getOrganization(parseId(parent.organizationId));
+    return OrganizationService.getOrganization(parent.organizationId);
   },
 };
