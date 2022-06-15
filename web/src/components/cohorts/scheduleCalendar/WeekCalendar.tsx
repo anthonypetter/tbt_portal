@@ -2,7 +2,7 @@ import clsx from "clsx";
 import toDate from "date-fns-tz/toDate";
 import utcToZonedTime from "date-fns-tz/utcToZonedTime";
 import formatISO from "date-fns/formatISO";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { FC, Fragment, useEffect, useRef, useState } from "react";
 
 import { Weekday } from "@generated/graphql";
 import {
@@ -15,9 +15,15 @@ import {
   localizedWeekdays,
   Minute,
   normalizeTime,
+  printDuration,
   Time24Hour,
   WeekdayNumber
 } from "@utils/dateTime";
+import { Popover } from "./Popover";
+
+export type ContentProps = {
+  eventColor?: EventColor;
+};
 
 export type WeekCalendarEvent = {
   weekday: Weekday;
@@ -29,9 +35,11 @@ export type WeekCalendarEvent = {
   groupKey: string;       // Used to color-coordinate events.
   startDate?: Date;       // Used to filter out events outside the targetDate...
   endDate?: Date;         // ... if left blank event will not show.
+  content?: FC<ContentProps>; // Custom sub component to show content.
 };
 
 type AdjustedWeekCalendarEvent = WeekCalendarEvent & {
+  adjustedTimeZone: IANAtzName;
   groupNumber: number;
   adjustedStartIsoDate: ISODate;
   adjustedStartWeekdayNumber: WeekdayNumber;
@@ -87,12 +95,12 @@ export function WeekCalendar(
   });
 
   return (
-    <div ref={container} className="h-[70vh] flex flex-auto flex-col overflow-auto bg-white">
+    <div ref={container} className="h-[70vh] flex flex-auto flex-col overflow-auto md:overflow-x-clip bg-white">
       <div className="w-[165%] flex max-w-full flex-none flex-col sm:max-w-none md:max-w-full">
         {/* Days Nav Row */}
         <div
           ref={containerNav}
-          className="sticky top-0 z-30 flex-none bg-white shadow ring-1 ring-black ring-opacity-5 sm:pr-8"
+          className="sticky top-0 z-40 flex-none bg-white shadow ring-1 ring-black ring-opacity-5 sm:pr-8"
         >
           <MobileNav
             localizedWeekdays={localizedWeekdaysList}
@@ -225,7 +233,6 @@ function FullNav({ localizedWeekdays, focusedDay }: FullNavProps) {
   );
 }
 
-
 type EventsProps = BaseWeekdayProps & {
   events: WeekCalendarEvent[];
   locale: string;
@@ -318,6 +325,7 @@ function Events({
 
     adjustedEvents.push({
       ...event,
+      adjustedTimeZone: viewingTimeZone,
       groupNumber: groups[event.groupKey] || 0,
       adjustedStartIsoDate,
       adjustedStartWeekdayNumber,
@@ -325,9 +333,8 @@ function Events({
       adjustedEndWeekdayNumber,
       adjustedEndTime,
       adjustedStartMinute,
-      eventMinuteLength:
-        // Hacky way to extend an event that goes past midnight to span to the bottom.
-        Math.abs(adjustedEndMinute - adjustedStartMinute),
+      eventMinuteLength: adjustedEndMinute - adjustedStartMinute +
+        (adjustedEndMinute < adjustedStartMinute ? 1440 : 0),
     });
   });
 
@@ -340,6 +347,7 @@ function Events({
         <Event
           key={`${adjustedEvent.groupKey}_${i}`}
           adjustedEvent={adjustedEvent}
+          localizedWeekdays={localizedWeekdays}
           focusedDay={focusedDay}
           locale={locale}
           mode24Hour={mode24Hour}
@@ -351,13 +359,20 @@ function Events({
 
 type EventProps = {
   adjustedEvent: AdjustedWeekCalendarEvent;
+  localizedWeekdays: LocalizedWeekday[];
   focusedDay: WeekdayNumber;
   locale: string;
   mode24Hour: boolean;
 };
-function Event({ adjustedEvent, focusedDay, locale, mode24Hour }: EventProps) {
+function Event({
+  adjustedEvent,
+  localizedWeekdays,
+  focusedDay,
+  locale,
+  mode24Hour,
+}: EventProps) {
   const startGridRow = adjustedEvent.adjustedStartMinute / 5 + 2;
-  const gridSpan = Math.max(adjustedEvent.eventMinuteLength / 5, 3);
+  const gridSpan = Math.max(Math.ceil(adjustedEvent.eventMinuteLength / 5), 3);
   const eventColor = EVENT_COLORS[adjustedEvent.groupNumber % EVENT_COLORS.length];
 
   // Need this array defined because we're using the `sm:` prefix, cannot just
@@ -382,23 +397,113 @@ function Event({ adjustedEvent, focusedDay, locale, mode24Hour }: EventProps) {
       )}
       style={{ gridRow: `${startGridRow} / span ${gridSpan}` }}
     >
-      <a
-        href="#"
-        className={`group absolute inset-1 flex flex-col hover:z-20 overflow-y-auto rounded-lg ${eventColor.bg} p-2 text-xs leading-5 ${eventColor.bgHover}`}
+      <Popover
+        placement="top-start"
+        render={() => (
+          <EventPopover
+            adjustedEvent={adjustedEvent}
+            localizedWeekdays={localizedWeekdays}
+            locale={locale}
+            mode24Hour={mode24Hour}
+            eventColor={eventColor}
+          />
+        )}
       >
-        <p className={`${eventColor.text} ${eventColor.textHover}`}>
-          <time dateTime={`${adjustedEvent.adjustedStartIsoDate}T${adjustedEvent.adjustedStartTime}`}>
-            {localizedTime(adjustedEvent.adjustedStartTime, mode24Hour, locale)}
-          </time>
-        </p>
-        <p className={`font-semibold ${eventColor.text}`}>
-          {adjustedEvent.title}
-        </p>
-        <p className={`font-normal ${eventColor.text}`}>
-          {adjustedEvent.details}
-        </p>
-      </a>
+        <a
+          href="#"
+          className={clsx(
+            "group absolute inset-1 flex flex-col hover:z-20 overflow-y-auto rounded-lg p-2 text-xs leading-5",
+            `${eventColor.bg} ${eventColor.bgHover}`
+          )}
+        >
+          <p className={`${eventColor.text} ${eventColor.textHover}`}>
+            <time dateTime={`${adjustedEvent.adjustedStartIsoDate}T${adjustedEvent.adjustedStartTime}`}>
+              {localizedTime(adjustedEvent.adjustedStartTime, mode24Hour, locale)}
+            </time>
+          </p>
+          <p className={`font-semibold leading-tight ${eventColor.text}`}>
+            {adjustedEvent.title || "Untitled Event"}
+          </p>
+          {adjustedEvent.details && (
+            <p className={`font-normal leading-tight ${eventColor.text}`}>
+              {adjustedEvent.details}
+            </p>
+          )}
+        </a>
+      </Popover>
     </li>
+  )
+}
+
+
+type EventPopoverProps = Pick<
+  EventProps, "adjustedEvent" | "localizedWeekdays" | "locale" | "mode24Hour"
+> & {
+  eventColor: EventColor;
+};
+function EventPopover({
+  adjustedEvent,
+  localizedWeekdays,
+  locale,
+  mode24Hour,
+  eventColor,
+}: EventPopoverProps) {
+  const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: "medium" });
+  return (
+    <div className="relative z-30 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
+      <div className="flex flex-row bg-white gap-3 px-2 py-3 sm:p-3 w-[350px]">
+        {/* Left section */}
+        <div className="flex flex-col place-content-between w-auto my-1">
+          <div className="flex flex-col gap-1">
+            <p className={`font-semibold text-sm whitespace-nowrap ${eventColor.text}`}>
+              {localizedTime(adjustedEvent.adjustedStartTime, mode24Hour, locale)}
+            </p>
+            <p className={`font-normal text-xs whitespace-nowrap ${eventColor.text}`}>
+              {localizedTime(adjustedEvent.adjustedEndTime, mode24Hour, locale)}
+            </p>
+            <p className={`font-normal text-xs whitespace-nowrap capitalize ${eventColor.text}`}>
+              {localizedWeekdays[adjustedEvent.adjustedStartWeekdayNumber].long}
+            </p>
+          </div>
+
+          <div>
+            <p className={`font-normal text-xs whitespace-nowrap italic ${eventColor.text}`}>
+              {printDuration(adjustedEvent.eventMinuteLength, 60)}
+            </p>
+          </div>
+        </div>
+
+        {/* Vertical line */}
+        <div className={`shrink-0 w-0.5 h-auto rounded-sm ${eventColor.accent}`}></div>
+
+        {/* Right section */}
+        <div className="grow flex flex-col gap-2 my-1">
+          <div className="flex flex-col gap-1">
+            <p className={`font-semibold text-sm leading-tight ${eventColor.text}`}>
+              {adjustedEvent.title || "Untitled Event"}
+            </p>
+            <p className="font-normal text-xs text-gray-500 tabular-nums">
+              {dateFormat.format(adjustedEvent.startDate)} - {dateFormat.format(adjustedEvent.endDate)}
+            </p>
+            {adjustedEvent.details && (
+              <p className="font-normal text-xs leading-snug text-gray-500">
+                {adjustedEvent.details}
+              </p>
+            )}
+          </div>
+          {adjustedEvent.content && adjustedEvent.content({ eventColor })}
+          {adjustedEvent.adjustedTimeZone !== adjustedEvent.timeZone && (
+            <p className="font-normal text-xs leading-none text-gray-400 italic">
+              {localizedTime(adjustedEvent.startTime, mode24Hour, locale)}
+              {" "}
+              Local Start Time
+              <br />
+              ({adjustedEvent.timeZone.replace("_", " ")})
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -407,17 +512,26 @@ type EventColor = {
   bgHover: string;
   text: string;
   textHover: string;
+  accent: string;
 }
 const EVENT_COLORS: EventColor[] = [
-  { bg: "bg-green-50", bgHover: "hover:bg-green-100", text: "text-green-500", textHover: "group-hover:text-green-700" },
-  { bg: "bg-yellow-50", bgHover: "hover:bg-yellow-100", text: "text-yellow-500", textHover: "group-hover:text-yellow-700" },
-  { bg: "bg-teal-50", bgHover: "hover:bg-teal-100", text: "text-teal-500", textHover: "group-hover:text-teal-700" },
-  { bg: "bg-indigo-50", bgHover: "hover:bg-indigo-100", text: "text-indigo-500", textHover: "group-hover:text-indigo-700" },
-  { bg: "bg-emerald-50", bgHover: "hover:bg-emerald-100", text: "text-emerald-500", textHover: "group-hover:text-emerald-700" },
-  { bg: "bg-orange-50", bgHover: "hover:bg-orange-100", text: "text-orange-500", textHover: "group-hover:text-orange-700" },
-  { bg: "bg-blue-50", bgHover: "hover:bg-blue-100", text: "text-blue-500", textHover: "group-hover:text-blue-700" },
-  { bg: "bg-fuchsia-50", bgHover: "hover:bg-fuchsia-100", text: "text-fuchsia-500", textHover: "group-hover:text-fuchsia-700" },
-  { bg: "bg-pink-50", bgHover: "hover:bg-pink-100", text: "text-pink-500", textHover: "group-hover:text-pink-700" },
-  { bg: "bg-amber-50", bgHover: "hover:bg-amber-100", text: "text-amber-500", textHover: "group-hover:text-amber-700" },
-  { bg: "bg-slate-50", bgHover: "hover:bg-slate-100", text: "text-slate-500", textHover: "group-hover:text-slate-700" },
+  { bg: "bg-green-50", bgHover: "hover:bg-green-100", text: "text-green-500", textHover: "group-hover:text-green-700", accent: "bg-green-700" },
+  { bg: "bg-yellow-50", bgHover: "hover:bg-yellow-100", text: "text-yellow-500", textHover: "group-hover:text-yellow-700", accent: "bg-yellow-700" },
+  { bg: "bg-teal-50", bgHover: "hover:bg-teal-100", text: "text-teal-500", textHover: "group-hover:text-teal-700", accent: "bg-teal-700" },
+  { bg: "bg-indigo-50", bgHover: "hover:bg-indigo-100", text: "text-indigo-500", textHover: "group-hover:text-indigo-700", accent: "bg-indigo-700" },
+  { bg: "bg-emerald-50", bgHover: "hover:bg-emerald-100", text: "text-emerald-500", textHover: "group-hover:text-emerald-700", accent: "bg-emerald-700" },
+  { bg: "bg-orange-50", bgHover: "hover:bg-orange-100", text: "text-orange-500", textHover: "group-hover:text-orange-700", accent: "bg-orange-700" },
+  { bg: "bg-blue-50", bgHover: "hover:bg-blue-100", text: "text-blue-500", textHover: "group-hover:text-blue-700", accent: "bg-blue-700" },
+  { bg: "bg-fuchsia-50", bgHover: "hover:bg-fuchsia-100", text: "text-fuchsia-500", textHover: "group-hover:text-fuchsia-700", accent: "bg-fuchsia-700" },
+  { bg: "bg-pink-50", bgHover: "hover:bg-pink-100", text: "text-pink-500", textHover: "group-hover:text-pink-700", accent: "bg-pink-700" },
+  { bg: "bg-amber-50", bgHover: "hover:bg-amber-100", text: "text-amber-500", textHover: "group-hover:text-amber-700", accent: "bg-amber-700" },
+  { bg: "bg-slate-50", bgHover: "hover:bg-slate-100", text: "text-slate-500", textHover: "group-hover:text-slate-700", accent: "bg-slate-700" },
 ];
+
+export const DEFAULT_EVENT_COLOR: EventColor = {
+  bg: "bg-gray-50",
+  bgHover: "hover:bg-gray-100",
+  text: "text-gray-500",
+  textHover: "group-hover:text-gray-700",
+  accent: "bg-gray-700",
+};
