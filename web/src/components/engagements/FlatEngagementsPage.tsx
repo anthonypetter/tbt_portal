@@ -46,13 +46,16 @@ type Props = {
 export function FlatEngagementsPage({ engagements, refetch }: Props) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResultsMode, setSearchResultsMode] = useState(false);
-  const { results, loading } = useEngagementsSearch(searchQuery);
+  const [searchResults, setSearchResults] = useState<
+    FlatEngagementsTableEngagementFragment[]
+  >([]);
 
-  useEffect(() => {
-    if (searchQuery.length >= MIN_QUERY_LENGTH && !loading) {
+  const { loading } = useEngagementsSearch(searchQuery, {
+    onCompleted: (results) => {
+      setSearchResults(results);
       setSearchResultsMode(true);
-    }
-  }, [searchQuery, loading]);
+    },
+  });
 
   return (
     <div>
@@ -93,20 +96,27 @@ export function FlatEngagementsPage({ engagements, refetch }: Props) {
       </div>
 
       <FlatEngagementsTable
-        engagements={searchResultsMode && results ? results : engagements}
+        engagements={searchResultsMode ? searchResults : engagements}
         selectedEngagement={null}
       />
     </div>
   );
 }
 
-function useEngagementsSearch(query: string) {
+function useEngagementsSearch(
+  query: string,
+  options: {
+    onCompleted: (results: FlatEngagementsTableEngagementFragment[]) => void;
+  }
+) {
   const [debouncedQuery] = useDebounce(query, 300);
 
-  const [searchEngagements, { loading, data }] =
+  const [searchEngagements, { loading, data, error }] =
     useLazyQuery<SearchEngagementsQuery>(SEARCH_ENGAGEMENTS, {
       variables: { query },
       fetchPolicy: "no-cache",
+      onCompleted: ({ searchEngagements }) =>
+        options.onCompleted(searchEngagements.results),
       onError: (error) =>
         triggerErrorToast({
           message: "Something went wrong with this search.",
@@ -120,5 +130,5 @@ function useEngagementsSearch(query: string) {
     }
   }, [debouncedQuery, searchEngagements]);
 
-  return { loading, results: data?.searchEngagements.results };
+  return { loading, error, results: data?.searchEngagements.results };
 }
