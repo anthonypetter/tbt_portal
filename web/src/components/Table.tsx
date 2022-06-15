@@ -125,50 +125,61 @@ export function Table<D extends { id: string }>({
             className="bg-white divide-gray-200 divide-y"
             {...getTableBodyProps()}
           >
-            {page.map((row) => {
-              prepareRow(row);
-              const isRowSelected = row.original.id === selectedId;
-              const onClick = onRowClick
-                ? { onClick: () => onRowClick(row) }
-                : {};
-              return (
-                // eslint-disable-next-line react/jsx-key
-                <tr
-                  {...row.getRowProps()}
-                  className={clsx([
-                    isRowSelected ? "bg-blue-100" : "hover:bg-gray-50",
-                    onClick ? "cursor-pointer" : "cursor-default",
-                  ])}
-                  {...onClick}
+            {page.length === 0 ? (
+              <tr>
+                <td
+                  className="px-6 py-4 text-gray-500 text-sm"
+                  colSpan={columns.length}
                 >
-                  {row.cells.map((cell) => {
-                    const cellToRender =
-                      cell.column.id === CONTEXT_MENU_ID ? (
-                        <div className="flex justify-center">
-                          {cell.render("Cell")}
-                        </div>
-                      ) : (
-                        cell.render("Cell")
-                      );
+                  Data not found.
+                </td>
+              </tr>
+            ) : (
+              page.map((row) => {
+                prepareRow(row);
+                const isRowSelected = row.original.id === selectedId;
+                const onClick = onRowClick
+                  ? { onClick: () => onRowClick(row) }
+                  : {};
+                return (
+                  // eslint-disable-next-line react/jsx-key
+                  <tr
+                    {...row.getRowProps()}
+                    className={clsx([
+                      isRowSelected ? "bg-blue-100" : "hover:bg-gray-50",
+                      onClick ? "cursor-pointer" : "cursor-default",
+                    ])}
+                    {...onClick}
+                  >
+                    {row.cells.map((cell) => {
+                      const cellToRender =
+                        cell.column.id === CONTEXT_MENU_ID ? (
+                          <div className="flex justify-center">
+                            {cell.render("Cell")}
+                          </div>
+                        ) : (
+                          cell.render("Cell")
+                        );
 
-                    return (
-                      // eslint-disable-next-line react/jsx-key
-                      <td
-                        {...cell.getCellProps()}
-                        className={clsx(
-                          cell.column.id === CONTEXT_MENU_ID
-                            ? "px-0 py-0"
-                            : "px-6 py-4",
-                          "text-gray-500 text-sm"
-                        )}
-                      >
-                        {cellToRender}
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
+                      return (
+                        // eslint-disable-next-line react/jsx-key
+                        <td
+                          {...cell.getCellProps()}
+                          className={clsx(
+                            cell.column.id === CONTEXT_MENU_ID
+                              ? "px-0 py-0"
+                              : "px-6 py-4",
+                            "text-gray-500 text-sm"
+                          )}
+                        >
+                          {cellToRender}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
