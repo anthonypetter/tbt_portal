@@ -1,17 +1,42 @@
-import { useMemo, useState } from "react";
+import { gql } from "@apollo/client";
+import { FlatEngagementsTableEngagementFragment } from "@generated/graphql";
 import { Routes } from "@utils/routes";
-import { DateText } from "components/Date";
-import { CONTEXT_MENU_ID, Table } from "components/Table";
-import { Link } from "components/Link";
-import { Column, Cell } from "react-table";
-import { EditEngagementModal } from "./EditEngagementModal";
-import { QueryEngagements } from "./OrganizationEngagementsView";
 import { ContextMenu } from "components/ContextMenu";
+import { DateText } from "components/Date";
+import { Link } from "components/Link";
+import { CONTEXT_MENU_ID, Table } from "components/Table";
+import { useMemo, useState } from "react";
+import { Cell, Column } from "react-table";
 import { DeleteEngagementModal } from "./DeleteEngagementModal";
+import { EditEngagementModal } from "./EditEngagementModal";
 
 type Props = {
-  engagements: QueryEngagements;
-  selectedEngagement: QueryEngagements[number] | null;
+  engagements: FlatEngagementsTableEngagementFragment[];
+  selectedEngagement: FlatEngagementsTableEngagementFragment | null;
+};
+
+/**
+ * Different versions of an engagement are needed by this component's children.
+ * Since fragments merge repeated fields during composition, the final fragment will
+ * represent the exact engagement needed by this parent component.
+ */
+FlatEngagementsTable.fragments = {
+  engagement: gql`
+    fragment FlatEngagementsTableEngagement on Engagement {
+      id
+      name
+      startDate
+      endDate
+      organization {
+        id
+        name
+      }
+      ...DeleteEngagementModalEngagement
+      ...EditEngagementModalEngagement
+    }
+    ${DeleteEngagementModal.fragments.engagement}
+    ${EditEngagementModal.fragments.engagement}
+  `,
 };
 
 export function FlatEngagementsTable({
@@ -83,10 +108,11 @@ export type EngagementTableData = {
   startDate?: number | null;
   endDate?: number | null;
   organizationId: string;
+  organizationName: string;
 };
 
 export function usePrepEngagementData(
-  engagements: QueryEngagements,
+  engagements: FlatEngagementsTableEngagementFragment[],
   contextMenu: {
     onClickEdit: (engagement: EngagementTableData) => void;
     onClickDelete: (engagement: EngagementTableData) => void;
@@ -113,6 +139,20 @@ export function usePrepEngagementData(
           );
         },
       },
+      {
+        Header: "Organization",
+        accessor: "organizationName",
+        Cell: ({ row }: Cell<EngagementTableData>) => {
+          return (
+            <Link
+              href={Routes.org.engagements.href(row.original.organizationId)}
+            >
+              {row.original.organizationName}
+            </Link>
+          );
+        },
+      },
+
       {
         Header: "Starts",
         accessor: "startDate",
@@ -153,7 +193,8 @@ export function usePrepEngagementData(
         name: engagement.name,
         startDate: engagement.startDate,
         endDate: engagement.endDate,
-        organizationId: engagement.organizationId,
+        organizationId: engagement.organization.id,
+        organizationName: engagement.organization.name,
       };
     });
 
