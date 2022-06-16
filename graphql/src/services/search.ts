@@ -1,13 +1,16 @@
 import { prisma } from "../lib/prisma-client";
 
+const MIN_QUERY_LENGTH = 3;
+const SEARCH_TAKE_LIMIT = 100;
+
 export const SearchService = {
   async searchUsers(query: string) {
-    if (query.length < 3) {
+    if (query.length < MIN_QUERY_LENGTH) {
       return [];
     }
 
     return prisma.user.findMany({
-      take: 5,
+      take: SEARCH_TAKE_LIMIT,
       where: {
         OR: [
           { fullName: { startsWith: query, mode: "insensitive" } },
@@ -15,6 +18,25 @@ export const SearchService = {
         ],
       },
       orderBy: { fullName: "asc" },
+    });
+  },
+
+  async searchEngagements(query: string) {
+    if (query.length < MIN_QUERY_LENGTH) {
+      return [];
+    }
+
+    return prisma.engagement.findMany({
+      take: SEARCH_TAKE_LIMIT,
+      where: {
+        OR: [
+          { name: { startsWith: query, mode: "insensitive" } },
+          {
+            organization: { name: { startsWith: query, mode: "insensitive" } },
+          },
+        ],
+      },
+      orderBy: { name: "asc" },
     });
   },
 };

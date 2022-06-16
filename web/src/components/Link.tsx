@@ -9,7 +9,7 @@ type Props = {
 export function Link({ href, children }: Props) {
   return (
     <NextLink href={href}>
-      <a className="font-medium text-gray-900 hover:underline hover:underline-offset-2">
+      <a className="font-medium text-blue-500 hover:underline hover:underline-offset-2">
         {children}
       </a>
     </NextLink>

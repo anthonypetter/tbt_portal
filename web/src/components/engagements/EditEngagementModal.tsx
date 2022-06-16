@@ -1,21 +1,23 @@
-import { useRef, useState } from "react";
-import { Spinner } from "../Spinner";
-import { Modal } from "../Modal";
-import { ErrorBox } from "components/ErrorBox";
 import { ApolloError, gql, useMutation } from "@apollo/client";
-import { EditEngagementMutation } from "@generated/graphql";
+import {
+  EditEngagementModalEngagementFragment,
+  EditEngagementMutation,
+} from "@generated/graphql";
 import { fromJust } from "@utils/types";
+import { ErrorBox } from "components/ErrorBox";
 import { Input } from "components/Input";
-import { MdWorkspacesOutline } from "react-icons/md";
+import { LoadingSkeleton } from "components/LoadingSkeleton";
 import noop from "lodash/noop";
+import { useRef, useState } from "react";
 import DatePicker from "react-datepicker";
-import { QueryEngagements } from "./OrganizationEngagementsView";
+import { MdWorkspacesOutline } from "react-icons/md";
+import { Modal } from "../Modal";
+import { Spinner } from "../Spinner";
 import {
   AssignEngagementTeachers,
   EngagementStaffTeacher,
   toEngagementStaffTeacher,
 } from "../staffAssignments/AssignEngagementTeachers";
-import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { OrgDetailPageEngagementsQueryName } from "./constants";
 
 const EDIT_ENGAGEMENT = gql`
@@ -27,10 +29,29 @@ const EDIT_ENGAGEMENT = gql`
   }
 `;
 
+EditEngagementModal.fragments = {
+  engagement: gql`
+    fragment EditEngagementModalEngagement on Engagement {
+      id
+      name
+      startDate
+      endDate
+      staffAssignments {
+        user {
+          id
+          fullName
+          email
+        }
+        role
+      }
+    }
+  `,
+};
+
 type Props = {
   show: boolean;
   closeModal: () => void;
-  engagement: QueryEngagements[number] | null;
+  engagement: EditEngagementModalEngagementFragment | null;
   afterLeave: () => void;
 };
 
@@ -72,7 +93,7 @@ export function EditEngagementModal({
 type EditEngagementModalBodyProps = {
   onCancel: () => void;
   onSuccess: () => void;
-  engagement: QueryEngagements[number];
+  engagement: EditEngagementModalEngagementFragment;
 };
 
 export function EditEngagementModalBody({
