@@ -2347,7 +2347,7 @@
             "description": null,
             "args": [
               {
-                "name": "cohortId",
+                "name": "id",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",

@@ -75,7 +75,6 @@ export const typeDefs = gql`
     startDate: Date
     endDate: Date
 
-
     engagementId: ID!
     engagement: Engagement!
     staffAssignments: [CohortStaffAssignment!]!
@@ -113,7 +112,7 @@ export const typeDefs = gql`
   extend type Query {
     cohortsForOrg(organizationId: ID!): [Cohort!]!
     cohorts: [Cohort!]!
-    cohort(cohortId: ID!): Cohort!
+    cohort(id: ID!): Cohort!
   }
 
   extend type Mutation {
@@ -126,31 +125,27 @@ export const typeDefs = gql`
 /**
  * Query Resolvers
  */
-async function cohorts (
+async function cohorts(
   _parent: undefined,
   _args: undefined,
-  {authedUser, AuthorizationService, CohortService}: Context
+  { CohortService }: Context
 ) {
-  AuthorizationService.assertIsAdmin(authedUser);
-  return CohortService.getAllCohorts()
+  return CohortService.getAllCohorts();
 }
 
-async function cohort (
+async function cohort(
   _parent: undefined,
-  {cohortId}: QueryCohortArgs,
-  {authedUser, AuthorizationService, CohortService}: Context
-
-){
-  AuthorizationService.assertIsAdmin(authedUser);
-  return CohortService.getCohort(parseId(cohortId))
+  { id }: QueryCohortArgs,
+  { CohortService }: Context
+) {
+  return CohortService.getCohort(parseId(id));
 }
 
 async function cohortsForOrg(
   _parent: undefined,
   { organizationId }: QueryCohortsForOrgArgs,
-  { authedUser, AuthorizationService, CohortService }: Context
+  { CohortService }: Context
 ) {
-  AuthorizationService.assertIsAdmin(authedUser);
   return CohortService.getCohortsForOrg(parseId(organizationId));
 }
 
@@ -161,10 +156,8 @@ async function cohortsForOrg(
 async function editCohort(
   _parent: undefined,
   { input }: MutationEditCohortArgs,
-  { authedUser, AuthorizationService, CohortService }: Context
+  { CohortService }: Context
 ) {
-  AuthorizationService.assertIsAdmin(authedUser);
-
   if (input.name === null) {
     throw new Error("Cohort name cannot be null.");
   }
@@ -201,9 +194,8 @@ async function editCohort(
 async function deleteCohort(
   _parent: undefined,
   { id }: MutationDeleteCohortArgs,
-  { authedUser, AuthorizationService, CohortService }: Context
+  { CohortService }: Context
 ) {
-  AuthorizationService.assertIsAdmin(authedUser);
   const cohortDeleted = await CohortService.deleteCohort(parseId(id));
   if (cohortDeleted?.meetingId) {
     await WhereByService.deleteWhereByRoom(cohortDeleted.meetingId);
@@ -214,9 +206,8 @@ async function deleteCohort(
 async function addCohort(
   _parent: undefined,
   { input }: MutationAddCohortArgs,
-  { authedUser, AuthorizationService, CohortService }: Context
+  { CohortService }: Context
 ) {
-  AuthorizationService.assertIsAdmin(authedUser);
   const newCohort = {
     name: input.name,
     engagementId: parseId(input.engagementId),
