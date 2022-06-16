@@ -290,7 +290,7 @@ export type Query = {
 
 
 export type QueryCohortArgs = {
-  cohortId: Scalars['ID'];
+  id: Scalars['ID'];
 };
 
 
@@ -575,7 +575,7 @@ export type OrganizationResolvers<ContextType = any, ParentType extends Resolver
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  cohort?: Resolver<ResolversTypes['Cohort'], ParentType, ContextType, RequireFields<QueryCohortArgs, 'cohortId'>>;
+  cohort?: Resolver<ResolversTypes['Cohort'], ParentType, ContextType, RequireFields<QueryCohortArgs, 'id'>>;
   cohorts?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType>;
   cohortsForOrg?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType, RequireFields<QueryCohortsForOrgArgs, 'organizationId'>>;
   currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
