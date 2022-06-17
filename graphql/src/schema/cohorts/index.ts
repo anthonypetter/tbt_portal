@@ -128,24 +128,27 @@ export const typeDefs = gql`
 async function cohorts(
   _parent: undefined,
   _args: undefined,
-  { CohortService }: Context
+  { authedUser, AuthorizationService, CohortService }: Context
 ) {
+  AuthorizationService.assertIsAdmin(authedUser);
   return CohortService.getAllCohorts();
 }
 
 async function cohort(
   _parent: undefined,
   { id }: QueryCohortArgs,
-  { CohortService }: Context
+  { authedUser, AuthorizationService, CohortService }: Context
 ) {
+  AuthorizationService.assertIsAdmin(authedUser);
   return CohortService.getCohort(parseId(id));
 }
 
 async function cohortsForOrg(
   _parent: undefined,
   { organizationId }: QueryCohortsForOrgArgs,
-  { CohortService }: Context
+  { authedUser, AuthorizationService, CohortService }: Context
 ) {
+  AuthorizationService.assertIsAdmin(authedUser);
   return CohortService.getCohortsForOrg(parseId(organizationId));
 }
 
@@ -156,8 +159,9 @@ async function cohortsForOrg(
 async function editCohort(
   _parent: undefined,
   { input }: MutationEditCohortArgs,
-  { CohortService }: Context
+  { authedUser, AuthorizationService, CohortService }: Context
 ) {
+  AuthorizationService.assertIsAdmin(authedUser);
   if (input.name === null) {
     throw new Error("Cohort name cannot be null.");
   }
@@ -194,8 +198,9 @@ async function editCohort(
 async function deleteCohort(
   _parent: undefined,
   { id }: MutationDeleteCohortArgs,
-  { CohortService }: Context
+  { authedUser, AuthorizationService, CohortService }: Context
 ) {
+  AuthorizationService.assertIsAdmin(authedUser);
   const cohortDeleted = await CohortService.deleteCohort(parseId(id));
   if (cohortDeleted?.meetingId) {
     await WhereByService.deleteWhereByRoom(cohortDeleted.meetingId);
@@ -206,8 +211,9 @@ async function deleteCohort(
 async function addCohort(
   _parent: undefined,
   { input }: MutationAddCohortArgs,
-  { CohortService }: Context
+  { authedUser, AuthorizationService, CohortService }: Context
 ) {
+  AuthorizationService.assertIsAdmin(authedUser);
   const newCohort = {
     name: input.name,
     engagementId: parseId(input.engagementId),
