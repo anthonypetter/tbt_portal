@@ -8,19 +8,20 @@ type Props = {
 }
 export function MySchedulePage({ cohorts }: Props) {
   return (
-    <div>
+    // Want better height definition than this but I couldn't figure one out.
+    <div className="h-[calc(100vh-15rem)]">
       <PageHeader
         title="My Schedule"
         breadcrumbs={[
           breadcrumbs.home(),
           breadcrumbs.mySchedule({ current: true }),
         ]}
-      />
-      <div className="mb-4 lg:mb-0 p-6 rounded-md bg-gray-200">
+        />
+      <div className="h-full px-4 py-2 bg-white rounded-md">
         <CohortsScheduleCalendar
           cohorts={cohorts}
-        />
+          />
       </div>
     </div>
-  )
+  );
 }
