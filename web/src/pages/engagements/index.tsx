@@ -1,16 +1,16 @@
-import type { NextPage, GetServerSidePropsContext } from "next";
+import { ApolloQueryResult, gql, useQuery } from "@apollo/client";
+import { FlatEngagementsPageQuery } from "@generated/graphql";
+import { getSession } from "@lib/apollo-client";
+import { processResult } from "@utils/apollo";
 import { getServerSideAuth } from "@utils/auth/server-side-auth";
 import { AuthedLayout } from "components/AuthedLayout";
-import { ApolloQueryResult, gql, useQuery } from "@apollo/client";
 import { FlatEngagementsPage } from "components/engagements/FlatEngagementsPage";
-import { processResult } from "@utils/apollo";
-import { getSession } from "@lib/apollo-client";
-import { FlatEngagementsPageQuery } from "@generated/graphql";
 import { triggerErrorToast } from "components/Toast";
+import type { GetServerSidePropsContext, NextPage } from "next";
 
 const GET_ALL_ENGAGEMENTS = gql`
   query FlatEngagementsPage {
-    ...FlatEngagements
+    ...FlatEngagementsPage
   }
   ${FlatEngagementsPage.fragments.engagements}
 `;
@@ -40,21 +40,26 @@ type Props = {
 };
 
 const Engagements: NextPage<Props> = ({ engagements }) => {
-  const { data } = useQuery<FlatEngagementsPageQuery>(GET_ALL_ENGAGEMENTS, {
-    fetchPolicy: "network-only",
-    nextFetchPolicy: "cache-first",
-    onError: (error) => {
-      console.error(error);
-      triggerErrorToast({
-        message: "Looks like something went wrong.",
-        sub: "We weren't able to fetch engagements.",
-      });
-    },
-  });
+  const { data, refetch } = useQuery<FlatEngagementsPageQuery>(
+    GET_ALL_ENGAGEMENTS,
+    {
+      fetchPolicy: "network-only",
+      onError: (error) => {
+        console.error(error);
+        triggerErrorToast({
+          message: "Looks like something went wrong.",
+          sub: "We weren't able to fetch engagements.",
+        });
+      },
+    }
+  );
 
   return (
     <AuthedLayout>
-      <FlatEngagementsPage engagements={data?.engagements ?? engagements} />
+      <FlatEngagementsPage
+        engagements={data?.engagements ?? engagements}
+        refetch={() => refetch()}
+      />
     </AuthedLayout>
   );
 };

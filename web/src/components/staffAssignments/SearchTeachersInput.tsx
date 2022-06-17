@@ -59,7 +59,7 @@ export function SearchTeachersInput({ onSelect, onClickAdd, options }: Props) {
   }, [debouncedQuery, searchUsers]);
 
   let results: SearchUsersResult[] = [];
-  if (data?.searchUsers.__typename === "SearchResults") {
+  if (data?.searchUsers.__typename === "UsersSearchResults") {
     results = data.searchUsers.results;
   }
 

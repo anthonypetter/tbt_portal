@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma-client";
 import { Engagement } from "@prisma/client";
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import {
   ChangeSet,
   EngagementStaffAssignmentInput,
@@ -10,15 +10,34 @@ import { cohortWithBaseRelations } from "./cohort";
 const TAKE_LIMIT = 100;
 
 /**
+ * Engagement Type with relations
+ *
+ * Read more here: https://www.prisma.io/docs/concepts/components/prisma-client/advanced-type-safety/operating-against-partial-structures-of-model-types#problem-using-variations-of-the-generated-model-type
+ *
+ * EngagementWithBaseRelations is referenced in codegen.yml
+ */
+
+export const engagementWithBaseRelations =
+  Prisma.validator<Prisma.EngagementArgs>()({
+    include: {
+      staffAssignments: { include: { user: true } },
+      organization: true,
+    },
+  });
+
+export type EngagementWithBaseRelations = Prisma.EngagementGetPayload<
+  typeof engagementWithBaseRelations
+>;
+
+/**
  * Gets an engagement by id
  */
 async function getEngagement(id: number) {
   const engagement = await prisma.engagement.findFirst({
     where: { id },
     include: {
-      staffAssignments: { include: { user: true } },
+      ...engagementWithBaseRelations.include,
       cohorts: cohortWithBaseRelations,
-      organization: true,
     },
   });
   return engagement;
@@ -30,10 +49,10 @@ async function getEngagement(id: number) {
 
 async function getEngagements(organizationId: number) {
   const engagements = await prisma.engagement.findMany({
-    take: 100,
+    take: TAKE_LIMIT,
     where: { organizationId },
-    include: { staffAssignments: { include: { user: true } } },
-    orderBy: [{ name: "asc" }],
+    include: engagementWithBaseRelations.include,
+    orderBy: [{ startDate: "desc" }],
   });
 
   return engagements;
@@ -42,8 +61,8 @@ async function getEngagements(organizationId: number) {
 async function getAllEngagements() {
   return prisma.engagement.findMany({
     take: TAKE_LIMIT,
-    include: { staffAssignments: { include: { user: true } } },
-    orderBy: [{ name: "asc" }],
+    include: engagementWithBaseRelations.include,
+    orderBy: [{ startDate: "desc" }],
   });
 }
 
@@ -153,6 +172,17 @@ async function editEngagement({
   });
 }
 
+/**
+ * Gets engagement staff assignments
+ */
+
+async function getStaffAssignments(engagementId: number) {
+  return prisma.engagementStaffAssignment.findMany({
+    where: { engagementId },
+    include: { user: true },
+  });
+}
+
 export const EngagementService = {
   getEngagement,
   getEngagements,
@@ -160,4 +190,5 @@ export const EngagementService = {
   deleteEngagement,
   editEngagement,
   getAllEngagements,
+  getStaffAssignments,
 };
