@@ -8,7 +8,8 @@ generates:
     config:
       mapperTypeSuffix: Model
       mappers:
-        Cohort: "src/services/cohort#CohortsWithBaseRelations"
+        Cohort: "src/services/cohort#CohortWithBaseRelations"
+        Engagement: "src/services/engagement#EngagementWithBaseRelations"
   ./graphql.schema.json:
     plugins:
       - "introspection"

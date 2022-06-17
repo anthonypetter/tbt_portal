@@ -1,16 +1,18 @@
-import React from "react";
 import { gql, useMutation } from "@apollo/client";
-import { DeleteEngagementMutation } from "@generated/graphql";
-import { triggerSuccessToast } from "components/Toast";
-import { OrgDetailPageEngagementsQueryName } from "./constants";
+import {
+  DeleteEngagementModalEngagementFragment,
+  DeleteEngagementMutation,
+} from "@generated/graphql";
 import { ExclamationIcon } from "@heroicons/react/outline";
-import { Modal } from "components/Modal";
 import { ErrorBox } from "components/ErrorBox";
-import { Spinner } from "components/Spinner";
-import { QueryEngagements } from "./OrganizationEngagementsView";
-import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { FieldError } from "components/FieldError";
+import { LoadingSkeleton } from "components/LoadingSkeleton";
+import { Modal } from "components/Modal";
+import { Spinner } from "components/Spinner";
+import { triggerSuccessToast } from "components/Toast";
 import pluralize from "pluralize";
+import React from "react";
+import { OrgDetailPageEngagementsQueryName } from "./constants";
 
 const DELETE_ENGAGEMENT = gql`
   mutation DeleteEngagement($id: ID!) {
@@ -21,11 +23,28 @@ const DELETE_ENGAGEMENT = gql`
   }
 `;
 
+DeleteEngagementModal.fragments = {
+  engagement: gql`
+    fragment DeleteEngagementModalEngagement on Engagement {
+      id
+      name
+      cohorts {
+        id
+      }
+      staffAssignments {
+        user {
+          id
+        }
+      }
+    }
+  `,
+};
+
 type Props = {
   show: boolean;
   closeModal: () => void;
   afterLeave: () => void;
-  engagement: QueryEngagements[number] | null;
+  engagement: DeleteEngagementModalEngagementFragment | null;
 };
 
 export function DeleteEngagementModal({
@@ -63,7 +82,7 @@ export function DeleteEngagementModal({
 }
 
 type DeleteEngagementModalBodyProps = {
-  engagement: QueryEngagements[number];
+  engagement: DeleteEngagementModalEngagementFragment;
   onCancel: () => void;
   onSuccess: () => void;
 };
