@@ -476,6 +476,8 @@ export type OrganizationsFragment = { __typename?: 'Query', organizations: Array
 
 export type OrganizationsTableFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> };
 
+export type CurrentUserQueryForMySchedulePageFragment = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string } | null };
+
 export type SearchUsersQueryVariables = Exact<{
   query: Scalars['String'];
 }>;
@@ -502,7 +504,7 @@ export type FlatEngagementsPageQuery = { __typename?: 'Query', engagements: Arra
 export type MySchedulePageQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MySchedulePageQuery = { __typename?: 'Query', teacherCohorts: Array<{ __typename?: 'Cohort', name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, role: UserRole, fullName: string } }> }> };
+export type MySchedulePageQuery = { __typename?: 'Query', teacherCohorts: Array<{ __typename?: 'Cohort', name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, role: UserRole, fullName: string } }> }>, currentUser?: { __typename?: 'User', id: string } | null };
 
 export type OrgDetailPageCohortsQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -818,6 +820,13 @@ export const OrganizationsFragmentDoc = gql`
   ...OrganizationsTable
 }
     ${OrganizationsTableFragmentDoc}`;
+export const CurrentUserQueryForMySchedulePageFragmentDoc = gql`
+    fragment CurrentUserQueryForMySchedulePage on Query {
+  currentUser {
+    id
+  }
+}
+    `;
 export const UsersTableFragmentDoc = gql`
     fragment UsersTable on Query {
   users {
@@ -1365,8 +1374,10 @@ export const MySchedulePageDocument = gql`
   teacherCohorts {
     ...CohortForScheduleCalendar
   }
+  ...CurrentUserQueryForMySchedulePage
 }
-    ${CohortForScheduleCalendarFragmentDoc}`;
+    ${CohortForScheduleCalendarFragmentDoc}
+${CurrentUserQueryForMySchedulePageFragmentDoc}`;
 
 /**
  * __useMySchedulePageQuery__
