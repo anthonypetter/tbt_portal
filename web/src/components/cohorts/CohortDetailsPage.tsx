@@ -116,7 +116,7 @@ export function CohortDetailsPage({ cohort }: Props) {
                 <DetailsAside.Line
                   label="Host Key"
                   value={
-                    cohort.hostKey ? (
+                    !!cohort.hostKey ? (
                       <div
                         onClick={() =>
                           navigator.clipboard.writeText(`${cohort.hostKey}`)
