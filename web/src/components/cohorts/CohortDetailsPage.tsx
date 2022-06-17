@@ -113,7 +113,28 @@ export function CohortDetailsPage({ cohort }: Props) {
                     )
                   }
                 />
-                <DetailsAside.Line label="Host Key" value={cohort.hostKey} />
+                <DetailsAside.Line
+                  label="Host Key"
+                  value={
+                    cohort.hostKey ? (
+                      <div
+                        onClick={() =>
+                          navigator.clipboard.writeText(`${cohort.hostKey}`)
+                        }
+                        className="cursor-pointer transition duration-150 ease-in-out"
+                      >
+                        <p
+                          data-bs-toggle="tooltip"
+                          title="Click here to copy the token"
+                        >
+                          {cohort.hostKey?.slice(0, 12)}...
+                        </p>
+                      </div>
+                    ) : (
+                      ""
+                    )
+                  }
+                />
                 <DetailsAside.Line
                   label="Created At"
                   value={<DateText timeMs={cohort.createdAt} />}
