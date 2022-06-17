@@ -1,9 +1,13 @@
 const hostParams =
   "&video=on&audio=on&people=on&background=off&logo=off&leaveButton=off&timer=on&personality=off&roomIntegrations=on";
 const studentParams =
-  "?video=on&audio=on&people=off&background=off&logo=off&leaveButton=off&timer=on&personality=off&roomIntegrations=on";
-
-export function getRoomUrl(original: string) {
+  "&video=on&audio=on&people=off&background=off&logo=off&leaveButton=off&timer=on&personality=off&roomIntegrations=on";
+type GetRoomUrlResult = {
+  [backDoor: string]: string;
+  host: string;
+  student: string;
+};
+export function getRoomUrl(original: string): GetRoomUrlResult {
   return {
     backDoor: original,
     host: original + hostParams,

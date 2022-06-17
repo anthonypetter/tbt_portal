@@ -80,7 +80,7 @@ function getNavigation(role: UserRole, currentPathname: string) {
       name: "Cohorts",
       href: Routes.cohorts.href(),
       icon: SiGoogleclassroom,
-      current: Routes.cohorts.path() === currentPathname,
+      current: currentPathname.startsWith(Routes.cohorts.path()),
       order: 60,
       disabled: false,
     },
