@@ -353,12 +353,6 @@ async function getStaffAssignments(cohortId: number) {
   });
 }
 
-async function getEngagement(engagementId: number) {
-  return prisma.engagement.findUnique({
-    where: { id: engagementId },
-    include: { organization: true },
-  });
-}
 /**
  * Gets all cohorts where a particular teacher (userId) has been assigned
  * and where the provided filters are satisfied.
@@ -390,6 +384,5 @@ export const CohortService = {
   saveCsvCohortsData,
   getSchedule,
   getStaffAssignments,
-  getEngagement,
   getTeacherCohorts,
 };
