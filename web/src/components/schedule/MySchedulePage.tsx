@@ -1,12 +1,24 @@
+import { gql } from "@apollo/client";
 import { MySchedulePageQuery } from "@generated/graphql";
 import { breadcrumbs } from "@utils/breadcrumbs";
-import { CohortsScheduleCalendar } from "components/cohorts/scheduleCalendar/CohortsScheduleCalendar";
+import { CohortsScheduleCalendar, TargetUserIds } from "components/cohorts/scheduleCalendar/CohortsScheduleCalendar";
 import { PageHeader } from "components/PageHeader";
+
+MySchedulePage.fragments = {
+  query: gql`
+    fragment CurrentUserQueryForMySchedulePage on Query {
+      currentUser {
+        id
+      }
+    }
+  `,
+};
 
 type Props = {
   cohorts: NonNullable<MySchedulePageQuery["teacherCohorts"]>;
+  targetUserIds?: TargetUserIds;
 }
-export function MySchedulePage({ cohorts }: Props) {
+export function MySchedulePage({ cohorts, targetUserIds = [] }: Props) {
   return (
     // Want better height definition than this but I couldn't figure one out.
     <div className="h-[calc(100vh-15rem)]">
@@ -20,7 +32,8 @@ export function MySchedulePage({ cohorts }: Props) {
       <div className="h-full px-4 py-2 bg-white rounded-md">
         <CohortsScheduleCalendar
           cohorts={cohorts}
-          />
+          targetUserIds={targetUserIds}
+        />
       </div>
     </div>
   );

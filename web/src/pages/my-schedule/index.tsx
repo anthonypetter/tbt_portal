@@ -15,8 +15,10 @@ const GET_TEACHER_COHORTS = gql`
     teacherCohorts {
       ...CohortForScheduleCalendar
     }
+    ...CurrentUserQueryForMySchedulePage
   }
   ${CohortsScheduleCalendar.fragments.cohort}
+  ${MySchedulePage.fragments.query}
 `;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -32,17 +34,19 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   });
 
   const cohorts = processResult(result, (r) => r.teacherCohorts);
+  const currentUser = processResult(result, r => r.currentUser);
 
   return {
-    props: { cohorts },
+    props: { cohorts, currentUser },
   };
 }
 
 type Props = {
   cohorts: NonNullable<MySchedulePageQuery["teacherCohorts"]>;
+  currentUser: NonNullable<MySchedulePageQuery["currentUser"]>;
 };
 
-const MySchedule: NextPage<Props> = ({ cohorts }) => {
+const MySchedule: NextPage<Props> = ({ cohorts, currentUser }) => {
   console.table(cohorts);
   const { data } = useQuery<MySchedulePageQuery>(GET_TEACHER_COHORTS, {
     fetchPolicy: "network-only", // Used for first execution
@@ -61,6 +65,7 @@ const MySchedule: NextPage<Props> = ({ cohorts }) => {
     <AuthedLayout>
       <MySchedulePage
         cohorts={data?.teacherCohorts ?? cohorts}
+        targetUserIds={[data?.currentUser?.id ?? currentUser.id]}
       />
     </AuthedLayout>
   );
