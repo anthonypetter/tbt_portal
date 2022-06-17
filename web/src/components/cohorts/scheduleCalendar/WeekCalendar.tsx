@@ -96,7 +96,7 @@ export function WeekCalendar(
 
   return (
     <div ref={container} className="h-[70vh] flex flex-auto flex-col overflow-auto md:overflow-x-clip bg-white">
-      <div className="w-[165%] flex max-w-full flex-none flex-col sm:max-w-none md:max-w-full">
+      <div className="relative w-[165%] flex max-w-full flex-none flex-col sm:max-w-none md:max-w-full">
         {/* Days Nav Row */}
         <div
           ref={containerNav}
