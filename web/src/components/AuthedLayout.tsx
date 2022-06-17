@@ -171,6 +171,7 @@ export function AuthedLayout({ children }: Props) {
   return (
     <>
       <div>
+        {/* Pop-open sidebar for mobile */}
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
@@ -263,6 +264,7 @@ export function AuthedLayout({ children }: Props) {
 
         {/* Static sidebar for desktop */}
         <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
+
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div
             className={`flex flex-col flex-grow pt-5 ${sidebar.mainBackground} overflow-y-auto`}
@@ -299,8 +301,14 @@ export function AuthedLayout({ children }: Props) {
             </div>
           </div>
         </div>
+
+        {/* Top bar + Content container */}
         <div className="md:pl-64 flex flex-col flex-1">
+
+          {/* Top bar container */}
           <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow">
+
+            {/* Mobile Hamburger button */}
             <button
               type="button"
               className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 md:hidden"
@@ -309,7 +317,10 @@ export function AuthedLayout({ children }: Props) {
               <span className="sr-only">Open sidebar</span>
               <MenuAlt2Icon className="h-6 w-6" aria-hidden="true" />
             </button>
+
+            {/* Top bar */}
             <div className="flex-1 px-4 flex justify-between">
+              {/* Search input */}
               <div className="flex-1 flex">
                 <form className="w-full flex md:ml-0" action="#" method="GET">
                   <label htmlFor="search-field" className="sr-only">
@@ -329,6 +340,8 @@ export function AuthedLayout({ children }: Props) {
                   </div>
                 </form>
               </div>
+
+              {/* Utility Buttons */}
               <div className="ml-4 flex items-center md:ml-6">
                 <button
                   type="button"
@@ -343,7 +356,8 @@ export function AuthedLayout({ children }: Props) {
             </div>
           </div>
 
-          <main className="h-screen-nav overflow-y-scroll">
+          {/* Content area */}
+          <main className="z-0 h-screen-nav overflow-y-scroll">
             <div className="pt-6 pb-20">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
                 {children}
