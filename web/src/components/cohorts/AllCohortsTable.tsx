@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { AllCohortsTableFragment, CohortsPageQuery } from "@generated/graphql";
+import { CohortsPageQuery } from "@generated/graphql";
 import { ContextMenu } from "components/ContextMenu";
 import { DateText } from "components/Date";
 import { EditCohortModal } from "components/cohorts/EditCohortModal";
@@ -7,18 +7,17 @@ import { DeleteCohortModal } from "components/cohorts/DeleteCohortModal";
 import { CONTEXT_MENU_ID, Table } from "components/Table";
 import { useMemo, useState } from "react";
 import { Cell, Column } from "react-table";
+import { Link } from "components/Link";
+import { Routes } from "@utils/routes";
 
 AllCohortsTable.fragments = {
   cohorts: gql`
     fragment AllCohortsTable on Query {
       cohorts {
         id
-        createdAt
         name
+        createdAt
         grade
-        meetingRoom
-        hostKey
-        exempt
         startDate
         endDate
         engagement {
@@ -28,13 +27,6 @@ AllCohortsTable.fragments = {
             id
             name
           }
-        }
-        schedule {
-          weekday
-          subject
-          startTime
-          endTime
-          timeZone
         }
         staffAssignments {
           user {
@@ -50,16 +42,10 @@ AllCohortsTable.fragments = {
 };
 
 type Props = {
-  onRowClick: (cohortId: string) => void;
   cohorts: NonNullable<CohortsPageQuery["cohorts"]>;
-  selectedCohort: AllCohortsTableFragment["cohorts"][number] | null;
 };
 
-export function AllCohortsTable({
-  cohorts,
-  onRowClick,
-  selectedCohort,
-}: Props) {
+export function AllCohortsTable({ cohorts }: Props) {
   const [cohortIdToEdit, setCohortIdToEdit] = useState<string | null>(null);
   const [cohortIdToDelete, setCohortIdToDelete] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
@@ -82,13 +68,7 @@ export function AllCohortsTable({
 
   return (
     <>
-      <Table
-        columns={columns}
-        data={tableData}
-        border={false}
-        onRowClick={(row) => onRowClick(row.original.id)}
-        selectedId={selectedCohort?.id}
-      />
+      <Table columns={columns} data={tableData} border={false} />
       <EditCohortModal
         show={showEditModal}
         closeModal={() => setShowEditModal(false)}
@@ -121,6 +101,7 @@ export type CohortTableData = {
   startDate?: number | null;
   endDate?: number | null;
   organizationName?: string | null;
+  organizationId?: string | null;
   engagementName?: string | null;
   engagementId?: string | null;
 };
@@ -141,16 +122,43 @@ function usePrepCohortData(
         Header: "Name",
         accessor: "name",
         Cell: ({ row }: Cell<CohortTableData>) => {
-          return <span className="font-semibold">{row.original.name}</span>;
+          return (
+            <Link href={Routes.cohortDetail.href(row.original.id)}>
+              {row.original.name}
+            </Link>
+          );
         },
       },
       {
         Header: "Organization",
         accessor: "organizationName",
+        Cell: ({ row }: Cell<CohortTableData>) => {
+          return (
+            <Link
+              href={Routes.org.engagements.href(
+                `${row.original.organizationId}`
+              )}
+            >
+              {row.original.organizationName}
+            </Link>
+          );
+        },
       },
       {
         Header: "Engagement",
         accessor: "engagementName",
+        Cell: ({ row }: Cell<CohortTableData>) => {
+          return (
+            <Link
+              href={Routes.engagement.cohorts.href(
+                `${row.original.organizationId}`,
+                `${row.original.engagementId}`
+              )}
+            >
+              {row.original.engagementName}
+            </Link>
+          );
+        },
       },
       {
         Header: "Grade",
@@ -197,7 +205,9 @@ function usePrepCohortData(
         startDate: cohort.startDate,
         endDate: cohort.endDate,
         organizationName: cohort?.engagement?.organization?.name,
+        organizationId: cohort?.engagement?.organization?.id,
         engagementName: cohort?.engagement?.name,
+        engagementId: cohort?.engagement.id,
       };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
