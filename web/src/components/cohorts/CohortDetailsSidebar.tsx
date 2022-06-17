@@ -102,7 +102,28 @@ export function CohortDetailsSidebar({
               )
             }
           />
-          <DetailsAside.Line label="Host key" value={selectedCohort.hostKey} />
+          <DetailsAside.Line
+            label="Host key"
+            value={
+              selectedCohort.hostKey ? (
+                <div
+                  onClick={() =>
+                    navigator.clipboard.writeText(`${selectedCohort.hostKey}`)
+                  }
+                  className="cursor-pointer transition duration-150 ease-in-out"
+                >
+                  <p
+                    data-bs-toggle="tooltip"
+                    title="Click here to copy the token"
+                  >
+                    {selectedCohort.hostKey?.slice(0, 12)}...
+                  </p>
+                </div>
+              ) : (
+                ""
+              )
+            }
+          />
           <DetailsAside.Line
             label="Created"
             value={<DateText timeMs={selectedCohort.createdAt} />}
