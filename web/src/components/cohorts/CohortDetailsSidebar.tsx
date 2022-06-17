@@ -8,7 +8,7 @@ import { DateText } from "components/Date";
 import { DetailsAside } from "components/DetailsAside";
 import { CohortsScheduleCalendarModal } from "./scheduleCalendar/CohortsScheduleCalendarModal";
 
-const DEV_SHOW_SCHEDULE_BUTTON = false;
+const DEV_SHOW_SCHEDULE_BUTTON = true;
 
 CohortDetailsSidebar.fragments = {
   cohort: gql`
