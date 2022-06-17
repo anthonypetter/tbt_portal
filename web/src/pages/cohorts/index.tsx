@@ -1,14 +1,13 @@
 import type { NextPage, GetServerSidePropsContext } from "next";
 import { getServerSideAuth } from "@utils/auth/server-side-auth";
 import { AuthedLayout } from "components/AuthedLayout";
-import { PageHeader } from "components/PageHeader";
-import { breadcrumbs } from "@utils/breadcrumbs";
 import { CohortsPage } from "components/cohorts/CohortsPage";
 import { ApolloQueryResult, gql, useQuery } from "@apollo/client";
 import { CohortsPageQuery } from "@generated/graphql";
 import { triggerErrorToast } from "components/Toast";
 import { getSession } from "@lib/apollo-client";
 import { processResult } from "@utils/apollo";
+
 const GET_COHORTS = gql`
   query CohortsPage {
     ...Cohorts
