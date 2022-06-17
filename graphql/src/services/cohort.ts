@@ -15,7 +15,7 @@ const TAKE_LIMIT = 100;
 async function getAllCohorts() {
   return prisma.cohort.findMany({
     take: TAKE_LIMIT,
-    orderBy: [{ name: "asc" }],
+    orderBy: [{ startDate: "desc" }],
   });
 }
 
