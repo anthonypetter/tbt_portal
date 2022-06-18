@@ -3,6 +3,7 @@ import { VideoCameraIcon } from "@heroicons/react/outline";
 import formatISO from "date-fns/formatISO";
 
 import { CohortForScheduleCalendarFragment } from "@generated/graphql";
+import { formatGrade } from "@utils/strings";
 import { RoleText } from "components/RoleText";
 import {
   ContentProps,
@@ -36,6 +37,12 @@ CohortsScheduleCalendar.fragments = {
       meetingRoom
       hostKey
       meetingId
+      engagement {
+        organization {
+          name
+          description
+        }
+      }
     }
   `,
 };
@@ -95,8 +102,8 @@ function buildWeekCalendarSchedule(
         startDate: cohort.startDate,
         endDate: cohort.endDate,
         groupKey: `${i}+${meeting.subject}`,
-        title: `${cohort.grade && cohort.grade + ": "}${meeting.subject}`,
-        details: `${cohort.name}`,
+        title: `${meeting.subject}${cohort.grade && " (" + formatGrade(cohort.grade, false) + ")"} @ ${cohort.engagement.organization.name}`,
+        details: `${cohort.engagement.organization.description} | ${cohort.name}`,
         content: ({ eventColor }) => (
           <CohortEventDetails
             staffAssignments={subjectStaff}
