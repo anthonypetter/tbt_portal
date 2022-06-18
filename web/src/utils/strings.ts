@@ -29,7 +29,7 @@ export function formatOrdinal(count: number) {
   const locale = "en-US";
   const pluralRules = new Intl.PluralRules(locale, { type: "ordinal" });
   const rule = pluralRules.select(count);
-  const suffix = suffixes[locale][rule];
+  const suffix = suffixes[locale]?.[rule] ?? "";
   return `${count}${suffix}`;
 }
 
