@@ -40,12 +40,15 @@ CohortsScheduleCalendar.fragments = {
   `,
 };
 
+export type TargetUserIds = string[];
+
 type CohortsScheduleCalendarProps = {
-  cohorts: CohortForScheduleCalendarFragment[],  // Multiple cohorts with schedule data
+  cohorts: CohortForScheduleCalendarFragment[];  // Multiple cohorts with schedule data
+  targetUserIds?: TargetUserIds;
 };
 
-export function CohortsScheduleCalendar({ cohorts }: CohortsScheduleCalendarProps) {
-  const weekCalendarSchedule = buildWeekCalendarSchedule(cohorts);
+export function CohortsScheduleCalendar({ cohorts, targetUserIds = [] }: CohortsScheduleCalendarProps) {
+  const weekCalendarSchedule = buildWeekCalendarSchedule(cohorts, targetUserIds);
 
   return (
     <WeekCalendar
@@ -60,27 +63,45 @@ export function CohortsScheduleCalendar({ cohorts }: CohortsScheduleCalendarProp
   );
 }
 
-function buildWeekCalendarSchedule(cohorts: CohortForScheduleCalendarFragment[]): WeekCalendarEvent[] {
+function buildWeekCalendarSchedule(
+  cohorts: CohortForScheduleCalendarFragment[],
+  targetUserIds: TargetUserIds,
+): WeekCalendarEvent[] {
   const weekCalendarEvents: WeekCalendarEvent[] = [];
 
+  // If provided a list of target user IDs filter cohorts for only events that
+  // include one of the provided user IDs.
   cohorts.forEach((cohort, i) => {
-    cohort.schedule.forEach(day => {
+    cohort.schedule.forEach(meeting => {
+      // Build the list of assigned staff for this meeting.
       const subjectStaff = cohort.staffAssignments.filter(
-        staffAssignment => staffAssignment.subject === day.subject,
+        staffAssignment => staffAssignment.subject === meeting.subject,
       );
 
+      // If an array of targetUserIds has been provided, check to make sure at
+      // least one of them is present.
+      if (targetUserIds.length !== 0 && !subjectStaff.some(
+        individual => targetUserIds.includes(individual.user.id)
+      )) {
+        // Skip this event. None of the targeted user IDs are teaching this class.
+        return;
+      }
+
       weekCalendarEvents.push({
-        weekday: day.weekday,
-        timeZone: day.timeZone,
-        startTime: day.startTime,
-        endTime: day.endTime,
+        weekday: meeting.weekday,
+        timeZone: meeting.timeZone,
+        startTime: meeting.startTime,
+        endTime: meeting.endTime,
         startDate: cohort.startDate,
         endDate: cohort.endDate,
-        groupKey: `${i}+${day.subject}`,
-        title: `${cohort.grade && cohort.grade + ": "}${day.subject}`,
+        groupKey: `${i}+${meeting.subject}`,
+        title: `${cohort.grade && cohort.grade + ": "}${meeting.subject}`,
         details: `${cohort.name}`,
         content: ({ eventColor }) => (
-          <CohortEventDetails staffAssignments={subjectStaff} eventColor={eventColor} />
+          <CohortEventDetails
+            staffAssignments={subjectStaff}
+            eventColor={eventColor}
+          />
         ),
       })
     });
