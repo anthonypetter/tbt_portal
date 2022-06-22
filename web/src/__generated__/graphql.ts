@@ -476,6 +476,8 @@ export type OrganizationsFragment = { __typename?: 'Query', organizations: Array
 
 export type OrganizationsTableFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> };
 
+export type CurrentUserQueryForMySchedulePageFragment = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string } | null };
+
 export type SearchUsersQueryVariables = Exact<{
   query: Scalars['String'];
 }>;
@@ -498,6 +500,11 @@ export type FlatEngagementsPageQueryVariables = Exact<{ [key: string]: never; }>
 
 
 export type FlatEngagementsPageQuery = { __typename?: 'Query', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organization: { __typename?: 'Organization', id: string, name: string }, cohorts: Array<{ __typename?: 'Cohort', id: string }>, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
+
+export type MySchedulePageQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MySchedulePageQuery = { __typename?: 'Query', teacherCohorts: Array<{ __typename?: 'Cohort', name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, role: UserRole, fullName: string } }> }>, currentUser?: { __typename?: 'User', id: string } | null };
 
 export type OrgDetailPageCohortsQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -813,6 +820,13 @@ export const OrganizationsFragmentDoc = gql`
   ...OrganizationsTable
 }
     ${OrganizationsTableFragmentDoc}`;
+export const CurrentUserQueryForMySchedulePageFragmentDoc = gql`
+    fragment CurrentUserQueryForMySchedulePage on Query {
+  currentUser {
+    id
+  }
+}
+    `;
 export const UsersTableFragmentDoc = gql`
     fragment UsersTable on Query {
   users {
@@ -1355,6 +1369,42 @@ export function useFlatEngagementsPageLazyQuery(baseOptions?: Apollo.LazyQueryHo
 export type FlatEngagementsPageQueryHookResult = ReturnType<typeof useFlatEngagementsPageQuery>;
 export type FlatEngagementsPageLazyQueryHookResult = ReturnType<typeof useFlatEngagementsPageLazyQuery>;
 export type FlatEngagementsPageQueryResult = Apollo.QueryResult<FlatEngagementsPageQuery, FlatEngagementsPageQueryVariables>;
+export const MySchedulePageDocument = gql`
+    query MySchedulePage {
+  teacherCohorts {
+    ...CohortForScheduleCalendar
+  }
+  ...CurrentUserQueryForMySchedulePage
+}
+    ${CohortForScheduleCalendarFragmentDoc}
+${CurrentUserQueryForMySchedulePageFragmentDoc}`;
+
+/**
+ * __useMySchedulePageQuery__
+ *
+ * To run a query within a React component, call `useMySchedulePageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMySchedulePageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMySchedulePageQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMySchedulePageQuery(baseOptions?: Apollo.QueryHookOptions<MySchedulePageQuery, MySchedulePageQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MySchedulePageQuery, MySchedulePageQueryVariables>(MySchedulePageDocument, options);
+      }
+export function useMySchedulePageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MySchedulePageQuery, MySchedulePageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MySchedulePageQuery, MySchedulePageQueryVariables>(MySchedulePageDocument, options);
+        }
+export type MySchedulePageQueryHookResult = ReturnType<typeof useMySchedulePageQuery>;
+export type MySchedulePageLazyQueryHookResult = ReturnType<typeof useMySchedulePageLazyQuery>;
+export type MySchedulePageQueryResult = Apollo.QueryResult<MySchedulePageQuery, MySchedulePageQueryVariables>;
 export const OrgDetailPageCohortsDocument = gql`
     query OrgDetailPageCohorts($id: ID!) {
   organization(id: $id) {

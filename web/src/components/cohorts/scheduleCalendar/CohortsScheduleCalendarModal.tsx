@@ -45,9 +45,11 @@ export function CohortsScheduleCalendarModal({
         <h1 className="text-xl2 mb-3">
           {cohorts.map(cohort => `${cohort.name} (Grade ${cohort.grade ?? "?"})`).join(", ")}
         </h1>
-        <CohortsScheduleCalendar
-          cohorts={cohorts}
-        />
+        <div className="h-[75vh]">
+          <CohortsScheduleCalendar
+            cohorts={cohorts}
+          />
+        </div>
       </div>
     </Modal>
   );
