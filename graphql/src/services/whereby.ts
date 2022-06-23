@@ -27,7 +27,7 @@ async function createWhereByRoom(endDate: string, cohortId: number) {
       isLocked: true,
       roomMode: "group",
       fields: ["hostRoomUrl"],
-      roomNamePrefix: `${cohortId}_`,
+      roomNamePrefix: `WHEREBY-RECORDING-COHORT-ID-${cohortId}-`,
     };
     const result = await fetch(WHEREBY_URL, {
       method: "POST",
