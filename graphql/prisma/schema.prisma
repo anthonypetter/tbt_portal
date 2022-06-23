@@ -167,11 +167,12 @@ enum MeetingType {
 }
 
 model CohortEvent {
-  id          Int         @id @default(autoincrement())
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @default(now())
+  id          Int                @id @default(autoincrement())
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @default(now())
   eventType   EventType
   meetingType MeetingType
+  subject     AssignmentSubject?
 
   startDateTime   DateTime
   timeZone        String
