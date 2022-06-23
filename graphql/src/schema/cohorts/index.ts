@@ -212,7 +212,9 @@ async function addCohort(
   const cohortCreated = await CohortService.addCohort(newCohort);
 
   // if the meeting room url was already provided, retrun the cohort
-  if (cohortCreated.meetingRoom) return cohortCreated;
+  if (cohortCreated.meetingRoom) {
+    return cohortCreated;
+  }
 
   // else create meeting room on whereby,with cohort id prefexName
   const wherebyResult = await WhereByService.createWhereByRoom(
