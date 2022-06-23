@@ -1,17 +1,39 @@
 import { prisma } from "@lib/prisma-client";
-import { S3ObjectCreatedNotificationEvent } from "aws-lambda";
+import { S3Event, S3EventRecord, S3Handler } from "aws-lambda";
 
-const s3EventsHandler = async (
-  event: S3ObjectCreatedNotificationEvent
-): Promise<void> => {
-  try {
-    const object = event.detail.object;
-    const key = object.key;
-    const cohortId = parseInt(key.split("_")[0]);
-    await prisma.cohortSession.create({ data: { recording: key, cohortId } });
-  } catch (error) {
-    console.log("[ERROR]: s3 events handler error", error);
+const s3EventsHandler: S3Handler = async (event: S3Event) => {
+  if (!isS3ObjectCreationEvent(event)) {
+    return;
   }
+
+  const eventRecord = event.Records[0];
+  await updateCohortSessionRecording(eventRecord);
 };
+
+function isS3ObjectCreationEvent(event: S3Event): boolean {
+  const eventRecord = event.Records[0];
+  return (
+    eventRecord.eventSource === "aws:s3" &&
+    eventRecord.eventName.startsWith("ObjectCreated:")
+  );
+}
+
+async function updateCohortSessionRecording(record: S3EventRecord) {
+  const key = record.s3.object.key;
+  /**           0       1        2    3       4            5     6
+   * key is WHEREBY-RECORDING-COHORT-ID-actualCohortId-roomName-startTime
+   */
+  const keyParts = key.split("-");
+  const cohortId = parseInt(keyParts[4]);
+  const roomName = keyParts[5];
+  try {
+    await prisma.cohortSession.updateMany({
+      where: { AND: [{ cohortId }, { roomName }] },
+      data: { recording: key },
+    });
+  } catch (error) {
+    console.error("[S3Events Handler ERROR]:", error);
+  }
+}
 
 exports.handler = s3EventsHandler;
