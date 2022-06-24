@@ -14,7 +14,8 @@ function isS3ObjectCreationEvent(event: S3Event): boolean {
   const eventRecord = event.Records[0];
   return (
     eventRecord.eventSource === "aws:s3" &&
-    eventRecord.eventName.startsWith("ObjectCreated:")
+    eventRecord.eventName.startsWith("ObjectCreated:") &&
+    eventRecord.s3.object.key.startsWith("WHEREBY-RECORDING-COHORT-ID")
   );
 }
 
