@@ -11,7 +11,7 @@ import { Routes } from "@utils/routes";
 import { Link } from "components/Link";
 import { getRoomUrl } from "@utils/roomUrls";
 
-const DEV_SHOW_SCHEDULE_BUTTON = false;
+const DEV_SHOW_SCHEDULE_BUTTON = true;
 
 CohortDetailsSidebar.fragments = {
   cohort: gql`
