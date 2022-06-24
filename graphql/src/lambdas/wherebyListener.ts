@@ -18,7 +18,7 @@ const wherebyHandler: APIGatewayProxyHandler = async (
     };
   }
 
-  const meetingId = eventBody.data?.meetingId;
+  const meetingId = eventBody.data.meetingId;
   const cohort = await prisma.cohort.findFirst({
     where: { meetingId },
     select: { id: true },
@@ -31,17 +31,17 @@ const wherebyHandler: APIGatewayProxyHandler = async (
 
   if (!cohortId) {
     return {
-      body: "Room session is not related to any session",
+      body: "Room session is not related to any cohort",
       statusCode: 400,
     };
   }
 
-  const roomName = eventBody?.data?.roomName?.replace("/", "");
+  const roomName = eventBody.data.roomName.replace("/", "");
 
   await prisma.cohortSession.create({
     data: {
       cohortId,
-      createdAt: eventBody?.data?.createdAt,
+      createdAt: eventBody.createdAt,
       roomName, // we need this value because it also exists on s3 notification and helps for update
     },
   });
