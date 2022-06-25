@@ -1,7 +1,7 @@
+import { Weekday } from "@generated/graphql";
+import { toDate } from "date-fns-tz";
 import formatISO from "date-fns/formatISO";
 import startOfWeek from "date-fns/startOfWeek";
-
-import { Weekday } from "@generated/graphql";
 
 /**
  * H:mm or HH:mm time stamp. (ex: 13:05, 6:43, 06:43)
@@ -201,4 +201,53 @@ export function normalizeDateFromUTCDateTime(utcDateTime: Date): Date {
     utcDateTime.getUTCMonth(),
     utcDateTime.getUTCDate()
   );
+}
+
+/**
+ * Takes a floating time and converts it into an incremental time by applying a time zone.
+ *
+ * Info on floating times:
+ *  - https://www.w3.org/International/wiki/FloatingTime
+ *  - https://github.com/jakubroztocil/rrule#important-use-utc-dates
+ *
+ * Info on `toDate`: https://github.com/marnusw/date-fns-tz#todate
+ *
+ */
+
+export function floatingToZonedDateTime(
+  floatingDateTime: Date,
+  timeZone: IANAtzName
+) {
+  const year = floatingDateTime.getFullYear();
+  const monthIndex = floatingDateTime.getUTCMonth();
+  const day = floatingDateTime.getUTCDate();
+  const hour = floatingDateTime.getUTCHours();
+  const minute = floatingDateTime.getUTCMinutes();
+
+  const isoStringWithNoOffset = `${formatISO(new Date(year, monthIndex, day), {
+    representation: "date",
+  })}T${stringifyHour(hour)}:${stringifyMinute(minute)}`;
+
+  return toDate(isoStringWithNoOffset, { timeZone });
+}
+
+function stringifyHour(hour: number) {
+  if (hour < 0 || hour > 23) {
+    return "00";
+  }
+  return hour.toLocaleString("en-US", {
+    minimumIntegerDigits: 2,
+    useGrouping: false,
+  });
+}
+
+function stringifyMinute(minute: number) {
+  if (minute < 0 || minute > 59) {
+    return "00";
+  }
+
+  return minute.toLocaleString("en-US", {
+    minimumIntegerDigits: 2,
+    useGrouping: false,
+  });
 }
