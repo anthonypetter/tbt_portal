@@ -1,13 +1,18 @@
+import { AccountStatus, CohortEvent, Prisma } from "@prisma/client";
+import utcToZonedTime from "date-fns-tz/utcToZonedTime";
+import compareAsc from "date-fns/compareAsc";
+import endOfWeek from "date-fns/endOfWeek";
+import startOfWeek from "date-fns/startOfWeek";
+import compact from "lodash/compact";
+import flatten from "lodash/flatten";
+import uniqBy from "lodash/uniqBy";
+import { rrulestr } from "rrule";
 import { prisma } from "../lib/prisma-client";
-import { AccountStatus, Prisma } from "@prisma/client";
+import { AssignmentSubject } from "../schema/__generated__/graphql";
 import {
   ChangeSet,
   CohortStaffAssignmentInput,
 } from "../utils/cohortStaffAssignments";
-import { AssignmentSubject } from "../schema/__generated__/graphql";
-import flatten from "lodash/flatten";
-import compact from "lodash/compact";
-import uniqBy from "lodash/uniqBy";
 import { extractSchedules } from "../utils/schedules";
 
 /**
@@ -364,6 +369,89 @@ async function getTeacherCohorts(userId: number, filter: TeacherCohortsFilter) {
   });
 }
 
+async function getCohortEventsForCurrentWeek(cohortId: number) {
+  const recurringEvents = await prisma.cohortEvent.findMany({
+    where: { cohortId },
+  });
+
+  return generateCurrentWeekInstances(recurringEvents);
+}
+
+function generateCurrentWeekInstances(recurringEvents: CohortEvent[]) {
+  if (recurringEvents.length === 0) {
+    return [];
+  }
+
+  /**
+   * The start of the week is Sunday.
+   *
+   * Of course, we know people in NY experience the start
+   * of the week 3 hours earlier than people in California. Sunday morning
+   * 1:00 AM in NY is still Saturday night 10:00 PM in California.
+   *
+   * So who gets to decide when the start of the week is?
+   * The answer is the user should. If we saved the timezone on a per user basis (for
+   * example, as a user setting), we'd be able to calculate a user's start of the
+   * week based on their timezone.  We're not doing that yet so that's not an option
+   * right now.
+   *
+   * As a backup, we're going to pick the cohort's timezone.  This means that
+   * whenever it's the new week for the students in a cohort, it's the new week
+   * for everyone participating in the cohort. Since the transition happens between
+   * saturday and sunday around midnight, I think we can live with this for now.
+   *
+   * For information about "floating" times,
+   * read https://github.com/jakubroztocil/rrule#important-use-utc-dates
+   *
+   */
+
+  const timeZone = recurringEvents[0].timeZone;
+  const todayServer = new Date();
+  const todayZoned = utcToZonedTime(todayServer, timeZone);
+
+  const startOfWeekDateTime = startOfWeek(todayZoned);
+  const endOfWeekDateTime = endOfWeek(todayZoned);
+
+  const startOfWeekFloating = new Date(
+    Date.UTC(
+      startOfWeekDateTime.getFullYear(),
+      startOfWeekDateTime.getMonth(),
+      startOfWeekDateTime.getDate(),
+      0,
+      0
+    )
+  );
+
+  const endOfWeekFloating = new Date(
+    Date.UTC(
+      endOfWeekDateTime.getFullYear(),
+      endOfWeekDateTime.getMonth(),
+      endOfWeekDateTime.getDate(),
+      23,
+      59,
+      59
+    )
+  );
+
+  return recurringEvents
+    .flatMap((rEvent) => {
+      const rRule = rrulestr(rEvent.recurrenceRule);
+      return rRule
+        .between(startOfWeekFloating, endOfWeekFloating)
+        .map((dateInstance) => {
+          return {
+            startFloatingDateTime: dateInstance,
+            durationMinutes: rEvent.durationMinutes,
+            timeZone: rEvent.timeZone,
+            subject: rEvent.subject,
+          };
+        });
+    })
+    .sort((a, b) =>
+      compareAsc(a.startFloatingDateTime, b.startFloatingDateTime)
+    );
+}
+
 export const CohortService = {
   getCohort,
   getCohorts,
@@ -375,4 +463,5 @@ export const CohortService = {
   getSchedule,
   getStaffAssignments,
   getTeacherCohorts,
+  getCohortEventsForCurrentWeek,
 };
