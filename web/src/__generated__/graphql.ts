@@ -67,6 +67,7 @@ export type Cohort = {
   endDate?: Maybe<Scalars['Date']>;
   engagement: Engagement;
   engagementId: Scalars['ID'];
+  events: Array<CohortEvent>;
   exempt?: Maybe<Scalars['String']>;
   grade?: Maybe<Scalars['String']>;
   hostKey?: Maybe<Scalars['String']>;
@@ -77,6 +78,14 @@ export type Cohort = {
   schedule: Array<ScheduledMeeting>;
   staffAssignments: Array<CohortStaffAssignment>;
   startDate?: Maybe<Scalars['Date']>;
+};
+
+export type CohortEvent = {
+  __typename?: 'CohortEvent';
+  durationMinutes: Scalars['Int'];
+  startFloatingDateTime: Scalars['Date'];
+  subject: AssignmentSubject;
+  timeZone: Scalars['String'];
 };
 
 export type CohortStaffAssignment = {
@@ -370,7 +379,7 @@ export type AddCohortMutationVariables = Exact<{
 
 export type AddCohortMutation = { __typename?: 'Mutation', addCohort: { __typename?: 'Cohort', id: string, name: string } };
 
-export type CohortForDetailsSidebarFragment = { __typename?: 'Cohort', name: string, startDate?: any | null, endDate?: any | null, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, createdAt: any, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, role: UserRole } }>, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, engagement: { __typename?: 'Engagement', organization: { __typename?: 'Organization', name: string, description?: string | null } } };
+export type CohortForDetailsSidebarFragment = { __typename?: 'Cohort', name: string, startDate?: any | null, endDate?: any | null, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, createdAt: any, id: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, role: UserRole } }>, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, events: Array<{ __typename?: 'CohortEvent', timeZone: string, startFloatingDateTime: any, durationMinutes: number, subject: AssignmentSubject }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } };
 
 export type CohortForTableFragment = { __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> };
 
@@ -388,9 +397,9 @@ export type EditCohortMutationVariables = Exact<{
 
 export type EditCohortMutation = { __typename?: 'Mutation', editCohort: { __typename?: 'Cohort', id: string, name: string } };
 
-export type EngagementCohortsViewFragment = { __typename?: 'Engagement', cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, engagement: { __typename?: 'Engagement', organization: { __typename?: 'Organization', name: string, description?: string | null } } }> };
+export type EngagementCohortsViewFragment = { __typename?: 'Engagement', cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, events: Array<{ __typename?: 'CohortEvent', timeZone: string, startFloatingDateTime: any, durationMinutes: number, subject: AssignmentSubject }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> };
 
-export type CohortsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, engagement: { __typename?: 'Engagement', organization: { __typename?: 'Organization', name: string, description?: string | null } } }> }> };
+export type CohortsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, events: Array<{ __typename?: 'CohortEvent', timeZone: string, startFloatingDateTime: any, durationMinutes: number, subject: AssignmentSubject }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> }> };
 
 export type SaveCohortsCsvDataMutationVariables = Exact<{
   input: CsvProcessedData;
@@ -399,9 +408,9 @@ export type SaveCohortsCsvDataMutationVariables = Exact<{
 
 export type SaveCohortsCsvDataMutation = { __typename?: 'Mutation', saveCohortsCsvData: { __typename?: 'CsvSaveCountsResult', newTeacherCount: number, newCohortCount: number } };
 
-export type CohortForScheduleCalendarFragment = { __typename?: 'Cohort', name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, role: UserRole, fullName: string } }>, engagement: { __typename?: 'Engagement', organization: { __typename?: 'Organization', name: string, description?: string | null } } };
+export type CohortForCohortsScheduleCalendarFragment = { __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, events: Array<{ __typename?: 'CohortEvent', timeZone: string, startFloatingDateTime: any, durationMinutes: number, subject: AssignmentSubject }>, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, role: UserRole, fullName: string } }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } };
 
-export type CohortForScheduleCalendarModalFragment = { __typename?: 'Cohort', name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, role: UserRole, fullName: string } }>, engagement: { __typename?: 'Engagement', organization: { __typename?: 'Organization', name: string, description?: string | null } } };
+export type CohortForScheduleCalendarModalFragment = { __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, events: Array<{ __typename?: 'CohortEvent', timeZone: string, startFloatingDateTime: any, durationMinutes: number, subject: AssignmentSubject }>, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, role: UserRole, fullName: string } }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } };
 
 export type AddEngagementMutationVariables = Exact<{
   input: AddEngagementInput;
@@ -428,7 +437,7 @@ export type EditEngagementMutation = { __typename?: 'Mutation', editEngagement: 
 
 export type EditEngagementModalEngagementFragment = { __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> };
 
-export type EngagementDetailsPageCohortsFragment = { __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, organization: { __typename?: 'Organization', name: string, id: string }, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, engagement: { __typename?: 'Engagement', organization: { __typename?: 'Organization', name: string, description?: string | null } } }> };
+export type EngagementDetailsPageCohortsFragment = { __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, organization: { __typename?: 'Organization', name: string, id: string }, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, events: Array<{ __typename?: 'CohortEvent', timeZone: string, startFloatingDateTime: any, durationMinutes: number, subject: AssignmentSubject }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> };
 
 export type EngagementDetailsPageCsvUploadFragment = { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string }, cohorts: Array<{ __typename?: 'Cohort', id: string }> };
 
@@ -470,13 +479,13 @@ export type EditOrganizationMutation = { __typename?: 'Mutation', editOrganizati
 
 export type EngagementsViewFFragment = { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
-export type CohortsViewFFragment = { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, engagement: { __typename?: 'Engagement', organization: { __typename?: 'Organization', name: string, description?: string | null } } }> }> };
+export type CohortsViewFFragment = { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, events: Array<{ __typename?: 'CohortEvent', timeZone: string, startFloatingDateTime: any, durationMinutes: number, subject: AssignmentSubject }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> }> };
 
 export type OrganizationsFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> };
 
 export type OrganizationsTableFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> };
 
-export type CurrentUserQueryForMySchedulePageFragment = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string } | null };
+export type CurrentUserQueryForMySchedulePageFragment = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string } | null, teacherCohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, events: Array<{ __typename?: 'CohortEvent', timeZone: string, startFloatingDateTime: any, durationMinutes: number, subject: AssignmentSubject }>, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, role: UserRole, fullName: string } }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> };
 
 export type SearchUsersQueryVariables = Exact<{
   query: Scalars['String'];
@@ -504,21 +513,21 @@ export type FlatEngagementsPageQuery = { __typename?: 'Query', engagements: Arra
 export type MySchedulePageQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MySchedulePageQuery = { __typename?: 'Query', teacherCohorts: Array<{ __typename?: 'Cohort', name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, role: UserRole, fullName: string } }>, engagement: { __typename?: 'Engagement', organization: { __typename?: 'Organization', name: string, description?: string | null } } }>, currentUser?: { __typename?: 'User', id: string } | null };
+export type MySchedulePageQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string } | null, teacherCohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, events: Array<{ __typename?: 'CohortEvent', timeZone: string, startFloatingDateTime: any, durationMinutes: number, subject: AssignmentSubject }>, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, role: UserRole, fullName: string } }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> };
 
 export type OrgDetailPageCohortsQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type OrgDetailPageCohortsQuery = { __typename?: 'Query', organization?: { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, engagement: { __typename?: 'Engagement', organization: { __typename?: 'Organization', name: string, description?: string | null } } }> }> } | null };
+export type OrgDetailPageCohortsQuery = { __typename?: 'Query', organization?: { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, events: Array<{ __typename?: 'CohortEvent', timeZone: string, startFloatingDateTime: any, durationMinutes: number, subject: AssignmentSubject }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> }> } | null };
 
 export type EngagementDetailsPageQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type EngagementDetailsPageQuery = { __typename?: 'Query', engagement?: { __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, organization: { __typename?: 'Organization', name: string, id: string }, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, engagement: { __typename?: 'Engagement', organization: { __typename?: 'Organization', name: string, description?: string | null } } }> } | null };
+export type EngagementDetailsPageQuery = { __typename?: 'Query', engagement?: { __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, organization: { __typename?: 'Organization', name: string, id: string }, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, schedule: Array<{ __typename?: 'ScheduledMeeting', weekday: Weekday, subject: AssignmentSubject, startTime: string, endTime: string, timeZone: string }>, events: Array<{ __typename?: 'CohortEvent', timeZone: string, startFloatingDateTime: any, durationMinutes: number, subject: AssignmentSubject }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> } | null };
 
 export type EngagementCsvUploadPageQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -566,8 +575,9 @@ export const CohortForTableFragmentDoc = gql`
   }
 }
     `;
-export const CohortForScheduleCalendarFragmentDoc = gql`
-    fragment CohortForScheduleCalendar on Cohort {
+export const CohortForCohortsScheduleCalendarFragmentDoc = gql`
+    fragment CohortForCohortsScheduleCalendar on Cohort {
+  id
   name
   grade
   startDate
@@ -578,6 +588,12 @@ export const CohortForScheduleCalendarFragmentDoc = gql`
     startTime
     endTime
     timeZone
+  }
+  events {
+    timeZone
+    startFloatingDateTime
+    durationMinutes
+    subject
   }
   staffAssignments {
     user {
@@ -591,18 +607,18 @@ export const CohortForScheduleCalendarFragmentDoc = gql`
   hostKey
   meetingId
   engagement {
+    name
     organization {
       name
-      description
     }
   }
 }
     `;
 export const CohortForScheduleCalendarModalFragmentDoc = gql`
     fragment CohortForScheduleCalendarModal on Cohort {
-  ...CohortForScheduleCalendar
+  ...CohortForCohortsScheduleCalendar
 }
-    ${CohortForScheduleCalendarFragmentDoc}`;
+    ${CohortForCohortsScheduleCalendarFragmentDoc}`;
 export const CohortForDetailsSidebarFragmentDoc = gql`
     fragment CohortForDetailsSidebar on Cohort {
   name
@@ -831,8 +847,11 @@ export const CurrentUserQueryForMySchedulePageFragmentDoc = gql`
   currentUser {
     id
   }
+  teacherCohorts {
+    ...CohortForCohortsScheduleCalendar
+  }
 }
-    `;
+    ${CohortForCohortsScheduleCalendarFragmentDoc}`;
 export const UsersTableFragmentDoc = gql`
     fragment UsersTable on Query {
   users {
@@ -1377,13 +1396,9 @@ export type FlatEngagementsPageLazyQueryHookResult = ReturnType<typeof useFlatEn
 export type FlatEngagementsPageQueryResult = Apollo.QueryResult<FlatEngagementsPageQuery, FlatEngagementsPageQueryVariables>;
 export const MySchedulePageDocument = gql`
     query MySchedulePage {
-  teacherCohorts {
-    ...CohortForScheduleCalendar
-  }
   ...CurrentUserQueryForMySchedulePage
 }
-    ${CohortForScheduleCalendarFragmentDoc}
-${CurrentUserQueryForMySchedulePageFragmentDoc}`;
+    ${CurrentUserQueryForMySchedulePageFragmentDoc}`;
 
 /**
  * __useMySchedulePageQuery__
