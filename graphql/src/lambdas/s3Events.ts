@@ -2,7 +2,7 @@ import { prisma } from "@lib/prisma-client";
 import { S3Event, S3EventRecord, S3Handler } from "aws-lambda";
 
 const s3EventsHandler: S3Handler = async (event: S3Event) => {
-  if (!isS3ObjectCreationEvent(event)) {
+  if (!isWherebyS3ObjectCreationEvent(event)) {
     return;
   }
 
@@ -10,7 +10,7 @@ const s3EventsHandler: S3Handler = async (event: S3Event) => {
   await updateCohortSessionRecording(eventRecord);
 };
 
-function isS3ObjectCreationEvent(event: S3Event): boolean {
+function isWherebyS3ObjectCreationEvent(event: S3Event): boolean {
   const eventRecord = event.Records[0];
   return (
     eventRecord.eventSource === "aws:s3" &&

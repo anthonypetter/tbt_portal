@@ -216,15 +216,19 @@ async function addCohort(
     return cohortCreated;
   }
 
+  const endDate = new Date(input.endDate);
+  endDate.setDate(endDate.getDate() + 1);
+
   // else create meeting room on whereby,with cohort id prefexName
   const wherebyResult = await WhereByService.createWhereByRoom(
-    new Date(input.endDate).toUTCString(),
+    endDate.toUTCString(),
     cohortCreated.id
   );
 
   const { roomUrl: meetingRoom, meetingId, hostRoomUrl } = wherebyResult;
-  const hostRoomSearch = hostRoomUrl?.split("?");
-  const hostKey = parse(`${hostRoomSearch[1]}`).roomKey;
+  const hostRoomSearch = hostRoomUrl.split("?");
+  const hostKey =
+    hostRoomSearch.length > 1 ? parse(`${hostRoomSearch[1]}`).roomKey : "";
 
   return prisma.cohort.update({
     where: { id: cohortCreated.id },
