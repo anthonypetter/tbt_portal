@@ -45,4 +45,12 @@ export const CohortResolver = {
   ) {
     return EngagementService.getEngagement(parent.engagementId);
   },
+
+  async events(
+    parent: ResolversParentTypes["Cohort"],
+    _args: undefined,
+    { CohortService }: Context
+  ) {
+    return CohortService.getCohortEventsForCurrentWeek(parent.id);
+  },
 };
