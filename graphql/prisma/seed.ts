@@ -358,40 +358,42 @@ function createSchoolEngagements(engAbbr: string) {
     cohortAbbvr: `${engAbbr}-${index + 1}-Cohort`,
   }));
 
+  const today = makeNoOffsetUtcDateTime({ month: 6, day: 25, year: 2022 });
+
   return engagements.map((eng: { name: string; cohortAbbvr: string }) => {
     return {
       name: eng.name,
-      startDate: new Date(),
-      endDate: add(new Date(), { days: getRandomInt(60) }),
+      startDate: today,
+      endDate: add(today, { days: getRandomInt(60) }),
       cohorts: {
         create: [
           {
             createdAt: new Date(),
             name: `${eng.cohortAbbvr}-K`,
             grade: "K",
-            startDate: new Date(),
-            endDate: add(new Date(), { days: getRandomInt(60) }),
+            startDate: today,
+            endDate: add(today, { days: getRandomInt(60) }),
           },
           {
             createdAt: new Date(),
             name: `${eng.cohortAbbvr}-1`,
             grade: "1",
-            startDate: new Date(),
-            endDate: add(new Date(), { days: getRandomInt(60) }),
+            startDate: today,
+            endDate: add(today, { days: getRandomInt(60) }),
           },
           {
             createdAt: new Date(),
             name: `${eng.cohortAbbvr}-2`,
             grade: "2",
-            startDate: new Date(),
-            endDate: add(new Date(), { days: getRandomInt(60) }),
+            startDate: today,
+            endDate: add(today, { days: getRandomInt(60) }),
           },
           {
             createdAt: new Date(),
             name: `${eng.cohortAbbvr}-3`,
             grade: "3",
-            startDate: new Date(),
-            endDate: add(new Date(), { days: getRandomInt(60) }),
+            startDate: today,
+            endDate: add(today, { days: getRandomInt(60) }),
           },
         ],
       },
@@ -415,6 +417,11 @@ function getRandomInt(max: number) {
   return Math.floor(Math.random() * max) + 1;
 }
 
+/**
+ *
+ * Victor's test org for testing
+ */
+
 async function createVictorsTestOrg(users: User[]) {
   const mentorTeacher = fromJust(
     users.find((u) => u.email === "victor+mt@tutored.live")
@@ -428,6 +435,21 @@ async function createVictorsTestOrg(users: User[]) {
   const elaTeacher = fromJust(
     users.find((u) => u.email === "victor+tt@tutored.live")
   );
+
+  const startDate = makeNoOffsetUtcDateTime({
+    month: 6,
+    day: 1,
+    year: 2022,
+    time: { hour: 0, minute: 0 },
+  });
+
+  const endDate = makeNoOffsetUtcDateTime({
+    month: 12,
+    day: 24,
+    year: 2022,
+    time: { hour: 23, minute: 59, second: 59 },
+  });
+
   const testOrg = await prisma.organization.create({
     data: {
       name: "Victor's org",
@@ -435,8 +457,8 @@ async function createVictorsTestOrg(users: User[]) {
       engagements: {
         create: {
           name: "Victor's test engagement",
-          startDate: new Date(),
-          endDate: add(new Date(), { days: 60 }),
+          startDate: startDate,
+          endDate: endDate,
           staffAssignments: {
             createMany: {
               data: [
@@ -461,15 +483,12 @@ async function createVictorsTestOrg(users: User[]) {
     },
   });
 
-  const cohortStartDate = new Date(Date.UTC(2022, 5, 15));
-  const cohortEndDate = new Date(Date.UTC(2022, 11, 21, 23, 59, 59));
-
   await prisma.cohort.create({
     data: {
       name: "Victor's Cohort 1",
       engagementId: testOrg.engagements[0].id,
-      startDate: cohortStartDate,
-      endDate: cohortEndDate,
+      startDate: startDate,
+      endDate: endDate,
       grade: "1",
       staffAssignments: {
         createMany: {
@@ -547,8 +566,8 @@ async function createVictorsTestOrg(users: User[]) {
         createMany: {
           data: [
             makeRecurringEvent({
-              cohortStartDate,
-              cohortEndDate,
+              cohortStartDate: startDate,
+              cohortEndDate: endDate,
               startTime: { hour: 8, minute: 30 },
               durationMinutes: 75,
               subject: AssignmentSubject.ELA,
@@ -557,8 +576,8 @@ async function createVictorsTestOrg(users: User[]) {
             }),
 
             makeRecurringEvent({
-              cohortStartDate,
-              cohortEndDate,
+              cohortStartDate: startDate,
+              cohortEndDate: endDate,
               startTime: { hour: 10, minute: 0 },
               durationMinutes: 60,
               subject: AssignmentSubject.MATH,
@@ -567,8 +586,8 @@ async function createVictorsTestOrg(users: User[]) {
             }),
 
             makeRecurringEvent({
-              cohortStartDate,
-              cohortEndDate,
+              cohortStartDate: startDate,
+              cohortEndDate: endDate,
               startTime: { hour: 15, minute: 0 },
               durationMinutes: 75,
               subject: AssignmentSubject.MATH,
@@ -577,8 +596,8 @@ async function createVictorsTestOrg(users: User[]) {
             }),
 
             makeRecurringEvent({
-              cohortStartDate,
-              cohortEndDate,
+              cohortStartDate: startDate,
+              cohortEndDate: endDate,
               startTime: { hour: 13, minute: 0 },
               durationMinutes: 67,
               subject: AssignmentSubject.GENERAL,
@@ -597,6 +616,7 @@ async function createVictorsTestOrg(users: User[]) {
 type Time = {
   hour: number;
   minute: number;
+  second?: number;
 };
 function makeRecurringEvent({
   cohortStartDate,
@@ -651,4 +671,29 @@ function makeRecurringEvent({
       until: endDateTime,
     }).toString(),
   };
+}
+
+function makeNoOffsetUtcDateTime({
+  year,
+  month,
+  day,
+  time,
+}: {
+  year: number;
+  month: number;
+  day: number;
+  time?: Time;
+}) {
+  const monthIndex = month - 1;
+
+  return new Date(
+    Date.UTC(
+      year,
+      monthIndex,
+      day,
+      time?.hour ?? 0,
+      time?.minute ?? 0,
+      time?.second ?? 0
+    )
+  );
 }
