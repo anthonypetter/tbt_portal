@@ -14,6 +14,7 @@ type Props = {
   leftIcon?: (props: React.ComponentProps<"svg">) => JSX.Element;
   className?: string;
   onClick?: MouseEventHandler<HTMLInputElement>;
+  disabled?: boolean;
 };
 
 function InputForwardRef(
@@ -30,6 +31,7 @@ function InputForwardRef(
     leftIcon: LeftIcon,
     className: classNameProp,
     onClick: onClickProp,
+    disabled = false,
   }: Props,
   ref: React.Ref<HTMLInputElement>
 ) {
@@ -66,6 +68,7 @@ function InputForwardRef(
           id={id}
           type={type}
           className={clsx(
+            disabled && "text-gray-400",
             "shadow-sm block w-full sm:text-sm border-gray-300 rounded-md",
             "focus:ring-blue-500 focus:border-blue-500",
             LeftIcon && "pl-10"
@@ -73,6 +76,7 @@ function InputForwardRef(
           aria-describedby={`${id}-input-description`}
           required={required}
           ref={ref}
+          disabled={disabled}
           {...name}
           {...value}
           {...onChange}
@@ -81,10 +85,7 @@ function InputForwardRef(
         />
       </div>
       {description && (
-        <p
-          className="mt-2 text-sm text-gray-500"
-          id={`${id}-input-description`}
-        >
+        <p className={clsx("mt-2 text-sm ")} id={`${id}-input-description`}>
           {description}
         </p>
       )}
