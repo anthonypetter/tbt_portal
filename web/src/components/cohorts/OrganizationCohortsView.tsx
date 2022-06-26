@@ -2,13 +2,13 @@ import { gql } from "@apollo/client";
 import { OrgDetailPageCohortsQuery } from "@generated/graphql";
 import { SearchIcon } from "@heroicons/react/outline";
 import clsx from "clsx";
-import { Input } from "components/Input";
-import { useState } from "react";
-import { CohortsTable } from "./CohortsTable";
-import filter from "lodash/filter";
 import { ErrorBoundary } from "components/ErrorBoundary";
 import { ErrorBox } from "components/ErrorBox";
+import { Input } from "components/Input";
+import filter from "lodash/filter";
+import { useState } from "react";
 import { CohortDetailsSidebar } from "./CohortDetailsSidebar";
+import { CohortsTable } from "./CohortsTable";
 
 OrganizationCohortsView.fragments = {
   cohortsList: gql`
@@ -45,10 +45,6 @@ OrganizationCohortsView.fragments = {
     ${CohortDetailsSidebar.fragments.cohort}
   `,
 };
-
-export type QueryCohorts = NonNullable<
-  OrgDetailPageCohortsQuery["organization"]
->["engagements"][number]["cohorts"];
 
 type Props = {
   organization: NonNullable<OrgDetailPageCohortsQuery["organization"]>;

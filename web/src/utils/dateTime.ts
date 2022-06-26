@@ -204,6 +204,25 @@ export function normalizeDateFromUTCDateTime(utcDateTime: Date): Date {
 }
 
 /**
+ * Takes a DateTime and creates a Zero-offset UTC Date.
+ *
+ * Example:
+ * Input: 2022-06-20T04:00:00Z
+ * Output: 2022-06-20T00:00:00Z
+ *
+ * @param dateTime
+ * @returns new UTC zero-offset dateTime with local date's month, day, and year.
+ *
+ */
+
+export function normalizeToUtcDate(dateTime: Date): Date {
+  // Hours, minutes, seconds, milliseconds are left at 0.
+  return new Date(
+    Date.UTC(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate())
+  );
+}
+
+/**
  * Takes a floating time and converts it into an incremental time by applying a time zone.
  *
  * Info on floating times:

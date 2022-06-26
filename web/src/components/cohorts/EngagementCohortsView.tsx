@@ -1,26 +1,28 @@
 import { gql } from "@apollo/client";
 import { EngagementDetailsPageCohortsFragment } from "@generated/graphql";
 import { PlusIcon, SearchIcon } from "@heroicons/react/outline";
-import { Input } from "components/Input";
-import { useState } from "react";
-import { CohortsTable } from "./CohortsTable";
-import filter from "lodash/filter";
 import { Button } from "components/Button";
-import { AddNewCohortModal } from "./AddNewCohortModal";
-import { ErrorBox } from "components/ErrorBox";
 import { ErrorBoundary } from "components/ErrorBoundary";
+import { ErrorBox } from "components/ErrorBox";
+import { Input } from "components/Input";
+import filter from "lodash/filter";
+import { useState } from "react";
+import { AddNewCohortModal } from "./AddNewCohortModal";
 import { CohortDetailsSidebar } from "./CohortDetailsSidebar";
+import { CohortsTable } from "./CohortsTable";
 
 EngagementCohortsView.fragments = {
   cohortsList: gql`
     fragment EngagementCohortsView on Engagement {
       cohorts {
-      ...CohortForTable
-      ...CohortForDetailsSidebar
+        ...CohortForTable
+        ...CohortForDetailsSidebar
       }
+      ...EngagementForAddNewCohortModal
     }
     ${CohortsTable.fragments.cohort}
     ${CohortDetailsSidebar.fragments.cohort}
+    ${AddNewCohortModal.fragments.engagement}
   `,
 };
 
@@ -79,7 +81,7 @@ export function EngagementCohortsView({ engagement }: Props) {
           />
 
           <AddNewCohortModal
-            engagementId={engagement.id}
+            engagement={engagement}
             show={showAddModal}
             onCancel={() => setShowAddModal(false)}
             onSuccess={() => setShowAddModal(false)}
