@@ -5,7 +5,7 @@ type Props = {
   timeMs: number | null | undefined;
 };
 
-export function DateText({ timeMs }: Props) {
+export function NormalizedDateText({ timeMs }: Props) {
   if (!timeMs) {
     return <span>&#8212;</span>;
   }
