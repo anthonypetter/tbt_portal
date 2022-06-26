@@ -3,6 +3,10 @@ import {
   EditEngagementModalEngagementFragment,
   EditEngagementMutation,
 } from "@generated/graphql";
+import {
+  normalizeDateFromUTCDateTime,
+  normalizeToUtcDate,
+} from "@utils/dateTime";
 import { fromJust } from "@utils/types";
 import { ErrorBox } from "components/ErrorBox";
 import { Input } from "components/Input";
@@ -104,12 +108,19 @@ export function EditEngagementModalBody({
   const cancelButtonRef = useRef(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [name, setName] = useState<string | null | undefined>(engagement.name);
+
   const [startDate, setStartDate] = useState<Date | null | undefined>(
-    engagement.startDate ? new Date(engagement.startDate) : undefined
+    engagement.startDate
+      ? normalizeDateFromUTCDateTime(new Date(engagement.startDate))
+      : undefined
   );
+
   const [endDate, setEndDate] = useState<Date | null | undefined>(
-    engagement.endDate ? new Date(engagement.endDate) : undefined
+    engagement.endDate
+      ? normalizeDateFromUTCDateTime(new Date(engagement.endDate))
+      : undefined
   );
+
   const [staff, setStaff] = useState<EngagementStaffTeacher[]>(
     engagement.staffAssignments.map((sa) => toEngagementStaffTeacher(sa))
   );
@@ -128,8 +139,10 @@ export function EditEngagementModalBody({
         input: {
           id: engagement.id,
           name: fromJust(name, "name"),
-          startDate: startDate ? startDate.getTime() : startDate,
-          endDate: endDate ? endDate.getTime() : endDate,
+          startDate: startDate
+            ? normalizeToUtcDate(startDate).getTime()
+            : startDate,
+          endDate: endDate ? normalizeToUtcDate(endDate).getTime() : endDate,
           newStaffAssignments: staff.map((t) => ({
             userId: t.userId,
             role: t.role,

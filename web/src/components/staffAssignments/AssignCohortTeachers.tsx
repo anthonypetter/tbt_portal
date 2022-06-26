@@ -1,11 +1,10 @@
-import { AssignmentSubject } from "@generated/graphql";
+import { AssignmentSubject, CohortForTableFragment } from "@generated/graphql";
 import { FieldError } from "components/FieldError";
-import { Assignment, CohortAssignment, TeacherAssignmentType } from "./types";
-import { SearchTeachersInput, TeacherSelection } from "./SearchTeachersInput";
 import React, { useState } from "react";
 import { EmptyStaffingState } from "./EmptyStaffingState";
+import { SearchTeachersInput, TeacherSelection } from "./SearchTeachersInput";
 import { isCohortStaffTeacher, StaffAssignment } from "./StaffAssignment";
-import { QueryCohorts } from "components/cohorts/OrganizationCohortsView";
+import { Assignment, CohortAssignment, TeacherAssignmentType } from "./types";
 
 type Props = {
   staff: CohortStaffTeacher[];
@@ -96,7 +95,7 @@ export type CohortStaffTeacher = TeacherSelection & {
 };
 
 export function toCohortStaffTeacher(
-  staffAssignment: QueryCohorts[number]["staffAssignments"][number]
+  staffAssignment: CohortForTableFragment["staffAssignments"][number]
 ): CohortStaffTeacher {
   return {
     userId: staffAssignment.user.id,

@@ -1,14 +1,21 @@
-import { useRef, useState } from "react";
-import { Spinner } from "../Spinner";
-import { Modal } from "../Modal";
-import { ErrorBox } from "components/ErrorBox";
 import { ApolloError, gql, useMutation } from "@apollo/client";
-import { AddCohortMutation } from "@generated/graphql";
+import {
+  AddCohortMutation,
+  EngagementForAddNewCohortModalFragment,
+} from "@generated/graphql";
+import {
+  normalizeDateFromUTCDateTime,
+  normalizeToUtcDate,
+} from "@utils/dateTime";
 import { fromJust } from "@utils/types";
+import { ErrorBox } from "components/ErrorBox";
 import { Input } from "components/Input";
-import { MdWorkspacesOutline } from "react-icons/md";
 import noop from "lodash/noop";
+import { useRef, useState } from "react";
 import DatePicker from "react-datepicker";
+import { MdWorkspacesOutline } from "react-icons/md";
+import { Modal } from "../Modal";
+import { Spinner } from "../Spinner";
 import {
   AssignCohortTeachers,
   CohortStaffTeacher,
@@ -27,8 +34,18 @@ const ADD_COHORT = gql`
   }
 `;
 
+AddNewCohortModal.fragments = {
+  engagement: gql`
+    fragment EngagementForAddNewCohortModal on Engagement {
+      id
+      startDate
+      endDate
+    }
+  `,
+};
+
 type Props = {
-  engagementId: string;
+  engagement: EngagementForAddNewCohortModalFragment;
   show: boolean;
   onCancel: () => void;
   onSuccess: () => void;
@@ -36,7 +53,7 @@ type Props = {
 
 export function AddNewCohortModal({
   show,
-  engagementId,
+  engagement,
   onCancel,
   onSuccess,
 }: Props) {
@@ -56,7 +73,7 @@ export function AddNewCohortModal({
       width="large"
     >
       <AddCohortModalBody
-        engagementId={engagementId}
+        engagement={engagement}
         onCancel={onCancel}
         onSuccess={onSuccess}
       />
@@ -65,21 +82,32 @@ export function AddNewCohortModal({
 }
 
 type AddCohortModalBodyProps = {
-  engagementId: string;
+  engagement: EngagementForAddNewCohortModalFragment;
   onCancel: () => void;
   onSuccess: () => void;
 };
 
 export function AddCohortModalBody({
-  engagementId,
+  engagement,
   onCancel,
   onSuccess,
 }: AddCohortModalBodyProps) {
   const cancelButtonRef = useRef(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [name, setName] = useState<string | null | undefined>();
-  const [startDate, setStartDate] = useState<Date | null | undefined>();
-  const [endDate, setEndDate] = useState<Date | null | undefined>();
+
+  const [startDate, setStartDate] = useState<Date | null | undefined>(
+    engagement.startDate
+      ? normalizeDateFromUTCDateTime(new Date(engagement.startDate))
+      : undefined
+  );
+
+  const [endDate, setEndDate] = useState<Date | null | undefined>(
+    engagement.endDate
+      ? normalizeDateFromUTCDateTime(new Date(engagement.endDate))
+      : undefined
+  );
+
   const [grade, setGrade] = useState<string | null | undefined>();
   const [hostKey, setHostKey] = useState<string | null | undefined>();
   const [meetingRoom, setMeetingRoom] = useState<string | null | undefined>();
@@ -95,9 +123,11 @@ export function AddCohortModalBody({
       variables: {
         input: {
           name: fromJust(name, "name"),
-          engagementId,
-          startDate: startDate ? startDate.getTime() : startDate,
-          endDate: endDate ? endDate.getTime() : endDate,
+          engagementId: engagement.id,
+          startDate: startDate
+            ? normalizeToUtcDate(startDate).getTime()
+            : startDate,
+          endDate: endDate ? normalizeToUtcDate(endDate).getTime() : endDate,
           grade: grade,
           hostKey: hostKey,
           meetingRoom: meetingRoom,
@@ -148,7 +178,14 @@ export function AddCohortModalBody({
             <DatePicker
               selected={startDate}
               onChange={(date) => setStartDate(date)}
-              customInput={<Input label="Start" id="cohort-start-date" />}
+              customInput={
+                <Input
+                  label="Engagement Start"
+                  id="cohort-start-date"
+                  disabled
+                />
+              }
+              disabled
             />
           </div>
 
@@ -156,7 +193,10 @@ export function AddCohortModalBody({
             <DatePicker
               selected={endDate}
               onChange={(date) => setEndDate(date)}
-              customInput={<Input label="End" id="cohort-end-date" />}
+              customInput={
+                <Input label="Engagement End" id="cohort-end-date" disabled />
+              }
+              disabled
             />
           </div>
 
