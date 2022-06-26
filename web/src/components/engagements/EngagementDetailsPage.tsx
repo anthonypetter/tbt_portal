@@ -1,18 +1,14 @@
+import { gql } from "@apollo/client";
 import {
   EngagementDetailsPageCohortsFragment,
   EngagementDetailsPageCsvUploadFragment,
 } from "@generated/graphql";
-import { gql } from "@apollo/client";
-import { PageHeader } from "components/PageHeader";
-import { Routes } from "@utils/routes";
-import {
-  getDisplayName,
-  EngagementDetailsTabs,
-  Tab,
-} from "./EngagementDetailsTabs";
-import { Container } from "components/Container";
-import { EngagementCohortsView } from "components/cohorts/EngagementCohortsView";
 import { breadcrumbs } from "@utils/breadcrumbs";
+import { Routes } from "@utils/routes";
+import { EngagementCohortsView } from "components/cohorts/EngagementCohortsView";
+import { Container } from "components/Container";
+import { PageHeader } from "components/PageHeader";
+import { EngagementDetailsTabs, Tab } from "./EngagementDetailsTabs";
 
 EngagementDetailsPage.fragments = {
   cohortsView: gql`
@@ -67,21 +63,22 @@ type Props = {
 };
 
 export function EngagementDetailsPage({ tabEng }: Props) {
-  const { tab, engagement } = tabEng;
+  const { engagement } = tabEng;
+
   return (
     <>
       <PageHeader
-        title={tabEng.engagement.name}
+        title={engagement.name}
         description="Engagement"
         breadcrumbs={[
           breadcrumbs.home(),
           breadcrumbs.organizations(),
           {
-            name: `${engagement.organization.name} Engagements`,
+            name: engagement.organization.name,
             href: Routes.org.engagements.href(engagement.organization.id),
           },
           {
-            name: `${engagement.name} ${getDisplayName(tab)}`,
+            name: engagement.name,
             href: Routes.engagement.cohorts.href(
               engagement.organization.id,
               engagement.id
