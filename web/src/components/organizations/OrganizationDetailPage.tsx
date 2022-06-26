@@ -1,15 +1,15 @@
 import { gql } from "@apollo/client";
 import {
-  OrgDetailPageEngagementsQuery,
   OrgDetailPageCohortsQuery,
+  OrgDetailPageEngagementsQuery,
 } from "@generated/graphql";
-import { Routes } from "@utils/routes";
-import { Container } from "components/Container";
-import { OrganizationEngagementsView } from "../engagements/OrganizationEngagementsView";
-import { OrganizationCohortsView } from "components/cohorts/OrganizationCohortsView";
-import { getDisplayName, OrganizationTabs, Tab } from "./OrganizationTabs";
-import { PageHeader } from "components/PageHeader";
 import { breadcrumbs } from "@utils/breadcrumbs";
+import { Routes } from "@utils/routes";
+import { OrganizationCohortsView } from "components/cohorts/OrganizationCohortsView";
+import { Container } from "components/Container";
+import { PageHeader } from "components/PageHeader";
+import { OrganizationEngagementsView } from "../engagements/OrganizationEngagementsView";
+import { OrganizationTabs, Tab } from "./OrganizationTabs";
 
 OrganizationDetailPage.fragments = {
   engagementsView: gql`
@@ -66,7 +66,7 @@ export function OrganizationDetailPage({ tabOrg }: Props) {
           breadcrumbs.home(),
           breadcrumbs.organizations(),
           {
-            name: `${tabOrg.organization.name} ${getDisplayName(tabOrg.tab)}`,
+            name: tabOrg.organization.name,
             href: Routes.org.engagements.href(tabOrg.organization.id),
             current: true,
           },
