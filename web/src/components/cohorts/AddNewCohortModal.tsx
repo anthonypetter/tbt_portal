@@ -178,8 +178,9 @@ export function AddCohortModalBody({
             <DatePicker
               selected={startDate}
               onChange={(date) => setStartDate(date)}
+              required={true}
               customInput={
-                <Input label="Start" id="cohort-start-date" disabled />
+                <Input label="Start" id="cohort-start-date" disabled={true} />
               }
               disabled
             />
@@ -189,7 +190,10 @@ export function AddCohortModalBody({
             <DatePicker
               selected={endDate}
               onChange={(date) => setEndDate(date)}
-              customInput={<Input label="End" id="cohort-end-date" disabled />}
+              required={true}
+              customInput={
+                <Input label="End" id="cohort-end-date" disabled={true} />
+              }
               disabled
             />
           </div>
@@ -229,7 +233,7 @@ export function AddCohortModalBody({
           <Modal.Button
             type="confirm"
             onClick={onAddEngagement}
-            disabled={!name}
+            disabled={!name || !startDate || !endDate}
           >
             {loading ? <Spinner /> : "Save"}
           </Modal.Button>
