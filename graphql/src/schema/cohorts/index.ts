@@ -1,4 +1,5 @@
 import { gql } from "apollo-server";
+import { parse } from "querystring";
 import { Context } from "../../context";
 import {
   QueryCohortsArgs,
@@ -23,6 +24,7 @@ import {
 } from "./teacher";
 import merge from "lodash/merge";
 import { WhereByService } from "../../services/whereby";
+import { prisma } from "@lib/prisma-client";
 
 /**
  * Type Defs
@@ -207,21 +209,32 @@ async function addCohort(
     staff: input.newStaffAssignments.map((t) => fromNewToInput(t)),
   };
 
-  // if meeting room url is specified, just create the cohort
-  if (newCohort.meetingRoom) {
-    return CohortService.addCohort(newCohort);
+  const cohortCreated = await CohortService.addCohort(newCohort);
+
+  // if the meeting room url was already provided, retrun the cohort
+  if (cohortCreated.meetingRoom) {
+    return cohortCreated;
   }
 
-  // else create meeting room on whereby and create the cohort
+  const endDate = new Date(input.endDate);
+  endDate.setDate(endDate.getDate() + 1);
+
+  // else create meeting room on whereby,with cohort id prefexName
   const wherebyResult = await WhereByService.createWhereByRoom(
-    new Date(input.startDate).toISOString(),
-    new Date(input.endDate).toISOString()
+    endDate.toUTCString(),
+    cohortCreated.engagementId,
+    cohortCreated.id
   );
 
-  newCohort.meetingRoom = wherebyResult?.hostRoomUrl;
-  newCohort.meetingId = wherebyResult?.meetingId;
+  const { roomUrl: meetingRoom, meetingId, hostRoomUrl } = wherebyResult;
+  const hostRoomSearch = hostRoomUrl.split("?");
+  const hostKey =
+    hostRoomSearch.length > 1 ? parse(`${hostRoomSearch[1]}`).roomKey : "";
 
-  return CohortService.addCohort(newCohort);
+  return prisma.cohort.update({
+    where: { id: cohortCreated.id },
+    data: { meetingRoom, meetingId, hostKey: `${hostKey}` },
+  });
 }
 
 /**
