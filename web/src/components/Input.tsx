@@ -68,7 +68,7 @@ function InputForwardRef(
           id={id}
           type={type}
           className={clsx(
-            disabled && "text-gray-400",
+            disabled && "bg-gray-50 text-gray-400 ",
             "shadow-sm block w-full sm:text-sm border-gray-300 rounded-md",
             "focus:ring-blue-500 focus:border-blue-500",
             LeftIcon && "pl-10"
