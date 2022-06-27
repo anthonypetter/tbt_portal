@@ -43,7 +43,6 @@ type Props = {
 const MySchedule: NextPage<Props> = ({ cohorts, currentUser }) => {
   const { data } = useQuery<MySchedulePageQuery>(GET_TEACHER_COHORTS, {
     fetchPolicy: "network-only", // Used for first execution
-    nextFetchPolicy: "cache-first", // Used for subsequent executions
     onError: (error) => {
       console.error(error);
       triggerErrorToast({
