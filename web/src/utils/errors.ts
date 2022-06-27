@@ -26,4 +26,5 @@ export enum CsvValidationErrorMessage {
   unsupportedEmailFormat = "The given email format is not supported.",
   missingTeacherName = "Unable to parse a teacher's name.",
   missingTeacherEmail = "Unable to parse a teacher's email.",
+  invalidStartEndDates = "Unable to detect start/end dates.",
 }

@@ -1,9 +1,10 @@
+import { AssignmentSubject } from "@generated/graphql";
+import { numberifyTime, Time, TIME_REGEX } from "@utils/dateTime";
+import { CsvValidationError, CsvValidationErrorMessage } from "@utils/errors";
 import csv from "csv-parser";
 import { ReadStream } from "fs";
-import difference from "lodash/difference";
 import isEmail from "isemail";
-import { AssignmentSubject } from "@generated/graphql";
-import { CsvValidationError, CsvValidationErrorMessage } from "@utils/errors";
+import difference from "lodash/difference";
 
 const NONE = "none";
 
@@ -39,8 +40,8 @@ export type CohortCsvRow = { [key in RequiredHeaders]: string } & {
 
 export type SubjectSchedule = {
   subject: AssignmentSubject;
-  startTime: string;
-  endTime: string;
+  startTime: Time;
+  endTime: Time;
   timeZone: SupportedIanaTimeZone;
 };
 
@@ -53,6 +54,8 @@ export type ProcessedCohort = {
   cohortName: string;
   grade: string;
   googleClassroomLink?: string;
+  cohortStartDate: Date;
+  cohortEndDate: Date;
 
   monday: SubjectSchedule[];
   tuesday: SubjectSchedule[];
@@ -114,7 +117,15 @@ export function parseToCohortRows(csv: unknown): CohortCsvRow[] {
   return csv as CohortCsvRow[];
 }
 
-export function processCohortRow(csv: CohortCsvRow[]): ProcessedCohort[] {
+export function processCohortRow({
+  csv,
+  startDate,
+  endDate,
+}: {
+  csv: CohortCsvRow[];
+  startDate: Date;
+  endDate: Date;
+}): ProcessedCohort[] {
   const processedRows = csv.map((cohortRow) => {
     const googleClassroomLink = cohortRow["google classroom link"];
 
@@ -134,6 +145,8 @@ export function processCohortRow(csv: CohortCsvRow[]): ProcessedCohort[] {
       friday: parseSubjectSchedules(cohortRow.friday),
       saturday: parseSubjectSchedules(cohortRow.saturday),
       sunday: parseSubjectSchedules(cohortRow.sunday),
+      cohortStartDate: startDate,
+      cohortEndDate: endDate,
 
       staffAssignments: parseStaffAssignments(cohortRow),
     };
@@ -153,11 +166,14 @@ function parseSubjectSchedules(csvDayInput: string): SubjectSchedule[] {
     const [subject, ...restTime] = subjectRange.split(":");
     const timeAndZone = restTime.join(":");
     const [timeRange, timeZone] = timeAndZone.split(" ");
-    const [startTime, endTime] = timeRange.split("-");
+    const [startTimeString, endTimeString] = timeRange.split("-");
+    const startTime = numberifyTime(parseHhMm(startTimeString));
+    const endTime = numberifyTime(parseHhMm(endTimeString));
+
     return {
       subject: parseSubject(subject),
-      startTime: parseHhMm(startTime),
-      endTime: parseHhMm(endTime),
+      startTime,
+      endTime,
       timeZone: parseTimeZone(timeZone),
     };
   });
@@ -250,9 +266,7 @@ function parseSubject(subject: string) {
 }
 
 export function parseHhMm(time: string) {
-  const regex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
-
-  const isValid = regex.test(time);
+  const isValid = TIME_REGEX.test(time);
 
   if (isValid) {
     return time;

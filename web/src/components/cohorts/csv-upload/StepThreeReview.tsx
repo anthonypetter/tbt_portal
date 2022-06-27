@@ -4,12 +4,14 @@ import {
 } from "@generated/graphql";
 import {
   ProcessedCohort,
-  SubjectSchedule,
   StaffAssignment,
+  SubjectSchedule,
 } from "@utils/csv/parseCsv";
+import { stringifyTime } from "@utils/dateTime";
 import { assertUnreachable } from "@utils/types";
 import clsx from "clsx";
 import { Button } from "components/Button";
+import { NormalizedDateText } from "components/NormalizedDateText";
 import { ReactNode } from "react";
 
 type Props = {
@@ -31,6 +33,10 @@ export function StepThreeReview({
     <div className="my-4 max-w-full">
       <p className="text-sm text-gray-900 pb-2">
         Engagement: {engagement.name}
+      </p>
+      <p className="text-sm text-gray-900 pb-2">
+        Dates: <NormalizedDateText timeMs={engagement.startDate} /> -
+        <NormalizedDateText timeMs={engagement.endDate} />
       </p>
       <div className="overflow-x-auto">
         <ReviewTable processedCsv={processedCsv} />
@@ -178,9 +184,9 @@ function SchedulesCell({
           <div key={`${weekday}-${i}`} className="flex flex-col py-1">
             <div className="flex px-2">
               <div>{getDisplayNameForSubject(schedule.subject)}:</div>
-              <div>{schedule.startTime}</div>
+              <div>{stringifyTime(schedule.startTime)}</div>
               {"-"}
-              <div>{schedule.endTime}</div>
+              <div>{stringifyTime(schedule.endTime)}</div>
             </div>
             <div className="px-2">Time zone: {schedule.timeZone}</div>
           </div>

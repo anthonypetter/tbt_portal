@@ -1,9 +1,9 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import formidable, { File } from "formidable";
 import { getApiAuth } from "@utils/auth/server-side-auth";
-import fs, { ReadStream } from "fs";
-import { validateCsvFile } from "@utils/csv/validateCsv";
 import { ProcessedCohort } from "@utils/csv/parseCsv";
+import { validate } from "@utils/csv/validateCsv";
+import formidable, { File } from "formidable";
+import fs, { ReadStream } from "fs";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 export const COHORTS_CSV_FILE_NAME = "csvCohorts";
 
@@ -31,8 +31,15 @@ export default async function handler(
       res.end();
     }
 
-    const { stream, filepath } = await parseRequestForCsv(req);
-    const { csv: processedCsv, errors } = await validateCsvFile(stream);
+    const { stream, filepath, startDate, endDate } = await parseRequestForCsv(
+      req
+    );
+
+    const { csv: processedCsv, errors } = await validate({
+      data: stream,
+      startDate,
+      endDate,
+    });
 
     // Delete file now that we're done validating it.
     deleteFile(filepath);
@@ -53,9 +60,12 @@ export default async function handler(
  * Parsing Utilities
  */
 
-function parseRequestForCsv(
-  req: NextApiRequest
-): Promise<{ stream: ReadStream; filepath: string }> {
+function parseRequestForCsv(req: NextApiRequest): Promise<{
+  stream: ReadStream;
+  filepath: string;
+  startDate?: formidable.Fields["field"];
+  endDate?: formidable.Fields["field"];
+}> {
   return new Promise(async (resolve, reject) => {
     try {
       const form = new formidable.IncomingForm({
@@ -72,7 +82,12 @@ function parseRequestForCsv(
         const file = extractFile(files[COHORTS_CSV_FILE_NAME]);
         const fileStream = fs.createReadStream(file.filepath);
 
-        return resolve({ stream: fileStream, filepath: file.filepath });
+        return resolve({
+          stream: fileStream,
+          filepath: file.filepath,
+          startDate: fields.startDate,
+          endDate: fields.endDate,
+        });
       });
     } catch (error) {
       // TODO: improve
