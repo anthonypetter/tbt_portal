@@ -20,14 +20,18 @@ const headers = {
  * This helps us to parse the cohort id when s3 events hit our lambda
  * and store the data into recordings table.
  */
-async function createWhereByRoom(endDate: string, cohortId: number) {
+async function createWhereByRoom(
+  endDate: string,
+  engagementId: number,
+  cohortId: number
+) {
   try {
     const data = {
       endDate,
       isLocked: true,
       roomMode: "group",
       fields: ["hostRoomUrl"],
-      roomNamePrefix: `WHEREBY-RECORDING-COHORT-ID-${cohortId}-`,
+      roomNamePrefix: `WHEREBY-RECORDING-${engagementId}-${cohortId}-`,
     };
     const result = await fetch(WHEREBY_URL, {
       method: "POST",
