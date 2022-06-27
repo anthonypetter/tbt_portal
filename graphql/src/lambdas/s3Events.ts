@@ -1,12 +1,24 @@
 import { prisma } from "@lib/prisma-client";
 import { S3Event, S3Handler } from "aws-lambda";
-import AWS from "aws-sdk";
-import { S3_BUCKET } from "../config";
+import {
+  S3Client,
+  CopyObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
+import {
+  S3_RECORDINGS_BUCKET,
+  AWS_REGION,
+  AWS_ACCESS_ID,
+  AWS_SECRET_ACCESS_KEY,
+} from "../config";
 
-AWS.config.loadFromPath("../keys/aws.json");
-AWS.config.update({ region: "us-east-2" });
-
-const s3 = new AWS.S3();
+const s3 = new S3Client({
+  region: AWS_REGION,
+  credentials: {
+    accessKeyId: AWS_ACCESS_ID,
+    secretAccessKey: AWS_SECRET_ACCESS_KEY,
+  },
+});
 
 const s3EventsHandler: S3Handler = async (event: S3Event) => {
   if (!isWherebyS3ObjectCreationEvent(event)) {
@@ -30,9 +42,10 @@ function isWherebyS3ObjectCreationEvent(event: S3Event): boolean {
 }
 
 async function updateCohortSessionRecording(objectKey: string) {
-  const { cohortId, roomName, destinationPath } = getS3PathElements(objectKey);
-
   try {
+    const { cohortId, roomName, destinationPath } =
+      getS3PathElements(objectKey);
+
     await prisma.cohortSession.updateMany({
       where: { AND: [{ cohortId }, { roomName }] },
       data: { recording: destinationPath },
@@ -43,21 +56,22 @@ async function updateCohortSessionRecording(objectKey: string) {
 }
 
 async function copyS3ObjectToFolder(objectKey: string) {
-  const { destinationPath } = getS3PathElements(objectKey);
   try {
-    const copyBucketParams = {
-      Bucket: S3_BUCKET,
+    const { destinationPath } = getS3PathElements(objectKey);
+
+    const copyBucketCommand = new CopyObjectCommand({
+      Bucket: S3_RECORDINGS_BUCKET,
       CopySource: `${process.env.AWS_S3_BUCKET}/${objectKey}`,
       Key: destinationPath,
-    };
+    });
 
-    const deleteBucketParams = {
-      Bucket: S3_BUCKET,
+    const deleteBucketParams = new DeleteObjectCommand({
+      Bucket: S3_RECORDINGS_BUCKET,
       Key: objectKey,
-    };
+    });
 
-    await s3.copyObject(copyBucketParams);
-    await s3.deleteObject(deleteBucketParams);
+    await s3.send(copyBucketCommand);
+    await s3.send(deleteBucketParams);
     return true;
   } catch (error) {
     console.error("[S3 Copy ERROR]: ", error);
@@ -70,6 +84,9 @@ function getS3PathElements(key: string) {
    * key is WHEREBY-RECORDING-actualEngagementId-actualCohortId-roomName-startTime
    */
   const keyParts = key.split("-");
+  if (keyParts.length < 6) {
+    throw new Error("Object key is not in a correct format or missing details");
+  }
   const engagementId = parseInt(keyParts[2]);
   const cohortId = parseInt(keyParts[3]);
   const roomName = keyParts[4];
