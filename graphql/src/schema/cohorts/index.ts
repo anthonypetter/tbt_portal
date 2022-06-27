@@ -222,6 +222,7 @@ async function addCohort(
   // else create meeting room on whereby,with cohort id prefexName
   const wherebyResult = await WhereByService.createWhereByRoom(
     endDate.toUTCString(),
+    cohortCreated.engagementId,
     cohortCreated.id
   );
 
