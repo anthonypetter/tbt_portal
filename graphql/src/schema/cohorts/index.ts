@@ -1,5 +1,4 @@
 import { gql } from "apollo-server";
-import { parse } from "querystring";
 import { Context } from "../../context";
 import {
   QueryCohortsArgs,
@@ -24,7 +23,6 @@ import {
 } from "./teacher";
 import merge from "lodash/merge";
 import { WhereByService } from "../../services/whereby";
-import { prisma } from "@lib/prisma-client";
 
 /**
  * Type Defs
@@ -216,25 +214,14 @@ async function addCohort(
     return cohortCreated;
   }
 
+  // else create meeting room on whereby
   const endDate = new Date(input.endDate);
-  endDate.setDate(endDate.getDate() + 1);
 
-  // else create meeting room on whereby,with cohort id prefexName
-  const wherebyResult = await WhereByService.createWhereByRoom(
-    endDate.toUTCString(),
+  return CohortService.createRoomForCohort(
     cohortCreated.engagementId,
-    cohortCreated.id
+    cohortCreated.id,
+    endDate
   );
-
-  const { roomUrl: meetingRoom, meetingId, hostRoomUrl } = wherebyResult;
-  const hostRoomSearch = hostRoomUrl.split("?");
-  const hostKey =
-    hostRoomSearch.length > 1 ? parse(`${hostRoomSearch[1]}`).roomKey : "";
-
-  return prisma.cohort.update({
-    where: { id: cohortCreated.id },
-    data: { meetingRoom, meetingId, hostKey: `${hostKey}` },
-  });
 }
 
 /**

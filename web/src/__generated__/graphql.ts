@@ -97,6 +97,7 @@ export type CsvCohortTeacher = {
 
 export type CsvProcessedCohort = {
   cohortName: Scalars['String'];
+  endDate: Scalars['Date'];
   friday: Array<CsvSubjectSchedule>;
   googleClassroomLink?: InputMaybe<Scalars['String']>;
   grade: Scalars['String'];

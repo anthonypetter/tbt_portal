@@ -29,7 +29,7 @@ export const typeDefs = gql`
     cohortName: String!
     grade: String!
     googleClassroomLink: String
-
+    endDate: Date!
     monday: [CsvSubjectSchedule!]!
     tuesday: [CsvSubjectSchedule!]!
     wednesday: [CsvSubjectSchedule!]!

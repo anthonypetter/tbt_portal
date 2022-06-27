@@ -9,6 +9,8 @@ import flatten from "lodash/flatten";
 import compact from "lodash/compact";
 import uniqBy from "lodash/uniqBy";
 import { extractSchedules } from "../utils/schedules";
+import { parse } from "querystring";
+import { WhereByService } from "./whereby";
 
 /**
  * Cohort Type with relations
@@ -73,7 +75,7 @@ type EditInput = {
   id: number;
   name?: string;
   startDate?: Date | null;
-  endDate?: Date | null;
+  endDate: Date;
   grade?: string | null;
   hostKey?: string | null;
   meetingRoom?: string | null;
@@ -148,7 +150,7 @@ type AddCohortInput = {
   name: string;
   engagementId: number;
   startDate?: Date;
-  endDate?: Date;
+  endDate: Date;
   grade?: string | null;
   hostKey?: string | null;
   meetingRoom?: string | null;
@@ -200,7 +202,7 @@ type CsvCohortStaff = {
 export type CsvCohortInput = {
   cohortName: string;
   grade: string;
-
+  endDate: Date;
   monday: SubjectScheduleInput[];
   tuesday: SubjectScheduleInput[];
   wednesday: SubjectScheduleInput[];
@@ -230,6 +232,7 @@ async function saveCsvCohortsData(
       name: cohort.cohortName,
       engagementId,
       grade: cohort.grade,
+      endDate: cohort.endDate,
       staffAssignments: cohort.staffAssignments,
       schedules: extractSchedules(cohort),
     };
@@ -306,6 +309,7 @@ async function saveCsvCohortsData(
           name: cohort.name,
           grade: cohort.grade,
           engagementId: cohort.engagementId,
+          endDate: cohort.endDate,
           staffAssignments: {
             createMany: { data: staffAssignments },
           },
@@ -316,6 +320,14 @@ async function saveCsvCohortsData(
       });
     })
   );
+
+  const cohortsWithNoRoom = cohortsCreated.filter(
+    (cohort) => !cohort.meetingRoom
+  );
+  for (let i = 0; i < cohortsWithNoRoom.length; i++) {
+    const cohort = cohortsCreated[i];
+    await createRoomForCohort(cohort.engagementId, cohort.id, cohort.endDate);
+  }
 
   return {
     newTeacherCount,
@@ -350,7 +362,7 @@ async function getStaffAssignments(cohortId: number) {
  */
 
 type TeacherCohortsFilter = {
-  endDate: Prisma.DateTimeNullableFilter;
+  endDate: Prisma.DateTimeFilter;
 };
 
 async function getTeacherCohorts(userId: number, filter: TeacherCohortsFilter) {
@@ -364,6 +376,28 @@ async function getTeacherCohorts(userId: number, filter: TeacherCohortsFilter) {
   });
 }
 
+async function createRoomForCohort(
+  engagementId: number,
+  cohortId: number,
+  endDate: Date
+) {
+  const wherebyResult = await WhereByService.createWhereByRoom(
+    endDate,
+    engagementId,
+    cohortId
+  );
+
+  const { roomUrl: meetingRoom, meetingId, hostRoomUrl } = wherebyResult;
+  const hostRoomSearch = hostRoomUrl.split("?");
+  const hostKey =
+    hostRoomSearch.length > 1 ? parse(`${hostRoomSearch[1]}`).roomKey : "";
+
+  return prisma.cohort.update({
+    where: { id: cohortId },
+    data: { meetingRoom, meetingId, hostKey: `${hostKey}` },
+  });
+}
+
 export const CohortService = {
   getCohort,
   getCohorts,
@@ -372,6 +406,7 @@ export const CohortService = {
   deleteCohort,
   addCohort,
   saveCsvCohortsData,
+  createRoomForCohort,
   getSchedule,
   getStaffAssignments,
   getTeacherCohorts,
