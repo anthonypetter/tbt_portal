@@ -13,9 +13,14 @@ export const COGNITO_REGION = fromJust(
 export const WHEREBY_URL = fromJust(
   process.env.WHEREBY_URL,
   "process.env.WHEREBY_URL"
-)
+);
 
 export const WHEREBY_API_KEY = fromJust(
   process.env.WHEREBY_API_KEY,
- "process.env.WHEREBY_API_KEY",
-)
+  "process.env.WHEREBY_API_KEY"
+);
+
+export const S3_BUCKET = fromJust(
+  process.env.S3_BUCKET,
+  "process.env.S3_BUCKET"
+);
