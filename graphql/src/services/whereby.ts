@@ -21,13 +21,15 @@ const headers = {
  * and store the data into recordings table.
  */
 async function createWhereByRoom(
-  endDate: string,
+  endDate: Date,
   engagementId: number,
   cohortId: number
 ) {
+  const updatedEndDate = new Date(endDate);
+  updatedEndDate.setDate(updatedEndDate.getDate() + 1);
   try {
     const data = {
-      endDate,
+      endDate: updatedEndDate.toISOString(),
       isLocked: true,
       roomMode: "group",
       fields: ["hostRoomUrl"],
