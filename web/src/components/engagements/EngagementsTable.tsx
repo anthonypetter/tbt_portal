@@ -79,6 +79,7 @@ export function EngagementsTable({
             ? engagements.find((e) => e.id === engagementIdToDelete) ?? null
             : null
         }
+        refetchQueries={[OrgDetailPageEngagementsQueryName]}
       />
     </div>
   );
