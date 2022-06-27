@@ -100,6 +100,7 @@ export function FlatEngagementsTable({
             ? engagements.find((e) => e.id === engagementIdToDelete) ?? null
             : null
         }
+        refetchQueries={[FlatEngagementsPageQueryName]}
       />
     </div>
   );
