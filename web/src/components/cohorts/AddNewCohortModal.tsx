@@ -179,11 +179,7 @@ export function AddCohortModalBody({
               selected={startDate}
               onChange={(date) => setStartDate(date)}
               customInput={
-                <Input
-                  label="Engagement Start"
-                  id="cohort-start-date"
-                  disabled
-                />
+                <Input label="Start" id="cohort-start-date" disabled />
               }
               disabled
             />
@@ -193,9 +189,7 @@ export function AddCohortModalBody({
             <DatePicker
               selected={endDate}
               onChange={(date) => setEndDate(date)}
-              customInput={
-                <Input label="Engagement End" id="cohort-end-date" disabled />
-              }
+              customInput={<Input label="End" id="cohort-end-date" disabled />}
               disabled
             />
           </div>
