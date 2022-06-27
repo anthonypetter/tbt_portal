@@ -1,10 +1,11 @@
+import { EngagementDetailsPageCsvUploadFragment } from "@generated/graphql";
+import { ProcessedCohort } from "@utils/csv/parseCsv";
 import { Button } from "components/Button";
+import { ErrorBox } from "components/ErrorBox";
+import { FieldError } from "components/FieldError";
+import { Spinner } from "components/Spinner";
 import { useState } from "react";
 import { COHORTS_CSV_FILE_NAME } from "./CsvUploadView";
-import { Spinner } from "components/Spinner";
-import { FieldError } from "components/FieldError";
-import { ErrorBox } from "components/ErrorBox";
-import { ProcessedCohort } from "@utils/csv/parseCsv";
 
 type ValidationError = { message: string; hint?: string };
 
@@ -12,12 +13,14 @@ type Props = {
   file: File | null;
   onPassValidation: (processedCsv: ProcessedCohort[]) => void;
   filePreviouslyPassedValidation: boolean;
+  engagement: EngagementDetailsPageCsvUploadFragment;
 };
 
 export function StepTwoValidateCsv({
   file,
   onPassValidation,
   filePreviouslyPassedValidation,
+  engagement,
 }: Props) {
   if (!file) {
     return null;
@@ -28,6 +31,7 @@ export function StepTwoValidateCsv({
       file={file}
       onPassValidation={onPassValidation}
       filePreviouslyPassedValidation={filePreviouslyPassedValidation}
+      engagement={engagement}
     />
   );
 }
@@ -57,12 +61,14 @@ type ValidateFileProps = {
   file: File;
   onPassValidation: (processedCsv: ProcessedCohort[]) => void;
   filePreviouslyPassedValidation: boolean;
+  engagement: EngagementDetailsPageCsvUploadFragment;
 };
 
 function ValidateFile({
   file,
   onPassValidation,
   filePreviouslyPassedValidation,
+  engagement,
 }: ValidateFileProps) {
   const [validationState, setValidationState] = useState<ValidationState>(
     filePreviouslyPassedValidation
@@ -75,6 +81,8 @@ function ValidateFile({
   const validate = async () => {
     const formData = new FormData();
     formData.append(COHORTS_CSV_FILE_NAME, file);
+    formData.append("startDate", engagement.startDate);
+    formData.append("endDate", engagement.endDate);
     setValidationState({ status: Status.Validating });
 
     try {
