@@ -11,9 +11,13 @@ import { EngagementCohortsView } from "components/cohorts/EngagementCohortsView"
 import { Container } from "components/Container";
 import { NormalizedDateText } from "components/NormalizedDateText";
 import { PageHeader } from "components/PageHeader";
+import { useState } from "react";
+import { EditEngagementModal } from "./EditEngagementModal";
 import { EngagementDetailsTabs, Tab } from "./EngagementDetailsTabs";
 
-EngagementDetailsPage.fragments = {
+const EngagementDetailsPageQueryName = "EngagementDetailsPage";
+
+https: EngagementDetailsPage.fragments = {
   cohortsView: gql`
     fragment EngagementDetailsPageCohorts on Engagement {
       id
@@ -33,8 +37,10 @@ EngagementDetailsPage.fragments = {
         id
       }
       ...EngagementCohortsView
+      ...EngagementForEditEngagementModal
     }
     ${EngagementCohortsView.fragments.cohortsList}
+    ${EditEngagementModal.fragments.engagement}
   `,
   csvUploadView: gql`
     fragment EngagementDetailsPageCsvUpload on Engagement {
@@ -49,7 +55,9 @@ EngagementDetailsPage.fragments = {
       cohorts {
         id
       }
+      ...EngagementForEditEngagementModal
     }
+    ${EditEngagementModal.fragments.engagement}
   `,
 };
 
@@ -69,6 +77,7 @@ type Props = {
 
 export function EngagementDetailsPage({ tabEng }: Props) {
   const { engagement } = tabEng;
+  const [showEditModal, setShowEditModal] = useState(false);
 
   return (
     <>
@@ -101,7 +110,7 @@ export function EngagementDetailsPage({ tabEng }: Props) {
           </PageHeader.DescriptionText>
 
           <div>
-            <Button onClick={() => console.log("TODO!")} theme="tertiary">
+            <Button onClick={() => setShowEditModal(true)} theme="tertiary">
               <PencilIcon
                 className="-ml-2 mr-2 h-5 w-5 text-gray-400"
                 aria-hidden="true"
@@ -117,6 +126,13 @@ export function EngagementDetailsPage({ tabEng }: Props) {
           <EngagementDetailsTabs tabEng={tabEng} />
         </Container>
       </div>
+
+      <EditEngagementModal
+        show={showEditModal}
+        closeModal={() => setShowEditModal(false)}
+        engagement={engagement}
+        refetchQueries={[EngagementDetailsPageQueryName]}
+      />
     </>
   );
 }

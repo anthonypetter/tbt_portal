@@ -1,7 +1,7 @@
 import { ApolloError, gql, useMutation } from "@apollo/client";
 import {
-  EditEngagementModalEngagementFragment,
   EditEngagementMutation,
+  EngagementForEditEngagementModalFragment,
 } from "@generated/graphql";
 import {
   normalizeDateFromUTCDateTime,
@@ -22,7 +22,6 @@ import {
   EngagementStaffTeacher,
   toEngagementStaffTeacher,
 } from "../staffAssignments/AssignEngagementTeachers";
-import { OrgDetailPageEngagementsQueryName } from "./constants";
 
 const EDIT_ENGAGEMENT = gql`
   mutation EditEngagement($input: EditEngagementInput!) {
@@ -35,7 +34,7 @@ const EDIT_ENGAGEMENT = gql`
 
 EditEngagementModal.fragments = {
   engagement: gql`
-    fragment EditEngagementModalEngagement on Engagement {
+    fragment EngagementForEditEngagementModal on Engagement {
       id
       name
       startDate
@@ -55,8 +54,19 @@ EditEngagementModal.fragments = {
 type Props = {
   show: boolean;
   closeModal: () => void;
-  engagement: EditEngagementModalEngagementFragment | null;
-  afterLeave: () => void;
+  engagement: EngagementForEditEngagementModalFragment | null;
+  afterLeave?: () => void;
+  /**
+   * Use of refetchQueries is a temporary solution.
+   * Info: https://www.apollographql.com/docs/react/data/refetching/
+   *
+   * We shouldn't need to specify query names. Apollo should know what "active" queries
+   * need to be refeched.  There's a task to dig into this issue. We can also
+   * consider optimistically updating the cache directly as per apollo docs. Regardless,
+   * explicitly passing in query names will not scale.
+   *
+   */
+  refetchQueries: string[];
 };
 
 export function EditEngagementModal({
@@ -64,6 +74,7 @@ export function EditEngagementModal({
   closeModal,
   engagement,
   afterLeave,
+  refetchQueries,
 }: Props) {
   return (
     <Modal
@@ -86,6 +97,7 @@ export function EditEngagementModal({
           onCancel={closeModal}
           onSuccess={closeModal}
           engagement={engagement}
+          refetchQueries={refetchQueries}
         />
       ) : (
         <LoadingSkeleton />
@@ -97,13 +109,15 @@ export function EditEngagementModal({
 type EditEngagementModalBodyProps = {
   onCancel: () => void;
   onSuccess: () => void;
-  engagement: EditEngagementModalEngagementFragment;
+  engagement: EngagementForEditEngagementModalFragment;
+  refetchQueries: string[];
 };
 
 export function EditEngagementModalBody({
   onCancel,
   onSuccess,
   engagement,
+  refetchQueries,
 }: EditEngagementModalBodyProps) {
   const cancelButtonRef = useRef(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -149,9 +163,9 @@ export function EditEngagementModalBody({
           })),
         },
       },
-      refetchQueries: [OrgDetailPageEngagementsQueryName],
+      refetchQueries: refetchQueries,
       onQueryUpdated(observableQuery) {
-        observableQuery.refetch();
+        return observableQuery.refetch();
       },
     });
   };

@@ -9,6 +9,8 @@ import { DeleteEngagementModal } from "./DeleteEngagementModal";
 import { EditEngagementModal } from "./EditEngagementModal";
 import { QueryEngagements } from "./OrganizationEngagementsView";
 
+const OrgDetailPageEngagementsQueryName = "OrgDetailPageEngagements";
+
 type Props = {
   engagements: QueryEngagements;
   onRowClick: (engagementId: string) => void;
@@ -65,6 +67,7 @@ export function EngagementsTable({
             ? engagements.find((e) => e.id === engagementIdToEdit) ?? null
             : null
         }
+        refetchQueries={[OrgDetailPageEngagementsQueryName]}
       />
 
       <DeleteEngagementModal

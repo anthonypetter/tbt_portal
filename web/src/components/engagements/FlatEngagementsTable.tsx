@@ -15,6 +15,8 @@ type Props = {
   selectedEngagement: FlatEngagementsTableEngagementFragment | null;
 };
 
+const FlatEngagementsPageQueryName = "FlatEngagementsPage";
+
 /**
  * Different versions of an engagement are needed by this component's children.
  * Since fragments merge repeated fields during composition, the final fragment will
@@ -32,7 +34,7 @@ FlatEngagementsTable.fragments = {
         name
       }
       ...DeleteEngagementModalEngagement
-      ...EditEngagementModalEngagement
+      ...EngagementForEditEngagementModal
     }
     ${DeleteEngagementModal.fragments.engagement}
     ${EditEngagementModal.fragments.engagement}
@@ -86,6 +88,7 @@ export function FlatEngagementsTable({
             ? engagements.find((e) => e.id === engagementIdToEdit) ?? null
             : null
         }
+        refetchQueries={[FlatEngagementsPageQueryName]}
       />
 
       <DeleteEngagementModal
