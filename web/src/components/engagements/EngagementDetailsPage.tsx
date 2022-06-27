@@ -3,10 +3,13 @@ import {
   EngagementDetailsPageCohortsFragment,
   EngagementDetailsPageCsvUploadFragment,
 } from "@generated/graphql";
+import { PencilIcon } from "@heroicons/react/solid";
 import { breadcrumbs } from "@utils/breadcrumbs";
 import { Routes } from "@utils/routes";
+import { Button } from "components/Button";
 import { EngagementCohortsView } from "components/cohorts/EngagementCohortsView";
 import { Container } from "components/Container";
+import { NormalizedDateText } from "components/NormalizedDateText";
 import { PageHeader } from "components/PageHeader";
 import { EngagementDetailsTabs, Tab } from "./EngagementDetailsTabs";
 
@@ -37,6 +40,8 @@ EngagementDetailsPage.fragments = {
     fragment EngagementDetailsPageCsvUpload on Engagement {
       id
       name
+      startDate
+      endDate
       organization {
         id
         name
@@ -69,7 +74,6 @@ export function EngagementDetailsPage({ tabEng }: Props) {
     <>
       <PageHeader
         title={engagement.name}
-        description="Engagement"
         breadcrumbs={[
           breadcrumbs.home(),
           breadcrumbs.organizations(),
@@ -86,13 +90,59 @@ export function EngagementDetailsPage({ tabEng }: Props) {
             current: true,
           },
         ]}
-      />
+      >
+        <div className="flex justify-between items-center">
+          <PageHeader.DescriptionText className="flex">
+            <span className="mr-2">Engagement: </span>
+            <DateRangeText
+              startDateMs={engagement.startDate}
+              endDateMs={engagement.endDate}
+            />
+          </PageHeader.DescriptionText>
+
+          <div>
+            <Button onClick={() => console.log("TODO!")} theme="tertiary">
+              <PencilIcon
+                className="-ml-2 mr-2 h-5 w-5 text-gray-400"
+                aria-hidden="true"
+              />
+              <span>Edit</span>
+            </Button>
+          </div>
+        </div>
+      </PageHeader>
 
       <div className="mt-8">
         <Container padding="md">
           <EngagementDetailsTabs tabEng={tabEng} />
         </Container>
       </div>
+    </>
+  );
+}
+
+function DateRangeText({
+  startDateMs,
+  endDateMs,
+}: {
+  startDateMs?: number;
+  endDateMs?: number;
+}) {
+  return (
+    <>
+      {startDateMs ? (
+        <NormalizedDateText timeMs={startDateMs} />
+      ) : (
+        "Start date unspecified"
+      )}
+
+      <span className="mx-3"> - </span>
+
+      {endDateMs ? (
+        <NormalizedDateText timeMs={endDateMs} />
+      ) : (
+        "End date unspecified"
+      )}
     </>
   );
 }

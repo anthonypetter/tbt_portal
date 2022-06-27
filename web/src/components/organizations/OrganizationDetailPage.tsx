@@ -57,11 +57,6 @@ export function OrganizationDetailPage({ tabOrg }: Props) {
     <>
       <PageHeader
         title={tabOrg.organization.name}
-        description={`Organization${
-          tabOrg.organization.description
-            ? `: ${tabOrg.organization.description}`
-            : ""
-        }`}
         breadcrumbs={[
           breadcrumbs.home(),
           breadcrumbs.organizations(),
@@ -71,7 +66,14 @@ export function OrganizationDetailPage({ tabOrg }: Props) {
             current: true,
           },
         ]}
-      />
+      >
+        <PageHeader.DescriptionText>
+          Organization{" "}
+          {tabOrg.organization.description
+            ? `: ${tabOrg.organization.description}`
+            : ""}
+        </PageHeader.DescriptionText>
+      </PageHeader>
 
       <div className="mt-8">
         <Container padding="md">
