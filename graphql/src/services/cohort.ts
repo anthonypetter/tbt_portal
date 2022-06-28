@@ -27,7 +27,6 @@ import { extractSchedules } from "../utils/schedules";
 
 export const cohortWithBaseRelations = Prisma.validator<Prisma.CohortArgs>()({
   include: {
-    schedule: true,
     staffAssignments: { include: { user: true } },
   },
 });
@@ -341,16 +340,6 @@ async function saveCsvCohortsData(
 }
 
 /**
- * Gets cohort schedule
- */
-
-async function getSchedule(cohortId: number) {
-  return prisma.cohortSchedule.findMany({
-    where: { cohortId },
-  });
-}
-
-/**
  * Gets cohort staff assignments
  */
 
@@ -472,7 +461,6 @@ export const CohortService = {
   deleteCohort,
   addCohort,
   saveCsvCohortsData,
-  getSchedule,
   getStaffAssignments,
   getTeacherCohorts,
   getCohortEventsForCurrentWeek,

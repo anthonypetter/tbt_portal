@@ -1,9 +1,4 @@
-import {
-  AssignmentSubject,
-  EventType,
-  MeetingType,
-  Weekday,
-} from "@prisma/client";
+import { AssignmentSubject, EventType, MeetingType } from "@prisma/client";
 import groupBy from "lodash/groupBy";
 import RRule, { ByWeekday } from "rrule";
 import {
@@ -11,6 +6,7 @@ import {
   makeFloatingDateTime,
   stringifyTime,
   Time,
+  Weekday,
 } from "./dateTime";
 import { ScheduleEntry } from "./schedules";
 import { assertUnreachable } from "./types";

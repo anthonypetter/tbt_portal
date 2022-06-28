@@ -75,7 +75,6 @@ export type Cohort = {
   meetingId?: Maybe<Scalars['String']>;
   meetingRoom?: Maybe<Scalars['String']>;
   name: Scalars['String'];
-  schedule: Array<ScheduledMeeting>;
   staffAssignments: Array<CohortStaffAssignment>;
   startDate?: Maybe<Scalars['Date']>;
 };
@@ -328,16 +327,6 @@ export type QuerySearchUsersArgs = {
   query: Scalars['String'];
 };
 
-export type ScheduledMeeting = {
-  __typename?: 'ScheduledMeeting';
-  createdAt: Scalars['Date'];
-  endTime: Scalars['String'];
-  startTime: Scalars['String'];
-  subject: AssignmentSubject;
-  timeZone: Scalars['String'];
-  weekday: Weekday;
-};
-
 export type Time = {
   hour: Scalars['Int'];
   minute: Scalars['Int'];
@@ -363,16 +352,6 @@ export type UsersSearchResults = {
   count: Scalars['Int'];
   results: Array<User>;
 };
-
-export enum Weekday {
-  Friday = 'FRIDAY',
-  Monday = 'MONDAY',
-  Saturday = 'SATURDAY',
-  Sunday = 'SUNDAY',
-  Thursday = 'THURSDAY',
-  Tuesday = 'TUESDAY',
-  Wednesday = 'WEDNESDAY'
-}
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 

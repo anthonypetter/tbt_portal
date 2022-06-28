@@ -104,7 +104,6 @@ model Cohort {
   engagement       Engagement              @relation(fields: [engagementId], references: [id])
   staffAssignments CohortStaffAssignment[]
   sessions         CohortSession[]
-  schedule         CohortSchedule[]
   events           CohortEvent[]
 }
 
@@ -119,30 +118,6 @@ model CohortStaffAssignment {
   cohort   Cohort @relation(fields: [cohortId], references: [id])
 
   @@id([userId, cohortId, subject])
-}
-
-enum Weekday {
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-  SATURDAY
-  SUNDAY
-}
-
-model CohortSchedule {
-  id        Int               @id @default(autoincrement())
-  createdAt DateTime          @default(now())
-  weekday   Weekday
-  subject   AssignmentSubject
-  startTime String
-  endTime   String
-  timeZone  String
-
-  // relation fields
-  cohortId Int
-  cohort   Cohort @relation(fields: [cohortId], references: [id])
 }
 
 model CohortSession {
