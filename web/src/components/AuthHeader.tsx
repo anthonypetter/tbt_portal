@@ -1,11 +1,8 @@
 import { Menu, Transition } from "@headlessui/react";
 import {
   BellIcon,
-  CalendarIcon,
-  HomeIcon,
   MenuAlt2Icon,
   UserCircleIcon,
-  XIcon,
 } from "@heroicons/react/outline";
 import { SearchIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
@@ -13,13 +10,17 @@ import { Fragment } from "react";
 import { useAuth } from "./auth/AuthProvider";
 import { RoleText } from "./RoleText";
 
-export function AuthHeader() {
+type Props = {
+  setSidebarOpen: (data: boolean) => void;
+};
+
+export function AuthHeader({ setSidebarOpen }: Props) {
   return (
     <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow">
       <button
         type="button"
         className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 md:hidden"
-        // onClick={() => setSidebarOpen(true)}
+        onClick={() => setSidebarOpen(true)}
       >
         <span className="sr-only">Open sidebar</span>
         <MenuAlt2Icon className="h-6 w-6" aria-hidden="true" />
