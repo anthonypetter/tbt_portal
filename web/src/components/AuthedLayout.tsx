@@ -1,31 +1,31 @@
-import { Fragment, useState } from "react";
+import { UserRole } from "@generated/graphql";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import {
   BellIcon,
   CalendarIcon,
   HomeIcon,
   MenuAlt2Icon,
+  UserCircleIcon,
   XIcon,
 } from "@heroicons/react/outline";
 import { SearchIcon } from "@heroicons/react/solid";
-import clsx from "clsx";
 import { Routes } from "@utils/routes";
-import { FaRegBuilding, FaGraduationCap } from "react-icons/fa";
-import { SiGoogleclassroom } from "react-icons/si";
-import { MdWorkspacesOutline } from "react-icons/md";
-import { FiUsers } from "react-icons/fi";
-import { BiVideoRecording } from "react-icons/bi";
-import { RiSignalTowerFill } from "react-icons/ri";
+import { fromJust } from "@utils/types";
+import clsx from "clsx";
+import sortBy from "lodash/sortBy";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { Fragment, useState } from "react";
+import { BiVideoRecording } from "react-icons/bi";
+import { FaGraduationCap, FaRegBuilding } from "react-icons/fa";
+import { FiUsers } from "react-icons/fi";
+import { MdWorkspacesOutline } from "react-icons/md";
+import { RiSignalTowerFill } from "react-icons/ri";
+import { SiGoogleclassroom } from "react-icons/si";
 import { useAuth } from "./auth/AuthProvider";
-import Image from "next/image";
-import { UserCircleIcon } from "@heroicons/react/outline";
-import { useTheme } from "./ThemeProvider";
 import { RoleText } from "./RoleText";
-import { UserRole } from "@generated/graphql";
-import { fromJust } from "@utils/types";
-import sortBy from "lodash/sortBy";
+import { useTheme } from "./ThemeProvider";
 
 type SidebarLink = {
   name: string;
@@ -98,7 +98,7 @@ function getNavigation(role: UserRole, currentPathname: string) {
       icon: FaGraduationCap,
       current: Routes.teachers.path() === currentPathname,
       order: 70,
-      disabled: false,
+      disabled: true,
     },
     {
       name: "Schedules",
@@ -216,10 +216,7 @@ export function AuthedLayout({ children }: Props) {
                     onClick={() => setSidebarOpen(false)}
                   >
                     <span className="sr-only">Close sidebar</span>
-                    <XIcon
-                      className="h-6 w-6 text-white"
-                      aria-hidden="true"
-                    />
+                    <XIcon className="h-6 w-6 text-white" aria-hidden="true" />
                   </button>
                 </div>
               </Transition.Child>
@@ -263,7 +260,6 @@ export function AuthedLayout({ children }: Props) {
 
       {/* Static sidebar for desktop */}
       <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
-
         {/* Sidebar component, swap this element with another sidebar if you like */}
         <div
           className={`flex flex-col flex-grow pt-5 ${sidebar.mainBackground} overflow-y-auto`}
@@ -303,10 +299,8 @@ export function AuthedLayout({ children }: Props) {
 
       {/* Top bar + Content container */}
       <div className="md:pl-64 flex flex-col flex-1">
-
         {/* Top bar container */}
         <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow">
-
           {/* Mobile Hamburger button */}
           <button
             type="button"
