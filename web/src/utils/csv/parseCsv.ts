@@ -54,8 +54,8 @@ export type ProcessedCohort = {
   cohortName: string;
   grade: string;
   googleClassroomLink?: string;
-  cohortStartDate: Date;
-  cohortEndDate: Date;
+  cohortStartDate: number;
+  cohortEndDate: number;
 
   monday: SubjectSchedule[];
   tuesday: SubjectSchedule[];
@@ -68,10 +68,18 @@ export type ProcessedCohort = {
   staffAssignments: StaffAssignment[];
 };
 
-export async function parseCsv(data: ReadStream) {
+export async function parseCsv({
+  data,
+  startDate,
+  endDate,
+}: {
+  data: ReadStream;
+  startDate: Date;
+  endDate: Date;
+}) {
   const genericObject = await parseReadStream(data);
   const cohortRows = parseToCohortRows(genericObject);
-  return processCohortRow(cohortRows);
+  return processCohortRow({ csv: cohortRows, startDate, endDate });
 }
 
 export async function parseReadStream(
@@ -145,8 +153,8 @@ export function processCohortRow({
       friday: parseSubjectSchedules(cohortRow.friday),
       saturday: parseSubjectSchedules(cohortRow.saturday),
       sunday: parseSubjectSchedules(cohortRow.sunday),
-      cohortStartDate: startDate,
-      cohortEndDate: endDate,
+      cohortStartDate: startDate.getTime(),
+      cohortEndDate: endDate.getTime(),
 
       staffAssignments: parseStaffAssignments(cohortRow),
     };
