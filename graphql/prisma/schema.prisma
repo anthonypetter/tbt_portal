@@ -105,6 +105,7 @@ model Cohort {
   staffAssignments CohortStaffAssignment[]
   sessions         CohortSession[]
   schedule         CohortSchedule[]
+  events           CohortEvent[]
 }
 
 model CohortStaffAssignment {
@@ -152,4 +153,32 @@ model CohortSession {
   // relation fields
   cohortId  Int
   cohort    Cohort   @relation(fields: [cohortId], references: [id])
+}
+
+//"Single" events can be added here later.
+enum EventType {
+  RECURRING
+}
+
+enum MeetingType {
+  STUDENT_SESSION
+  PARENT_CONFERENCE
+  ADHOC
+}
+
+model CohortEvent {
+  id          Int                @id @default(autoincrement())
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @default(now())
+  eventType   EventType
+  meetingType MeetingType
+  subject     AssignmentSubject?
+
+  startDateTime   DateTime
+  timeZone        String
+  durationMinutes Int
+  recurrenceRule  String
+
+  cohortId Int
+  cohort   Cohort @relation(fields: [cohortId], references: [id])
 }

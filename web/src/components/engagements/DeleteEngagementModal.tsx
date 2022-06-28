@@ -12,7 +12,6 @@ import { Spinner } from "components/Spinner";
 import { triggerSuccessToast } from "components/Toast";
 import pluralize from "pluralize";
 import React from "react";
-import { OrgDetailPageEngagementsQueryName } from "./constants";
 
 const DELETE_ENGAGEMENT = gql`
   mutation DeleteEngagement($id: ID!) {
@@ -45,6 +44,7 @@ type Props = {
   closeModal: () => void;
   afterLeave: () => void;
   engagement: DeleteEngagementModalEngagementFragment | null;
+  refetchQueries: string[];
 };
 
 export function DeleteEngagementModal({
@@ -52,6 +52,7 @@ export function DeleteEngagementModal({
   closeModal,
   engagement,
   afterLeave,
+  refetchQueries,
 }: Props) {
   return (
     <Modal
@@ -73,6 +74,7 @@ export function DeleteEngagementModal({
           engagement={engagement}
           onCancel={closeModal}
           onSuccess={closeModal}
+          refetchQueries={refetchQueries}
         />
       ) : (
         <LoadingSkeleton className="h-56" />
@@ -85,18 +87,20 @@ type DeleteEngagementModalBodyProps = {
   engagement: DeleteEngagementModalEngagementFragment;
   onCancel: () => void;
   onSuccess: () => void;
+  refetchQueries: string[];
 };
 
 export function DeleteEngagementModalBody({
   engagement,
   onSuccess: onSuccessProp,
   onCancel,
+  refetchQueries,
 }: DeleteEngagementModalBodyProps) {
   const { id, name, cohorts, staffAssignments } = engagement;
 
   const [deleteEngagement, { error, loading }] =
     useMutation<DeleteEngagementMutation>(DELETE_ENGAGEMENT, {
-      refetchQueries: [OrgDetailPageEngagementsQueryName],
+      refetchQueries: refetchQueries,
       onQueryUpdated(observableQuery) {
         observableQuery.refetch();
       },

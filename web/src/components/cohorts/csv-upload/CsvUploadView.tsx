@@ -1,14 +1,14 @@
-import { useState } from "react";
 import { EngagementDetailsPageCsvUploadFragment } from "@generated/graphql";
+import { ProcessedCohort } from "@utils/csv/parseCsv";
+import { Button } from "components/Button";
 import { ErrorBoundary } from "components/ErrorBoundary";
 import { ErrorBox } from "components/ErrorBox";
 import { Stepper, StepStatus } from "components/Stepper";
-import { Button } from "components/Button";
-import { StepOneUploadCsv } from "./StepOneUploadCsv";
-import { StepTwoValidateCsv } from "./StepTwoValidateCsv";
-import { ProcessedCohort } from "@utils/csv/parseCsv";
-import { StepThreeReview } from "./StepThreeReview";
+import { useState } from "react";
 import { StepFourSubmit } from "./StepFourSubmit";
+import { StepOneUploadCsv } from "./StepOneUploadCsv";
+import { StepThreeReview } from "./StepThreeReview";
+import { StepTwoValidateCsv } from "./StepTwoValidateCsv";
 
 type Props = {
   engagement: EngagementDetailsPageCsvUploadFragment;
@@ -48,6 +48,7 @@ export function CsvUploadView({ engagement }: Props) {
       name: "Validate",
       body: (
         <StepTwoValidateCsv
+          engagement={engagement}
           file={file}
           filePreviouslyPassedValidation={currentStep > Step.Validate}
           onPassValidation={(processedCsv) => {

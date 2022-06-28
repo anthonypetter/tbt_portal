@@ -1,12 +1,12 @@
-import type { NextPage, GetServerSidePropsContext } from "next";
-import { AuthedLayout } from "components/AuthedLayout";
-import { getServerSideAuth } from "@utils/auth/server-side-auth";
-import { OrganizationsPage } from "components/organizations/OrganizationsPage";
-import { gql, useQuery, ApolloQueryResult } from "@apollo/client";
+import { ApolloQueryResult, gql, useQuery } from "@apollo/client";
 import { OrganizationsPageQuery } from "@generated/graphql";
-import { triggerErrorToast } from "components/Toast";
 import { getSession } from "@lib/apollo-client";
 import { processResult } from "@utils/apollo";
+import { getServerSideAuth } from "@utils/auth/server-side-auth";
+import { AuthedLayout } from "components/AuthedLayout";
+import { OrganizationsPage } from "components/organizations/OrganizationsPage";
+import { triggerErrorToast } from "components/Toast";
+import type { GetServerSidePropsContext, NextPage } from "next";
 
 const GET_ORGANIZATIONS = gql`
   query OrganizationsPage {
@@ -41,7 +41,6 @@ type Props = {
 const Organizations: NextPage<Props> = ({ organizations }) => {
   const { data } = useQuery<OrganizationsPageQuery>(GET_ORGANIZATIONS, {
     fetchPolicy: "network-only", // Used for first execution
-    nextFetchPolicy: "cache-first", // Used for subsequent executions
     onError: (error) => {
       console.error(error);
       triggerErrorToast({

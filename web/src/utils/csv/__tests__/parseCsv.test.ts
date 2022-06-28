@@ -1,98 +1,163 @@
-import { parseCsv, parseHhMm, SupportedIanaTimeZone } from "../parseCsv";
+import { normalizeToUtcDate } from "@utils/dateTime";
+import { CsvValidationError, CsvValidationErrorMessage } from "@utils/errors";
 import fs from "fs";
 import path from "path";
-import { AssignmentSubject } from "@generated/graphql";
-import { CsvValidationError, CsvValidationErrorMessage } from "@utils/errors";
+import { parseCsv, parseHhMm } from "../parseCsv";
+import { parseDates } from "../validateCsv";
 
 describe("parseCsv", () => {
   test("should parse a valid math and ela csv", async () => {
+    const startDate = normalizeToUtcDate(new Date("6/27/2022"));
+    const endDate = normalizeToUtcDate(new Date("7/27/2022"));
+
     const expected = [
       {
         cohortName: "a-1",
-        googleClassroomLink: undefined,
         grade: "K",
         monday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "15:00",
-            endTime: "16:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 15,
+              minute: 0,
+            },
+            endTime: {
+              hour: 16,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "12:00",
-            endTime: "13:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 12,
+              minute: 0,
+            },
+            endTime: {
+              hour: 13,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "10:00",
-            endTime: "12:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 12,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "14:00",
-            endTime: "16:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 14,
+              minute: 0,
+            },
+            endTime: {
+              hour: 16,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 1",
               email: "testemail1@gmail.com",
             },
           },
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 1",
               email: "testemail1@gmail.com",
@@ -102,90 +167,151 @@ describe("parseCsv", () => {
       },
       {
         cohortName: "a-2",
-        googleClassroomLink: undefined,
         grade: "K",
         monday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 2",
               email: "testemail2@gmail.com",
             },
           },
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 2",
               email: "testemail2@gmail.com",
@@ -195,90 +321,151 @@ describe("parseCsv", () => {
       },
       {
         cohortName: "b-1",
-        googleClassroomLink: undefined,
         grade: "2",
         monday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 2",
               email: "testemail2@gmail.com",
             },
           },
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 2",
               email: "testemail2@gmail.com",
@@ -288,90 +475,151 @@ describe("parseCsv", () => {
       },
       {
         cohortName: "b-2",
-        googleClassroomLink: undefined,
         grade: "3",
         monday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 3",
               email: "testemail3@tutored.live",
             },
           },
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 3",
               email: "testemail3@tutored.live",
@@ -381,90 +629,151 @@ describe("parseCsv", () => {
       },
       {
         cohortName: "b-3",
-        googleClassroomLink: undefined,
         grade: "4",
         monday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 3",
               email: "testemail3@tutored.live",
             },
           },
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 3",
               email: "testemail3@tutored.live",
@@ -474,90 +783,151 @@ describe("parseCsv", () => {
       },
       {
         cohortName: "c-1",
-        googleClassroomLink: undefined,
         grade: "5",
         monday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 1",
               email: "testemail1@gmail.com",
             },
           },
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 4",
               email: "testemail4@gmail.com",
@@ -567,90 +937,151 @@ describe("parseCsv", () => {
       },
       {
         cohortName: "c-2",
-        googleClassroomLink: undefined,
         grade: "6",
         monday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Math,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Math,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Math,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Math,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Math,
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 1",
               email: "testemail1@gmail.com",
             },
           },
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 4",
               email: "testemail4@gmail.com",
@@ -660,90 +1091,151 @@ describe("parseCsv", () => {
       },
       {
         cohortName: "c-3",
-        googleClassroomLink: undefined,
         grade: "7",
         monday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 1",
               email: "testemail1@gmail.com",
             },
           },
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 4",
               email: "testemail4@gmail.com",
@@ -753,90 +1245,151 @@ describe("parseCsv", () => {
       },
       {
         cohortName: "c-4",
-        googleClassroomLink: undefined,
         grade: "8",
         monday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Math,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Math,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Math,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Math,
-            startTime: "12:30",
-            endTime: "13:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 13,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "06:30",
-            endTime: "07:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 6,
+              minute: 30,
+            },
+            endTime: {
+              hour: 7,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
           {
-            subject: AssignmentSubject.Math,
-            startTime: "08:00",
-            endTime: "09:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 8,
+              minute: 0,
+            },
+            endTime: {
+              hour: 9,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 1",
               email: "testemail1@gmail.com",
             },
           },
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 4",
               email: "testemail4@gmail.com",
@@ -850,65 +1403,112 @@ describe("parseCsv", () => {
       path.resolve(__dirname, "./valid-math-and-ela.csv")
     );
 
-    expect(await parseCsv(readStream)).toEqual(expected);
+    expect(
+      await parseCsv({
+        data: readStream,
+        startDate,
+        endDate,
+      })
+    ).toEqual(expected);
 
     const casingReadStream = fs.createReadStream(
       path.resolve(__dirname, "./valid-math-and-ela-casing.csv")
     );
 
-    expect(await parseCsv(casingReadStream)).toEqual(expected);
+    expect(
+      await parseCsv({
+        data: casingReadStream,
+        startDate,
+        endDate,
+      })
+    ).toEqual(expected);
   });
 
   test("should parse a valid ela only csv", async () => {
+    const startDate = normalizeToUtcDate(new Date("8/1/2022"));
+    const endDate = normalizeToUtcDate(new Date("9/1/2022"));
+
     const expected = [
       {
         cohortName: "a-1",
         grade: "K",
         monday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 1",
               email: "testemail1@gmail.com",
@@ -921,49 +1521,81 @@ describe("parseCsv", () => {
         grade: "K",
         monday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 2",
               email: "testemail2@gmail.com",
@@ -976,49 +1608,81 @@ describe("parseCsv", () => {
         grade: "2",
         monday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 2",
               email: "testemail2@gmail.com",
@@ -1031,49 +1695,81 @@ describe("parseCsv", () => {
         grade: "3",
         monday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 3",
               email: "testemail3@tutored.live",
@@ -1086,49 +1782,81 @@ describe("parseCsv", () => {
         grade: "4",
         monday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 3",
               email: "testemail3@tutored.live",
@@ -1141,49 +1869,81 @@ describe("parseCsv", () => {
         grade: "5",
         monday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 4",
               email: "testemail4@gmail.com",
@@ -1196,49 +1956,81 @@ describe("parseCsv", () => {
         grade: "6",
         monday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 4",
               email: "testemail4@gmail.com",
@@ -1251,49 +2043,81 @@ describe("parseCsv", () => {
         grade: "7",
         monday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 4",
               email: "testemail4@gmail.com",
@@ -1306,49 +2130,81 @@ describe("parseCsv", () => {
         grade: "8",
         monday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Ela,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "ELA",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Ela,
+            subject: "ELA",
             teacher: {
               fullName: "testemail 4",
               email: "testemail4@gmail.com",
@@ -1362,60 +2218,100 @@ describe("parseCsv", () => {
       path.resolve(__dirname, "./valid-ela-only.csv")
     );
 
-    const result = await parseCsv(readStream);
+    const result = await parseCsv({
+      data: readStream,
+      startDate,
+      endDate,
+    });
+
     expect(result).toEqual(expected);
   });
 
   test("should parse a valid math only csv", async () => {
+    const startDate = normalizeToUtcDate(new Date("1/1/2023"));
+    const endDate = normalizeToUtcDate(new Date("6/1/2023"));
+
     const expected = [
       {
         cohortName: "a-1",
         grade: "K",
         monday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 1",
               email: "testemail1@gmail.com",
@@ -1428,49 +2324,81 @@ describe("parseCsv", () => {
         grade: "K",
         monday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 2",
               email: "testemail2@gmail.com",
@@ -1483,49 +2411,81 @@ describe("parseCsv", () => {
         grade: "2",
         monday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 2",
               email: "testemail2@gmail.com",
@@ -1538,49 +2498,81 @@ describe("parseCsv", () => {
         grade: "3",
         monday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 3",
               email: "testemail3@tutored.live",
@@ -1593,49 +2585,81 @@ describe("parseCsv", () => {
         grade: "4",
         monday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 3",
               email: "testemail3@tutored.live",
@@ -1648,49 +2672,81 @@ describe("parseCsv", () => {
         grade: "5",
         monday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 4",
               email: "testemail4@gmail.com",
@@ -1703,49 +2759,81 @@ describe("parseCsv", () => {
         grade: "6",
         monday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 4",
               email: "testemail4@gmail.com",
@@ -1758,49 +2846,81 @@ describe("parseCsv", () => {
         grade: "7",
         monday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 4",
               email: "testemail4@gmail.com",
@@ -1813,49 +2933,81 @@ describe("parseCsv", () => {
         grade: "8",
         monday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
-            subject: AssignmentSubject.Math,
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            subject: "MATH",
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
-            subject: AssignmentSubject.Math,
+            subject: "MATH",
             teacher: {
               fullName: "testemail 4",
               email: "testemail4@gmail.com",
@@ -1869,11 +3021,19 @@ describe("parseCsv", () => {
       path.resolve(__dirname, "./valid-math-only.csv")
     );
 
-    const result = await parseCsv(readStream);
+    const result = await parseCsv({
+      data: readStream,
+      startDate,
+      endDate,
+    });
+
     expect(result).toEqual(expected);
   });
 
   test("should parse a valid gen only csv", async () => {
+    const startDate = normalizeToUtcDate(new Date("2/25/2023"));
+    const endDate = normalizeToUtcDate(new Date("4/17/2023"));
+
     const expected = [
       {
         cohortName: "gen1",
@@ -1881,45 +3041,77 @@ describe("parseCsv", () => {
         monday: [
           {
             subject: "GENERAL",
-            startTime: "14:00",
-            endTime: "15:00",
+            startTime: {
+              hour: 14,
+              minute: 0,
+            },
+            endTime: {
+              hour: 15,
+              minute: 0,
+            },
             timeZone: "America/Los_Angeles",
           },
         ],
         tuesday: [
           {
             subject: "GENERAL",
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
             subject: "GENERAL",
-            startTime: "14:00",
-            endTime: "15:00",
+            startTime: {
+              hour: 14,
+              minute: 0,
+            },
+            endTime: {
+              hour: 15,
+              minute: 0,
+            },
             timeZone: "America/Los_Angeles",
           },
         ],
         thursday: [
           {
             subject: "GENERAL",
-            startTime: "10:00",
-            endTime: "11:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            startTime: {
+              hour: 10,
+              minute: 0,
+            },
+            endTime: {
+              hour: 11,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
             subject: "GENERAL",
-            startTime: "14:00",
-            endTime: "15:00",
+            startTime: {
+              hour: 14,
+              minute: 0,
+            },
+            endTime: {
+              hour: 15,
+              minute: 0,
+            },
             timeZone: "America/Los_Angeles",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
             subject: "GENERAL",
@@ -1936,45 +3128,77 @@ describe("parseCsv", () => {
         monday: [
           {
             subject: "GENERAL",
-            startTime: "15:00",
-            endTime: "16:00",
+            startTime: {
+              hour: 15,
+              minute: 0,
+            },
+            endTime: {
+              hour: 16,
+              minute: 0,
+            },
             timeZone: "America/Los_Angeles",
           },
         ],
         tuesday: [
           {
             subject: "GENERAL",
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
             subject: "GENERAL",
-            startTime: "15:00",
-            endTime: "16:00",
+            startTime: {
+              hour: 15,
+              minute: 0,
+            },
+            endTime: {
+              hour: 16,
+              minute: 0,
+            },
             timeZone: "America/Los_Angeles",
           },
         ],
         thursday: [
           {
             subject: "GENERAL",
-            startTime: "9:00",
-            endTime: "10:00",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            startTime: {
+              hour: 9,
+              minute: 0,
+            },
+            endTime: {
+              hour: 10,
+              minute: 0,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
             subject: "GENERAL",
-            startTime: "15:00",
-            endTime: "16:00",
+            startTime: {
+              hour: 15,
+              minute: 0,
+            },
+            endTime: {
+              hour: 16,
+              minute: 0,
+            },
             timeZone: "America/Los_Angeles",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
             subject: "GENERAL",
@@ -1991,45 +3215,77 @@ describe("parseCsv", () => {
         monday: [
           {
             subject: "GENERAL",
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
             subject: "GENERAL",
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
             subject: "GENERAL",
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
             subject: "GENERAL",
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
             subject: "GENERAL",
-            startTime: "11:30",
-            endTime: "12:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            startTime: {
+              hour: 11,
+              minute: 30,
+            },
+            endTime: {
+              hour: 12,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
             subject: "GENERAL",
@@ -2046,45 +3302,77 @@ describe("parseCsv", () => {
         monday: [
           {
             subject: "GENERAL",
-            startTime: "11:15",
-            endTime: "12:15",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            startTime: {
+              hour: 11,
+              minute: 15,
+            },
+            endTime: {
+              hour: 12,
+              minute: 15,
+            },
+            timeZone: "America/New_York",
           },
         ],
         tuesday: [
           {
             subject: "GENERAL",
-            startTime: "12:30",
-            endTime: "15:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 15,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         wednesday: [
           {
             subject: "GENERAL",
-            startTime: "11:15",
-            endTime: "12:15",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            startTime: {
+              hour: 11,
+              minute: 15,
+            },
+            endTime: {
+              hour: 12,
+              minute: 15,
+            },
+            timeZone: "America/New_York",
           },
         ],
         thursday: [
           {
             subject: "GENERAL",
-            startTime: "12:30",
-            endTime: "15:30",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            startTime: {
+              hour: 12,
+              minute: 30,
+            },
+            endTime: {
+              hour: 15,
+              minute: 30,
+            },
+            timeZone: "America/New_York",
           },
         ],
         friday: [
           {
             subject: "GENERAL",
-            startTime: "11:15",
-            endTime: "12:15",
-            timeZone: SupportedIanaTimeZone.AmericaNewYork,
+            startTime: {
+              hour: 11,
+              minute: 15,
+            },
+            endTime: {
+              hour: 12,
+              minute: 15,
+            },
+            timeZone: "America/New_York",
           },
         ],
         saturday: [],
         sunday: [],
+        cohortStartDate: startDate.getTime(),
+        cohortEndDate: endDate.getTime(),
         staffAssignments: [
           {
             subject: "GENERAL",
@@ -2101,7 +3389,12 @@ describe("parseCsv", () => {
       path.resolve(__dirname, "./valid-gen-only.csv")
     );
 
-    const result = await parseCsv(readStream);
+    const result = await parseCsv({
+      data: readStream,
+      startDate,
+      endDate,
+    });
+
     expect(result).toEqual(expected);
   });
 
@@ -2135,6 +3428,24 @@ describe("parseCsv", () => {
     );
     expect(getErrorMsg(() => parseHhMm("12:"))).toEqual(
       CsvValidationErrorMessage.invalidTimeFormat
+    );
+  });
+
+  test("should fail to parse dates", () => {
+    expect(getErrorMsg(() => parseDates(null, null))).toEqual(
+      "Unable to detect start/end dates."
+    );
+
+    expect(getErrorMsg(() => parseDates(undefined, "1234568423"))).toEqual(
+      "Unable to detect start/end dates."
+    );
+
+    expect(getErrorMsg(() => parseDates(0, 0))).toEqual(
+      "Unable to detect start/end dates."
+    );
+
+    expect(getErrorMsg(() => parseDates("null", "null"))).toEqual(
+      "Unable to detect start/end dates."
     );
   });
 });

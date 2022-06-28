@@ -1,11 +1,15 @@
 import {
   AssignmentRole,
   AssignmentSubject,
+  EventType,
+  MeetingType,
   Prisma,
   PrismaClient,
   User,
+  Weekday,
 } from "@prisma/client";
 import { add } from "date-fns";
+import { ByWeekday, RRule } from "rrule";
 
 const prisma = new PrismaClient();
 
@@ -19,6 +23,7 @@ async function main() {
 
   const users = await upsertUsers(env);
   await createOrgs(users);
+  await createVictorsTestOrg(users);
 
   console.log("[🌱 Seed] - Finished seeding.");
 }
@@ -353,40 +358,42 @@ function createSchoolEngagements(engAbbr: string) {
     cohortAbbvr: `${engAbbr}-${index + 1}-Cohort`,
   }));
 
+  const today = makeNoOffsetUtcDateTime({ month: 6, day: 25, year: 2022 });
+
   return engagements.map((eng: { name: string; cohortAbbvr: string }) => {
     return {
       name: eng.name,
-      startDate: new Date(),
-      endDate: add(new Date(), { days: getRandomInt(60) }),
+      startDate: today,
+      endDate: add(today, { days: getRandomInt(60) }),
       cohorts: {
         create: [
           {
             createdAt: new Date(),
             name: `${eng.cohortAbbvr}-K`,
             grade: "K",
-            startDate: new Date(),
-            endDate: add(new Date(), { days: getRandomInt(60) }),
+            startDate: today,
+            endDate: add(today, { days: getRandomInt(60) }),
           },
           {
             createdAt: new Date(),
             name: `${eng.cohortAbbvr}-1`,
             grade: "1",
-            startDate: new Date(),
-            endDate: add(new Date(), { days: getRandomInt(60) }),
+            startDate: today,
+            endDate: add(today, { days: getRandomInt(60) }),
           },
           {
             createdAt: new Date(),
             name: `${eng.cohortAbbvr}-2`,
             grade: "2",
-            startDate: new Date(),
-            endDate: add(new Date(), { days: getRandomInt(60) }),
+            startDate: today,
+            endDate: add(today, { days: getRandomInt(60) }),
           },
           {
             createdAt: new Date(),
             name: `${eng.cohortAbbvr}-3`,
             grade: "3",
-            startDate: new Date(),
-            endDate: add(new Date(), { days: getRandomInt(60) }),
+            startDate: today,
+            endDate: add(today, { days: getRandomInt(60) }),
           },
         ],
       },
@@ -408,4 +415,285 @@ export function fromJust<T>(t: T | null | undefined, nameForError?: string): T {
 
 function getRandomInt(max: number) {
   return Math.floor(Math.random() * max) + 1;
+}
+
+/**
+ *
+ * Victor's test org for testing
+ */
+
+async function createVictorsTestOrg(users: User[]) {
+  const mentorTeacher = fromJust(
+    users.find((u) => u.email === "victor+mt@tutored.live")
+  );
+  const substituteTeacher = fromJust(
+    users.find((u) => u.email === "victor+st@tutored.live")
+  );
+  const mathTeacher = fromJust(
+    users.find((u) => u.email === "victor@tutored.live")
+  );
+  const elaTeacher = fromJust(
+    users.find((u) => u.email === "victor+tt@tutored.live")
+  );
+
+  const startDate = makeNoOffsetUtcDateTime({
+    month: 6,
+    day: 1,
+    year: 2022,
+    time: { hour: 0, minute: 0 },
+  });
+
+  const endDate = makeNoOffsetUtcDateTime({
+    month: 12,
+    day: 24,
+    year: 2022,
+    time: { hour: 23, minute: 59, second: 59 },
+  });
+
+  const testOrg = await prisma.organization.create({
+    data: {
+      name: "Victor's org",
+      description: "This is Victor's test organization.",
+      engagements: {
+        create: {
+          name: "Victor's test engagement",
+          startDate: startDate,
+          endDate: endDate,
+          staffAssignments: {
+            createMany: {
+              data: [
+                {
+                  userId: mentorTeacher.id,
+                  role: AssignmentRole.MENTOR_TEACHER,
+                },
+                {
+                  userId: substituteTeacher.id,
+                  role: AssignmentRole.SUBSTITUTE_TEACHER,
+                },
+              ],
+            },
+          },
+        },
+      },
+    },
+    include: {
+      engagements: {
+        include: { staffAssignments: { include: { user: true } } },
+      },
+    },
+  });
+
+  await prisma.cohort.create({
+    data: {
+      name: "Victor's Cohort 1",
+      engagementId: testOrg.engagements[0].id,
+      startDate: startDate,
+      endDate: endDate,
+      grade: "1",
+      staffAssignments: {
+        createMany: {
+          data: [
+            { userId: mathTeacher.id, subject: AssignmentSubject.MATH },
+            { userId: elaTeacher.id, subject: AssignmentSubject.ELA },
+            {
+              userId: substituteTeacher.id,
+              subject: AssignmentSubject.GENERAL,
+            },
+          ],
+        },
+      },
+      schedule: {
+        createMany: {
+          data: [
+            // AssignmentSubject.ELA
+            {
+              weekday: Weekday.TUESDAY,
+              subject: AssignmentSubject.ELA,
+              startTime: "08:30",
+              endTime: "09:45",
+              timeZone: "America/Los_Angeles",
+            },
+            {
+              weekday: Weekday.THURSDAY,
+              subject: AssignmentSubject.ELA,
+              startTime: "08:30",
+              endTime: "09:45",
+              timeZone: "America/Los_Angeles",
+            },
+
+            // AssignmentSubject.MATH
+            {
+              weekday: Weekday.TUESDAY,
+              subject: AssignmentSubject.MATH,
+              startTime: "10:00",
+              endTime: "11:10",
+              timeZone: "America/Los_Angeles",
+            },
+            {
+              weekday: Weekday.THURSDAY,
+              subject: AssignmentSubject.MATH,
+              startTime: "15:00",
+              endTime: "16:15",
+              timeZone: "America/Los_Angeles",
+            },
+
+            //General
+            {
+              weekday: Weekday.MONDAY,
+              subject: AssignmentSubject.GENERAL,
+              startTime: "13:00",
+              endTime: "14:07",
+              timeZone: "America/Los_Angeles",
+            },
+            {
+              weekday: Weekday.WEDNESDAY,
+              subject: AssignmentSubject.GENERAL,
+              startTime: "13:00",
+              endTime: "14:07",
+              timeZone: "America/Los_Angeles",
+            },
+            {
+              weekday: Weekday.FRIDAY,
+              subject: AssignmentSubject.GENERAL,
+              startTime: "13:00",
+              endTime: "14:07",
+              timeZone: "America/Los_Angeles",
+            },
+          ],
+        },
+      },
+      events: {
+        createMany: {
+          data: [
+            makeRecurringEvent({
+              cohortStartDate: startDate,
+              cohortEndDate: endDate,
+              startTime: { hour: 8, minute: 30 },
+              durationMinutes: 75,
+              subject: AssignmentSubject.ELA,
+              byWeekday: [RRule.TU, RRule.TH],
+              timeZone: "America/Los_Angeles",
+            }),
+
+            makeRecurringEvent({
+              cohortStartDate: startDate,
+              cohortEndDate: endDate,
+              startTime: { hour: 10, minute: 0 },
+              durationMinutes: 60,
+              subject: AssignmentSubject.MATH,
+              byWeekday: [RRule.TU],
+              timeZone: "America/Los_Angeles",
+            }),
+
+            makeRecurringEvent({
+              cohortStartDate: startDate,
+              cohortEndDate: endDate,
+              startTime: { hour: 15, minute: 0 },
+              durationMinutes: 75,
+              subject: AssignmentSubject.MATH,
+              byWeekday: [RRule.TH],
+              timeZone: "America/Los_Angeles",
+            }),
+
+            makeRecurringEvent({
+              cohortStartDate: startDate,
+              cohortEndDate: endDate,
+              startTime: { hour: 13, minute: 0 },
+              durationMinutes: 67,
+              subject: AssignmentSubject.GENERAL,
+              byWeekday: [RRule.MO, RRule.WE, RRule.FR],
+              timeZone: "America/Los_Angeles",
+            }),
+          ],
+        },
+      },
+    },
+  });
+
+  console.log("[🌱 Seed] - Victor's test org created.");
+}
+
+type Time = {
+  hour: number;
+  minute: number;
+  second?: number;
+};
+function makeRecurringEvent({
+  cohortStartDate,
+  cohortEndDate,
+  startTime,
+  durationMinutes,
+  subject,
+  byWeekday,
+  timeZone,
+}: {
+  cohortStartDate: Date;
+  cohortEndDate: Date;
+  startTime: Time;
+  durationMinutes: number;
+  subject: AssignmentSubject;
+  byWeekday: ByWeekday[];
+  timeZone: string;
+}) {
+  const startDateTime = new Date(
+    Date.UTC(
+      cohortStartDate.getUTCFullYear(),
+      cohortStartDate.getUTCMonth(),
+      cohortStartDate.getUTCDate(),
+      startTime.hour,
+      startTime.minute
+    )
+  );
+
+  const endDateTime = new Date(
+    Date.UTC(
+      cohortEndDate.getUTCFullYear(),
+      cohortEndDate.getUTCMonth(),
+      cohortEndDate.getUTCDate(),
+      23,
+      59
+    )
+  );
+
+  return {
+    eventType: EventType.RECURRING,
+    meetingType: MeetingType.STUDENT_SESSION,
+    subject,
+
+    startDateTime,
+    timeZone,
+    durationMinutes,
+
+    recurrenceRule: new RRule({
+      freq: RRule.DAILY,
+      byweekday: byWeekday,
+      dtstart: startDateTime,
+      until: endDateTime,
+    }).toString(),
+  };
+}
+
+function makeNoOffsetUtcDateTime({
+  year,
+  month,
+  day,
+  time,
+}: {
+  year: number;
+  month: number;
+  day: number;
+  time?: Time;
+}) {
+  const monthIndex = month - 1;
+
+  return new Date(
+    Date.UTC(
+      year,
+      monthIndex,
+      day,
+      time?.hour ?? 0,
+      time?.minute ?? 0,
+      time?.second ?? 0
+    )
+  );
 }
