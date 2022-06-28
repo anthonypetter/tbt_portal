@@ -1,14 +1,13 @@
-import { CalendarIcon } from "@heroicons/react/outline";
-
 import { gql } from "@apollo/client";
-import { CohortForScheduleCalendarFragment } from "@generated/graphql";
+import { CohortForCohortsScheduleCalendarFragment } from "@generated/graphql";
+import { CalendarIcon } from "@heroicons/react/outline";
 import { Modal } from "components/Modal";
 import { CohortsScheduleCalendar } from "./CohortsScheduleCalendar";
 
 CohortsScheduleCalendarModal.fragments = {
   cohort: gql`
     fragment CohortForScheduleCalendarModal on Cohort {
-      ...CohortForScheduleCalendar
+      ...CohortForCohortsScheduleCalendar
     }
     ${CohortsScheduleCalendar.fragments.cohort}
   `,
@@ -17,7 +16,7 @@ CohortsScheduleCalendarModal.fragments = {
 type CohortsScheduleCalendarModalProps = {
   show: boolean;
   closeModal: () => void;
-  cohorts: CohortForScheduleCalendarFragment[];
+  cohorts: CohortForCohortsScheduleCalendarFragment[];
 };
 
 export function CohortsScheduleCalendarModal({
@@ -32,10 +31,7 @@ export function CohortsScheduleCalendarModal({
       onDismissClick={() => closeModal()}
       icon={
         <Modal.Icon className="bg-blue-100">
-          <CalendarIcon
-            className="w-6 h-6 text-blue-600"
-            aria-hidden="true"
-          />
+          <CalendarIcon className="w-6 h-6 text-blue-600" aria-hidden="true" />
         </Modal.Icon>
       }
       title="Cohort Weekly Schedule"
@@ -43,12 +39,12 @@ export function CohortsScheduleCalendarModal({
     >
       <div className="container mx-auto">
         <h1 className="text-xl2 mb-3">
-          {cohorts.map(cohort => `${cohort.name} (Grade ${cohort.grade ?? "?"})`).join(", ")}
+          {cohorts
+            .map((cohort) => `${cohort.name} (Grade ${cohort.grade ?? "?"})`)
+            .join(", ")}
         </h1>
         <div className="h-[75vh]">
-          <CohortsScheduleCalendar
-            cohorts={cohorts}
-          />
+          <CohortsScheduleCalendar cohorts={cohorts} />
         </div>
       </div>
     </Modal>

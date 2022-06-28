@@ -1,8 +1,12 @@
 import { ApolloError, gql, useMutation } from "@apollo/client";
 import {
-  EditEngagementModalEngagementFragment,
   EditEngagementMutation,
+  EngagementForEditEngagementModalFragment,
 } from "@generated/graphql";
+import {
+  normalizeDateFromUTCDateTime,
+  normalizeToUtcDate,
+} from "@utils/dateTime";
 import { fromJust } from "@utils/types";
 import { ErrorBox } from "components/ErrorBox";
 import { Input } from "components/Input";
@@ -18,7 +22,6 @@ import {
   EngagementStaffTeacher,
   toEngagementStaffTeacher,
 } from "../staffAssignments/AssignEngagementTeachers";
-import { OrgDetailPageEngagementsQueryName } from "./constants";
 
 const EDIT_ENGAGEMENT = gql`
   mutation EditEngagement($input: EditEngagementInput!) {
@@ -31,7 +34,7 @@ const EDIT_ENGAGEMENT = gql`
 
 EditEngagementModal.fragments = {
   engagement: gql`
-    fragment EditEngagementModalEngagement on Engagement {
+    fragment EngagementForEditEngagementModal on Engagement {
       id
       name
       startDate
@@ -51,8 +54,19 @@ EditEngagementModal.fragments = {
 type Props = {
   show: boolean;
   closeModal: () => void;
-  engagement: EditEngagementModalEngagementFragment | null;
-  afterLeave: () => void;
+  engagement: EngagementForEditEngagementModalFragment | null;
+  afterLeave?: () => void;
+  /**
+   * Use of refetchQueries is a temporary solution.
+   * Info: https://www.apollographql.com/docs/react/data/refetching/
+   *
+   * We shouldn't need to specify query names. Apollo should know what "active" queries
+   * need to be refeched.  There's a task to dig into this issue. We can also
+   * consider optimistically updating the cache directly as per apollo docs. Regardless,
+   * explicitly passing in query names will not scale.
+   *
+   */
+  refetchQueries: string[];
 };
 
 export function EditEngagementModal({
@@ -60,6 +74,7 @@ export function EditEngagementModal({
   closeModal,
   engagement,
   afterLeave,
+  refetchQueries,
 }: Props) {
   return (
     <Modal
@@ -82,6 +97,7 @@ export function EditEngagementModal({
           onCancel={closeModal}
           onSuccess={closeModal}
           engagement={engagement}
+          refetchQueries={refetchQueries}
         />
       ) : (
         <LoadingSkeleton />
@@ -93,23 +109,32 @@ export function EditEngagementModal({
 type EditEngagementModalBodyProps = {
   onCancel: () => void;
   onSuccess: () => void;
-  engagement: EditEngagementModalEngagementFragment;
+  engagement: EngagementForEditEngagementModalFragment;
+  refetchQueries: string[];
 };
 
 export function EditEngagementModalBody({
   onCancel,
   onSuccess,
   engagement,
+  refetchQueries,
 }: EditEngagementModalBodyProps) {
   const cancelButtonRef = useRef(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [name, setName] = useState<string | null | undefined>(engagement.name);
+
   const [startDate, setStartDate] = useState<Date | null | undefined>(
-    engagement.startDate ? new Date(engagement.startDate) : undefined
+    engagement.startDate
+      ? normalizeDateFromUTCDateTime(new Date(engagement.startDate))
+      : undefined
   );
+
   const [endDate, setEndDate] = useState<Date | null | undefined>(
-    engagement.endDate ? new Date(engagement.endDate) : undefined
+    engagement.endDate
+      ? normalizeDateFromUTCDateTime(new Date(engagement.endDate))
+      : undefined
   );
+
   const [staff, setStaff] = useState<EngagementStaffTeacher[]>(
     engagement.staffAssignments.map((sa) => toEngagementStaffTeacher(sa))
   );
@@ -128,17 +153,19 @@ export function EditEngagementModalBody({
         input: {
           id: engagement.id,
           name: fromJust(name, "name"),
-          startDate: startDate ? startDate.getTime() : startDate,
-          endDate: endDate ? endDate.getTime() : endDate,
+          startDate: startDate
+            ? normalizeToUtcDate(startDate).getTime()
+            : startDate,
+          endDate: endDate ? normalizeToUtcDate(endDate).getTime() : endDate,
           newStaffAssignments: staff.map((t) => ({
             userId: t.userId,
             role: t.role,
           })),
         },
       },
-      refetchQueries: [OrgDetailPageEngagementsQueryName],
+      refetchQueries: refetchQueries,
       onQueryUpdated(observableQuery) {
-        observableQuery.refetch();
+        return observableQuery.refetch();
       },
     });
   };

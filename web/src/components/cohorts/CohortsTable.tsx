@@ -1,12 +1,12 @@
-import { useMemo, useState } from "react";
-import { CohortForTableFragment } from "@generated/graphql";
-import { DateText } from "components/Date";
-import { CONTEXT_MENU_ID, Table } from "components/Table";
-import { Column, Cell } from "react-table";
-import { EditCohortModal } from "./EditCohortModal";
-import { ContextMenu } from "components/ContextMenu";
-import { DeleteCohortModal } from "./DeleteCohortModal";
 import { gql } from "@apollo/client";
+import { CohortForTableFragment } from "@generated/graphql";
+import { ContextMenu } from "components/ContextMenu";
+import { NormalizedDateText } from "components/NormalizedDateText";
+import { CONTEXT_MENU_ID, Table } from "components/Table";
+import { useMemo, useState } from "react";
+import { Cell, Column } from "react-table";
+import { DeleteCohortModal } from "./DeleteCohortModal";
+import { EditCohortModal } from "./EditCohortModal";
 
 CohortsTable.fragments = {
   cohort: gql`
@@ -157,14 +157,14 @@ function usePrepCohortData({
         Header: "Starts",
         accessor: "startDate",
         Cell: ({ row }: Cell<CohortTableData>) => {
-          return <DateText timeMs={row.original.startDate} />;
+          return <NormalizedDateText timeMs={row.original.startDate} />;
         },
       },
       {
         Header: "Ends",
         accessor: "endDate",
         Cell: ({ row }: Cell<CohortTableData>) => {
-          return <DateText timeMs={row.original.endDate} />;
+          return <NormalizedDateText timeMs={row.original.endDate} />;
         },
       },
       {

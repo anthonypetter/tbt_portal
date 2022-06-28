@@ -1,14 +1,14 @@
-import type { NextPage, GetServerSidePropsContext } from "next";
-import { AuthedLayout } from "components/AuthedLayout";
-import { getServerSideAuth } from "@utils/auth/server-side-auth";
-import { OrganizationDetailPage } from "components/organizations/OrganizationDetailPage";
-import { gql, useQuery, ApolloQueryResult } from "@apollo/client";
+import { ApolloQueryResult, gql, useQuery } from "@apollo/client";
 import { OrgDetailPageEngagementsQuery } from "@generated/graphql";
-import { triggerErrorToast } from "components/Toast";
 import { getSession } from "@lib/apollo-client";
 import { processResult } from "@utils/apollo";
+import { getServerSideAuth } from "@utils/auth/server-side-auth";
 import { parseOrgId } from "@utils/parsing";
+import { AuthedLayout } from "components/AuthedLayout";
+import { OrganizationDetailPage } from "components/organizations/OrganizationDetailPage";
 import { Tab } from "components/organizations/OrganizationTabs";
+import { triggerErrorToast } from "components/Toast";
+import type { GetServerSidePropsContext, NextPage } from "next";
 
 const GET_ORGANIZATION = gql`
   query OrgDetailPageEngagements($id: ID!) {
@@ -50,7 +50,6 @@ const Organizations: NextPage<Props> = ({ organization }) => {
   const { data } = useQuery<OrgDetailPageEngagementsQuery>(GET_ORGANIZATION, {
     variables: { id: organization.id },
     fetchPolicy: "network-only",
-    nextFetchPolicy: "cache-first",
     onError: (error) => {
       console.error(error);
       triggerErrorToast({
