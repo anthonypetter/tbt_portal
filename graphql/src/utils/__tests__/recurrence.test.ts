@@ -1,6 +1,5 @@
-import { Weekday } from "@prisma/client";
 import { AssignmentSubject } from "../../schema/__generated__/graphql";
-import { normalizeDateTimeToUTCDate } from "../dateTime";
+import { normalizeDateTimeToUTCDate, Weekday } from "../dateTime";
 import { calculateRecurringEvents } from "../recurrence";
 
 describe("recurrence", () => {

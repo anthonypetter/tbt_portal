@@ -77,7 +77,6 @@ export type Cohort = {
   meetingId?: Maybe<Scalars['String']>;
   meetingRoom?: Maybe<Scalars['String']>;
   name: Scalars['String'];
-  schedule: Array<ScheduledMeeting>;
   staffAssignments: Array<CohortStaffAssignment>;
   startDate?: Maybe<Scalars['Date']>;
 };
@@ -330,16 +329,6 @@ export type QuerySearchUsersArgs = {
   query: Scalars['String'];
 };
 
-export type ScheduledMeeting = {
-  __typename?: 'ScheduledMeeting';
-  createdAt: Scalars['Date'];
-  endTime: Scalars['String'];
-  startTime: Scalars['String'];
-  subject: AssignmentSubject;
-  timeZone: Scalars['String'];
-  weekday: Weekday;
-};
-
 export type Time = {
   hour: Scalars['Int'];
   minute: Scalars['Int'];
@@ -365,16 +354,6 @@ export type UsersSearchResults = {
   count: Scalars['Int'];
   results: Array<User>;
 };
-
-export enum Weekday {
-  Friday = 'FRIDAY',
-  Monday = 'MONDAY',
-  Saturday = 'SATURDAY',
-  Sunday = 'SUNDAY',
-  Thursday = 'THURSDAY',
-  Tuesday = 'TUESDAY',
-  Wednesday = 'WEDNESDAY'
-}
 
 
 
@@ -476,13 +455,11 @@ export type ResolversTypes = {
   NewEngagementStaffAssignment: NewEngagementStaffAssignment;
   Organization: ResolverTypeWrapper<Omit<Organization, 'engagements'> & { engagements: Array<ResolversTypes['Engagement']> }>;
   Query: ResolverTypeWrapper<{}>;
-  ScheduledMeeting: ResolverTypeWrapper<ScheduledMeeting>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Time: Time;
   User: ResolverTypeWrapper<User>;
   UserRole: UserRole;
   UsersSearchResults: ResolverTypeWrapper<UsersSearchResults>;
-  Weekday: Weekday;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -515,7 +492,6 @@ export type ResolversParentTypes = {
   NewEngagementStaffAssignment: NewEngagementStaffAssignment;
   Organization: Omit<Organization, 'engagements'> & { engagements: Array<ResolversParentTypes['Engagement']> };
   Query: {};
-  ScheduledMeeting: ScheduledMeeting;
   String: Scalars['String'];
   Time: Time;
   User: User;
@@ -535,7 +511,6 @@ export type CohortResolvers<ContextType = any, ParentType extends ResolversParen
   meetingId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   meetingRoom?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  schedule?: Resolver<Array<ResolversTypes['ScheduledMeeting']>, ParentType, ContextType>;
   staffAssignments?: Resolver<Array<ResolversTypes['CohortStaffAssignment']>, ParentType, ContextType>;
   startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -630,16 +605,6 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
 };
 
-export type ScheduledMeetingResolvers<ContextType = any, ParentType extends ResolversParentTypes['ScheduledMeeting'] = ResolversParentTypes['ScheduledMeeting']> = {
-  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  endTime?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  startTime?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  subject?: Resolver<ResolversTypes['AssignmentSubject'], ParentType, ContextType>;
-  timeZone?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  weekday?: Resolver<ResolversTypes['Weekday'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   accountStatus?: Resolver<ResolversTypes['AccountStatus'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -667,7 +632,6 @@ export type Resolvers<ContextType = any> = {
   Mutation?: MutationResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
-  ScheduledMeeting?: ScheduledMeetingResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UsersSearchResults?: UsersSearchResultsResolvers<ContextType>;
 };

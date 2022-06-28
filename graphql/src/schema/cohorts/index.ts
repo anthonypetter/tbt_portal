@@ -40,28 +40,9 @@ export const typeDefs = gql`
     GENERAL
   }
 
-  enum Weekday {
-    SUNDAY
-    MONDAY
-    TUESDAY
-    WEDNESDAY
-    THURSDAY
-    FRIDAY
-    SATURDAY
-  }
-
   type CohortStaffAssignment {
     user: User!
     subject: AssignmentSubject!
-  }
-
-  type ScheduledMeeting {
-    createdAt: Date!
-    weekday: Weekday!
-    subject: AssignmentSubject!
-    startTime: String!
-    endTime: String!
-    timeZone: String!
   }
 
   type CohortEvent {
@@ -86,7 +67,6 @@ export const typeDefs = gql`
     engagementId: ID!
     engagement: Engagement!
     staffAssignments: [CohortStaffAssignment!]!
-    schedule: [ScheduledMeeting!]!
     events: [CohortEvent!]!
   }
 
