@@ -3,6 +3,7 @@ import { CsvValidationError, CsvValidationErrorMessage } from "@utils/errors";
 import fs from "fs";
 import path from "path";
 import { parseCsv, parseHhMm } from "../parseCsv";
+import { parseDates } from "../validateCsv";
 
 describe("parseCsv", () => {
   test("should parse a valid math and ela csv", async () => {
@@ -3427,6 +3428,24 @@ describe("parseCsv", () => {
     );
     expect(getErrorMsg(() => parseHhMm("12:"))).toEqual(
       CsvValidationErrorMessage.invalidTimeFormat
+    );
+  });
+
+  test("should fail to parse dates", () => {
+    expect(getErrorMsg(() => parseDates(null, null))).toEqual(
+      "Unable to detect start/end dates."
+    );
+
+    expect(getErrorMsg(() => parseDates(undefined, "1234568423"))).toEqual(
+      "Unable to detect start/end dates."
+    );
+
+    expect(getErrorMsg(() => parseDates(0, 0))).toEqual(
+      "Unable to detect start/end dates."
+    );
+
+    expect(getErrorMsg(() => parseDates("null", "null"))).toEqual(
+      "Unable to detect start/end dates."
     );
   });
 });
