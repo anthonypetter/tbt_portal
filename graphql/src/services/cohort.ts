@@ -7,12 +7,14 @@ import compact from "lodash/compact";
 import flatten from "lodash/flatten";
 import uniqBy from "lodash/uniqBy";
 import { rrulestr } from "rrule";
+import { calculateRecurringEvents } from "src/utils/recurrence";
 import { prisma } from "../lib/prisma-client";
 import { AssignmentSubject } from "../schema/__generated__/graphql";
 import {
   ChangeSet,
   CohortStaffAssignmentInput,
 } from "../utils/cohortStaffAssignments";
+import { Time } from "../utils/dateTime";
 import { extractSchedules } from "../utils/schedules";
 
 /**
@@ -213,14 +215,16 @@ export type CsvCohortInput = {
   friday: SubjectScheduleInput[];
   saturday: SubjectScheduleInput[];
   sunday: SubjectScheduleInput[];
+  cohortStartDate: Date;
+  cohortEndDate: Date;
 
   staffAssignments: CsvCohortStaff[];
 };
 
 export type SubjectScheduleInput = {
   subject: AssignmentSubject;
-  startTime: string;
-  endTime: string;
+  startTime: Time;
+  endTime: Time;
   timeZone: string;
 };
 
@@ -236,7 +240,11 @@ async function saveCsvCohortsData(
       engagementId,
       grade: cohort.grade,
       staffAssignments: cohort.staffAssignments,
-      schedules: extractSchedules(cohort),
+      events: calculateRecurringEvents({
+        startDate: cohort.cohortStartDate,
+        endDate: cohort.cohortEndDate,
+        schedules: extractSchedules(cohort),
+      }),
     };
   });
 
@@ -274,7 +282,7 @@ async function saveCsvCohortsData(
    * Create cohorts, staff, and schedules
    *
    * Since
-   *  - cohorts come with multiple staff assignments and schedules
+   *  - cohorts come with multiple staff assignments and recurring events
    *  - cohorts don't exist yet (no cohortId is available)
    *  - prisma's createMany does not support accessing relations
    *
@@ -314,8 +322,8 @@ async function saveCsvCohortsData(
           staffAssignments: {
             createMany: { data: staffAssignments },
           },
-          schedule: {
-            createMany: { data: cohort.schedules },
+          events: {
+            createMany: { data: cohort.events },
           },
         },
       });
