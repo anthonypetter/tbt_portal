@@ -6,7 +6,6 @@ import {
   Prisma,
   PrismaClient,
   User,
-  Weekday,
 } from "@prisma/client";
 import { add } from "date-fns";
 import { ByWeekday, RRule } from "rrule";
@@ -498,66 +497,6 @@ async function createVictorsTestOrg(users: User[]) {
             {
               userId: substituteTeacher.id,
               subject: AssignmentSubject.GENERAL,
-            },
-          ],
-        },
-      },
-      schedule: {
-        createMany: {
-          data: [
-            // AssignmentSubject.ELA
-            {
-              weekday: Weekday.TUESDAY,
-              subject: AssignmentSubject.ELA,
-              startTime: "08:30",
-              endTime: "09:45",
-              timeZone: "America/Los_Angeles",
-            },
-            {
-              weekday: Weekday.THURSDAY,
-              subject: AssignmentSubject.ELA,
-              startTime: "08:30",
-              endTime: "09:45",
-              timeZone: "America/Los_Angeles",
-            },
-
-            // AssignmentSubject.MATH
-            {
-              weekday: Weekday.TUESDAY,
-              subject: AssignmentSubject.MATH,
-              startTime: "10:00",
-              endTime: "11:10",
-              timeZone: "America/Los_Angeles",
-            },
-            {
-              weekday: Weekday.THURSDAY,
-              subject: AssignmentSubject.MATH,
-              startTime: "15:00",
-              endTime: "16:15",
-              timeZone: "America/Los_Angeles",
-            },
-
-            //General
-            {
-              weekday: Weekday.MONDAY,
-              subject: AssignmentSubject.GENERAL,
-              startTime: "13:00",
-              endTime: "14:07",
-              timeZone: "America/Los_Angeles",
-            },
-            {
-              weekday: Weekday.WEDNESDAY,
-              subject: AssignmentSubject.GENERAL,
-              startTime: "13:00",
-              endTime: "14:07",
-              timeZone: "America/Los_Angeles",
-            },
-            {
-              weekday: Weekday.FRIDAY,
-              subject: AssignmentSubject.GENERAL,
-              startTime: "13:00",
-              endTime: "14:07",
-              timeZone: "America/Los_Angeles",
             },
           ],
         },

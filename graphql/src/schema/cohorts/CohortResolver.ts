@@ -18,26 +18,6 @@ export const CohortResolver = {
     }));
   },
 
-  async schedule(
-    parent: ResolversParentTypes["Cohort"],
-    _args: undefined,
-    { CohortService }: Context
-  ) {
-    const scheduleMeetings =
-      parent.schedule?.length > 0
-        ? parent.schedule
-        : await CohortService.getSchedule(parent.id);
-
-    return scheduleMeetings.map((scheduledMeeting) => ({
-      createdAt: scheduledMeeting.createdAt,
-      weekday: scheduledMeeting.weekday,
-      subject: scheduledMeeting.subject,
-      startTime: scheduledMeeting.startTime,
-      endTime: scheduledMeeting.endTime,
-      timeZone: scheduledMeeting.timeZone,
-    }));
-  },
-
   async engagement(
     parent: ResolversParentTypes["Cohort"],
     _args: undefined,
