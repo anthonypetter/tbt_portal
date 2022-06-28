@@ -151,8 +151,8 @@ function getNavigation(role: UserRole, currentPathname: string) {
 
 // TODO: update
 const userNavigation = [
-  { name: "Your Profile", href: "#" },
-  { name: "Settings", href: "#" },
+  { name: "Your Profile", href: "#", disabled: true },
+  { name: "Settings", href: "#", disabled: true },
 ];
 
 type Props = {
@@ -387,18 +387,21 @@ function AvatarDropdown() {
             <div className="py-1">
               <Menu.Item key="role">
                 <div className="px-4 py-2">
-                  <div className="flex items-center">
+                  <div className="flex min-w-[200px]">
                     <UserCircleIcon
                       className="h-10 w-10 rounded-full mr-1"
                       aria-hidden="true"
                     />
-                    <div>
-                      <div className="text-xs text-gray-700 font-bold">
+                    <div className="ml-1">
+                      <div className="text-sm text-gray-700 font-bold py-1">
+                        {auth.user.fullName}
+                      </div>
+                      <div className="text-xs text-gray-700 font-light">
                         {auth.user.email}
                       </div>
                       <RoleText
                         role={auth.user.role}
-                        className="text-xs text-gray-700 font-light"
+                        className="text-xs text-gray-700 font-light italic"
                       />
                     </div>
                   </div>
@@ -409,13 +412,16 @@ function AvatarDropdown() {
 
           <div className="py-1">
             {userNavigation.map((item) => (
-              <Menu.Item key={item.name}>
+              <Menu.Item key={item.name} disabled={item.disabled}>
                 {({ active }) => (
                   <a
                     href={item.href}
                     className={clsx(
                       active ? "bg-gray-100" : "",
-                      "block px-4 py-2 text-sm text-gray-700"
+                      item.disabled
+                        ? "text-gray-400 cursor-default"
+                        : "text-gray-700",
+                      "block px-4 py-2 text-sm"
                     )}
                   >
                     {item.name}
