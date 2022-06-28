@@ -281,16 +281,18 @@ export function AuthedLayout({ children }: Props) {
             </nav>
           </div>
         </div>
-        <div className="md:pl-64 flex flex-col flex-1">
-          <AuthHeader />
-          <main className="h-screen-nav overflow-y-scroll">
-            <div className="pt-6 pb-20">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-                {children}
-              </div>
+      </div>
+      {/* Top bar + Content container */}
+      <div className="md:pl-64 flex flex-col flex-1">
+        <AuthHeader />
+        {/* Content area */}
+        <main className="z-0 h-screen-nav overflow-y-scroll">
+          <div className="pt-6 pb-20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+              {children}
             </div>
-          </main>
-        </div>
+          </div>
+        </main>
       </div>
     </div>
   );
