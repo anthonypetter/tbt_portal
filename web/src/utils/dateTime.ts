@@ -1,4 +1,3 @@
-import { Weekday } from "@generated/graphql";
 import { toDate } from "date-fns-tz";
 import formatISO from "date-fns/formatISO";
 import startOfWeek from "date-fns/startOfWeek";
@@ -20,15 +19,25 @@ export type ISODate = string;
 export type Hour = number;
 export type Minute = number;
 
+export enum Weekday {
+  SUNDAY,
+  MONDAY,
+  TUESDAY,
+  WEDNESDAY,
+  THURSDAY,
+  FRIDAY,
+  SATURDAY,
+}
+
 export type WeekdayNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 export const weekdaysOrdered: Weekday[] = [
-  Weekday.Sunday,
-  Weekday.Monday,
-  Weekday.Tuesday,
-  Weekday.Wednesday,
-  Weekday.Thursday,
-  Weekday.Friday,
-  Weekday.Saturday,
+  Weekday.SUNDAY,
+  Weekday.MONDAY,
+  Weekday.TUESDAY,
+  Weekday.WEDNESDAY,
+  Weekday.THURSDAY,
+  Weekday.FRIDAY,
+  Weekday.SATURDAY,
 ];
 
 export type LocalizedWeekday = {

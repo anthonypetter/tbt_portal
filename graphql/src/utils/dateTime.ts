@@ -1,3 +1,13 @@
+export enum Weekday {
+  SUNDAY,
+  MONDAY,
+  TUESDAY,
+  WEDNESDAY,
+  THURSDAY,
+  FRIDAY,
+  SATURDAY,
+}
+
 /**
  * Given a particular dateTime this will return the same dateTime but with the
  * time set to midnight (00:00:00), UTC.
