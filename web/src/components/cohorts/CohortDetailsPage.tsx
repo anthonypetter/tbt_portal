@@ -31,14 +31,6 @@ CohortDetailsPage.fragments = {
           name
         }
       }
-      schedule {
-        createdAt
-        weekday
-        subject
-        startTime
-        endTime
-        timeZone
-      }
       staffAssignments {
         user {
           id
