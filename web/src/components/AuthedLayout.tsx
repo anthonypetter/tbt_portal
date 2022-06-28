@@ -284,7 +284,7 @@ export function AuthedLayout({ children }: Props) {
       </div>
       {/* Top bar + Content container */}
       <div className="md:pl-64 flex flex-col flex-1">
-        <AuthHeader />
+        <AuthHeader setSidebarOpen={setSidebarOpen} />
         {/* Content area */}
         <main className="z-0 h-screen-nav overflow-y-scroll">
           <div className="pt-6 pb-20">
