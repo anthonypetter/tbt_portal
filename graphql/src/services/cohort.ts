@@ -17,6 +17,15 @@ import {
 import { Time } from "../utils/dateTime";
 import { extractSchedules } from "../utils/schedules";
 
+const TAKE_LIMIT = 100;
+
+async function getAllCohorts() {
+  return prisma.cohort.findMany({
+    take: TAKE_LIMIT,
+    orderBy: [{ startDate: "desc" }],
+  });
+}
+
 /**
  * Cohort Type with relations
  *
@@ -50,7 +59,7 @@ async function getCohort(cohortId: number) {
  * Gets cohorts for a given engagementId
  */
 
-async function getCohorts(engagementId: number) {
+async function getCohortsForEngagement(engagementId: number) {
   return prisma.cohort.findMany({
     take: 100,
     where: { engagementId },
@@ -454,8 +463,9 @@ function generateCurrentWeekInstances(recurringEvents: CohortEvent[]) {
 }
 
 export const CohortService = {
+  getAllCohorts,
   getCohort,
-  getCohorts,
+  getCohortsForEngagement,
   getCohortsForOrg,
   editCohort,
   deleteCohort,

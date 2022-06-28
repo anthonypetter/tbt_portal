@@ -36,7 +36,10 @@ const EDIT_COHORT = gql`
 type Props = {
   show: boolean;
   closeModal: () => void;
-  cohort: CohortForTableFragment | null;
+  cohort:
+    | CohortForTableFragment
+    | AllCohortsTableFragment["cohorts"][number]
+    | null;
   afterLeave: () => void;
 };
 
@@ -78,7 +81,7 @@ export function EditCohortModal({
 type EditCohortModalBodyProps = {
   onCancel: () => void;
   onSuccess: () => void;
-  cohort: CohortForTableFragment;
+  cohort: CohortForTableFragment | AllCohortsTableFragment["cohorts"][number];
 };
 
 export function EditCohortModalBody({
