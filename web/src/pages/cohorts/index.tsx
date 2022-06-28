@@ -44,7 +44,6 @@ type Props = {
 const Cohorts: NextPage<Props> = ({ cohorts }) => {
   const { data } = useQuery<CohortsPageQuery>(GET_COHORTS, {
     fetchPolicy: "network-only", // Used for first execution
-    nextFetchPolicy: "cache-first", // Used for subsequent executions
     onError: (error) => {
       console.error(error);
       triggerErrorToast({
