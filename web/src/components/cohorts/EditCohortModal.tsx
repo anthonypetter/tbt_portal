@@ -1,24 +1,24 @@
-import { useRef, useState } from "react";
-import { Spinner } from "../Spinner";
-import { Modal } from "../Modal";
-import { ErrorBox } from "components/ErrorBox";
 import { ApolloError, gql, useMutation } from "@apollo/client";
+import { CohortForTableFragment, EditCohortMutation } from "@generated/graphql";
 import {
-  EditEngagementMutation,
-  CohortForTableFragment,
-  AllCohortsTableFragment,
-} from "@generated/graphql";
+  normalizeDateFromUTCDateTime,
+  normalizeToUtcDate,
+} from "@utils/dateTime";
 import { fromJust } from "@utils/types";
+import { ErrorBox } from "components/ErrorBox";
 import { Input } from "components/Input";
-import { MdWorkspacesOutline } from "react-icons/md";
+import { LoadingSkeleton } from "components/LoadingSkeleton";
 import noop from "lodash/noop";
+import { useRef, useState } from "react";
 import DatePicker from "react-datepicker";
+import { MdWorkspacesOutline } from "react-icons/md";
+import { Modal } from "../Modal";
+import { Spinner } from "../Spinner";
 import {
   AssignCohortTeachers,
   CohortStaffTeacher,
   toCohortStaffTeacher,
 } from "../staffAssignments/AssignCohortTeachers";
-import { LoadingSkeleton } from "components/LoadingSkeleton";
 import {
   ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
   ORG_DETAIL_PAGE_COHORTS_NAME,
@@ -92,12 +92,19 @@ export function EditCohortModalBody({
   const cancelButtonRef = useRef(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [name, setName] = useState<string | null | undefined>(cohort.name);
+
   const [startDate, setStartDate] = useState<Date | null | undefined>(
-    cohort.startDate ? new Date(cohort.startDate) : undefined
+    cohort.startDate
+      ? normalizeDateFromUTCDateTime(new Date(cohort.startDate))
+      : undefined
   );
+
   const [endDate, setEndDate] = useState<Date | null | undefined>(
-    cohort.endDate ? new Date(cohort.endDate) : undefined
+    cohort.endDate
+      ? normalizeDateFromUTCDateTime(new Date(cohort.endDate))
+      : undefined
   );
+
   const [grade, setGrade] = useState<string | null | undefined>(cohort.grade);
   const [hostKey, setHostKey] = useState<string | null | undefined>(
     cohort.hostKey
@@ -109,7 +116,7 @@ export function EditCohortModalBody({
     cohort.staffAssignments.map((sa) => toCohortStaffTeacher(sa))
   );
 
-  const [editOrg, { loading }] = useMutation<EditEngagementMutation>(
+  const [editCohort, { loading }] = useMutation<EditCohortMutation>(
     EDIT_COHORT,
     {
       onError: (err: ApolloError) => setErrorMsg(err.message),
@@ -117,14 +124,16 @@ export function EditCohortModalBody({
     }
   );
 
-  const onEditOrg = async () => {
-    await editOrg({
+  const onEditCohort = async () => {
+    await editCohort({
       variables: {
         input: {
           id: cohort.id,
           name: fromJust(name, "name"),
-          startDate: startDate ? startDate.getTime() : startDate,
-          endDate: endDate ? endDate.getTime() : endDate,
+          startDate: startDate
+            ? normalizeToUtcDate(startDate).getTime()
+            : startDate,
+          endDate: endDate ? normalizeToUtcDate(endDate).getTime() : endDate,
           grade: grade,
           hostKey: hostKey,
           meetingRoom: meetingRoom,
@@ -175,7 +184,10 @@ export function EditCohortModalBody({
             <DatePicker
               selected={startDate}
               onChange={(date) => setStartDate(date)}
-              customInput={<Input label="Start" id="cohort-start-date" />}
+              customInput={
+                <Input label="Start" id="cohort-start-date" disabled />
+              }
+              disabled
             />
           </div>
 
@@ -183,7 +195,8 @@ export function EditCohortModalBody({
             <DatePicker
               selected={endDate}
               onChange={(date) => setEndDate(date)}
-              customInput={<Input label="End" id="cohort-end-date" />}
+              customInput={<Input label="End" id="cohort-end-date" disabled />}
+              disabled
             />
           </div>
 
@@ -220,7 +233,7 @@ export function EditCohortModalBody({
         </div>
 
         <Modal.Buttons>
-          <Modal.Button type="confirm" onClick={onEditOrg} disabled={!name}>
+          <Modal.Button type="confirm" onClick={onEditCohort} disabled={!name}>
             {loading ? <Spinner /> : "Save"}
           </Modal.Button>
           <Modal.Button type="cancel" onClick={onCancel} ref={cancelButtonRef}>

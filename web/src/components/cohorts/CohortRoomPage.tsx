@@ -24,7 +24,9 @@ type Props = {
 
 export function CohortRoomPage({ cohort, roomType }: Props) {
   const roomUrl = getRoomUrl(
-    `${cohort.meetingRoom}?roomKey=${cohort?.hostKey}`
+    `${cohort.meetingRoom}${
+      roomType === "host" ? "?roomKey=" + cohort.hostKey : ""
+    }`
   )[`${roomType}`];
   return (
     <div>

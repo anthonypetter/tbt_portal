@@ -1,7 +1,8 @@
+import { Weekday } from "@generated/graphql";
+import { toDate } from "date-fns-tz";
 import formatISO from "date-fns/formatISO";
 import startOfWeek from "date-fns/startOfWeek";
-
-import { Weekday } from "@generated/graphql";
+import { parseInteger } from "./numbers";
 
 /**
  * H:mm or HH:mm time stamp. (ex: 13:05, 6:43, 06:43)
@@ -37,7 +38,7 @@ export type LocalizedWeekday = {
   isoDate: ISODate;
 };
 
-export const timeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
+export const TIME_REGEX = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
 
 /**
  * Helper function normalizes time input to be HH:mm when it could be H:mm. In
@@ -47,7 +48,7 @@ export const timeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
  */
 export function normalizeTime(timeString: Time24Hour): Time24Hour {
   const paddedString = timeString.padStart(5, "0"); // 6:30 --> 06:30.
-  return timeRegex.test(paddedString) ? paddedString : "00:00";
+  return TIME_REGEX.test(paddedString) ? paddedString : "00:00";
 }
 
 /**
@@ -201,4 +202,121 @@ export function normalizeDateFromUTCDateTime(utcDateTime: Date): Date {
     utcDateTime.getUTCMonth(),
     utcDateTime.getUTCDate()
   );
+}
+
+/**
+ * Takes a DateTime and creates a Zero-offset UTC Date.
+ *
+ * Example:
+ * Input: 2022-06-20T04:00:00Z
+ * Output: 2022-06-20T00:00:00Z
+ *
+ * @param dateTime
+ * @returns new UTC zero-offset dateTime with local date's month, day, and year.
+ *
+ */
+
+export function normalizeToUtcDate(dateTime: Date): Date {
+  // Hours, minutes, seconds, milliseconds are left at 0.
+  return new Date(
+    Date.UTC(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate())
+  );
+}
+
+/**
+ * Takes a floating time and converts it into an incremental time by applying a time zone.
+ *
+ * Info on floating times:
+ *  - https://www.w3.org/International/wiki/FloatingTime
+ *  - https://github.com/jakubroztocil/rrule#important-use-utc-dates
+ *
+ * Info on `toDate`: https://github.com/marnusw/date-fns-tz#todate
+ *
+ */
+
+export function floatingToZonedDateTime(
+  floatingDateTime: Date,
+  timeZone: IANAtzName
+) {
+  const year = floatingDateTime.getFullYear();
+  const monthIndex = floatingDateTime.getUTCMonth();
+  const day = floatingDateTime.getUTCDate();
+  const hour = floatingDateTime.getUTCHours();
+  const minute = floatingDateTime.getUTCMinutes();
+
+  const isoStringWithNoOffset = `${formatISO(new Date(year, monthIndex, day), {
+    representation: "date",
+  })}T${stringifyHour(hour)}:${stringifyMinute(minute)}`;
+
+  return toDate(isoStringWithNoOffset, { timeZone });
+}
+
+/**
+ * Takes time object and converts it to a normalized time string
+ */
+export function stringifyTime(time: Time): Time24Hour {
+  return `${stringifyHour(time.hour)}:${stringifyMinute(time.minute)}`;
+}
+
+function stringifyHour(hour: number) {
+  if (hour < 0 || hour > 23) {
+    throw new Error(`Invalid hour value encountered: ${hour.toString()}`);
+  }
+  return hour.toLocaleString("en-US", {
+    minimumIntegerDigits: 2,
+    useGrouping: false,
+  });
+}
+
+function stringifyMinute(minute: number) {
+  if (minute < 0 || minute > 59) {
+    throw new Error(`Invalid minute value encountered: ${minute.toString()}`);
+  }
+
+  return minute.toLocaleString("en-US", {
+    minimumIntegerDigits: 2,
+    useGrouping: false,
+  });
+}
+
+/**
+ * Takes a timeString and returns an object with the hours and minutes as numbers.
+ */
+
+export type Time = {
+  hour: Hour;
+  minute: Minute;
+};
+
+export function numberifyTime(timeString: Time24Hour): Time {
+  if (!TIME_REGEX.test(timeString)) {
+    throw new Error(
+      `Unrecognized time string format: ${
+        timeString.length === 0 ? "empty string" : timeString
+      }`
+    );
+  }
+
+  const [hours, minutes] = timeString
+    .split(":")
+    .map((num) => parseInteger(num));
+
+  return { hour: hours, minute: minutes };
+}
+
+/**
+ * Calculates number minutes between 2 time objects
+ */
+
+export function calculateDurationInMinutes(start: Time, end: Time) {
+  const startMinutes = start.hour * 60 + start.minute;
+  const endMinutes = end.hour * 60 + end.minute;
+
+  const duration = endMinutes - startMinutes;
+
+  if (duration < 0) {
+    throw new Error("Negative durations are not supported.");
+  }
+
+  return duration;
 }

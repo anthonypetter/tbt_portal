@@ -69,6 +69,7 @@ export type Cohort = {
   endDate?: Maybe<Scalars['Date']>;
   engagement: Engagement;
   engagementId: Scalars['ID'];
+  events: Array<CohortEvent>;
   exempt?: Maybe<Scalars['String']>;
   grade?: Maybe<Scalars['String']>;
   hostKey?: Maybe<Scalars['String']>;
@@ -79,6 +80,14 @@ export type Cohort = {
   schedule: Array<ScheduledMeeting>;
   staffAssignments: Array<CohortStaffAssignment>;
   startDate?: Maybe<Scalars['Date']>;
+};
+
+export type CohortEvent = {
+  __typename?: 'CohortEvent';
+  durationMinutes: Scalars['Int'];
+  startFloatingDateTime: Scalars['Date'];
+  subject: AssignmentSubject;
+  timeZone: Scalars['String'];
 };
 
 export type CohortStaffAssignment = {
@@ -98,7 +107,9 @@ export type CsvCohortTeacher = {
 };
 
 export type CsvProcessedCohort = {
+  cohortEndDate: Scalars['Date'];
   cohortName: Scalars['String'];
+  cohortStartDate: Scalars['Date'];
   friday: Array<CsvSubjectSchedule>;
   googleClassroomLink?: InputMaybe<Scalars['String']>;
   grade: Scalars['String'];
@@ -123,8 +134,8 @@ export type CsvSaveCountsResult = {
 };
 
 export type CsvSubjectSchedule = {
-  endTime: Scalars['String'];
-  startTime: Scalars['String'];
+  endTime: Time;
+  startTime: Time;
   subject: AssignmentSubject;
   timeZone: Scalars['String'];
 };
@@ -336,6 +347,11 @@ export type ScheduledMeeting = {
   weekday: Weekday;
 };
 
+export type Time = {
+  hour: Scalars['Int'];
+  minute: Scalars['Int'];
+};
+
 export type User = {
   __typename?: 'User';
   accountStatus: AccountStatus;
@@ -444,6 +460,7 @@ export type ResolversTypes = {
   AssignmentSubject: AssignmentSubject;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Cohort: ResolverTypeWrapper<CohortWithBaseRelationsModel>;
+  CohortEvent: ResolverTypeWrapper<CohortEvent>;
   CohortStaffAssignment: ResolverTypeWrapper<CohortStaffAssignment>;
   CsvCohortStaffAssignment: CsvCohortStaffAssignment;
   CsvCohortTeacher: CsvCohortTeacher;
@@ -468,6 +485,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   ScheduledMeeting: ResolverTypeWrapper<ScheduledMeeting>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  Time: Time;
   User: ResolverTypeWrapper<User>;
   UserRole: UserRole;
   UsersSearchResults: ResolverTypeWrapper<UsersSearchResults>;
@@ -481,6 +499,7 @@ export type ResolversParentTypes = {
   AddOrganizationInput: AddOrganizationInput;
   Boolean: Scalars['Boolean'];
   Cohort: CohortWithBaseRelationsModel;
+  CohortEvent: CohortEvent;
   CohortStaffAssignment: CohortStaffAssignment;
   CsvCohortStaffAssignment: CsvCohortStaffAssignment;
   CsvCohortTeacher: CsvCohortTeacher;
@@ -505,6 +524,7 @@ export type ResolversParentTypes = {
   Query: {};
   ScheduledMeeting: ScheduledMeeting;
   String: Scalars['String'];
+  Time: Time;
   User: User;
   UsersSearchResults: UsersSearchResults;
 };
@@ -514,6 +534,7 @@ export type CohortResolvers<ContextType = any, ParentType extends ResolversParen
   endDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   engagement?: Resolver<ResolversTypes['Engagement'], ParentType, ContextType>;
   engagementId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  events?: Resolver<Array<ResolversTypes['CohortEvent']>, ParentType, ContextType>;
   exempt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   grade?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hostKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -524,6 +545,14 @@ export type CohortResolvers<ContextType = any, ParentType extends ResolversParen
   schedule?: Resolver<Array<ResolversTypes['ScheduledMeeting']>, ParentType, ContextType>;
   staffAssignments?: Resolver<Array<ResolversTypes['CohortStaffAssignment']>, ParentType, ContextType>;
   startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CohortEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['CohortEvent'] = ResolversParentTypes['CohortEvent']> = {
+  durationMinutes?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  startFloatingDateTime?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  subject?: Resolver<ResolversTypes['AssignmentSubject'], ParentType, ContextType>;
+  timeZone?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -637,6 +666,7 @@ export type UsersSearchResultsResolvers<ContextType = any, ParentType extends Re
 
 export type Resolvers<ContextType = any> = {
   Cohort?: CohortResolvers<ContextType>;
+  CohortEvent?: CohortEventResolvers<ContextType>;
   CohortStaffAssignment?: CohortStaffAssignmentResolvers<ContextType>;
   CsvSaveCountsResult?: CsvSaveCountsResultResolvers<ContextType>;
   Date?: GraphQLScalarType;
