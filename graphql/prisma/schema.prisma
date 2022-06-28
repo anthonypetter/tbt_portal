@@ -149,10 +149,10 @@ model CohortSession {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   recording String?
-
+  roomName  String
   // relation fields
-  cohortId Int
-  cohort   Cohort @relation(fields: [cohortId], references: [id])
+  cohortId  Int
+  cohort    Cohort   @relation(fields: [cohortId], references: [id])
 }
 
 //"Single" events can be added here later.
