@@ -1,6 +1,6 @@
-import { CohortStaffAssignment, AssignmentSubject } from "@prisma/client";
+import { NewCohortStaffAssignment } from "@generated/graphql";
+import { AssignmentSubject, CohortStaffAssignment } from "@prisma/client";
 import differenceWith from "lodash/differenceWith";
-import { NewCohortStaffAssignment } from "src/schema/__generated__/graphql";
 import { parseId } from "./numbers";
 
 export type ChangeSet = {

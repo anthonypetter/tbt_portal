@@ -1,18 +1,18 @@
-import { gql } from "apollo-server";
-import { EngagementResolver } from "./EngagementResolver";
-import { Context } from "../../context";
 import {
-  MutationEditEngagementArgs,
   MutationAddEngagementArgs,
   MutationDeleteEngagementArgs,
+  MutationEditEngagementArgs,
   QueryEngagementArgs,
-} from "../__generated__/graphql";
-import { parseId } from "../../utils/numbers";
-import { fromJust } from "../../utils/types";
+} from "@generated/graphql";
+import { gql } from "apollo-server";
+import { Context } from "../../context";
 import {
   calcStaffChanges,
   fromNewToInput,
 } from "../../utils/engagementStaffAssignments";
+import { parseId } from "../../utils/numbers";
+import { fromJust } from "../../utils/types";
+import { EngagementResolver } from "./EngagementResolver";
 
 /**
  * Type Defs

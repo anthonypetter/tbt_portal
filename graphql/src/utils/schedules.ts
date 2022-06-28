@@ -1,4 +1,4 @@
-import { AssignmentSubject } from "../schema/__generated__/graphql";
+import { AssignmentSubject } from "@generated/graphql";
 import { CsvCohortInput, SubjectScheduleInput } from "../services/cohort";
 import { Time, Weekday } from "./dateTime";
 

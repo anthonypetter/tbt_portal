@@ -1,7 +1,7 @@
+import { MutationSaveCohortsCsvDataArgs } from "@generated/graphql";
 import { gql } from "apollo-server";
 import { Context } from "../../context";
 import { parseId } from "../../utils/numbers";
-import { MutationSaveCohortsCsvDataArgs } from "../__generated__/graphql";
 
 /**
  * Type Defs
