@@ -53,7 +53,6 @@ const CohortDetail: NextPage<Props> = ({ cohort }) => {
   const { data } = useQuery<CohortDetailsPageQuery>(GET_COHORT, {
     variables: { id: cohort.id },
     fetchPolicy: "network-only",
-    nextFetchPolicy: "cache-first",
     onError: (error) => {
       console.error(error);
       triggerErrorToast({
