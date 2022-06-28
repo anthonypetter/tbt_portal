@@ -6,6 +6,9 @@ import { DetailsAside } from "components/DetailsAside";
 import { NormalizedDateText } from "components/NormalizedDateText";
 import { useState } from "react";
 import { CohortsScheduleCalendarModal } from "./scheduleCalendar/CohortsScheduleCalendarModal";
+import { Routes } from "@utils/routes";
+import { Link } from "components/Link";
+import { getRoomUrl } from "@utils/roomUrls";
 
 const DEV_SHOW_SCHEDULE_BUTTON = true;
 
@@ -61,9 +64,57 @@ export function CohortDetailsSidebar({
           <DetailsAside.Line label="Grade" value={selectedCohort.grade} />
           <DetailsAside.Line
             label="Meeting Room"
-            value={selectedCohort.meetingRoom}
+            value={
+              selectedCohort.meetingRoom ? (
+                <div>
+                  <Link href={getRoomUrl(selectedCohort.meetingRoom).backDoor}>
+                    <p className="text-ellipsis text-blue-400 truncate">
+                      Backdoor Link
+                    </p>
+                  </Link>
+
+                  <Link
+                    href={Routes.cohortRoom.href(selectedCohort.id, "host")}
+                  >
+                    <p className="text-ellipsis text-blue-400 truncate">
+                      Host Link
+                    </p>
+                  </Link>
+                  <Link
+                    href={Routes.cohortRoom.href(selectedCohort.id, "student")}
+                  >
+                    <p className="text-ellipsis text-blue-400 truncate">
+                      Student Link
+                    </p>
+                  </Link>
+                </div>
+              ) : (
+                ""
+              )
+            }
           />
-          <DetailsAside.Line label="Host key" value={selectedCohort.hostKey} />
+          <DetailsAside.Line
+            label="Host key"
+            value={
+              selectedCohort.hostKey ? (
+                <div
+                  onClick={() =>
+                    navigator.clipboard.writeText(`${selectedCohort.hostKey}`)
+                  }
+                  className="cursor-pointer transition duration-150 ease-in-out"
+                >
+                  <p
+                    data-bs-toggle="tooltip"
+                    title="Click here to copy the token"
+                  >
+                    {selectedCohort.hostKey?.slice(0, 12)}...
+                  </p>
+                </div>
+              ) : (
+                ""
+              )
+            }
+          />
           <DetailsAside.Line
             label="Created"
             value={<NormalizedDateText timeMs={selectedCohort.createdAt} />}
