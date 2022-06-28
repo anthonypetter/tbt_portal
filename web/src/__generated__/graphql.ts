@@ -105,7 +105,9 @@ export type CsvCohortTeacher = {
 };
 
 export type CsvProcessedCohort = {
+  cohortEndDate: Scalars['Date'];
   cohortName: Scalars['String'];
+  cohortStartDate: Scalars['Date'];
   friday: Array<CsvSubjectSchedule>;
   googleClassroomLink?: InputMaybe<Scalars['String']>;
   grade: Scalars['String'];
@@ -130,8 +132,8 @@ export type CsvSaveCountsResult = {
 };
 
 export type CsvSubjectSchedule = {
-  endTime: Scalars['String'];
-  startTime: Scalars['String'];
+  endTime: Time;
+  startTime: Time;
   subject: AssignmentSubject;
   timeZone: Scalars['String'];
 };
@@ -334,6 +336,11 @@ export type ScheduledMeeting = {
   subject: AssignmentSubject;
   timeZone: Scalars['String'];
   weekday: Weekday;
+};
+
+export type Time = {
+  hour: Scalars['Int'];
+  minute: Scalars['Int'];
 };
 
 export type User = {
