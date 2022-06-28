@@ -1,9 +1,9 @@
+import {
+  QuerySearchEngagementsArgs,
+  QuerySearchUsersArgs,
+} from "@generated/graphql";
 import { gql } from "apollo-server";
 import { Context } from "../../context";
-import {
-  QuerySearchUsersArgs,
-  QuerySearchEngagementsArgs,
-} from "../__generated__/graphql";
 
 /**
  * Type Defs

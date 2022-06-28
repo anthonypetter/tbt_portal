@@ -1,11 +1,11 @@
-import { gql } from "apollo-server";
-import { Context } from "../../context";
 import {
   MutationAddOrganizationArgs,
-  MutationEditOrganizationArgs,
   MutationDeleteOrganizationArgs,
+  MutationEditOrganizationArgs,
   QueryOrganizationArgs,
-} from "../__generated__/graphql";
+} from "@generated/graphql";
+import { gql } from "apollo-server";
+import { Context } from "../../context";
 import { parseId } from "../../utils/numbers";
 import { OrganizationResolver } from "./OrganizationResolver";
 
