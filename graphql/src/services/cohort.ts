@@ -240,6 +240,8 @@ async function saveCsvCohortsData(
       engagementId,
       grade: cohort.grade,
       staffAssignments: cohort.staffAssignments,
+      startDate: cohort.cohortStartDate,
+      endDate: cohort.cohortEndDate,
       events: calculateRecurringEvents({
         startDate: cohort.cohortStartDate,
         endDate: cohort.cohortEndDate,
@@ -319,6 +321,8 @@ async function saveCsvCohortsData(
           name: cohort.name,
           grade: cohort.grade,
           engagementId: cohort.engagementId,
+          startDate: cohort.startDate,
+          endDate: cohort.endDate,
           staffAssignments: {
             createMany: { data: staffAssignments },
           },
