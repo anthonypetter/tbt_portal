@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Weekday } from "@generated/graphql";
 import { getErrorMsg } from "@utils/tests";
 import {
   calculateDurationInMinutes,
@@ -12,6 +11,7 @@ import {
   numberifyTime,
   printDuration,
   stringifyTime,
+  Weekday,
 } from "../dateTime";
 
 describe("dateTime", () => {
@@ -250,13 +250,13 @@ describe("dateTime", () => {
   describe("findWeekdayNumber()", () => {
     describe("happy path", () => {
       test("should find any day of the week", () => {
-        expect(findWeekdayNumber(Weekday.Sunday)).toBe(0);
-        expect(findWeekdayNumber(Weekday.Monday)).toBe(1);
-        expect(findWeekdayNumber(Weekday.Tuesday)).toBe(2);
-        expect(findWeekdayNumber(Weekday.Wednesday)).toBe(3);
-        expect(findWeekdayNumber(Weekday.Thursday)).toBe(4);
-        expect(findWeekdayNumber(Weekday.Friday)).toBe(5);
-        expect(findWeekdayNumber(Weekday.Saturday)).toBe(6);
+        expect(findWeekdayNumber(Weekday.SUNDAY)).toBe(0);
+        expect(findWeekdayNumber(Weekday.MONDAY)).toBe(1);
+        expect(findWeekdayNumber(Weekday.TUESDAY)).toBe(2);
+        expect(findWeekdayNumber(Weekday.WEDNESDAY)).toBe(3);
+        expect(findWeekdayNumber(Weekday.THURSDAY)).toBe(4);
+        expect(findWeekdayNumber(Weekday.FRIDAY)).toBe(5);
+        expect(findWeekdayNumber(Weekday.SATURDAY)).toBe(6);
       });
     });
 
