@@ -2,8 +2,8 @@ import { gql } from "@apollo/client";
 import { FlatEngagementsTableEngagementFragment } from "@generated/graphql";
 import { Routes } from "@utils/routes";
 import { ContextMenu } from "components/ContextMenu";
-import { DateText } from "components/Date";
 import { Link } from "components/Link";
+import { NormalizedDateText } from "components/NormalizedDateText";
 import { CONTEXT_MENU_ID, Table } from "components/Table";
 import { useMemo, useState } from "react";
 import { Cell, Column } from "react-table";
@@ -14,6 +14,8 @@ type Props = {
   engagements: FlatEngagementsTableEngagementFragment[];
   selectedEngagement: FlatEngagementsTableEngagementFragment | null;
 };
+
+const FlatEngagementsPageQueryName = "FlatEngagementsPage";
 
 /**
  * Different versions of an engagement are needed by this component's children.
@@ -32,7 +34,7 @@ FlatEngagementsTable.fragments = {
         name
       }
       ...DeleteEngagementModalEngagement
-      ...EditEngagementModalEngagement
+      ...EngagementForEditEngagementModal
     }
     ${DeleteEngagementModal.fragments.engagement}
     ${EditEngagementModal.fragments.engagement}
@@ -86,6 +88,7 @@ export function FlatEngagementsTable({
             ? engagements.find((e) => e.id === engagementIdToEdit) ?? null
             : null
         }
+        refetchQueries={[FlatEngagementsPageQueryName]}
       />
 
       <DeleteEngagementModal
@@ -97,6 +100,7 @@ export function FlatEngagementsTable({
             ? engagements.find((e) => e.id === engagementIdToDelete) ?? null
             : null
         }
+        refetchQueries={[FlatEngagementsPageQueryName]}
       />
     </div>
   );
@@ -157,14 +161,14 @@ export function usePrepEngagementData(
         Header: "Starts",
         accessor: "startDate",
         Cell: ({ row }: Cell<EngagementTableData>) => {
-          return <DateText timeMs={row.original.startDate} />;
+          return <NormalizedDateText timeMs={row.original.startDate} />;
         },
       },
       {
         Header: "Ends",
         accessor: "endDate",
         Cell: ({ row }: Cell<EngagementTableData>) => {
-          return <DateText timeMs={row.original.endDate} />;
+          return <NormalizedDateText timeMs={row.original.endDate} />;
         },
       },
       {

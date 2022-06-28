@@ -1,13 +1,15 @@
-import { useMemo, useState } from "react";
 import { Routes } from "@utils/routes";
-import { DateText } from "components/Date";
-import { CONTEXT_MENU_ID, Table } from "components/Table";
+import { ContextMenu } from "components/ContextMenu";
 import { Link } from "components/Link";
-import { Column, Cell } from "react-table";
+import { NormalizedDateText } from "components/NormalizedDateText";
+import { CONTEXT_MENU_ID, Table } from "components/Table";
+import { useMemo, useState } from "react";
+import { Cell, Column } from "react-table";
+import { DeleteEngagementModal } from "./DeleteEngagementModal";
 import { EditEngagementModal } from "./EditEngagementModal";
 import { QueryEngagements } from "./OrganizationEngagementsView";
-import { ContextMenu } from "components/ContextMenu";
-import { DeleteEngagementModal } from "./DeleteEngagementModal";
+
+const OrgDetailPageEngagementsQueryName = "OrgDetailPageEngagements";
 
 type Props = {
   engagements: QueryEngagements;
@@ -65,6 +67,7 @@ export function EngagementsTable({
             ? engagements.find((e) => e.id === engagementIdToEdit) ?? null
             : null
         }
+        refetchQueries={[OrgDetailPageEngagementsQueryName]}
       />
 
       <DeleteEngagementModal
@@ -76,6 +79,7 @@ export function EngagementsTable({
             ? engagements.find((e) => e.id === engagementIdToDelete) ?? null
             : null
         }
+        refetchQueries={[OrgDetailPageEngagementsQueryName]}
       />
     </div>
   );
@@ -121,14 +125,14 @@ function usePrepEngagementData(
         Header: "Starts",
         accessor: "startDate",
         Cell: ({ row }: Cell<EngagementTableData>) => {
-          return <DateText timeMs={row.original.startDate} />;
+          return <NormalizedDateText timeMs={row.original.startDate} />;
         },
       },
       {
         Header: "Ends",
         accessor: "endDate",
         Cell: ({ row }: Cell<EngagementTableData>) => {
-          return <DateText timeMs={row.original.endDate} />;
+          return <NormalizedDateText timeMs={row.original.endDate} />;
         },
       },
       {

@@ -1,31 +1,31 @@
 import { gql } from "apollo-server";
+import merge from "lodash/merge";
 import { parse } from "querystring";
 import { Context } from "../../context";
-import {
-  QueryCohortArgs,
-  QueryCohortsForOrgArgs,
-  MutationEditCohortArgs,
-  MutationDeleteCohortArgs,
-  MutationAddCohortArgs,
-} from "../__generated__/graphql";
-import { parseId } from "../../utils/numbers";
-import { CohortResolver } from "./CohortResolver";
-import { fromJust } from "../../utils/types";
+import { prisma } from "../../lib/prisma-client";
+import { WhereByService } from "../../services/whereby";
 import {
   calcStaffChanges,
   fromNewToInput,
 } from "../../utils/cohortStaffAssignments";
+import { parseId } from "../../utils/numbers";
+import { fromJust } from "../../utils/types";
 import {
-  typeDefs as CohortCsvDefs,
+  MutationAddCohortArgs,
+  MutationDeleteCohortArgs,
+  MutationEditCohortArgs,
+  QueryCohortArgs,
+  QueryCohortsForOrgArgs,
+} from "../__generated__/graphql";
+import { CohortResolver } from "./CohortResolver";
+import {
   resolvers as CohortCsvResolvers,
+  typeDefs as CohortCsvDefs,
 } from "./csv";
 import {
-  typeDefs as TeacherDefs,
   resolvers as TeacherResolvers,
+  typeDefs as TeacherDefs,
 } from "./teacher";
-import merge from "lodash/merge";
-import { WhereByService } from "../../services/whereby";
-import { prisma } from "@lib/prisma-client";
 
 /**
  * Type Defs
@@ -65,6 +65,13 @@ export const typeDefs = gql`
     timeZone: String!
   }
 
+  type CohortEvent {
+    startFloatingDateTime: Date!
+    durationMinutes: Int!
+    timeZone: String!
+    subject: AssignmentSubject!
+  }
+
   type Cohort {
     id: ID!
     createdAt: Date!
@@ -81,6 +88,7 @@ export const typeDefs = gql`
     engagement: Engagement!
     staffAssignments: [CohortStaffAssignment!]!
     schedule: [ScheduledMeeting!]!
+    events: [CohortEvent!]!
   }
 
   input NewCohortStaffAssignment {

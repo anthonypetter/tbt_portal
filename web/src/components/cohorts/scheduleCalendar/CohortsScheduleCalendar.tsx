@@ -1,30 +1,31 @@
 import { gql } from "@apollo/client";
+import {
+  AssignmentSubject,
+  CohortForCohortsScheduleCalendarFragment,
+} from "@generated/graphql";
 import { VideoCameraIcon } from "@heroicons/react/outline";
-import formatISO from "date-fns/formatISO";
-
-import { CohortForScheduleCalendarFragment } from "@generated/graphql";
+import { floatingToZonedDateTime } from "@utils/dateTime";
 import { formatGrade } from "@utils/strings";
 import { RoleText } from "components/RoleText";
-import {
-  ContentProps,
-  DEFAULT_EVENT_COLOR,
-  WeekCalendar,
-  WeekCalendarEvent
-} from "./WeekCalendar";
+import add from "date-fns/add";
+import formatISO from "date-fns/formatISO";
+import compact from "lodash/compact";
+import { DEFAULT_EVENT_COLOR, EventColor } from "./EventColor";
+import { CalendarEvent, ContentProps, WeekCalendar } from "./WeekCalendar";
 
 CohortsScheduleCalendar.fragments = {
   cohort: gql`
-    fragment CohortForScheduleCalendar on Cohort {
+    fragment CohortForCohortsScheduleCalendar on Cohort {
+      id
       name
       grade
       startDate
       endDate
-      schedule {
-        weekday
-        subject
-        startTime
-        endTime
+      events {
+        startFloatingDateTime
         timeZone
+        durationMinutes
+        subject
       }
       staffAssignments {
         user {
@@ -38,9 +39,9 @@ CohortsScheduleCalendar.fragments = {
       hostKey
       meetingId
       engagement {
+        name
         organization {
           name
-          description
         }
       }
     }
@@ -49,13 +50,19 @@ CohortsScheduleCalendar.fragments = {
 
 export type TargetUserIds = string[];
 
-type CohortsScheduleCalendarProps = {
-  cohorts: CohortForScheduleCalendarFragment[];  // Multiple cohorts with schedule data
+type Props = {
+  cohorts: CohortForCohortsScheduleCalendarFragment[]; // Multiple cohorts with schedule data
   targetUserIds?: TargetUserIds;
 };
 
-export function CohortsScheduleCalendar({ cohorts, targetUserIds = [] }: CohortsScheduleCalendarProps) {
-  const weekCalendarSchedule = buildWeekCalendarSchedule(cohorts, targetUserIds);
+export function CohortsScheduleCalendar({
+  cohorts,
+  targetUserIds = [],
+}: Props) {
+  const weekCalendarSchedule = buildWeekCalendarSchedule(
+    cohorts,
+    targetUserIds
+  );
 
   return (
     <WeekCalendar
@@ -71,54 +78,66 @@ export function CohortsScheduleCalendar({ cohorts, targetUserIds = [] }: Cohorts
 }
 
 function buildWeekCalendarSchedule(
-  cohorts: CohortForScheduleCalendarFragment[],
-  targetUserIds: TargetUserIds,
-): WeekCalendarEvent[] {
-  const weekCalendarEvents: WeekCalendarEvent[] = [];
+  cohorts: CohortForCohortsScheduleCalendarFragment[],
+  targetUserIds: TargetUserIds
+): CalendarEvent[] {
+  const events: CalendarEvent[] = cohorts.flatMap((cohort) => {
+    return compact(
+      cohort.events.map((event) => {
+        const subjectStaff = cohort.staffAssignments.filter(
+          (staffAssignment) => staffAssignment.subject === event.subject
+        );
 
-  // If provided a list of target user IDs filter cohorts for only events that
-  // include one of the provided user IDs.
-  cohorts.forEach((cohort, i) => {
-    cohort.schedule.forEach(meeting => {
-      // Build the list of assigned staff for this meeting.
-      const subjectStaff = cohort.staffAssignments.filter(
-        staffAssignment => staffAssignment.subject === meeting.subject,
-      );
+        // If provided a list of target user IDs filter cohorts for only events that
+        // include one of the provided user IDs.
+        if (
+          targetUserIds.length !== 0 &&
+          !subjectStaff.some((individual) =>
+            targetUserIds.includes(individual.user.id)
+          )
+        ) {
+          // Skip this event. None of the targeted user IDs are teaching this class.
+          return undefined;
+        }
 
-      // If an array of targetUserIds has been provided, check to make sure at
-      // least one of them is present.
-      if (targetUserIds.length !== 0 && !subjectStaff.some(
-        individual => targetUserIds.includes(individual.user.id)
-      )) {
-        // Skip this event. None of the targeted user IDs are teaching this class.
-        return;
-      }
+        const startDateTime = floatingToZonedDateTime(
+          new Date(event.startFloatingDateTime),
+          event.timeZone
+        );
 
-      weekCalendarEvents.push({
-        weekday: meeting.weekday,
-        timeZone: meeting.timeZone,
-        startTime: meeting.startTime,
-        endTime: meeting.endTime,
-        startDate: cohort.startDate,
-        endDate: cohort.endDate,
-        groupKey: `${i}+${meeting.subject}`,
-        title: `${meeting.subject}${cohort.grade && " (" + formatGrade(cohort.grade, false) + ")"} @ ${cohort.engagement.organization.name}`,
-        details: `${cohort.engagement.organization.description} | ${cohort.name}`,
-        content: ({ eventColor }) => (
-          <CohortEventDetails
-            staffAssignments={subjectStaff}
-            eventColor={eventColor}
-          />
-        ),
+        return {
+          startDateTime,
+          endDateTime: add(startDateTime, { minutes: event.durationMinutes }),
+          durationMinutes: event.durationMinutes,
+          timeZone: event.timeZone,
+          cohortStartDate: cohort.startDate,
+          cohortEndDate: cohort.endDate,
+
+          groupKey: createSubjectKey(cohort.id, event.subject),
+          title: `${event.subject}${
+            cohort.grade && " (" + formatGrade(cohort.grade, false) + ")"
+          } @ ${cohort.engagement.name}`,
+          details: cohort.name,
+          content: ({ eventColor }: { eventColor?: EventColor }) => (
+            <CohortEventDetails
+              staffAssignments={subjectStaff}
+              eventColor={eventColor}
+            />
+          ),
+        };
       })
-    });
+    );
   });
 
-  return weekCalendarEvents;
+  return events;
+}
+
+function createSubjectKey(cohortId: string, subject: AssignmentSubject) {
+  return `GROUP_${cohortId}_${subject}`;
 }
 
 type CohortEventDetailsProps = ContentProps & {
-  staffAssignments: CohortForScheduleCalendarFragment["staffAssignments"];
+  staffAssignments: CohortForCohortsScheduleCalendarFragment["staffAssignments"];
 };
 function CohortEventDetails({
   staffAssignments,
@@ -127,27 +146,26 @@ function CohortEventDetails({
   return (
     <div className="flex flex-col gap-2">
       {staffAssignments.length > 0 ? (
-        staffAssignments.sort(
-          (a, b) => {
+        staffAssignments
+          .sort((a, b) => {
             if (a.user.role === b.user.role) {
               // Sort by full name alphabetic if role is identical.
               return a.user.fullName < b.user.fullName ? -1 : 1;
             }
             // Sort by role reverse alphabetic (Tutor before Mentor).
             return a.user.role < b.user.role ? 1 : -1;
-          }
-        ).map(staffAssignment => (
-          <div key={staffAssignment.user.id} className="flex flex-col">
-            <p className={`text-sm text-semibold ${eventColor?.text}`}>
-              {staffAssignment.user.fullName}
-            </p>
-            <p className="text-xs italic text-gray-400">
-              <RoleText className="" role={staffAssignment.user.role} />
-              {" "}
-              ({staffAssignment.subject})
-            </p>
-          </div>
-        ))
+          })
+          .map((staffAssignment) => (
+            <div key={staffAssignment.user.id} className="flex flex-col">
+              <p className={`text-sm text-semibold ${eventColor?.text}`}>
+                {staffAssignment.user.fullName}
+              </p>
+              <p className="text-xs italic text-gray-400">
+                <RoleText className="" role={staffAssignment.user.role} /> (
+                {staffAssignment.subject})
+              </p>
+            </div>
+          ))
       ) : (
         <p className="text-sm text-semibold">
           No staff has been assigned to this subject.
@@ -159,9 +177,12 @@ function CohortEventDetails({
           className={`inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md ${eventColor.text} ${eventColor.bg} ${eventColor.bgHover} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500`}
         >
           Link to the Classroom
-          <VideoCameraIcon className="ml-2 -mr-0.5 h-4 w-4" aria-hidden="true" />
+          <VideoCameraIcon
+            className="ml-2 -mr-0.5 h-4 w-4"
+            aria-hidden="true"
+          />
         </button>
       </div>
     </div>
-  )
+  );
 }

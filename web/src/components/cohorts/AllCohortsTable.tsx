@@ -1,7 +1,6 @@
 import { gql } from "@apollo/client";
 import { CohortsPageQuery } from "@generated/graphql";
 import { ContextMenu } from "components/ContextMenu";
-import { DateText } from "components/Date";
 import { EditCohortModal } from "components/cohorts/EditCohortModal";
 import { DeleteCohortModal } from "components/cohorts/DeleteCohortModal";
 import { CONTEXT_MENU_ID, Table } from "components/Table";
@@ -9,6 +8,7 @@ import { useMemo, useState } from "react";
 import { Cell, Column } from "react-table";
 import { Link } from "components/Link";
 import { Routes } from "@utils/routes";
+import { NormalizedDateText } from "components/NormalizedDateText";
 
 AllCohortsTable.fragments = {
   cohorts: gql`
@@ -168,14 +168,14 @@ function usePrepCohortData(
         Header: "Starts",
         accessor: "startDate",
         Cell: ({ row }: Cell<CohortTableData>) => {
-          return <DateText timeMs={row.original.startDate} />;
+          return <NormalizedDateText timeMs={row.original.startDate} />;
         },
       },
       {
         Header: "Ends",
         accessor: "endDate",
         Cell: ({ row }: Cell<CohortTableData>) => {
-          return <DateText timeMs={row.original.endDate} />;
+          return <NormalizedDateText timeMs={row.original.endDate} />;
         },
       },
       {

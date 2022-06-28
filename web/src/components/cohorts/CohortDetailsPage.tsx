@@ -4,9 +4,9 @@ import { breadcrumbs } from "@utils/breadcrumbs";
 import { Routes } from "@utils/routes";
 import { AssignmentSubjectBadge } from "components/AssignmentSubjectBadge";
 import { Container } from "components/Container";
-import { DateText } from "components/Date";
 import { DetailsAside } from "components/DetailsAside";
 import { Link } from "components/Link";
+import { NormalizedDateText } from "components/NormalizedDateText";
 import { PageHeader } from "../PageHeader";
 
 CohortDetailsPage.fragments = {
@@ -77,11 +77,11 @@ export function CohortDetailsPage({ cohort }: Props) {
               <DetailsAside.Section title={cohort.name}>
                 <DetailsAside.Line
                   label="Starts"
-                  value={<DateText timeMs={cohort.startDate} />}
+                  value={<NormalizedDateText timeMs={cohort.startDate} />}
                 />
                 <DetailsAside.Line
                   label="Ends"
-                  value={<DateText timeMs={cohort.endDate} />}
+                  value={<NormalizedDateText timeMs={cohort.endDate} />}
                 />
                 <DetailsAside.Line label="Grade" value={cohort.grade} />
                 <DetailsAside.Line
@@ -137,7 +137,7 @@ export function CohortDetailsPage({ cohort }: Props) {
                 />
                 <DetailsAside.Line
                   label="Created At"
-                  value={<DateText timeMs={cohort.createdAt} />}
+                  value={<NormalizedDateText timeMs={cohort.createdAt} />}
                 />
               </DetailsAside.Section>
             </div>

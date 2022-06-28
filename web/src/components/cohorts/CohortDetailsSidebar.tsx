@@ -1,11 +1,10 @@
 import { gql } from "@apollo/client";
-import { CalendarIcon } from "@heroicons/react/outline";
-import { useState } from "react";
-
 import { CohortForDetailsSidebarFragment } from "@generated/graphql";
+import { CalendarIcon } from "@heroicons/react/outline";
 import { AssignmentSubjectBadge } from "components/AssignmentSubjectBadge";
-import { DateText } from "components/Date";
 import { DetailsAside } from "components/DetailsAside";
+import { NormalizedDateText } from "components/NormalizedDateText";
+import { useState } from "react";
 import { CohortsScheduleCalendarModal } from "./scheduleCalendar/CohortsScheduleCalendarModal";
 import { Routes } from "@utils/routes";
 import { Link } from "components/Link";
@@ -56,11 +55,11 @@ export function CohortDetailsSidebar({
         <DetailsAside.Section title="Details">
           <DetailsAside.Line
             label="Starts"
-            value={<DateText timeMs={selectedCohort.startDate} />}
+            value={<NormalizedDateText timeMs={selectedCohort.startDate} />}
           />
           <DetailsAside.Line
             label="Ends"
-            value={<DateText timeMs={selectedCohort.endDate} />}
+            value={<NormalizedDateText timeMs={selectedCohort.endDate} />}
           />
           <DetailsAside.Line label="Grade" value={selectedCohort.grade} />
           <DetailsAside.Line
@@ -75,22 +74,14 @@ export function CohortDetailsSidebar({
                   </Link>
 
                   <Link
-                    href={
-                      getRoomUrl(
-                        Routes.cohortRoom.href(selectedCohort.meetingRoom)
-                      ).host
-                    }
+                    href={Routes.cohortRoom.href(selectedCohort.id, "host")}
                   >
                     <p className="text-ellipsis text-blue-400 truncate">
                       Host Link
                     </p>
                   </Link>
                   <Link
-                    href={
-                      getRoomUrl(
-                        Routes.cohortRoom.href(selectedCohort.meetingRoom)
-                      ).student
-                    }
+                    href={Routes.cohortRoom.href(selectedCohort.id, "student")}
                   >
                     <p className="text-ellipsis text-blue-400 truncate">
                       Student Link
@@ -126,7 +117,7 @@ export function CohortDetailsSidebar({
           />
           <DetailsAside.Line
             label="Created"
-            value={<DateText timeMs={selectedCohort.createdAt} />}
+            value={<NormalizedDateText timeMs={selectedCohort.createdAt} />}
           />
           {DEV_SHOW_SCHEDULE_BUTTON && (
             <DetailsAside.Line
