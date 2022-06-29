@@ -8,6 +8,9 @@ import { Cell, Column } from "react-table";
 import { DeleteCohortModal } from "./DeleteCohortModal";
 import { EditCohortModal } from "./EditCohortModal";
 
+const ENGAGEMENT_DETAILS_PAGE_QUERY_NAME = "EngagementDetailsPage";
+const ORG_DETAIL_PAGE_COHORTS_NAME = "OrgDetailPageCohorts";
+
 CohortsTable.fragments = {
   cohort: gql`
     fragment CohortForTable on Cohort {
@@ -93,6 +96,10 @@ export function CohortsTable({
             ? cohorts.find((e) => e.id === cohortIdToEdit) ?? null
             : null
         }
+        refetchQueries={[
+          ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
+          ORG_DETAIL_PAGE_COHORTS_NAME,
+        ]}
       />
 
       <DeleteCohortModal
@@ -104,6 +111,10 @@ export function CohortsTable({
             : null
         }
         afterLeave={() => setCohortIdToDelete(null)}
+        refetchQueries={[
+          ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
+          ORG_DETAIL_PAGE_COHORTS_NAME,
+        ]}
       />
     </div>
   );
