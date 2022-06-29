@@ -1,4 +1,13 @@
+import { AssignmentSubject } from "@generated/graphql";
+import { prisma } from "@lib/prisma-client";
 import { AccountStatus, CohortEvent, Prisma } from "@prisma/client";
+import {
+  ChangeSet,
+  CohortStaffAssignmentInput,
+} from "@utils/cohortStaffAssignments";
+import { Time } from "@utils/dateTime";
+import { calculateRecurringEvents } from "@utils/recurrence";
+import { extractSchedules } from "@utils/schedules";
 import utcToZonedTime from "date-fns-tz/utcToZonedTime";
 import compareAsc from "date-fns/compareAsc";
 import endOfWeek from "date-fns/endOfWeek";
@@ -7,15 +16,6 @@ import compact from "lodash/compact";
 import flatten from "lodash/flatten";
 import uniqBy from "lodash/uniqBy";
 import { rrulestr } from "rrule";
-import { calculateRecurringEvents } from "src/utils/recurrence";
-import { prisma } from "../lib/prisma-client";
-import { AssignmentSubject } from "../schema/__generated__/graphql";
-import {
-  ChangeSet,
-  CohortStaffAssignmentInput,
-} from "../utils/cohortStaffAssignments";
-import { Time } from "../utils/dateTime";
-import { extractSchedules } from "../utils/schedules";
 
 const TAKE_LIMIT = 100;
 

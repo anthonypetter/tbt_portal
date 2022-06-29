@@ -1,3 +1,10 @@
+import {
+  MutationAddCohortArgs,
+  MutationDeleteCohortArgs,
+  MutationEditCohortArgs,
+  QueryCohortArgs,
+  QueryCohortsForOrgArgs,
+} from "@generated/graphql";
 import { gql } from "apollo-server";
 import merge from "lodash/merge";
 import { parse } from "querystring";
@@ -10,13 +17,6 @@ import {
 } from "../../utils/cohortStaffAssignments";
 import { parseId } from "../../utils/numbers";
 import { fromJust } from "../../utils/types";
-import {
-  MutationAddCohortArgs,
-  MutationDeleteCohortArgs,
-  MutationEditCohortArgs,
-  QueryCohortArgs,
-  QueryCohortsForOrgArgs,
-} from "../__generated__/graphql";
 import { CohortResolver } from "./CohortResolver";
 import {
   resolvers as CohortCsvResolvers,
