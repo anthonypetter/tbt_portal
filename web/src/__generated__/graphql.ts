@@ -372,17 +372,15 @@ export type AddCohortMutationVariables = Exact<{
 
 export type AddCohortMutation = { __typename?: 'Mutation', addCohort: { __typename?: 'Cohort', id: string, name: string } };
 
-export type EngagementForAddNewCohortModalFragment = { __typename?: 'Engagement', id: string, startDate?: any | null, endDate?: any | null };
+export type AddNewCohortModal_EngagementFragment = { __typename?: 'Engagement', id: string, startDate?: any | null, endDate?: any | null };
 
-export type AllCohortsTableFragment = { __typename?: 'Query', cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, createdAt: any, grade?: string | null, startDate?: any | null, endDate?: any | null, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } }, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
+export type AllCohortsTable_CohortsFragment = { __typename?: 'Query', cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, hostKey?: string | null, meetingRoom?: string | null, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } }, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
 export type CohortDetailsFragment = { __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, startDate?: any | null, endDate?: any | null, engagement: { __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organization: { __typename?: 'Organization', id: string, name: string } }, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> };
 
 export type CohortForDetailsSidebarFragment = { __typename?: 'Cohort', name: string, startDate?: any | null, endDate?: any | null, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, createdAt: any, id: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, role: UserRole } }>, events: Array<{ __typename?: 'CohortEvent', startFloatingDateTime: any, timeZone: string, durationMinutes: number, subject: AssignmentSubject }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } };
 
 export type CohortDetailsRoomFragment = { __typename?: 'Cohort', id: string, name: string, meetingRoom?: string | null, hostKey?: string | null, startDate?: any | null, endDate?: any | null };
-
-export type CohortsFragment = { __typename?: 'Query', cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, createdAt: any, grade?: string | null, startDate?: any | null, endDate?: any | null, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } }, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
 export type CohortForTableFragment = { __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, engagement: { __typename?: 'Engagement', id: string, name: string }, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> };
 
@@ -393,6 +391,8 @@ export type DeleteCohortMutationVariables = Exact<{
 
 export type DeleteCohortMutation = { __typename?: 'Mutation', deleteCohort: { __typename?: 'Cohort', id: string, name: string } };
 
+export type DeleteCohortModal_CohortFragment = { __typename?: 'Cohort', id: string, name: string, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', user: { __typename?: 'User', id: string } }> };
+
 export type EditCohortMutationVariables = Exact<{
   input: EditCohortInput;
 }>;
@@ -400,7 +400,11 @@ export type EditCohortMutationVariables = Exact<{
 
 export type EditCohortMutation = { __typename?: 'Mutation', editCohort: { __typename?: 'Cohort', id: string, name: string } };
 
+export type EditCohortModal_CohortFragment = { __typename?: 'Cohort', id: string, name: string, startDate?: any | null, endDate?: any | null, grade?: string | null, hostKey?: string | null, meetingRoom?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> };
+
 export type EngagementCohortsViewFragment = { __typename?: 'Engagement', id: string, startDate?: any | null, endDate?: any | null, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', name: string } }, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, events: Array<{ __typename?: 'CohortEvent', startFloatingDateTime: any, timeZone: string, durationMinutes: number, subject: AssignmentSubject }> }> };
+
+export type FlatCohortsPage_CohortsFragment = { __typename?: 'Query', cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, hostKey?: string | null, meetingRoom?: string | null, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } }, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
 export type CohortsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, events: Array<{ __typename?: 'CohortEvent', startFloatingDateTime: any, timeZone: string, durationMinutes: number, subject: AssignmentSubject }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> }> };
 
@@ -522,10 +526,10 @@ export type CohortDetailsRoomPageQueryVariables = Exact<{
 
 export type CohortDetailsRoomPageQuery = { __typename?: 'Query', cohort: { __typename?: 'Cohort', id: string, name: string, meetingRoom?: string | null, hostKey?: string | null, startDate?: any | null, endDate?: any | null } };
 
-export type CohortsPageQueryVariables = Exact<{ [key: string]: never; }>;
+export type FlatCohortsPageQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CohortsPageQuery = { __typename?: 'Query', cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, createdAt: any, grade?: string | null, startDate?: any | null, endDate?: any | null, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } }, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
+export type FlatCohortsPageQuery = { __typename?: 'Query', cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, hostKey?: string | null, meetingRoom?: string | null, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } }, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
 export type FlatEngagementsPageQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -616,12 +620,41 @@ export const CohortDetailsRoomFragmentDoc = gql`
   endDate
 }
     `;
-export const AllCohortsTableFragmentDoc = gql`
-    fragment AllCohortsTable on Query {
+export const EditCohortModal_CohortFragmentDoc = gql`
+    fragment EditCohortModal_Cohort on Cohort {
+  id
+  name
+  startDate
+  endDate
+  grade
+  hostKey
+  meetingRoom
+  staffAssignments {
+    user {
+      id
+      fullName
+      email
+    }
+    subject
+  }
+}
+    `;
+export const DeleteCohortModal_CohortFragmentDoc = gql`
+    fragment DeleteCohortModal_Cohort on Cohort {
+  id
+  name
+  staffAssignments {
+    user {
+      id
+    }
+  }
+}
+    `;
+export const AllCohortsTable_CohortsFragmentDoc = gql`
+    fragment AllCohortsTable_Cohorts on Query {
   cohorts {
     id
     name
-    createdAt
     grade
     startDate
     endDate
@@ -633,22 +666,17 @@ export const AllCohortsTableFragmentDoc = gql`
         name
       }
     }
-    staffAssignments {
-      user {
-        id
-        fullName
-        email
-      }
-      subject
-    }
+    ...EditCohortModal_Cohort
+    ...DeleteCohortModal_Cohort
   }
 }
-    `;
-export const CohortsFragmentDoc = gql`
-    fragment Cohorts on Query {
-  ...AllCohortsTable
+    ${EditCohortModal_CohortFragmentDoc}
+${DeleteCohortModal_CohortFragmentDoc}`;
+export const FlatCohortsPage_CohortsFragmentDoc = gql`
+    fragment FlatCohortsPage_Cohorts on Query {
+  ...AllCohortsTable_Cohorts
 }
-    ${AllCohortsTableFragmentDoc}`;
+    ${AllCohortsTable_CohortsFragmentDoc}`;
 export const CohortForTableFragmentDoc = gql`
     fragment CohortForTable on Cohort {
   id
@@ -731,8 +759,8 @@ export const CohortForDetailsSidebarFragmentDoc = gql`
   ...CohortForScheduleCalendarModal
 }
     ${CohortForScheduleCalendarModalFragmentDoc}`;
-export const EngagementForAddNewCohortModalFragmentDoc = gql`
-    fragment EngagementForAddNewCohortModal on Engagement {
+export const AddNewCohortModal_EngagementFragmentDoc = gql`
+    fragment AddNewCohortModal_Engagement on Engagement {
   id
   startDate
   endDate
@@ -744,11 +772,11 @@ export const EngagementCohortsViewFragmentDoc = gql`
     ...CohortForTable
     ...CohortForDetailsSidebar
   }
-  ...EngagementForAddNewCohortModal
+  ...AddNewCohortModal_Engagement
 }
     ${CohortForTableFragmentDoc}
 ${CohortForDetailsSidebarFragmentDoc}
-${EngagementForAddNewCohortModalFragmentDoc}`;
+${AddNewCohortModal_EngagementFragmentDoc}`;
 export const EngagementForEditEngagementModalFragmentDoc = gql`
     fragment EngagementForEditEngagementModal on Engagement {
   id
@@ -1539,38 +1567,38 @@ export function useCohortDetailsRoomPageLazyQuery(baseOptions?: Apollo.LazyQuery
 export type CohortDetailsRoomPageQueryHookResult = ReturnType<typeof useCohortDetailsRoomPageQuery>;
 export type CohortDetailsRoomPageLazyQueryHookResult = ReturnType<typeof useCohortDetailsRoomPageLazyQuery>;
 export type CohortDetailsRoomPageQueryResult = Apollo.QueryResult<CohortDetailsRoomPageQuery, CohortDetailsRoomPageQueryVariables>;
-export const CohortsPageDocument = gql`
-    query CohortsPage {
-  ...Cohorts
+export const FlatCohortsPageDocument = gql`
+    query FlatCohortsPage {
+  ...FlatCohortsPage_Cohorts
 }
-    ${CohortsFragmentDoc}`;
+    ${FlatCohortsPage_CohortsFragmentDoc}`;
 
 /**
- * __useCohortsPageQuery__
+ * __useFlatCohortsPageQuery__
  *
- * To run a query within a React component, call `useCohortsPageQuery` and pass it any options that fit your needs.
- * When your component renders, `useCohortsPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useFlatCohortsPageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFlatCohortsPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useCohortsPageQuery({
+ * const { data, loading, error } = useFlatCohortsPageQuery({
  *   variables: {
  *   },
  * });
  */
-export function useCohortsPageQuery(baseOptions?: Apollo.QueryHookOptions<CohortsPageQuery, CohortsPageQueryVariables>) {
+export function useFlatCohortsPageQuery(baseOptions?: Apollo.QueryHookOptions<FlatCohortsPageQuery, FlatCohortsPageQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<CohortsPageQuery, CohortsPageQueryVariables>(CohortsPageDocument, options);
+        return Apollo.useQuery<FlatCohortsPageQuery, FlatCohortsPageQueryVariables>(FlatCohortsPageDocument, options);
       }
-export function useCohortsPageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CohortsPageQuery, CohortsPageQueryVariables>) {
+export function useFlatCohortsPageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FlatCohortsPageQuery, FlatCohortsPageQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<CohortsPageQuery, CohortsPageQueryVariables>(CohortsPageDocument, options);
+          return Apollo.useLazyQuery<FlatCohortsPageQuery, FlatCohortsPageQueryVariables>(FlatCohortsPageDocument, options);
         }
-export type CohortsPageQueryHookResult = ReturnType<typeof useCohortsPageQuery>;
-export type CohortsPageLazyQueryHookResult = ReturnType<typeof useCohortsPageLazyQuery>;
-export type CohortsPageQueryResult = Apollo.QueryResult<CohortsPageQuery, CohortsPageQueryVariables>;
+export type FlatCohortsPageQueryHookResult = ReturnType<typeof useFlatCohortsPageQuery>;
+export type FlatCohortsPageLazyQueryHookResult = ReturnType<typeof useFlatCohortsPageLazyQuery>;
+export type FlatCohortsPageQueryResult = Apollo.QueryResult<FlatCohortsPageQuery, FlatCohortsPageQueryVariables>;
 export const FlatEngagementsPageDocument = gql`
     query FlatEngagementsPage {
   ...FlatEngagementsPage

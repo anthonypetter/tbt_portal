@@ -1,24 +1,24 @@
 import { gql } from "@apollo/client";
-import { CohortsPageQuery } from "@generated/graphql";
+import { FlatCohortsPage_CohortsFragment } from "@generated/graphql";
 import { breadcrumbs } from "@utils/breadcrumbs";
 import { Routes } from "@utils/routes";
 import { PageHeader } from "components/PageHeader";
 import { AllCohortsTable } from "./AllCohortsTable";
 
-CohortsPage.fragments = {
+FlatCohortsPage.fragments = {
   cohorts: gql`
-    fragment Cohorts on Query {
-      ...AllCohortsTable
+    fragment FlatCohortsPage_Cohorts on Query {
+      ...AllCohortsTable_Cohorts
     }
     ${AllCohortsTable.fragments.cohorts}
   `,
 };
 
 type Props = {
-  cohorts: NonNullable<CohortsPageQuery["cohorts"]>;
+  cohorts: NonNullable<FlatCohortsPage_CohortsFragment["cohorts"]>;
 };
 
-export function CohortsPage({ cohorts }: Props) {
+export function FlatCohortsPage({ cohorts }: Props) {
   return (
     <>
       <PageHeader
@@ -28,11 +28,13 @@ export function CohortsPage({ cohorts }: Props) {
           { name: "Cohorts", href: Routes.cohorts.href(), current: true },
         ]}
       />
-      <div className="mb-4 lg:mb-0">
+      <div className="mb-4 lg:mb-0 mt-8">
         <AllCohortsTable cohorts={cohorts} />
       </div>
     </>
   );
 }
 
-export type QueryAllCohorts = NonNullable<CohortsPageQuery["cohorts"]>[number];
+export type QueryAllCohorts = NonNullable<
+  FlatCohortsPage_CohortsFragment["cohorts"]
+>[number];
