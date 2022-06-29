@@ -1,25 +1,30 @@
-import { useState, useEffect } from "react";
 import { gql, useLazyQuery } from "@apollo/client";
-import { SearchOrganizationsQuery } from "@generated/graphql";
-import { Button } from "components/Button";
-import { OrganizationsTable } from "./OrganizationsTable";
-import { AddOrgModal } from "./AddOrgModal";
-import { Routes } from "@utils/routes";
+import {
+  OrganizationsPage_OrganizationsFragment,
+  SearchOrganizationsQuery,
+} from "@generated/graphql";
 import { HomeIcon, SearchIcon } from "@heroicons/react/solid";
-import { PageHeader } from "components/PageHeader";
+import { Routes } from "@utils/routes";
+import { Button } from "components/Button";
 import { Input } from "components/Input";
-import { useDebounce } from "use-debounce";
-import { triggerErrorToast } from "components/Toast";
+import { PageHeader } from "components/PageHeader";
 import { Spinner } from "components/Spinner";
+import { triggerErrorToast } from "components/Toast";
+import { useEffect, useState } from "react";
+import { useDebounce } from "use-debounce";
+import { AddOrgModal } from "./AddOrgModal";
+import { OrganizationsTable } from "./OrganizationsTable";
 
 const MIN_QUERY_LENGTH = 3;
 
 OrganizationsPage.fragments = {
   organizations: gql`
-    fragment Organizations on Query {
-      ...OrganizationsTable
+    fragment OrganizationsPage_Organizations on Query {
+      organizations {
+        ...OrganizationsTable_Organization
+      }
     }
-    ${OrganizationsTable.fragments.organizations}
+    ${OrganizationsTable.fragments.organization}
   `,
 };
 
@@ -28,21 +33,15 @@ const SEARCH_ORGANIZATIONS = gql`
     searchOrganizations(query: $query) {
       count
       results {
-        id,
-        name,
-        location,
-        description,
-        district,
-        subDistrict,
-        engagements {
-          id
-        }
+        ...OrganizationsTable_Organization
       }
     }
-  }`;
+  }
+  ${OrganizationsTable.fragments.organization}
+`;
 
 type Props = {
-  organizations: SearchOrganizationsQuery['searchOrganizations']['results'];
+  organizations: OrganizationsPage_OrganizationsFragment["organizations"];
   refetch: () => void;
 };
 
@@ -50,7 +49,9 @@ export function OrganizationsPage({ organizations, refetch }: Props) {
   const [showAddOrgModal, setShowAddOrgModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResultsMode, setSearchResultsMode] = useState(false);
-  const [searchResults, setSearchResults] = useState<SearchOrganizationsQuery['searchOrganizations']['results']>([]);
+  const [searchResults, setSearchResults] = useState<
+    SearchOrganizationsQuery["searchOrganizations"]["results"]
+  >([]);
 
   const { loading } = useOrganizationsSearch(searchQuery, {
     onCompleted: (results) => {
@@ -108,7 +109,9 @@ export function OrganizationsPage({ organizations, refetch }: Props) {
       </div>
 
       <div className="mb-4 lg:mb-0">
-        <OrganizationsTable organizations={searchResultsMode ? searchResults : organizations} />
+        <OrganizationsTable
+          organizations={searchResultsMode ? searchResults : organizations}
+        />
       </div>
 
       <AddOrgModal
@@ -122,7 +125,9 @@ export function OrganizationsPage({ organizations, refetch }: Props) {
 function useOrganizationsSearch(
   query: string,
   options: {
-    onCompleted: (results: SearchOrganizationsQuery['searchOrganizations']['results']) => void;
+    onCompleted: (
+      results: SearchOrganizationsQuery["searchOrganizations"]["results"]
+    ) => void;
   }
 ) {
   const [debouncedQuery] = useDebounce(query, 300);

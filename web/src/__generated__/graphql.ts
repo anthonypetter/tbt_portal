@@ -500,16 +500,16 @@ export type EngagementsViewFFragment = { __typename?: 'Organization', id: string
 
 export type CohortsViewFFragment = { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, events: Array<{ __typename?: 'CohortEvent', startFloatingDateTime: any, timeZone: string, durationMinutes: number, subject: AssignmentSubject }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> }> };
 
-export type OrganizationsFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> };
+export type OrganizationsPage_OrganizationsFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> };
 
 export type SearchOrganizationsQueryVariables = Exact<{
   query: Scalars['String'];
 }>;
 
 
-export type SearchOrganizationsQuery = { __typename?: 'Query', searchOrganizations: { __typename?: 'OrganizationsSearchResults', count: number, results: Array<{ __typename?: 'Organization', id: string, name: string, location?: string | null, description?: string | null, district?: string | null, subDistrict?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> } };
+export type SearchOrganizationsQuery = { __typename?: 'Query', searchOrganizations: { __typename?: 'OrganizationsSearchResults', count: number, results: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> } };
 
-export type OrganizationsTableFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> };
+export type OrganizationsTable_OrganizationFragment = { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> };
 
 export type CurrentUserQueryForMySchedulePageFragment = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string } | null, teacherCohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, events: Array<{ __typename?: 'CohortEvent', startFloatingDateTime: any, timeZone: string, durationMinutes: number, subject: AssignmentSubject }>, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, role: UserRole, fullName: string } }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> };
 
@@ -976,26 +976,26 @@ export const CohortsViewFFragmentDoc = gql`
   ...CohortsViewListF
 }
     ${CohortsViewListFFragmentDoc}`;
-export const OrganizationsTableFragmentDoc = gql`
-    fragment OrganizationsTable on Query {
-  organizations {
+export const OrganizationsTable_OrganizationFragmentDoc = gql`
+    fragment OrganizationsTable_Organization on Organization {
+  id
+  name
+  district
+  subDistrict
+  location
+  description
+  engagements {
     id
-    name
-    district
-    subDistrict
-    location
-    description
-    engagements {
-      id
-    }
   }
 }
     `;
-export const OrganizationsFragmentDoc = gql`
-    fragment Organizations on Query {
-  ...OrganizationsTable
+export const OrganizationsPage_OrganizationsFragmentDoc = gql`
+    fragment OrganizationsPage_Organizations on Query {
+  organizations {
+    ...OrganizationsTable_Organization
+  }
 }
-    ${OrganizationsTableFragmentDoc}`;
+    ${OrganizationsTable_OrganizationFragmentDoc}`;
 export const CurrentUserQueryForMySchedulePageFragmentDoc = gql`
     fragment CurrentUserQueryForMySchedulePage on Query {
   currentUser {
@@ -1448,19 +1448,11 @@ export const SearchOrganizationsDocument = gql`
   searchOrganizations(query: $query) {
     count
     results {
-      id
-      name
-      location
-      description
-      district
-      subDistrict
-      engagements {
-        id
-      }
+      ...OrganizationsTable_Organization
     }
   }
 }
-    `;
+    ${OrganizationsTable_OrganizationFragmentDoc}`;
 
 /**
  * __useSearchOrganizationsQuery__
@@ -1870,9 +1862,9 @@ export type OrgDetailPageEngagementsLazyQueryHookResult = ReturnType<typeof useO
 export type OrgDetailPageEngagementsQueryResult = Apollo.QueryResult<OrgDetailPageEngagementsQuery, OrgDetailPageEngagementsQueryVariables>;
 export const OrganizationsPageDocument = gql`
     query OrganizationsPage {
-  ...Organizations
+  ...OrganizationsPage_Organizations
 }
-    ${OrganizationsFragmentDoc}`;
+    ${OrganizationsPage_OrganizationsFragmentDoc}`;
 
 /**
  * __useOrganizationsPageQuery__
