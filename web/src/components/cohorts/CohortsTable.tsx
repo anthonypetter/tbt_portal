@@ -1,6 +1,8 @@
 import { gql } from "@apollo/client";
 import { CohortForTableFragment } from "@generated/graphql";
+import { Routes } from "@utils/routes";
 import { ContextMenu } from "components/ContextMenu";
+import { Link } from "components/Link";
 import { NormalizedDateText } from "components/NormalizedDateText";
 import { CONTEXT_MENU_ID, Table } from "components/Table";
 import { useMemo, useState } from "react";
@@ -151,16 +153,9 @@ function usePrepCohortData({
         accessor: "name",
         Cell: ({ row }: Cell<CohortTableData>) => {
           return (
-            <span className="font-semibold">{row.original.name}</span>
-            // <Link
-            //   href={Routes.cohort.href(
-            //     organizationId,
-            //     row.original.engagementId,
-            //     row.original.id
-            //   )}
-            // >
-            //   {row.original.name}
-            // </Link>
+            <Link href={Routes.cohortDetail.href(row.original.id)}>
+              {row.original.name}
+            </Link>
           );
         },
       },

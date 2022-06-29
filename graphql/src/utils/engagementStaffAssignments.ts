@@ -1,8 +1,7 @@
-import { EngagementStaffAssignment, AssignmentRole } from "@prisma/client";
+import { NewEngagementStaffAssignment } from "@generated/graphql";
+import { AssignmentRole, EngagementStaffAssignment } from "@prisma/client";
 import differenceWith from "lodash/differenceWith";
-import { NewEngagementStaffAssignment } from "src/schema/__generated__/graphql";
 import { parseId } from "./numbers";
-
 export type ChangeSet = {
   additions: EngagementStaffAssignmentInput[];
   removals: EngagementStaffAssignmentInput[];

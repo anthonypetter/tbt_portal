@@ -1,6 +1,6 @@
-import { parseId } from "../../utils/numbers";
+import { Organization } from "@generated/graphql";
 import { Context } from "../../context";
-import { Organization } from "../__generated__/graphql";
+import { parseId } from "../../utils/numbers";
 
 export const OrganizationResolver = {
   async engagements(

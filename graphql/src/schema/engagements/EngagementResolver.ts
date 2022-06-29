@@ -1,5 +1,5 @@
+import { ResolversParentTypes } from "@generated/graphql";
 import { Context } from "../../context";
-import { ResolversParentTypes } from "../__generated__/graphql";
 
 export const EngagementResolver = {
   async cohorts(
