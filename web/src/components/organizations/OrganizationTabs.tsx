@@ -1,9 +1,50 @@
+import { gql } from "@apollo/client";
+import {
+  OrganizationTabs_CohortsFragment,
+  OrganizationTabs_EngagementsFragment,
+} from "@generated/graphql";
 import { Routes } from "@utils/routes";
 import { assertUnreachable } from "@utils/types";
 import { OrganizationCohortsView } from "components/cohorts/OrganizationCohortsView";
 import { OrganizationEngagementsView } from "components/engagements/OrganizationEngagementsView";
 import { LinkTabs } from "components/LinkTabs";
-import { TabOrganization } from "./OrganizationDetailPage";
+
+OrganizationTabs.fragments = {
+  engagementsTab: gql`
+    fragment OrganizationTabs_Engagements on Organization {
+      id
+      name
+      district
+      subDistrict
+      location
+      description
+      ...OrganizationEngagementsView_EngagementsView
+    }
+    ${OrganizationEngagementsView.fragments.engagements}
+  `,
+  cohortsTab: gql`
+    fragment OrganizationTabs_Cohorts on Organization {
+      id
+      name
+      district
+      subDistrict
+      location
+      description
+      ...OrganizationCohortsView_CohortsView
+    }
+    ${OrganizationCohortsView.fragments.engagements}
+  `,
+};
+
+export type TabOrganization =
+  | {
+      tab: Tab.Engagements;
+      organization: OrganizationTabs_EngagementsFragment;
+    }
+  | {
+      tab: Tab.Cohorts;
+      organization: OrganizationTabs_CohortsFragment;
+    };
 
 export enum Tab {
   Engagements,
@@ -50,7 +91,11 @@ function TabView({ tabOrg }: TabViewProps) {
       return <OrganizationEngagementsView organization={tabOrg.organization} />;
 
     case Tab.Cohorts:
-      return <OrganizationCohortsView organization={tabOrg.organization} />;
+      return (
+        <OrganizationCohortsView
+          engagements={tabOrg.organization.engagements}
+        />
+      );
 
     default:
       assertUnreachable(tabOrg, "TabOrg.tab");

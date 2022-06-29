@@ -13,7 +13,7 @@ import type { GetServerSidePropsContext, NextPage } from "next";
 const GET_ORGANIZATION = gql`
   query OrgDetailPageCohorts($id: ID!) {
     organization(id: $id) {
-      ...CohortsViewF
+      ...OrganizationDetailPage_Cohorts
     }
   }
   ${OrganizationDetailPage.fragments.cohortsView}

@@ -14,8 +14,8 @@ import { AddEngagementModal } from "./AddNewEngagementModal";
 import { EngagementsTable } from "./EngagementsTable";
 
 OrganizationEngagementsView.fragments = {
-  engagementsList: gql`
-    fragment EngagementsViewListF on Organization {
+  engagements: gql`
+    fragment OrganizationEngagementsView_EngagementsView on Organization {
       engagements {
         id
         name

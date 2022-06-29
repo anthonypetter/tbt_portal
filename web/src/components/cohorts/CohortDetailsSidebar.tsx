@@ -1,20 +1,20 @@
 import { gql } from "@apollo/client";
-import { CohortForDetailsSidebarFragment } from "@generated/graphql";
+import { CohortDetailsSidebar_CohortFragment } from "@generated/graphql";
 import { CalendarIcon } from "@heroicons/react/outline";
+import { getRoomUrl } from "@utils/roomUrls";
+import { Routes } from "@utils/routes";
 import { AssignmentSubjectBadge } from "components/AssignmentSubjectBadge";
 import { DetailsAside } from "components/DetailsAside";
+import { Link } from "components/Link";
 import { NormalizedDateText } from "components/NormalizedDateText";
 import { useState } from "react";
 import { CohortsScheduleCalendarModal } from "./scheduleCalendar/CohortsScheduleCalendarModal";
-import { Routes } from "@utils/routes";
-import { Link } from "components/Link";
-import { getRoomUrl } from "@utils/roomUrls";
 
 const DEV_SHOW_SCHEDULE_BUTTON = true;
 
 CohortDetailsSidebar.fragments = {
   cohort: gql`
-    fragment CohortForDetailsSidebar on Cohort {
+    fragment CohortDetailsSidebar_Cohort on Cohort {
       name
       startDate
       endDate
@@ -36,7 +36,7 @@ CohortDetailsSidebar.fragments = {
 };
 
 type DetailsSidebarProps = {
-  selectedCohort: CohortForDetailsSidebarFragment | null;
+  selectedCohort: CohortDetailsSidebar_CohortFragment | null;
   onClose: () => void;
 };
 
