@@ -1,7 +1,7 @@
 import { ApolloError, gql, useMutation } from "@apollo/client";
 import {
   AddCohortMutation,
-  EngagementForAddNewCohortModalFragment,
+  AddNewCohortModal_EngagementFragment,
 } from "@generated/graphql";
 import {
   normalizeDateFromUTCDateTime,
@@ -20,10 +20,6 @@ import {
   AssignCohortTeachers,
   CohortStaffTeacher,
 } from "../staffAssignments/AssignCohortTeachers";
-import {
-  ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
-  ORG_DETAIL_PAGE_COHORTS_NAME,
-} from "./constants";
 
 const ADD_COHORT = gql`
   mutation AddCohort($input: AddCohortInput!) {
@@ -36,7 +32,7 @@ const ADD_COHORT = gql`
 
 AddNewCohortModal.fragments = {
   engagement: gql`
-    fragment EngagementForAddNewCohortModal on Engagement {
+    fragment AddNewCohortModal_Engagement on Engagement {
       id
       startDate
       endDate
@@ -45,10 +41,11 @@ AddNewCohortModal.fragments = {
 };
 
 type Props = {
-  engagement: EngagementForAddNewCohortModalFragment;
+  engagement: AddNewCohortModal_EngagementFragment;
   show: boolean;
   onCancel: () => void;
   onSuccess: () => void;
+  refetchQueries: string[];
 };
 
 export function AddNewCohortModal({
@@ -56,6 +53,7 @@ export function AddNewCohortModal({
   engagement,
   onCancel,
   onSuccess,
+  refetchQueries,
 }: Props) {
   return (
     <Modal
@@ -76,21 +74,24 @@ export function AddNewCohortModal({
         engagement={engagement}
         onCancel={onCancel}
         onSuccess={onSuccess}
+        refetchQueries={refetchQueries}
       />
     </Modal>
   );
 }
 
 type AddCohortModalBodyProps = {
-  engagement: EngagementForAddNewCohortModalFragment;
+  engagement: AddNewCohortModal_EngagementFragment;
   onCancel: () => void;
   onSuccess: () => void;
+  refetchQueries: string[];
 };
 
 export function AddCohortModalBody({
   engagement,
   onCancel,
   onSuccess,
+  refetchQueries,
 }: AddCohortModalBodyProps) {
   const cancelButtonRef = useRef(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -116,6 +117,10 @@ export function AddCohortModalBody({
   const [addCohort, { loading }] = useMutation<AddCohortMutation>(ADD_COHORT, {
     onError: (err: ApolloError) => setErrorMsg(err.message),
     onCompleted: onSuccess,
+    refetchQueries,
+    onQueryUpdated(observableQuery) {
+      observableQuery.refetch();
+    },
   });
 
   const onAddEngagement = async () => {
@@ -136,13 +141,6 @@ export function AddCohortModalBody({
             subject: t.subject,
           })),
         },
-      },
-      refetchQueries: [
-        ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
-        ORG_DETAIL_PAGE_COHORTS_NAME,
-      ],
-      onQueryUpdated(observableQuery) {
-        observableQuery.refetch();
       },
     });
   };
