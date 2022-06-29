@@ -39,7 +39,7 @@ type Props = {
 };
 
 const Organizations: NextPage<Props> = ({ organizations }) => {
-  const { data } = useQuery<OrganizationsPageQuery>(GET_ORGANIZATIONS, {
+  const { data, refetch } = useQuery<OrganizationsPageQuery>(GET_ORGANIZATIONS, {
     fetchPolicy: "network-only", // Used for first execution
     onError: (error) => {
       console.error(error);
@@ -53,7 +53,10 @@ const Organizations: NextPage<Props> = ({ organizations }) => {
   // To avoid loading flash, we'll preload the table using server-side fetched orgs.
   return (
     <AuthedLayout>
-      <OrganizationsPage organizations={data?.organizations ?? organizations} />
+      <OrganizationsPage
+        organizations={data?.organizations ?? organizations}
+        refetch={() => refetch()}
+      />
     </AuthedLayout>
   );
 };
