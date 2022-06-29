@@ -88,7 +88,12 @@ type TabViewProps = {
 function TabView({ tabOrg }: TabViewProps) {
   switch (tabOrg.tab) {
     case Tab.Engagements:
-      return <OrganizationEngagementsView organization={tabOrg.organization} />;
+      return (
+        <OrganizationEngagementsView
+          organizationId={tabOrg.organization.id}
+          engagements={tabOrg.organization.engagements}
+        />
+      );
 
     case Tab.Cohorts:
       return (
