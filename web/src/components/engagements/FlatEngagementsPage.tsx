@@ -1,5 +1,6 @@
 import { gql, useLazyQuery } from "@apollo/client";
 import {
+  FlatEngagementsPageFragment,
   FlatEngagementsTableEngagementFragment,
   SearchEngagementsQuery,
 } from "@generated/graphql";
@@ -39,7 +40,7 @@ const SEARCH_ENGAGEMENTS = gql`
 `;
 
 type Props = {
-  engagements: FlatEngagementsTableEngagementFragment[];
+  engagements: FlatEngagementsPageFragment["engagements"];
   refetch: () => void;
 };
 
