@@ -345,6 +345,7 @@ export type User = {
   email: Scalars['String'];
   fullName: Scalars['String'];
   id: Scalars['String'];
+  inviteSentAt?: Maybe<Scalars['Date']>;
   role: UserRole;
 };
 
@@ -504,9 +505,9 @@ export type InviteUserMutationVariables = Exact<{
 
 export type InviteUserMutation = { __typename?: 'Mutation', inviteUser: { __typename?: 'User', id: string } };
 
-export type UsersPageFragment = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, fullName: string, email: string, role: UserRole, accountStatus: AccountStatus }> };
+export type UsersPageFragment = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, fullName: string, email: string, role: UserRole, accountStatus: AccountStatus, inviteSentAt?: any | null }> };
 
-export type UsersTableFragment = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, fullName: string, email: string, role: UserRole, accountStatus: AccountStatus }> };
+export type UsersTableFragment = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, fullName: string, email: string, role: UserRole, accountStatus: AccountStatus, inviteSentAt?: any | null }> };
 
 export type CohortDetailsPageQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -573,7 +574,7 @@ export type OrganizationsPageQuery = { __typename?: 'Query', organizations: Arra
 export type UsersPageQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type UsersPageQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, fullName: string, email: string, role: UserRole, accountStatus: AccountStatus }> };
+export type UsersPageQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, fullName: string, email: string, role: UserRole, accountStatus: AccountStatus, inviteSentAt?: any | null }> };
 
 export const CohortDetailsFragmentDoc = gql`
     fragment CohortDetails on Cohort {
@@ -967,6 +968,7 @@ export const UsersTableFragmentDoc = gql`
     email
     role
     accountStatus
+    inviteSentAt
   }
 }
     `;
