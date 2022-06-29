@@ -1,6 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import {
-  CohortForTableFragment,
+  DeleteCohortModal_CohortFragment,
   DeleteCohortMutation,
 } from "@generated/graphql";
 import { ExclamationIcon } from "@heroicons/react/outline";
@@ -12,10 +12,6 @@ import { Spinner } from "components/Spinner";
 import { triggerSuccessToast } from "components/Toast";
 import pluralize from "pluralize";
 import React from "react";
-import {
-  ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
-  ORG_DETAIL_PAGE_COHORTS_NAME,
-} from "./constants";
 
 const DELETE_COHORT = gql`
   mutation DeleteCohort($id: ID!) {
@@ -26,11 +22,26 @@ const DELETE_COHORT = gql`
   }
 `;
 
+DeleteCohortModal.fragments = {
+  cohort: gql`
+    fragment DeleteCohortModal_Cohort on Cohort {
+      id
+      name
+      staffAssignments {
+        user {
+          id
+        }
+      }
+    }
+  `,
+};
+
 type Props = {
   show: boolean;
   closeModal: () => void;
-  cohort: CohortForTableFragment | null;
+  cohort: DeleteCohortModal_CohortFragment | null;
   afterLeave: () => void;
+  refetchQueries: string[];
 };
 
 export function DeleteCohortModal({
@@ -38,6 +49,7 @@ export function DeleteCohortModal({
   closeModal,
   cohort,
   afterLeave,
+  refetchQueries,
 }: Props) {
   return (
     <Modal
@@ -59,6 +71,7 @@ export function DeleteCohortModal({
           cohort={cohort}
           onCancel={closeModal}
           onSuccess={closeModal}
+          refetchQueries={refetchQueries}
         />
       ) : (
         <LoadingSkeleton className="h-56" />
@@ -68,25 +81,24 @@ export function DeleteCohortModal({
 }
 
 type DeleteCohortModalBodyProps = {
-  cohort: CohortForTableFragment;
+  cohort: DeleteCohortModal_CohortFragment;
   onCancel: () => void;
   onSuccess: () => void;
+  refetchQueries: string[];
 };
 
 export function DeleteCohortModalBody({
   cohort,
   onSuccess: onSuccessProp,
   onCancel,
+  refetchQueries,
 }: DeleteCohortModalBodyProps) {
   const { id, name, staffAssignments } = cohort;
 
   const [deleteCohort, { error, loading }] = useMutation<DeleteCohortMutation>(
     DELETE_COHORT,
     {
-      refetchQueries: [
-        ORG_DETAIL_PAGE_COHORTS_NAME,
-        ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
-      ],
+      refetchQueries,
       onQueryUpdated(observableQuery) {
         observableQuery.refetch();
       },

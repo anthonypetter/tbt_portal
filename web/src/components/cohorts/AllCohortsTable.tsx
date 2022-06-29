@@ -1,22 +1,29 @@
 import { gql } from "@apollo/client";
-import { CohortsPageQuery } from "@generated/graphql";
-import { ContextMenu } from "components/ContextMenu";
-import { EditCohortModal } from "components/cohorts/EditCohortModal";
+import { AllCohortsTable_CohortsFragment } from "@generated/graphql";
+import { Routes } from "@utils/routes";
 import { DeleteCohortModal } from "components/cohorts/DeleteCohortModal";
+import { EditCohortModal } from "components/cohorts/EditCohortModal";
+import { ContextMenu } from "components/ContextMenu";
+import { Link } from "components/Link";
+import { NormalizedDateText } from "components/NormalizedDateText";
 import { CONTEXT_MENU_ID, Table } from "components/Table";
 import { useMemo, useState } from "react";
 import { Cell, Column } from "react-table";
-import { Link } from "components/Link";
-import { Routes } from "@utils/routes";
-import { NormalizedDateText } from "components/NormalizedDateText";
+
+const FlatCohortsPageQueryName = "FlatCohortsPage";
+
+/**
+ * Different versions of a cohort are needed by this component's children.
+ * Since fragments merge repeated fields during composition, the final fragment will
+ * represent the exact cohort needed by this component.
+ */
 
 AllCohortsTable.fragments = {
   cohorts: gql`
-    fragment AllCohortsTable on Query {
+    fragment AllCohortsTable_Cohorts on Query {
       cohorts {
         id
         name
-        createdAt
         grade
         startDate
         endDate
@@ -28,21 +35,17 @@ AllCohortsTable.fragments = {
             name
           }
         }
-        staffAssignments {
-          user {
-            id
-            fullName
-            email
-          }
-          subject
-        }
+        ...EditCohortModal_Cohort
+        ...DeleteCohortModal_Cohort
       }
     }
+    ${EditCohortModal.fragments.cohort}
+    ${DeleteCohortModal.fragments.cohort}
   `,
 };
 
 type Props = {
-  cohorts: NonNullable<CohortsPageQuery["cohorts"]>;
+  cohorts: AllCohortsTable_CohortsFragment["cohorts"];
 };
 
 export function AllCohortsTable({ cohorts }: Props) {
@@ -78,6 +81,7 @@ export function AllCohortsTable({ cohorts }: Props) {
             ? cohorts.find((e) => e.id === cohortIdToEdit) ?? null
             : null
         }
+        refetchQueries={[FlatCohortsPageQueryName]}
       />
 
       <DeleteCohortModal
@@ -89,6 +93,7 @@ export function AllCohortsTable({ cohorts }: Props) {
             : null
         }
         afterLeave={() => setCohortIdToDelete(null)}
+        refetchQueries={[FlatCohortsPageQueryName]}
       />
     </>
   );
@@ -107,7 +112,7 @@ export type CohortTableData = {
 };
 
 function usePrepCohortData(
-  cohorts: NonNullable<CohortsPageQuery["cohorts"]>,
+  cohorts: AllCohortsTable_CohortsFragment["cohorts"],
   contextMenu: {
     onClickEdit: (cohort: CohortTableData) => void;
     onClickDelete: (cohort: CohortTableData) => void;
