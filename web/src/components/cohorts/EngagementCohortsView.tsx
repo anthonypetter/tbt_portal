@@ -11,6 +11,8 @@ import { AddNewCohortModal } from "./AddNewCohortModal";
 import { CohortDetailsSidebar } from "./CohortDetailsSidebar";
 import { CohortsTable } from "./CohortsTable";
 
+const ENGAGEMENT_DETAILS_PAGE_QUERY_NAME = "EngagementDetailsPage";
+
 EngagementCohortsView.fragments = {
   cohortsList: gql`
     fragment EngagementCohortsView on Engagement {
@@ -18,7 +20,7 @@ EngagementCohortsView.fragments = {
         ...CohortForTable
         ...CohortForDetailsSidebar
       }
-      ...EngagementForAddNewCohortModal
+      ...AddNewCohortModal_Engagement
     }
     ${CohortsTable.fragments.cohort}
     ${CohortDetailsSidebar.fragments.cohort}
@@ -85,6 +87,7 @@ export function EngagementCohortsView({ engagement }: Props) {
             show={showAddModal}
             onCancel={() => setShowAddModal(false)}
             onSuccess={() => setShowAddModal(false)}
+            refetchQueries={[ENGAGEMENT_DETAILS_PAGE_QUERY_NAME]}
           />
         </main>
 
