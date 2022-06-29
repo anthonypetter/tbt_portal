@@ -31,7 +31,7 @@ export function UsersTable({ users }: Props) {
   return <Table columns={columns} data={tableData} />;
 }
 
-type UserTableData = {
+export type UserTableData = {
   id: string;
   fullName: string;
   email: string;
@@ -82,7 +82,16 @@ function usePrepUserData(users: NonNullable<UsersPageQuery["users"]>): {
         accessor: "id",
         id: CONTEXT_MENU_ID,
         Cell: ({ row }: Cell<UserTableData>) => {
-          return <ContextMenu />;
+          const userData: UserTableData = {
+            id: row.values.id,
+            email: row.values.email,
+            fullName: row.values.fullName,
+            role: row.values.role,
+            accountStatus: row.values.accountStatus,
+            inviteSentAt: row.values.inviteSentAt
+          }
+
+          return <ContextMenu userData={userData} />;
         },
       },
     ];
