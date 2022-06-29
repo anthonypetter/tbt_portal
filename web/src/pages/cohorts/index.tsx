@@ -1,8 +1,19 @@
-import type { NextPage, GetServerSidePropsContext } from "next";
+import { ApolloQueryResult, gql, useQuery } from "@apollo/client";
+import { FlatCohortsPageQuery } from "@generated/graphql";
+import { getSession } from "@lib/apollo-client";
+import { processResult } from "@utils/apollo";
 import { getServerSideAuth } from "@utils/auth/server-side-auth";
 import { AuthedLayout } from "components/AuthedLayout";
-import { PageHeader } from "components/PageHeader";
-import { breadcrumbs } from "@utils/breadcrumbs";
+import { FlatCohortsPage } from "components/cohorts/FlatCohortsPage";
+import { triggerErrorToast } from "components/Toast";
+import type { GetServerSidePropsContext, NextPage } from "next";
+
+const GET_FLAT_COHORTS = gql`
+  query FlatCohortsPage {
+    ...FlatCohortsPage_Cohorts
+  }
+  ${FlatCohortsPage.fragments.cohorts}
+`;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const auth = await getServerSideAuth(context);
@@ -11,23 +22,40 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     return { redirect: auth.redirect };
   }
 
+  const { client } = getSession(auth.token);
+
+  const result: ApolloQueryResult<FlatCohortsPageQuery> = await client.query({
+    query: GET_FLAT_COHORTS,
+  });
+
+  const cohorts = processResult(result, (r) => r.cohorts);
+
   return {
     props: {
-      hello: "world",
+      cohorts,
     },
   };
 }
 
-const Cohorts: NextPage = () => {
+type Props = {
+  cohorts: NonNullable<FlatCohortsPageQuery["cohorts"]>;
+};
+
+const Cohorts: NextPage<Props> = ({ cohorts }) => {
+  const { data } = useQuery<FlatCohortsPageQuery>(GET_FLAT_COHORTS, {
+    fetchPolicy: "network-only", // Used for first execution
+    onError: (error) => {
+      console.error(error);
+      triggerErrorToast({
+        message: "Looks like something went wrong.",
+        sub: "We weren't able to fetch cohorts.",
+      });
+    },
+  });
+
   return (
     <AuthedLayout>
-      <PageHeader
-        title="Cohorts"
-        breadcrumbs={[
-          breadcrumbs.home(),
-          breadcrumbs.cohorts({ current: true }),
-        ]}
-      />
+      <FlatCohortsPage cohorts={data?.cohorts ?? cohorts} />
     </AuthedLayout>
   );
 };
