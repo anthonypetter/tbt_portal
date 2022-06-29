@@ -376,11 +376,11 @@ export type AddNewCohortModal_EngagementFragment = { __typename?: 'Engagement', 
 
 export type AllCohortsTable_CohortsFragment = { __typename?: 'Query', cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, hostKey?: string | null, meetingRoom?: string | null, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } }, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
-export type CohortDetailsTabs_CohortFragment = { __typename?: 'Cohort', id: string, name: string, startDate?: any | null, endDate?: any | null, createdAt: any, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, engagement: { __typename?: 'Engagement', name: string } };
+export type CohortDetailsTabs_CohortFragment = { __typename?: 'Cohort', id: string, name: string, startDate?: any | null, endDate?: any | null, createdAt: any, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } } };
 
-export type CohortDetailsView_CohortFragment = { __typename?: 'Cohort', id: string, name: string, createdAt: any, startDate?: any | null, endDate?: any | null, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, engagement: { __typename?: 'Engagement', name: string } };
+export type CohortDetailsView_CohortFragment = { __typename?: 'Cohort', id: string, name: string, createdAt: any, startDate?: any | null, endDate?: any | null, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } } };
 
-export type CohortDetailsPageDetails_CohortFragment = { __typename?: 'Cohort', id: string, name: string, startDate?: any | null, endDate?: any | null, createdAt: any, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, engagement: { __typename?: 'Engagement', name: string } };
+export type CohortDetailsPageDetails_CohortFragment = { __typename?: 'Cohort', id: string, name: string, startDate?: any | null, endDate?: any | null, createdAt: any, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } } };
 
 export type CohortForDetailsSidebarFragment = { __typename?: 'Cohort', name: string, startDate?: any | null, endDate?: any | null, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, createdAt: any, id: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, role: UserRole } }>, events: Array<{ __typename?: 'CohortEvent', startFloatingDateTime: any, timeZone: string, durationMinutes: number, subject: AssignmentSubject }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } };
 
@@ -521,7 +521,7 @@ export type CohortDetailsPageQueryVariables = Exact<{
 }>;
 
 
-export type CohortDetailsPageQuery = { __typename?: 'Query', cohort: { __typename?: 'Cohort', id: string, name: string, startDate?: any | null, endDate?: any | null, createdAt: any, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, engagement: { __typename?: 'Engagement', name: string } } };
+export type CohortDetailsPageQuery = { __typename?: 'Query', cohort: { __typename?: 'Cohort', id: string, name: string, startDate?: any | null, endDate?: any | null, createdAt: any, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } } } };
 
 export type CohortDetailsRoomPageQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -595,7 +595,12 @@ export const CohortDetailsView_CohortFragmentDoc = gql`
   hostKey
   meetingId
   engagement {
+    id
     name
+    organization {
+      id
+      name
+    }
   }
 }
     `;
