@@ -292,7 +292,9 @@ export type Organization = {
 export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']>;
+  cohort: Cohort;
   cohorts: Array<Cohort>;
+  cohortsForOrg: Array<Cohort>;
   currentUser?: Maybe<User>;
   engagement?: Maybe<Engagement>;
   engagements: Array<Engagement>;
@@ -305,7 +307,12 @@ export type Query = {
 };
 
 
-export type QueryCohortsArgs = {
+export type QueryCohortArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryCohortsForOrgArgs = {
   organizationId: Scalars['ID'];
 };
 
@@ -593,7 +600,9 @@ export type OrganizationResolvers<ContextType = any, ParentType extends Resolver
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  cohorts?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType, RequireFields<QueryCohortsArgs, 'organizationId'>>;
+  cohort?: Resolver<ResolversTypes['Cohort'], ParentType, ContextType, RequireFields<QueryCohortArgs, 'id'>>;
+  cohorts?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType>;
+  cohortsForOrg?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType, RequireFields<QueryCohortsForOrgArgs, 'organizationId'>>;
   currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   engagement?: Resolver<Maybe<ResolversTypes['Engagement']>, ParentType, ContextType, RequireFields<QueryEngagementArgs, 'id'>>;
   engagements?: Resolver<Array<ResolversTypes['Engagement']>, ParentType, ContextType>;

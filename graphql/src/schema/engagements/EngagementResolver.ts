@@ -7,7 +7,7 @@ export const EngagementResolver = {
     _args: undefined,
     { CohortService }: Context
   ) {
-    return CohortService.getCohorts(parent.id);
+    return CohortService.getCohortsForEngagement(parent.id);
   },
 
   async staffAssignments(

@@ -1,5 +1,8 @@
 import { ApolloError, gql, useMutation } from "@apollo/client";
-import { CohortForTableFragment, EditCohortMutation } from "@generated/graphql";
+import {
+  EditCohortModal_CohortFragment,
+  EditCohortMutation,
+} from "@generated/graphql";
 import {
   normalizeDateFromUTCDateTime,
   normalizeToUtcDate,
@@ -19,10 +22,6 @@ import {
   CohortStaffTeacher,
   toCohortStaffTeacher,
 } from "../staffAssignments/AssignCohortTeachers";
-import {
-  ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
-  ORG_DETAIL_PAGE_COHORTS_NAME,
-} from "./constants";
 
 const EDIT_COHORT = gql`
   mutation EditCohort($input: EditCohortInput!) {
@@ -33,11 +32,44 @@ const EDIT_COHORT = gql`
   }
 `;
 
+EditCohortModal.fragments = {
+  cohort: gql`
+    fragment EditCohortModal_Cohort on Cohort {
+      id
+      name
+      startDate
+      endDate
+      grade
+      hostKey
+      meetingRoom
+      staffAssignments {
+        user {
+          id
+          fullName
+          email
+        }
+        subject
+      }
+    }
+  `,
+};
+
 type Props = {
   show: boolean;
   closeModal: () => void;
-  cohort: CohortForTableFragment | null;
+  cohort: EditCohortModal_CohortFragment | null;
   afterLeave: () => void;
+  /**
+   * Use of refetchQueries is a temporary solution.
+   * Info: https://www.apollographql.com/docs/react/data/refetching/
+   *
+   * We shouldn't need to specify query names. Apollo should know what "active" queries
+   * need to be refeched.  There's a task to dig into this issue. We can also
+   * consider optimistically updating the cache directly as per apollo docs. Regardless,
+   * explicitly passing in query names will not scale.
+   *
+   */
+  refetchQueries: string[];
 };
 
 export function EditCohortModal({
@@ -45,6 +77,7 @@ export function EditCohortModal({
   closeModal,
   cohort,
   afterLeave,
+  refetchQueries,
 }: Props) {
   return (
     <Modal
@@ -67,6 +100,7 @@ export function EditCohortModal({
           onCancel={() => closeModal()}
           onSuccess={() => closeModal()}
           cohort={cohort}
+          refetchQueries={refetchQueries}
         />
       ) : (
         <LoadingSkeleton />
@@ -78,13 +112,15 @@ export function EditCohortModal({
 type EditCohortModalBodyProps = {
   onCancel: () => void;
   onSuccess: () => void;
-  cohort: CohortForTableFragment;
+  cohort: EditCohortModal_CohortFragment;
+  refetchQueries: string[];
 };
 
 export function EditCohortModalBody({
   onCancel,
   onSuccess,
   cohort,
+  refetchQueries,
 }: EditCohortModalBodyProps) {
   const cancelButtonRef = useRef(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -118,6 +154,10 @@ export function EditCohortModalBody({
     {
       onError: (err: ApolloError) => setErrorMsg(err.message),
       onCompleted: onSuccess,
+      refetchQueries,
+      onQueryUpdated(observableQuery) {
+        observableQuery.refetch();
+      },
     }
   );
 
@@ -139,13 +179,6 @@ export function EditCohortModalBody({
             subject: t.subject,
           })),
         },
-      },
-      refetchQueries: [
-        ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
-        ORG_DETAIL_PAGE_COHORTS_NAME,
-      ],
-      onQueryUpdated(observableQuery) {
-        observableQuery.refetch();
       },
     });
   };

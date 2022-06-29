@@ -1,58 +1,54 @@
 import { gql } from "@apollo/client";
-import { CohortForTableFragment } from "@generated/graphql";
+import { AllCohortsTable_CohortsFragment } from "@generated/graphql";
+import { Routes } from "@utils/routes";
+import { DeleteCohortModal } from "components/cohorts/DeleteCohortModal";
+import { EditCohortModal } from "components/cohorts/EditCohortModal";
 import { ContextMenu } from "components/ContextMenu";
+import { Link } from "components/Link";
 import { NormalizedDateText } from "components/NormalizedDateText";
 import { CONTEXT_MENU_ID, Table } from "components/Table";
 import { useMemo, useState } from "react";
 import { Cell, Column } from "react-table";
-import { DeleteCohortModal } from "./DeleteCohortModal";
-import { EditCohortModal } from "./EditCohortModal";
 
-const ENGAGEMENT_DETAILS_PAGE_QUERY_NAME = "EngagementDetailsPage";
-const ORG_DETAIL_PAGE_COHORTS_NAME = "OrgDetailPageCohorts";
+const FlatCohortsPageQueryName = "FlatCohortsPage";
 
-CohortsTable.fragments = {
-  cohort: gql`
-    fragment CohortForTable on Cohort {
-      id
-      createdAt
-      name
-      grade
-      meetingRoom
-      hostKey
-      exempt
-      startDate
-      endDate
-      engagementId
-      engagement {
+/**
+ * Different versions of a cohort are needed by this component's children.
+ * Since fragments merge repeated fields during composition, the final fragment will
+ * represent the exact cohort needed by this component.
+ */
+
+AllCohortsTable.fragments = {
+  cohorts: gql`
+    fragment AllCohortsTable_Cohorts on Query {
+      cohorts {
         id
         name
-      }
-      staffAssignments {
-        user {
+        grade
+        startDate
+        endDate
+        engagement {
           id
-          fullName
-          email
+          name
+          organization {
+            id
+            name
+          }
         }
-        subject
+        ...EditCohortModal_Cohort
+        ...DeleteCohortModal_Cohort
       }
     }
+    ${EditCohortModal.fragments.cohort}
+    ${DeleteCohortModal.fragments.cohort}
   `,
 };
 
 type Props = {
-  organizationId: string;
-  cohorts: CohortForTableFragment[];
-  onRowClick: (cohortId: string) => void;
-  selectedCohort: CohortForTableFragment | null;
+  cohorts: AllCohortsTable_CohortsFragment["cohorts"];
 };
 
-export function CohortsTable({
-  organizationId,
-  cohorts,
-  onRowClick,
-  selectedCohort,
-}: Props) {
+export function AllCohortsTable({ cohorts }: Props) {
   const [cohortIdToEdit, setCohortIdToEdit] = useState<string | null>(null);
   const [cohortIdToDelete, setCohortIdToDelete] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
@@ -60,33 +56,22 @@ export function CohortsTable({
 
   const contextMenu = useMemo(() => {
     return {
-      onClickEdit(cohort: CohortTableData) {
-        setCohortIdToEdit(cohort.id);
-        setShowEditModal(true);
-      },
       onClickDelete(cohort: CohortTableData) {
         setCohortIdToDelete(cohort.id);
         setShowDeleteModal(true);
       },
+      onClickEdit(cohort: CohortTableData) {
+        setCohortIdToEdit(cohort.id);
+        setShowEditModal(true);
+      },
     };
   }, []);
 
-  const { data, columns } = usePrepCohortData({
-    organizationId,
-    cohorts,
-    contextMenu,
-  });
+  const { columns, data: tableData } = usePrepCohortData(cohorts, contextMenu);
 
   return (
-    <div className="min-w-full">
-      <Table
-        columns={columns}
-        data={data}
-        border={false}
-        onRowClick={(row) => onRowClick(row.original.id)}
-        selectedId={selectedCohort?.id}
-      />
-
+    <>
+      <Table columns={columns} data={tableData} border={false} />
       <EditCohortModal
         show={showEditModal}
         closeModal={() => setShowEditModal(false)}
@@ -96,10 +81,7 @@ export function CohortsTable({
             ? cohorts.find((e) => e.id === cohortIdToEdit) ?? null
             : null
         }
-        refetchQueries={[
-          ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
-          ORG_DETAIL_PAGE_COHORTS_NAME,
-        ]}
+        refetchQueries={[FlatCohortsPageQueryName]}
       />
 
       <DeleteCohortModal
@@ -111,12 +93,9 @@ export function CohortsTable({
             : null
         }
         afterLeave={() => setCohortIdToDelete(null)}
-        refetchQueries={[
-          ENGAGEMENT_DETAILS_PAGE_QUERY_NAME,
-          ORG_DETAIL_PAGE_COHORTS_NAME,
-        ]}
+        refetchQueries={[FlatCohortsPageQueryName]}
       />
-    </div>
+    </>
   );
 }
 
@@ -126,21 +105,19 @@ export type CohortTableData = {
   grade?: string | null;
   startDate?: number | null;
   endDate?: number | null;
-  engagementId: string;
+  organizationName?: string | null;
+  organizationId?: string | null;
+  engagementName?: string | null;
+  engagementId?: string | null;
 };
 
-function usePrepCohortData({
-  organizationId,
-  cohorts,
-  contextMenu,
-}: {
-  organizationId: string;
-  cohorts: CohortForTableFragment[];
+function usePrepCohortData(
+  cohorts: AllCohortsTable_CohortsFragment["cohorts"],
   contextMenu: {
     onClickEdit: (cohort: CohortTableData) => void;
     onClickDelete: (cohort: CohortTableData) => void;
-  };
-}): {
+  }
+): {
   data: CohortTableData[];
   columns: Column<CohortTableData>[];
 } {
@@ -151,16 +128,40 @@ function usePrepCohortData({
         accessor: "name",
         Cell: ({ row }: Cell<CohortTableData>) => {
           return (
-            <span className="font-semibold">{row.original.name}</span>
-            // <Link
-            //   href={Routes.cohort.href(
-            //     organizationId,
-            //     row.original.engagementId,
-            //     row.original.id
-            //   )}
-            // >
-            //   {row.original.name}
-            // </Link>
+            <Link href={Routes.cohortDetail.href(row.original.id)}>
+              {row.original.name}
+            </Link>
+          );
+        },
+      },
+      {
+        Header: "Organization",
+        accessor: "organizationName",
+        Cell: ({ row }: Cell<CohortTableData>) => {
+          return (
+            <Link
+              href={Routes.org.engagements.href(
+                `${row.original.organizationId}`
+              )}
+            >
+              {row.original.organizationName}
+            </Link>
+          );
+        },
+      },
+      {
+        Header: "Engagement",
+        accessor: "engagementName",
+        Cell: ({ row }: Cell<CohortTableData>) => {
+          return (
+            <Link
+              href={Routes.engagement.cohorts.href(
+                `${row.original.organizationId}`,
+                `${row.original.engagementId}`
+              )}
+            >
+              {row.original.engagementName}
+            </Link>
           );
         },
       },
@@ -198,7 +199,7 @@ function usePrepCohortData({
     ];
   }, [contextMenu]);
 
-  const stringifiedCohorts = JSON.stringify(cohorts);
+  const stringfiedCohorts = JSON.stringify(cohorts);
 
   const data = useMemo(() => {
     return cohorts.map((cohort) => {
@@ -208,11 +209,14 @@ function usePrepCohortData({
         grade: cohort.grade,
         startDate: cohort.startDate,
         endDate: cohort.endDate,
-        engagementId: cohort.engagementId,
+        organizationName: cohort?.engagement?.organization?.name,
+        organizationId: cohort?.engagement?.organization?.id,
+        engagementName: cohort?.engagement?.name,
+        engagementId: cohort?.engagement.id,
       };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stringifiedCohorts]);
+  }, [stringfiedCohorts]);
 
   return { data, columns };
 }

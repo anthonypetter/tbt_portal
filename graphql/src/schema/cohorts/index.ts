@@ -2,7 +2,8 @@ import {
   MutationAddCohortArgs,
   MutationDeleteCohortArgs,
   MutationEditCohortArgs,
-  QueryCohortsArgs,
+  QueryCohortArgs,
+  QueryCohortsForOrgArgs,
 } from "@generated/graphql";
 import { gql } from "apollo-server";
 import merge from "lodash/merge";
@@ -99,7 +100,9 @@ export const typeDefs = gql`
   }
 
   extend type Query {
-    cohorts(organizationId: ID!): [Cohort!]!
+    cohortsForOrg(organizationId: ID!): [Cohort!]!
+    cohorts: [Cohort!]!
+    cohort(id: ID!): Cohort!
   }
 
   extend type Mutation {
@@ -112,10 +115,27 @@ export const typeDefs = gql`
 /**
  * Query Resolvers
  */
-
 async function cohorts(
   _parent: undefined,
-  { organizationId }: QueryCohortsArgs,
+  _args: undefined,
+  { authedUser, AuthorizationService, CohortService }: Context
+) {
+  AuthorizationService.assertIsAdmin(authedUser);
+  return CohortService.getAllCohorts();
+}
+
+async function cohort(
+  _parent: undefined,
+  { id }: QueryCohortArgs,
+  { authedUser, AuthorizationService, CohortService }: Context
+) {
+  AuthorizationService.assertIsAdmin(authedUser);
+  return CohortService.getCohort(parseId(id));
+}
+
+async function cohortsForOrg(
+  _parent: undefined,
+  { organizationId }: QueryCohortsForOrgArgs,
   { authedUser, AuthorizationService, CohortService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
@@ -132,7 +152,6 @@ async function editCohort(
   { authedUser, AuthorizationService, CohortService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
-
   if (input.name === null) {
     throw new Error("Cohort name cannot be null.");
   }
@@ -233,6 +252,8 @@ export const resolvers = merge(
   {
     Query: {
       cohorts,
+      cohort,
+      cohortsForOrg,
     },
     Mutation: {
       editCohort,
