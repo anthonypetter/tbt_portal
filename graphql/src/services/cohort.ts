@@ -90,7 +90,7 @@ type EditInput = {
   id: number;
   name?: string;
   startDate?: Date | null;
-  endDate: Date;
+  endDate?: Date | null;
   grade?: string | null;
   hostKey?: string | null;
   meetingRoom?: string | null;
@@ -165,7 +165,7 @@ type AddCohortInput = {
   name: string;
   engagementId: number;
   startDate?: Date;
-  endDate: Date;
+  endDate?: Date;
   grade?: string | null;
   hostKey?: string | null;
   meetingRoom?: string | null;
@@ -217,7 +217,6 @@ type CsvCohortStaff = {
 export type CsvCohortInput = {
   cohortName: string;
   grade: string;
-  endDate: Date;
   monday: SubjectScheduleInput[];
   tuesday: SubjectScheduleInput[];
   wednesday: SubjectScheduleInput[];
@@ -249,7 +248,6 @@ async function saveCsvCohortsData(
       name: cohort.cohortName,
       engagementId,
       grade: cohort.grade,
-      endDate: cohort.endDate,
       staffAssignments: cohort.staffAssignments,
       startDate: cohort.cohortStartDate,
       endDate: cohort.cohortEndDate,
@@ -350,7 +348,8 @@ async function saveCsvCohortsData(
   );
   for (let i = 0; i < cohortsWithNoRoom.length; i++) {
     const cohort = cohortsCreated[i];
-    await createRoomForCohort(cohort.engagementId, cohort.id, cohort.endDate);
+    if (cohort.endDate)
+      await createRoomForCohort(cohort.engagementId, cohort.id, cohort.endDate);
   }
 
   return {
@@ -376,7 +375,7 @@ async function getStaffAssignments(cohortId: number) {
  */
 
 type TeacherCohortsFilter = {
-  endDate: Prisma.DateTimeFilter;
+  endDate: Prisma.DateTimeNullableFilter;
 };
 
 async function getTeacherCohorts(userId: number, filter: TeacherCohortsFilter) {
