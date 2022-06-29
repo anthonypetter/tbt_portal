@@ -6,12 +6,13 @@ import {
 } from "@heroicons/react/outline";
 import { SearchIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
+import { noop } from "lodash";
 import { Fragment } from "react";
 import { useAuth } from "./auth/AuthProvider";
 import { RoleText } from "./RoleText";
 
 type Props = {
-  setSidebarOpen: (data: boolean) => void;
+  setSidebarOpen?: (data: boolean) => void;
 };
 
 export function AuthHeader({ setSidebarOpen }: Props) {
@@ -20,7 +21,7 @@ export function AuthHeader({ setSidebarOpen }: Props) {
       <button
         type="button"
         className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 md:hidden"
-        onClick={() => setSidebarOpen(true)}
+        onClick={setSidebarOpen ? () => setSidebarOpen(true) : noop}
       >
         <span className="sr-only">Open sidebar</span>
         <MenuAlt2Icon className="h-6 w-6" aria-hidden="true" />
