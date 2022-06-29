@@ -502,6 +502,13 @@ export type CohortsViewFFragment = { __typename?: 'Organization', id: string, na
 
 export type OrganizationsFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> };
 
+export type SearchOrganizationsQueryVariables = Exact<{
+  query: Scalars['String'];
+}>;
+
+
+export type SearchOrganizationsQuery = { __typename?: 'Query', searchOrganizations: { __typename?: 'OrganizationsSearchResults', count: number, results: Array<{ __typename?: 'Organization', id: string, name: string, description?: string | null, district?: string | null, subDistrict?: string | null }> } };
+
 export type OrganizationsTableFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> };
 
 export type CurrentUserQueryForMySchedulePageFragment = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string } | null, teacherCohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, events: Array<{ __typename?: 'CohortEvent', startFloatingDateTime: any, timeZone: string, durationMinutes: number, subject: AssignmentSubject }>, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, role: UserRole, fullName: string } }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> };
@@ -1436,6 +1443,48 @@ export function useEditOrganizationMutation(baseOptions?: Apollo.MutationHookOpt
 export type EditOrganizationMutationHookResult = ReturnType<typeof useEditOrganizationMutation>;
 export type EditOrganizationMutationResult = Apollo.MutationResult<EditOrganizationMutation>;
 export type EditOrganizationMutationOptions = Apollo.BaseMutationOptions<EditOrganizationMutation, EditOrganizationMutationVariables>;
+export const SearchOrganizationsDocument = gql`
+    query SearchOrganizations($query: String!) {
+  searchOrganizations(query: $query) {
+    count
+    results {
+      id
+      name
+      description
+      district
+      subDistrict
+    }
+  }
+}
+    `;
+
+/**
+ * __useSearchOrganizationsQuery__
+ *
+ * To run a query within a React component, call `useSearchOrganizationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchOrganizationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchOrganizationsQuery({
+ *   variables: {
+ *      query: // value for 'query'
+ *   },
+ * });
+ */
+export function useSearchOrganizationsQuery(baseOptions: Apollo.QueryHookOptions<SearchOrganizationsQuery, SearchOrganizationsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchOrganizationsQuery, SearchOrganizationsQueryVariables>(SearchOrganizationsDocument, options);
+      }
+export function useSearchOrganizationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchOrganizationsQuery, SearchOrganizationsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchOrganizationsQuery, SearchOrganizationsQueryVariables>(SearchOrganizationsDocument, options);
+        }
+export type SearchOrganizationsQueryHookResult = ReturnType<typeof useSearchOrganizationsQuery>;
+export type SearchOrganizationsLazyQueryHookResult = ReturnType<typeof useSearchOrganizationsLazyQuery>;
+export type SearchOrganizationsQueryResult = Apollo.QueryResult<SearchOrganizationsQuery, SearchOrganizationsQueryVariables>;
 export const SearchUsersDocument = gql`
     query SearchUsers($query: String!) {
   searchUsers(query: $query) {
