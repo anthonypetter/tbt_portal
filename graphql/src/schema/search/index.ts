@@ -3,6 +3,7 @@ import { Context } from "../../context";
 import {
   QuerySearchUsersArgs,
   QuerySearchEngagementsArgs,
+  QuerySearchOrganizationsArgs
 } from "../__generated__/graphql";
 
 /**
@@ -20,9 +21,15 @@ export const typeDefs = gql`
     results: [Engagement!]!
   }
 
+  type OrganizationsSearchResults {
+    count: Int!
+    results: [Organization!]!
+  }
+
   extend type Query {
     searchUsers(query: String!): UsersSearchResults!
     searchEngagements(query: String!): EngagementsSearchResults!
+    searchOrganizations(query: String!): OrganizationsSearchResults!
   }
 `;
 
@@ -59,6 +66,21 @@ async function searchEngagements(
   };
 }
 
+
+async function searchOrganizations(
+  _parent: undefined,
+  { query }: QuerySearchOrganizationsArgs,
+  { authedUser, AuthorizationService, SearchService }: Context
+) {
+  AuthorizationService.assertIsAdmin(authedUser);
+  const results = await SearchService.searchOrganizations(query);
+
+  return {
+    count: results.length,
+    results,
+  };
+}
+
 /**
  * Mutation Resolvers
  */
@@ -67,5 +89,6 @@ export const resolvers = {
   Query: {
     searchUsers,
     searchEngagements,
+    searchOrganizations,
   },
 };

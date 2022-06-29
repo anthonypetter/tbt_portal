@@ -287,6 +287,12 @@ export type Organization = {
   subDistrict?: Maybe<Scalars['String']>;
 };
 
+export type OrganizationsSearchResults = {
+  __typename?: 'OrganizationsSearchResults';
+  count: Scalars['Int'];
+  results: Array<Organization>;
+};
+
 export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']>;
@@ -299,6 +305,7 @@ export type Query = {
   organization?: Maybe<Organization>;
   organizations: Array<Organization>;
   searchEngagements: EngagementsSearchResults;
+  searchOrganizations: OrganizationsSearchResults;
   searchUsers: UsersSearchResults;
   teacherCohorts: Array<Cohort>;
   users: Array<User>;
@@ -326,6 +333,11 @@ export type QueryOrganizationArgs = {
 
 
 export type QuerySearchEngagementsArgs = {
+  query: Scalars['String'];
+};
+
+
+export type QuerySearchOrganizationsArgs = {
   query: Scalars['String'];
 };
 
