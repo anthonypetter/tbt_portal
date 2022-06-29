@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { CohortForTableFragment } from "@generated/graphql";
+import { CohortsTable_CohortFragment } from "@generated/graphql";
 import { Routes } from "@utils/routes";
 import { ContextMenu } from "components/ContextMenu";
 import { Link } from "components/Link";
@@ -15,7 +15,7 @@ const ORG_DETAIL_PAGE_COHORTS_NAME = "OrgDetailPageCohorts";
 
 CohortsTable.fragments = {
   cohort: gql`
-    fragment CohortForTable on Cohort {
+    fragment CohortsTable_Cohort on Cohort {
       id
       createdAt
       name
@@ -43,18 +43,12 @@ CohortsTable.fragments = {
 };
 
 type Props = {
-  organizationId: string;
-  cohorts: CohortForTableFragment[];
+  cohorts: CohortsTable_CohortFragment[];
   onRowClick: (cohortId: string) => void;
-  selectedCohort: CohortForTableFragment | null;
+  selectedCohort: CohortsTable_CohortFragment | null;
 };
 
-export function CohortsTable({
-  organizationId,
-  cohorts,
-  onRowClick,
-  selectedCohort,
-}: Props) {
+export function CohortsTable({ cohorts, onRowClick, selectedCohort }: Props) {
   const [cohortIdToEdit, setCohortIdToEdit] = useState<string | null>(null);
   const [cohortIdToDelete, setCohortIdToDelete] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
@@ -74,7 +68,6 @@ export function CohortsTable({
   }, []);
 
   const { data, columns } = usePrepCohortData({
-    organizationId,
     cohorts,
     contextMenu,
   });
@@ -132,12 +125,10 @@ export type CohortTableData = {
 };
 
 function usePrepCohortData({
-  organizationId,
   cohorts,
   contextMenu,
 }: {
-  organizationId: string;
-  cohorts: CohortForTableFragment[];
+  cohorts: CohortsTable_CohortFragment[];
   contextMenu: {
     onClickEdit: (cohort: CohortTableData) => void;
     onClickDelete: (cohort: CohortTableData) => void;

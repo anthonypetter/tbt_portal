@@ -13,7 +13,7 @@ import type { GetServerSidePropsContext, NextPage } from "next";
 const GET_ORGANIZATION = gql`
   query OrgDetailPageEngagements($id: ID!) {
     organization(id: $id) {
-      ...EngagementsViewF
+      ...OrganizationDetailPage_Engagements
     }
   }
   ${OrganizationDetailPage.fragments.engagementsView}
