@@ -507,7 +507,7 @@ export type SearchOrganizationsQueryVariables = Exact<{
 }>;
 
 
-export type SearchOrganizationsQuery = { __typename?: 'Query', searchOrganizations: { __typename?: 'OrganizationsSearchResults', count: number, results: Array<{ __typename?: 'Organization', id: string, name: string, description?: string | null, district?: string | null, subDistrict?: string | null }> } };
+export type SearchOrganizationsQuery = { __typename?: 'Query', searchOrganizations: { __typename?: 'OrganizationsSearchResults', count: number, results: Array<{ __typename?: 'Organization', id: string, name: string, location?: string | null, description?: string | null, district?: string | null, subDistrict?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> } };
 
 export type OrganizationsTableFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> };
 
@@ -1450,9 +1450,13 @@ export const SearchOrganizationsDocument = gql`
     results {
       id
       name
+      location
       description
       district
       subDistrict
+      engagements {
+        id
+      }
     }
   }
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { gql, useLazyQuery } from "@apollo/client";
-import { OrganizationsPageQuery } from "@generated/graphql";
+import { SearchOrganizationsQuery } from "@generated/graphql";
 import { Button } from "components/Button";
 import { OrganizationsTable } from "./OrganizationsTable";
 import { AddOrgModal } from "./AddOrgModal";
@@ -30,15 +30,19 @@ const SEARCH_ORGANIZATIONS = gql`
       results {
         id,
         name,
+        location,
         description,
         district,
-        subDistrict
+        subDistrict,
+        engagements {
+          id
+        }
       }
     }
   }`;
 
 type Props = {
-  organizations: NonNullable<OrganizationsPageQuery["organizations"]>;
+  organizations: SearchOrganizationsQuery['searchOrganizations']['results'];
   refetch: () => void;
 };
 
@@ -46,7 +50,7 @@ export function OrganizationsPage({ organizations, refetch }: Props) {
   const [showAddOrgModal, setShowAddOrgModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResultsMode, setSearchResultsMode] = useState(false);
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchOrganizationsQuery['searchOrganizations']['results']>([]);
 
   const { loading } = useOrganizationsSearch(searchQuery, {
     onCompleted: (results) => {
@@ -118,13 +122,13 @@ export function OrganizationsPage({ organizations, refetch }: Props) {
 function useOrganizationsSearch(
   query: string,
   options: {
-    onCompleted: (results: any) => void;
+    onCompleted: (results: SearchOrganizationsQuery['searchOrganizations']['results']) => void;
   }
 ) {
   const [debouncedQuery] = useDebounce(query, 300);
 
   const [searchOrganizations, { loading, data, error }] =
-    useLazyQuery<any>(SEARCH_ORGANIZATIONS, {
+    useLazyQuery<SearchOrganizationsQuery>(SEARCH_ORGANIZATIONS, {
       variables: { query },
       fetchPolicy: "no-cache",
       onCompleted: ({ searchOrganizations }) =>
