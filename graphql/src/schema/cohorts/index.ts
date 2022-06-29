@@ -15,6 +15,7 @@ import {
   MutationDeleteCohortArgs,
   MutationEditCohortArgs,
   QueryCohortArgs,
+  QueryCohortRecordingsArgs,
   QueryCohortsForOrgArgs,
 } from "../__generated__/graphql";
 import { CohortResolver } from "./CohortResolver";
@@ -71,6 +72,13 @@ export const typeDefs = gql`
     events: [CohortEvent!]!
   }
 
+  type CohortRecording {
+    id: ID!
+    recording: String
+    createdAt: Date
+    cohort: Cohort
+  }
+
   input NewCohortStaffAssignment {
     userId: ID!
     subject: AssignmentSubject!
@@ -103,6 +111,7 @@ export const typeDefs = gql`
     cohortsForOrg(organizationId: ID!): [Cohort!]!
     cohorts: [Cohort!]!
     cohort(id: ID!): Cohort!
+    cohortRecordings(id: ID!): [CohortRecording!]
   }
 
   extend type Mutation {
@@ -244,6 +253,18 @@ async function addCohort(
   });
 }
 
+async function cohortRecordings(
+  parent: undefined,
+  { id }: QueryCohortRecordingsArgs,
+  { authedUser, AuthorizationService }: Context
+) {
+  AuthorizationService.assertIsStaff(authedUser);
+  return prisma.cohortSession.findMany({
+    where: { cohortId: parseId(id) },
+    include: { cohort: true },
+  });
+}
+
 /**
  * Resolvers
  */
@@ -254,6 +275,7 @@ export const resolvers = merge(
       cohorts,
       cohort,
       cohortsForOrg,
+      cohortRecordings,
     },
     Mutation: {
       editCohort,

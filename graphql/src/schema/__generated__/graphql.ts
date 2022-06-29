@@ -89,6 +89,14 @@ export type CohortEvent = {
   timeZone: Scalars['String'];
 };
 
+export type CohortRecording = {
+  __typename?: 'CohortRecording';
+  cohort?: Maybe<Cohort>;
+  createdAt?: Maybe<Scalars['Date']>;
+  id: Scalars['ID'];
+  recording?: Maybe<Scalars['String']>;
+};
+
 export type CohortStaffAssignment = {
   __typename?: 'CohortStaffAssignment';
   subject: AssignmentSubject;
@@ -293,6 +301,7 @@ export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']>;
   cohort: Cohort;
+  cohortRecordings?: Maybe<Array<CohortRecording>>;
   cohorts: Array<Cohort>;
   cohortsForOrg: Array<Cohort>;
   currentUser?: Maybe<User>;
@@ -308,6 +317,11 @@ export type Query = {
 
 
 export type QueryCohortArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryCohortRecordingsArgs = {
   id: Scalars['ID'];
 };
 
@@ -440,6 +454,7 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Cohort: ResolverTypeWrapper<CohortWithBaseRelationsModel>;
   CohortEvent: ResolverTypeWrapper<CohortEvent>;
+  CohortRecording: ResolverTypeWrapper<Omit<CohortRecording, 'cohort'> & { cohort?: Maybe<ResolversTypes['Cohort']> }>;
   CohortStaffAssignment: ResolverTypeWrapper<CohortStaffAssignment>;
   CsvCohortStaffAssignment: CsvCohortStaffAssignment;
   CsvCohortTeacher: CsvCohortTeacher;
@@ -477,6 +492,7 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
   Cohort: CohortWithBaseRelationsModel;
   CohortEvent: CohortEvent;
+  CohortRecording: Omit<CohortRecording, 'cohort'> & { cohort?: Maybe<ResolversParentTypes['Cohort']> };
   CohortStaffAssignment: CohortStaffAssignment;
   CsvCohortStaffAssignment: CsvCohortStaffAssignment;
   CsvCohortTeacher: CsvCohortTeacher;
@@ -528,6 +544,14 @@ export type CohortEventResolvers<ContextType = any, ParentType extends Resolvers
   startFloatingDateTime?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   subject?: Resolver<ResolversTypes['AssignmentSubject'], ParentType, ContextType>;
   timeZone?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CohortRecordingResolvers<ContextType = any, ParentType extends ResolversParentTypes['CohortRecording'] = ResolversParentTypes['CohortRecording']> = {
+  cohort?: Resolver<Maybe<ResolversTypes['Cohort']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  recording?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -601,6 +625,7 @@ export type OrganizationResolvers<ContextType = any, ParentType extends Resolver
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cohort?: Resolver<ResolversTypes['Cohort'], ParentType, ContextType, RequireFields<QueryCohortArgs, 'id'>>;
+  cohortRecordings?: Resolver<Maybe<Array<ResolversTypes['CohortRecording']>>, ParentType, ContextType, RequireFields<QueryCohortRecordingsArgs, 'id'>>;
   cohorts?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType>;
   cohortsForOrg?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType, RequireFields<QueryCohortsForOrgArgs, 'organizationId'>>;
   currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -632,6 +657,7 @@ export type UsersSearchResultsResolvers<ContextType = any, ParentType extends Re
 export type Resolvers<ContextType = any> = {
   Cohort?: CohortResolvers<ContextType>;
   CohortEvent?: CohortEventResolvers<ContextType>;
+  CohortRecording?: CohortRecordingResolvers<ContextType>;
   CohortStaffAssignment?: CohortStaffAssignmentResolvers<ContextType>;
   CsvSaveCountsResult?: CsvSaveCountsResultResolvers<ContextType>;
   Date?: GraphQLScalarType;
