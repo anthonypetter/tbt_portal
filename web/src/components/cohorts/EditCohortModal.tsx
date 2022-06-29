@@ -58,7 +58,7 @@ type Props = {
   show: boolean;
   closeModal: () => void;
   cohort: EditCohortModal_CohortFragment | null;
-  afterLeave: () => void;
+  afterLeave?: () => void;
   /**
    * Use of refetchQueries is a temporary solution.
    * Info: https://www.apollographql.com/docs/react/data/refetching/
