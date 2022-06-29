@@ -5,11 +5,13 @@ import {
 } from "@generated/graphql";
 import { VideoCameraIcon } from "@heroicons/react/outline";
 import { floatingToZonedDateTime } from "@utils/dateTime";
+import { Routes } from "@utils/routes";
 import { formatGrade } from "@utils/strings";
 import { RoleText } from "components/RoleText";
 import add from "date-fns/add";
 import formatISO from "date-fns/formatISO";
 import compact from "lodash/compact";
+import { useRouter } from "next/router";
 import { DEFAULT_EVENT_COLOR, EventColor } from "./EventColor";
 import { CalendarEvent, ContentProps, WeekCalendar } from "./WeekCalendar";
 
@@ -120,6 +122,8 @@ function buildWeekCalendarSchedule(
           details: cohort.name,
           content: ({ eventColor }: { eventColor?: EventColor }) => (
             <CohortEventDetails
+              cohortId={cohort.id}
+              cohortRoomLink={cohort.meetingRoom}
               staffAssignments={subjectStaff}
               eventColor={eventColor}
             />
@@ -137,12 +141,17 @@ function createSubjectKey(cohortId: string, subject: AssignmentSubject) {
 }
 
 type CohortEventDetailsProps = ContentProps & {
+  cohortId: string;
+  cohortRoomLink: string | null | undefined;
   staffAssignments: CohortForCohortsScheduleCalendarFragment["staffAssignments"];
 };
 function CohortEventDetails({
+  cohortId,
+  cohortRoomLink,
   staffAssignments,
   eventColor = DEFAULT_EVENT_COLOR,
 }: CohortEventDetailsProps) {
+  const { push } = useRouter();
   return (
     <div className="flex flex-col gap-2">
       {staffAssignments.length > 0 ? (
@@ -175,8 +184,12 @@ function CohortEventDetails({
         <button
           type="button"
           className={`inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md ${eventColor.text} ${eventColor.bg} ${eventColor.bgHover} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500`}
+          onClick={() => push(Routes.cohortRoom.href(cohortId, "student"))}
+          disabled={!cohortRoomLink}
         >
-          Link to the Classroom
+          {cohortRoomLink
+            ? "Link to the classRoom"
+            : "Class room not created yet"}
           <VideoCameraIcon
             className="ml-2 -mr-0.5 h-4 w-4"
             aria-hidden="true"
