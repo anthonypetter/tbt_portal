@@ -16,6 +16,7 @@ UsersTable.fragments = {
         email
         role
         accountStatus
+        inviteSentAt
       }
     }
   `,
@@ -36,6 +37,7 @@ type UserTableData = {
   email: string;
   role: string;
   accountStatus: string;
+  inviteSentAt?: Date | undefined;
 };
 
 function usePrepUserData(users: NonNullable<UsersPageQuery["users"]>): {
@@ -66,6 +68,16 @@ function usePrepUserData(users: NonNullable<UsersPageQuery["users"]>): {
         },
       },
       {
+        Header: "invite Sent At",
+        accessor: "inviteSentAt",
+        Cell: ({ row }) => {
+          console.log(row.values)
+          return row.values.inviteSentAt
+            ? new Date(row.values.inviteSentAt).toLocaleString("en-US")
+            : ""
+        }
+      },
+      {
         Header: () => null,
         accessor: "id",
         id: CONTEXT_MENU_ID,
@@ -87,6 +99,7 @@ function usePrepUserData(users: NonNullable<UsersPageQuery["users"]>): {
         email: user.email,
         role: roleText === "Administrator" ? "Admin" : roleText,
         accountStatus: user.accountStatus,
+        inviteSentAt: user.inviteSentAt || undefined
       };
     });
     // Used concatenated emails as a way to determine if users
