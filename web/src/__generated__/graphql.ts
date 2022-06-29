@@ -507,6 +507,13 @@ export type InviteUserMutation = { __typename?: 'Mutation', inviteUser: { __type
 
 export type UsersPageFragment = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, fullName: string, email: string, role: UserRole, accountStatus: AccountStatus, inviteSentAt?: any | null }> };
 
+export type SearchUsersForUsersPageQueryVariables = Exact<{
+  query: Scalars['String'];
+}>;
+
+
+export type SearchUsersForUsersPageQuery = { __typename?: 'Query', searchUsers: { __typename?: 'UsersSearchResults', count: number, results: Array<{ __typename?: 'User', id: string, fullName: string, email: string, role: UserRole, accountStatus: AccountStatus, inviteSentAt?: any | null }> } };
+
 export type UsersTableFragment = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, fullName: string, email: string, role: UserRole, accountStatus: AccountStatus, inviteSentAt?: any | null }> };
 
 export type CohortDetailsPageQueryVariables = Exact<{
@@ -1471,6 +1478,49 @@ export function useInviteUserMutation(baseOptions?: Apollo.MutationHookOptions<I
 export type InviteUserMutationHookResult = ReturnType<typeof useInviteUserMutation>;
 export type InviteUserMutationResult = Apollo.MutationResult<InviteUserMutation>;
 export type InviteUserMutationOptions = Apollo.BaseMutationOptions<InviteUserMutation, InviteUserMutationVariables>;
+export const SearchUsersForUsersPageDocument = gql`
+    query SearchUsersForUsersPage($query: String!) {
+  searchUsers(query: $query) {
+    count
+    results {
+      id
+      fullName
+      email
+      role
+      accountStatus
+      inviteSentAt
+    }
+  }
+}
+    `;
+
+/**
+ * __useSearchUsersForUsersPageQuery__
+ *
+ * To run a query within a React component, call `useSearchUsersForUsersPageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchUsersForUsersPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchUsersForUsersPageQuery({
+ *   variables: {
+ *      query: // value for 'query'
+ *   },
+ * });
+ */
+export function useSearchUsersForUsersPageQuery(baseOptions: Apollo.QueryHookOptions<SearchUsersForUsersPageQuery, SearchUsersForUsersPageQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchUsersForUsersPageQuery, SearchUsersForUsersPageQueryVariables>(SearchUsersForUsersPageDocument, options);
+      }
+export function useSearchUsersForUsersPageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchUsersForUsersPageQuery, SearchUsersForUsersPageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchUsersForUsersPageQuery, SearchUsersForUsersPageQueryVariables>(SearchUsersForUsersPageDocument, options);
+        }
+export type SearchUsersForUsersPageQueryHookResult = ReturnType<typeof useSearchUsersForUsersPageQuery>;
+export type SearchUsersForUsersPageLazyQueryHookResult = ReturnType<typeof useSearchUsersForUsersPageLazyQuery>;
+export type SearchUsersForUsersPageQueryResult = Apollo.QueryResult<SearchUsersForUsersPageQuery, SearchUsersForUsersPageQueryVariables>;
 export const CohortDetailsPageDocument = gql`
     query CohortDetailsPage($id: ID!) {
   cohort(id: $id) {
