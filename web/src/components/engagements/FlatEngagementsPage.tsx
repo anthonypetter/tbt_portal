@@ -67,7 +67,7 @@ export function FlatEngagementsPage({ engagements, refetch }: Props) {
         ]}
       />
 
-      <div className="flex my-4 items-center justify-between">
+      <div className="flex my-4 items-center justify-between mt-8">
         <div className="flex flex-1 max-w-lg items-center">
           <Input
             className="flex-1"

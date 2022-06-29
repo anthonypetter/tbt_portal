@@ -1,25 +1,27 @@
 import { gql } from "apollo-server";
 import { Context } from "../../context";
-import {
-  QueryCohortsArgs,
-  MutationEditCohortArgs,
-  MutationDeleteCohortArgs,
-  MutationAddCohortArgs,
-} from "../__generated__/graphql";
-import { parseId } from "../../utils/numbers";
-import { CohortResolver } from "./CohortResolver";
-import { fromJust } from "../../utils/types";
+import { prisma } from "../../lib/prisma-client";
 import {
   calcStaffChanges,
   fromNewToInput,
 } from "../../utils/cohortStaffAssignments";
+import { parseId } from "../../utils/numbers";
+import { fromJust } from "../../utils/types";
 import {
-  typeDefs as CohortCsvDefs,
+  MutationAddCohortArgs,
+  MutationDeleteCohortArgs,
+  MutationEditCohortArgs,
+  QueryCohortArgs,
+  QueryCohortsForOrgArgs,
+} from "../__generated__/graphql";
+import { CohortResolver } from "./CohortResolver";
+import {
   resolvers as CohortCsvResolvers,
+  typeDefs as CohortCsvDefs,
 } from "./csv";
 import {
-  typeDefs as TeacherDefs,
   resolvers as TeacherResolvers,
+  typeDefs as TeacherDefs,
 } from "./teacher";
 import merge from "lodash/merge";
 import { WhereByService } from "../../services/whereby";
@@ -38,28 +40,16 @@ export const typeDefs = gql`
     GENERAL
   }
 
-  enum Weekday {
-    SUNDAY
-    MONDAY
-    TUESDAY
-    WEDNESDAY
-    THURSDAY
-    FRIDAY
-    SATURDAY
-  }
-
   type CohortStaffAssignment {
     user: User!
     subject: AssignmentSubject!
   }
 
-  type ScheduledMeeting {
-    createdAt: Date!
-    weekday: Weekday!
-    subject: AssignmentSubject!
-    startTime: String!
-    endTime: String!
+  type CohortEvent {
+    startFloatingDateTime: Date!
+    durationMinutes: Int!
     timeZone: String!
+    subject: AssignmentSubject!
   }
 
   type Cohort {
@@ -77,7 +67,7 @@ export const typeDefs = gql`
     engagementId: ID!
     engagement: Engagement!
     staffAssignments: [CohortStaffAssignment!]!
-    schedule: [ScheduledMeeting!]!
+    events: [CohortEvent!]!
   }
 
   input NewCohortStaffAssignment {
@@ -109,7 +99,9 @@ export const typeDefs = gql`
   }
 
   extend type Query {
-    cohorts(organizationId: ID!): [Cohort!]!
+    cohortsForOrg(organizationId: ID!): [Cohort!]!
+    cohorts: [Cohort!]!
+    cohort(id: ID!): Cohort!
   }
 
   extend type Mutation {
@@ -122,10 +114,27 @@ export const typeDefs = gql`
 /**
  * Query Resolvers
  */
-
 async function cohorts(
   _parent: undefined,
-  { organizationId }: QueryCohortsArgs,
+  _args: undefined,
+  { authedUser, AuthorizationService, CohortService }: Context
+) {
+  AuthorizationService.assertIsAdmin(authedUser);
+  return CohortService.getAllCohorts();
+}
+
+async function cohort(
+  _parent: undefined,
+  { id }: QueryCohortArgs,
+  { authedUser, AuthorizationService, CohortService }: Context
+) {
+  AuthorizationService.assertIsAdmin(authedUser);
+  return CohortService.getCohort(parseId(id));
+}
+
+async function cohortsForOrg(
+  _parent: undefined,
+  { organizationId }: QueryCohortsForOrgArgs,
   { authedUser, AuthorizationService, CohortService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
@@ -142,7 +151,6 @@ async function editCohort(
   { authedUser, AuthorizationService, CohortService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
-
   if (input.name === null) {
     throw new Error("Cohort name cannot be null.");
   }
@@ -232,6 +240,8 @@ export const resolvers = merge(
   {
     Query: {
       cohorts,
+      cohort,
+      cohortsForOrg,
     },
     Mutation: {
       editCohort,

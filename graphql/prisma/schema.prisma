@@ -104,7 +104,7 @@ model Cohort {
   engagement       Engagement              @relation(fields: [engagementId], references: [id])
   staffAssignments CohortStaffAssignment[]
   sessions         CohortSession[]
-  schedule         CohortSchedule[]
+  events           CohortEvent[]
 }
 
 model CohortStaffAssignment {
@@ -120,30 +120,6 @@ model CohortStaffAssignment {
   @@id([userId, cohortId, subject])
 }
 
-enum Weekday {
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-  SATURDAY
-  SUNDAY
-}
-
-model CohortSchedule {
-  id        Int               @id @default(autoincrement())
-  createdAt DateTime          @default(now())
-  weekday   Weekday
-  subject   AssignmentSubject
-  startTime String
-  endTime   String
-  timeZone  String
-
-  // relation fields
-  cohortId Int
-  cohort   Cohort @relation(fields: [cohortId], references: [id])
-}
-
 model CohortSession {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -152,4 +128,32 @@ model CohortSession {
   // relation fields
   cohortId  Int
   cohort    Cohort   @relation(fields: [cohortId], references: [id])
+}
+
+//"Single" events can be added here later.
+enum EventType {
+  RECURRING
+}
+
+enum MeetingType {
+  STUDENT_SESSION
+  PARENT_CONFERENCE
+  ADHOC
+}
+
+model CohortEvent {
+  id          Int                @id @default(autoincrement())
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @default(now())
+  eventType   EventType
+  meetingType MeetingType
+  subject     AssignmentSubject?
+
+  startDateTime   DateTime
+  timeZone        String
+  durationMinutes Int
+  recurrenceRule  String
+
+  cohortId Int
+  cohort   Cohort @relation(fields: [cohortId], references: [id])
 }

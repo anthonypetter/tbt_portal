@@ -1,7 +1,19 @@
-import { Weekday } from "@prisma/client";
+import { AssignmentSubject } from "../schema/__generated__/graphql";
 import { CsvCohortInput, SubjectScheduleInput } from "../services/cohort";
+import { Time, Weekday } from "./dateTime";
 
-export function extractSchedules(cohort: CsvCohortInput) {
+export type ScheduleEntry = {
+  weekday: Weekday;
+  subject: AssignmentSubject;
+  startTime: Time;
+  endTime: Time;
+  timeZone: string;
+};
+
+export function extractSchedules(cohort: CsvCohortInput): ScheduleEntry[] {
+  const sundaySchedules = cohort.sunday.map((subjectSchedule) =>
+    extractWeekdaySchedule(Weekday.SUNDAY, subjectSchedule)
+  );
   const mondaySchedules = cohort.monday.map((subjectSchedule) =>
     extractWeekdaySchedule(Weekday.MONDAY, subjectSchedule)
   );
@@ -20,25 +32,22 @@ export function extractSchedules(cohort: CsvCohortInput) {
   const saturdaySchedules = cohort.saturday.map((subjectSchedule) =>
     extractWeekdaySchedule(Weekday.SATURDAY, subjectSchedule)
   );
-  const sundaySchedules = cohort.sunday.map((subjectSchedule) =>
-    extractWeekdaySchedule(Weekday.SUNDAY, subjectSchedule)
-  );
 
   return [
+    ...sundaySchedules,
     ...mondaySchedules,
     ...tuesdaySchedules,
     ...wednesdaySchedules,
     ...thursdaySchedules,
     ...fridaySchedules,
     ...saturdaySchedules,
-    ...sundaySchedules,
   ];
 }
 
 function extractWeekdaySchedule(
   weekday: Weekday,
   subjectSchedule: SubjectScheduleInput
-) {
+): ScheduleEntry {
   return {
     weekday,
     subject: subjectSchedule.subject,

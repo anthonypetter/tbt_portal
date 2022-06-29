@@ -1,3 +1,13 @@
+export enum Weekday {
+  SUNDAY,
+  MONDAY,
+  TUESDAY,
+  WEDNESDAY,
+  THURSDAY,
+  FRIDAY,
+  SATURDAY,
+}
+
 /**
  * Given a particular dateTime this will return the same dateTime but with the
  * time set to midnight (00:00:00), UTC.
@@ -32,4 +42,90 @@ export function normalizeDateTimeToUTCDate(dateTime: Date): Date {
   return new Date(
     Date.UTC(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate())
   );
+}
+
+/**
+ * Takes a Date and Time and creates a Floating DateTime. Floating dateTime
+ * represents a "local" time that can later be converted to an incremental
+ * time by applying a time zone.
+ *
+ * Info on floating times:
+ *  - https://www.w3.org/International/wiki/FloatingTime
+ *  - https://github.com/jakubroztocil/rrule#important-use-utc-dates
+ *
+ *
+ */
+
+export type Hour = number;
+export type Minute = number;
+
+export type Time = {
+  hour: Hour;
+  minute: Minute;
+};
+
+export function makeFloatingDateTime({
+  date,
+  time,
+}: {
+  date: Date;
+  time: Time;
+}) {
+  return new Date(
+    Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate(),
+      time.hour,
+      time.minute
+    )
+  );
+}
+
+/**
+ * Takes time object and converts it to a normalized time string
+ */
+
+export type Time24Hour = string;
+
+export function stringifyTime(time: Time): Time24Hour {
+  return `${stringifyHour(time.hour)}:${stringifyMinute(time.minute)}`;
+}
+
+function stringifyHour(hour: number) {
+  if (hour < 0 || hour > 23) {
+    throw new Error(`Invalid hour value encountered: ${hour.toString()}`);
+  }
+  return hour.toLocaleString("en-US", {
+    minimumIntegerDigits: 2,
+    useGrouping: false,
+  });
+}
+
+function stringifyMinute(minute: number) {
+  if (minute < 0 || minute > 59) {
+    throw new Error(`Invalid minute value encountered: ${minute.toString()}`);
+  }
+
+  return minute.toLocaleString("en-US", {
+    minimumIntegerDigits: 2,
+    useGrouping: false,
+  });
+}
+
+/**
+ * Calculates number minutes between 2 time objects
+ */
+
+export function calculateDurationInMinutes(start: Time, end: Time) {
+  const startMinutes = start.hour * 60 + start.minute;
+  const endMinutes = end.hour * 60 + end.minute;
+
+  const duration = endMinutes - startMinutes;
+
+  if (duration < 0) {
+    throw new Error("Negative durations are not supported.");
+  }
+
+  return duration;
 }

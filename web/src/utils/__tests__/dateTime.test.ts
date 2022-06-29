@@ -1,13 +1,17 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Weekday } from "@generated/graphql";
+import { getErrorMsg } from "@utils/tests";
 import {
+  calculateDurationInMinutes,
   calculateMinutesElapsedInDay,
-  normalizeDateFromUTCDateTime,
   findWeekdayNumber,
   localizedTime,
   localizedWeekdays,
+  normalizeDateFromUTCDateTime,
   normalizeTime,
+  numberifyTime,
   printDuration,
+  stringifyTime,
+  Weekday,
 } from "../dateTime";
 
 describe("dateTime", () => {
@@ -246,13 +250,13 @@ describe("dateTime", () => {
   describe("findWeekdayNumber()", () => {
     describe("happy path", () => {
       test("should find any day of the week", () => {
-        expect(findWeekdayNumber(Weekday.Sunday)).toBe(0);
-        expect(findWeekdayNumber(Weekday.Monday)).toBe(1);
-        expect(findWeekdayNumber(Weekday.Tuesday)).toBe(2);
-        expect(findWeekdayNumber(Weekday.Wednesday)).toBe(3);
-        expect(findWeekdayNumber(Weekday.Thursday)).toBe(4);
-        expect(findWeekdayNumber(Weekday.Friday)).toBe(5);
-        expect(findWeekdayNumber(Weekday.Saturday)).toBe(6);
+        expect(findWeekdayNumber(Weekday.SUNDAY)).toBe(0);
+        expect(findWeekdayNumber(Weekday.MONDAY)).toBe(1);
+        expect(findWeekdayNumber(Weekday.TUESDAY)).toBe(2);
+        expect(findWeekdayNumber(Weekday.WEDNESDAY)).toBe(3);
+        expect(findWeekdayNumber(Weekday.THURSDAY)).toBe(4);
+        expect(findWeekdayNumber(Weekday.FRIDAY)).toBe(5);
+        expect(findWeekdayNumber(Weekday.SATURDAY)).toBe(6);
       });
     });
 
@@ -283,7 +287,7 @@ describe("dateTime", () => {
       });
     });
   });
-  
+
   describe("extractDateFromDateTime()", () => {
     describe("happy path", () => {
       test("should not convert to another date", () => {
@@ -301,6 +305,142 @@ describe("dateTime", () => {
           normalizeDateFromUTCDateTime(oneSecondToMidnight).getUTCDate()
         ).toBe(20);
       });
+    });
+  });
+
+  describe("numberifyTime()", () => {
+    test("should return expected time values", () => {
+      expect(numberifyTime("6:03")).toMatchObject({ hour: 6, minute: 3 });
+      expect(numberifyTime("06:03")).toMatchObject({ hour: 6, minute: 3 });
+    });
+
+    test("should throw error time is incorrectly formatted.", () => {
+      expect(getErrorMsg(() => numberifyTime(""))).toEqual(
+        "Unrecognized time string format: empty string"
+      );
+
+      expect(getErrorMsg(() => numberifyTime("Blah"))).toEqual(
+        "Unrecognized time string format: Blah"
+      );
+
+      expect(getErrorMsg(() => numberifyTime("1234"))).toEqual(
+        "Unrecognized time string format: 1234"
+      );
+
+      expect(getErrorMsg(() => numberifyTime("6:3"))).toEqual(
+        "Unrecognized time string format: 6:3"
+      );
+
+      expect(getErrorMsg(() => numberifyTime("0 6 : 3 0"))).toEqual(
+        "Unrecognized time string format: 0 6 : 3 0"
+      );
+    });
+  });
+
+  describe("calculateDurationInMinutes()", () => {
+    test("should calculation durations correctly", () => {
+      expect(
+        calculateDurationInMinutes(
+          { hour: 0, minute: 0 },
+          { hour: 23, minute: 59 }
+        )
+      ).toBe(1439);
+
+      expect(
+        calculateDurationInMinutes(
+          { hour: 0, minute: 10 },
+          { hour: 23, minute: 59 }
+        )
+      ).toBe(1429);
+
+      expect(
+        calculateDurationInMinutes(
+          { hour: 5, minute: 15 },
+          { hour: 6, minute: 30 }
+        )
+      ).toBe(75);
+
+      expect(
+        calculateDurationInMinutes(
+          { hour: 12, minute: 7 },
+          { hour: 12, minute: 8 }
+        )
+      ).toBe(1);
+
+      expect(
+        calculateDurationInMinutes(
+          { hour: 0, minute: 0 },
+          { hour: 0, minute: 0 }
+        )
+      ).toBe(0);
+    });
+
+    test("should throw an error if a negative duration is encountered", () => {
+      expect(
+        getErrorMsg(() =>
+          calculateDurationInMinutes(
+            { hour: 10, minute: 0 },
+            { hour: 9, minute: 30 }
+          )
+        )
+      ).toEqual("Negative durations are not supported.");
+
+      expect(
+        getErrorMsg(() =>
+          calculateDurationInMinutes(
+            { hour: 23, minute: 0 },
+            { hour: 0, minute: 0 }
+          )
+        )
+      ).toEqual("Negative durations are not supported.");
+
+      expect(
+        getErrorMsg(() =>
+          calculateDurationInMinutes(
+            { hour: 0, minute: 1 },
+            { hour: 0, minute: 0 }
+          )
+        )
+      ).toEqual("Negative durations are not supported.");
+    });
+  });
+
+  describe("stringifyTime()", () => {
+    test("should return expected time strings", () => {
+      expect(stringifyTime({ hour: 0, minute: 0 })).toEqual("00:00");
+      expect(stringifyTime({ hour: 6, minute: 25 })).toEqual("06:25");
+      expect(stringifyTime({ hour: 1, minute: 24 })).toEqual("01:24");
+      expect(stringifyTime({ hour: 14, minute: 14 })).toEqual("14:14");
+      expect(stringifyTime({ hour: 23, minute: 59 })).toEqual("23:59");
+    });
+
+    test("should throw an error for invalid time values", () => {
+      expect(getErrorMsg(() => stringifyTime({ hour: 24, minute: 0 }))).toEqual(
+        "Invalid hour value encountered: 24"
+      );
+
+      expect(
+        getErrorMsg(() => stringifyTime({ hour: 23, minute: 60 }))
+      ).toEqual("Invalid minute value encountered: 60");
+
+      expect(getErrorMsg(() => stringifyTime({ hour: 25, minute: 0 }))).toEqual(
+        "Invalid hour value encountered: 25"
+      );
+      expect(
+        getErrorMsg(() => stringifyTime({ hour: 12, minute: 65 }))
+      ).toEqual("Invalid minute value encountered: 65");
+
+      expect(
+        getErrorMsg(() => stringifyTime({ hour: -1, minute: 30 }))
+      ).toEqual("Invalid hour value encountered: -1");
+
+      expect(
+        getErrorMsg(() => stringifyTime({ hour: 7, minute: -30 }))
+      ).toEqual("Invalid minute value encountered: -30");
+
+      expect(
+        getErrorMsg(() => stringifyTime({ hour: 100, minute: 7821 }))
+      ).toEqual("Invalid hour value encountered: 100");
     });
   });
 });

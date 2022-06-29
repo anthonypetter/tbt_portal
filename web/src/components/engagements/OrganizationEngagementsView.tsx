@@ -1,17 +1,17 @@
 import { gql } from "@apollo/client";
 import { OrgDetailPageEngagementsQuery } from "@generated/graphql";
 import { PlusIcon, SearchIcon } from "@heroicons/react/outline";
-import { DateText } from "components/Date";
-import { Input } from "components/Input";
-import { useState } from "react";
-import { EngagementsTable } from "./EngagementsTable";
-import filter from "lodash/filter";
 import { AssignmentRoleBadge } from "components/AssignmentRoleBadge";
 import { Button } from "components/Button";
 import { DetailsAside } from "components/DetailsAside";
-import { AddEngagementModal } from "./AddNewEngagementModal";
 import { ErrorBoundary } from "components/ErrorBoundary";
 import { ErrorBox } from "components/ErrorBox";
+import { Input } from "components/Input";
+import { NormalizedDateText } from "components/NormalizedDateText";
+import filter from "lodash/filter";
+import { useState } from "react";
+import { AddEngagementModal } from "./AddNewEngagementModal";
+import { EngagementsTable } from "./EngagementsTable";
 
 OrganizationEngagementsView.fragments = {
   engagementsList: gql`
@@ -136,11 +136,11 @@ function DetailsSidebar({ selectedEngagement, onClose }: DetailsSidebarProps) {
       <DetailsAside.Section title="Details">
         <DetailsAside.Line
           label="Starts"
-          value={<DateText timeMs={selectedEngagement.startDate} />}
+          value={<NormalizedDateText timeMs={selectedEngagement.startDate} />}
         />
         <DetailsAside.Line
           label="Ends"
-          value={<DateText timeMs={selectedEngagement.endDate} />}
+          value={<NormalizedDateText timeMs={selectedEngagement.endDate} />}
         />
       </DetailsAside.Section>
 
@@ -166,9 +166,9 @@ function DetailsSidebar({ selectedEngagement, onClose }: DetailsSidebarProps) {
           col1: c.name,
           col2: (
             <span>
-              <DateText timeMs={c.startDate} />
+              <NormalizedDateText timeMs={c.startDate} />
               {" - "}
-              <DateText timeMs={c.endDate} />
+              <NormalizedDateText timeMs={c.endDate} />
             </span>
           ),
         }))}

@@ -1,6 +1,6 @@
-import { parseId } from "../../utils/numbers";
 import { gql } from "apollo-server";
 import { Context } from "../../context";
+import { parseId } from "../../utils/numbers";
 import { MutationSaveCohortsCsvDataArgs } from "../__generated__/graphql";
 
 /**
@@ -8,10 +8,15 @@ import { MutationSaveCohortsCsvDataArgs } from "../__generated__/graphql";
  */
 
 export const typeDefs = gql`
+  input Time {
+    hour: Int!
+    minute: Int!
+  }
+
   input CsvSubjectSchedule {
     subject: AssignmentSubject!
-    startTime: String!
-    endTime: String!
+    startTime: Time!
+    endTime: Time!
     timeZone: String!
   }
 
@@ -37,6 +42,8 @@ export const typeDefs = gql`
     friday: [CsvSubjectSchedule!]!
     saturday: [CsvSubjectSchedule!]!
     sunday: [CsvSubjectSchedule!]!
+    cohortStartDate: Date!
+    cohortEndDate: Date!
 
     staffAssignments: [CsvCohortStaffAssignment!]!
   }
