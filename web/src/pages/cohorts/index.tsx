@@ -1,18 +1,18 @@
-import type { NextPage, GetServerSidePropsContext } from "next";
-import { getServerSideAuth } from "@utils/auth/server-side-auth";
-import { AuthedLayout } from "components/AuthedLayout";
-import { CohortsPage } from "components/cohorts/CohortsPage";
 import { ApolloQueryResult, gql, useQuery } from "@apollo/client";
-import { CohortsPageQuery } from "@generated/graphql";
-import { triggerErrorToast } from "components/Toast";
+import { FlatCohortsPageQuery } from "@generated/graphql";
 import { getSession } from "@lib/apollo-client";
 import { processResult } from "@utils/apollo";
+import { getServerSideAuth } from "@utils/auth/server-side-auth";
+import { AuthedLayout } from "components/AuthedLayout";
+import { FlatCohortsPage } from "components/cohorts/FlatCohortsPage";
+import { triggerErrorToast } from "components/Toast";
+import type { GetServerSidePropsContext, NextPage } from "next";
 
-const GET_COHORTS = gql`
-  query CohortsPage {
-    ...Cohorts
+const GET_FLAT_COHORTS = gql`
+  query FlatCohortsPage {
+    ...FlatCohortsPage_Cohorts
   }
-  ${CohortsPage.fragments.cohorts}
+  ${FlatCohortsPage.fragments.cohorts}
 `;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -24,8 +24,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const { client } = getSession(auth.token);
 
-  const result: ApolloQueryResult<CohortsPageQuery> = await client.query({
-    query: GET_COHORTS,
+  const result: ApolloQueryResult<FlatCohortsPageQuery> = await client.query({
+    query: GET_FLAT_COHORTS,
   });
 
   const cohorts = processResult(result, (r) => r.cohorts);
@@ -38,11 +38,11 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 type Props = {
-  cohorts: NonNullable<CohortsPageQuery["cohorts"]>;
+  cohorts: NonNullable<FlatCohortsPageQuery["cohorts"]>;
 };
 
 const Cohorts: NextPage<Props> = ({ cohorts }) => {
-  const { data } = useQuery<CohortsPageQuery>(GET_COHORTS, {
+  const { data } = useQuery<FlatCohortsPageQuery>(GET_FLAT_COHORTS, {
     fetchPolicy: "network-only", // Used for first execution
     onError: (error) => {
       console.error(error);
@@ -55,7 +55,7 @@ const Cohorts: NextPage<Props> = ({ cohorts }) => {
 
   return (
     <AuthedLayout>
-      <CohortsPage cohorts={data?.cohorts ?? cohorts} />
+      <FlatCohortsPage cohorts={data?.cohorts ?? cohorts} />
     </AuthedLayout>
   );
 };
