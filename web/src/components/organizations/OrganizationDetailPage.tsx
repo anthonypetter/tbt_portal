@@ -1,9 +1,13 @@
 import { gql } from "@apollo/client";
+import {
+  OrganizationDetailPage_CohortsFragment,
+  OrganizationDetailPage_EngagementsFragment,
+} from "@generated/graphql";
 import { breadcrumbs } from "@utils/breadcrumbs";
 import { Routes } from "@utils/routes";
 import { Container } from "components/Container";
 import { PageHeader } from "components/PageHeader";
-import { OrganizationTabs, TabOrganization } from "./OrganizationTabs";
+import { OrganizationTabs, Tab } from "./OrganizationTabs";
 
 OrganizationDetailPage.fragments = {
   engagementsView: gql`
@@ -21,7 +25,15 @@ OrganizationDetailPage.fragments = {
 };
 
 type Props = {
-  tabOrg: TabOrganization;
+  tabOrg:
+    | {
+        tab: Tab.Engagements;
+        organization: OrganizationDetailPage_EngagementsFragment;
+      }
+    | {
+        tab: Tab.Cohorts;
+        organization: OrganizationDetailPage_CohortsFragment;
+      };
 };
 
 export function OrganizationDetailPage({ tabOrg }: Props) {
