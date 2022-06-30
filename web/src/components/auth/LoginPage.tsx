@@ -1,21 +1,21 @@
-import React, { useState } from "react";
-import { useAuth } from "components/auth/AuthProvider";
-import { useRouter } from "next/router";
-import Head from "next/head";
+import { CognitoUser } from "@aws-amplify/auth";
+import { UserRole } from "@generated/graphql";
 import { Routes } from "@utils/routes";
-import { Button } from "components/Button";
-import { FaLock, FaLockOpen } from "react-icons/fa";
-import { Spinner } from "components/Spinner";
 import { assertUnreachable } from "@utils/types";
-import Image from "next/image";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useAuth } from "components/auth/AuthProvider";
+import { Button } from "components/Button";
+import { Container } from "components/Container";
 import { ErrorBox } from "components/ErrorBox";
+import { Spinner } from "components/Spinner";
+import Head from "next/head";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { FaLock, FaLockOpen } from "react-icons/fa";
+import { FieldError } from "../FieldError";
 import { LoginStatus } from "./AuthContext";
 import { ChangePasswordPage } from "./ChangePasswordPage";
-import { CognitoUser } from "@aws-amplify/auth";
-import { FieldError } from "../FieldError";
-import { Container } from "components/Container";
-import { UserRole } from "@generated/graphql";
 
 type LoginInputs = {
   email: string;
@@ -275,6 +275,6 @@ function getPostLoginHref(role?: UserRole) {
       return Routes.organizations.href();
 
     default:
-      return Routes.mySchedule.href();
+      return Routes.home.href();
   }
 }
