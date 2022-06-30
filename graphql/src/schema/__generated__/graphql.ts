@@ -359,6 +359,7 @@ export type User = {
   email: Scalars['String'];
   fullName: Scalars['String'];
   id: Scalars['String'];
+  inviteSentAt?: Maybe<Scalars['Date']>;
   role: UserRole;
 };
 
@@ -640,6 +641,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   fullName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  inviteSentAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   role?: Resolver<ResolversTypes['UserRole'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
