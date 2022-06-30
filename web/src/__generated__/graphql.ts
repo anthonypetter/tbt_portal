@@ -434,6 +434,13 @@ export type EngagementCohortsViewFragment = { __typename?: 'Engagement', id: str
 
 export type FlatCohortsPage_CohortsFragment = { __typename?: 'Query', cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, hostKey?: string | null, meetingRoom?: string | null, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } }, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
+export type SearchCohortsQueryVariables = Exact<{
+  query: Scalars['String'];
+}>;
+
+
+export type SearchCohortsQuery = { __typename?: 'Query', searchCohorts: { __typename?: 'CohortsSearchResults', count: number, results: Array<{ __typename?: 'Cohort', name: string, grade?: string | null, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> } };
+
 export type CohortsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, events: Array<{ __typename?: 'CohortEvent', startFloatingDateTime: any, timeZone: string, durationMinutes: number, subject: AssignmentSubject }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> }> };
 
 export type SaveCohortsCsvDataMutationVariables = Exact<{
@@ -1189,6 +1196,51 @@ export function useEditCohortMutation(baseOptions?: Apollo.MutationHookOptions<E
 export type EditCohortMutationHookResult = ReturnType<typeof useEditCohortMutation>;
 export type EditCohortMutationResult = Apollo.MutationResult<EditCohortMutation>;
 export type EditCohortMutationOptions = Apollo.BaseMutationOptions<EditCohortMutation, EditCohortMutationVariables>;
+export const SearchCohortsDocument = gql`
+    query SearchCohorts($query: String!) {
+  searchCohorts(query: $query) {
+    count
+    results {
+      name
+      grade
+      engagement {
+        name
+        organization {
+          name
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useSearchCohortsQuery__
+ *
+ * To run a query within a React component, call `useSearchCohortsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchCohortsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchCohortsQuery({
+ *   variables: {
+ *      query: // value for 'query'
+ *   },
+ * });
+ */
+export function useSearchCohortsQuery(baseOptions: Apollo.QueryHookOptions<SearchCohortsQuery, SearchCohortsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchCohortsQuery, SearchCohortsQueryVariables>(SearchCohortsDocument, options);
+      }
+export function useSearchCohortsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchCohortsQuery, SearchCohortsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchCohortsQuery, SearchCohortsQueryVariables>(SearchCohortsDocument, options);
+        }
+export type SearchCohortsQueryHookResult = ReturnType<typeof useSearchCohortsQuery>;
+export type SearchCohortsLazyQueryHookResult = ReturnType<typeof useSearchCohortsLazyQuery>;
+export type SearchCohortsQueryResult = Apollo.QueryResult<SearchCohortsQuery, SearchCohortsQueryVariables>;
 export const SaveCohortsCsvDataDocument = gql`
     mutation SaveCohortsCsvData($input: CsvProcessedData!) {
   saveCohortsCsvData(input: $input) {

@@ -1,4 +1,5 @@
 import {
+  QuerySearchCohortsArgs,
   QuerySearchEngagementsArgs,
   QuerySearchOrganizationsArgs,
   QuerySearchUsersArgs
@@ -35,6 +36,7 @@ export const typeDefs = gql`
     searchUsers(query: String!): UsersSearchResults!
     searchEngagements(query: String!): EngagementsSearchResults!
     searchOrganizations(query: String!): OrganizationsSearchResults!
+    searchCohorts(query: String!): CohortsSearchResults!
   }
 `;
 
@@ -88,7 +90,7 @@ async function searchOrganizations(
 
 async function searchCohorts(
   _parent: undefined,
-  { query }: QuerySearchEngagementsArgs,
+  { query }: QuerySearchCohortsArgs,
   { authedUser, AuthorizationService, SearchService }: Context
 ) {
   AuthorizationService.assertIsAdmin(authedUser);
