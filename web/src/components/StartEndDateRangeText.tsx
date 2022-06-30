@@ -15,7 +15,7 @@ export function StartEndDateRangeText({
         "Start date unspecified"
       )}
 
-      <span className="mx-3"> - </span>
+      <span className="mx-1"> - </span>
 
       {endDateMs ? (
         <NormalizedDateText timeMs={endDateMs} />
