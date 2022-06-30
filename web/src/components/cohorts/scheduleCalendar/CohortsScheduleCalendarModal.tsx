@@ -17,12 +17,14 @@ type CohortsScheduleCalendarModalProps = {
   show: boolean;
   closeModal: () => void;
   cohorts: CohortForCohortsScheduleCalendarFragment[];
+  afterLeave?: () => void;
 };
 
 export function CohortsScheduleCalendarModal({
   show,
   closeModal,
   cohorts,
+  afterLeave,
 }: CohortsScheduleCalendarModalProps) {
   return (
     <Modal
@@ -36,6 +38,7 @@ export function CohortsScheduleCalendarModal({
       }
       title="Cohort Weekly Schedule"
       width="xlarge"
+      afterLeave={afterLeave}
     >
       <div className="container mx-auto">
         <h1 className="text-xl2 mb-3">
