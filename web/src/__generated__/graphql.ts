@@ -287,6 +287,12 @@ export type Organization = {
   subDistrict?: Maybe<Scalars['String']>;
 };
 
+export type OrganizationsSearchResults = {
+  __typename?: 'OrganizationsSearchResults';
+  count: Scalars['Int'];
+  results: Array<Organization>;
+};
+
 export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']>;
@@ -299,6 +305,7 @@ export type Query = {
   organization?: Maybe<Organization>;
   organizations: Array<Organization>;
   searchEngagements: EngagementsSearchResults;
+  searchOrganizations: OrganizationsSearchResults;
   searchUsers: UsersSearchResults;
   teacherCohorts: Array<Cohort>;
   users: Array<User>;
@@ -326,6 +333,11 @@ export type QueryOrganizationArgs = {
 
 
 export type QuerySearchEngagementsArgs = {
+  query: Scalars['String'];
+};
+
+
+export type QuerySearchOrganizationsArgs = {
   query: Scalars['String'];
 };
 
@@ -492,9 +504,16 @@ export type EngagementsViewFFragment = { __typename?: 'Organization', id: string
 
 export type CohortsViewFFragment = { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, events: Array<{ __typename?: 'CohortEvent', startFloatingDateTime: any, timeZone: string, durationMinutes: number, subject: AssignmentSubject }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> }> };
 
-export type OrganizationsFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> };
+export type OrganizationsPage_OrganizationsFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> };
 
-export type OrganizationsTableFragment = { __typename?: 'Query', organizations: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> };
+export type SearchOrganizationsQueryVariables = Exact<{
+  query: Scalars['String'];
+}>;
+
+
+export type SearchOrganizationsQuery = { __typename?: 'Query', searchOrganizations: { __typename?: 'OrganizationsSearchResults', count: number, results: Array<{ __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> }> } };
+
+export type OrganizationsTable_OrganizationFragment = { __typename?: 'Organization', id: string, name: string, district?: string | null, subDistrict?: string | null, location?: string | null, description?: string | null, engagements: Array<{ __typename?: 'Engagement', id: string }> };
 
 export type CurrentUserQueryForMySchedulePageFragment = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string } | null, teacherCohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, events: Array<{ __typename?: 'CohortEvent', startFloatingDateTime: any, timeZone: string, durationMinutes: number, subject: AssignmentSubject }>, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, role: UserRole, fullName: string } }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> };
 
@@ -973,26 +992,26 @@ export const CohortsViewFFragmentDoc = gql`
   ...CohortsViewListF
 }
     ${CohortsViewListFFragmentDoc}`;
-export const OrganizationsTableFragmentDoc = gql`
-    fragment OrganizationsTable on Query {
-  organizations {
+export const OrganizationsTable_OrganizationFragmentDoc = gql`
+    fragment OrganizationsTable_Organization on Organization {
+  id
+  name
+  district
+  subDistrict
+  location
+  description
+  engagements {
     id
-    name
-    district
-    subDistrict
-    location
-    description
-    engagements {
-      id
-    }
   }
 }
     `;
-export const OrganizationsFragmentDoc = gql`
-    fragment Organizations on Query {
-  ...OrganizationsTable
+export const OrganizationsPage_OrganizationsFragmentDoc = gql`
+    fragment OrganizationsPage_Organizations on Query {
+  organizations {
+    ...OrganizationsTable_Organization
+  }
 }
-    ${OrganizationsTableFragmentDoc}`;
+    ${OrganizationsTable_OrganizationFragmentDoc}`;
 export const CurrentUserQueryForMySchedulePageFragmentDoc = gql`
     fragment CurrentUserQueryForMySchedulePage on Query {
   currentUser {
@@ -1440,6 +1459,44 @@ export function useEditOrganizationMutation(baseOptions?: Apollo.MutationHookOpt
 export type EditOrganizationMutationHookResult = ReturnType<typeof useEditOrganizationMutation>;
 export type EditOrganizationMutationResult = Apollo.MutationResult<EditOrganizationMutation>;
 export type EditOrganizationMutationOptions = Apollo.BaseMutationOptions<EditOrganizationMutation, EditOrganizationMutationVariables>;
+export const SearchOrganizationsDocument = gql`
+    query SearchOrganizations($query: String!) {
+  searchOrganizations(query: $query) {
+    count
+    results {
+      ...OrganizationsTable_Organization
+    }
+  }
+}
+    ${OrganizationsTable_OrganizationFragmentDoc}`;
+
+/**
+ * __useSearchOrganizationsQuery__
+ *
+ * To run a query within a React component, call `useSearchOrganizationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchOrganizationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchOrganizationsQuery({
+ *   variables: {
+ *      query: // value for 'query'
+ *   },
+ * });
+ */
+export function useSearchOrganizationsQuery(baseOptions: Apollo.QueryHookOptions<SearchOrganizationsQuery, SearchOrganizationsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchOrganizationsQuery, SearchOrganizationsQueryVariables>(SearchOrganizationsDocument, options);
+      }
+export function useSearchOrganizationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchOrganizationsQuery, SearchOrganizationsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchOrganizationsQuery, SearchOrganizationsQueryVariables>(SearchOrganizationsDocument, options);
+        }
+export type SearchOrganizationsQueryHookResult = ReturnType<typeof useSearchOrganizationsQuery>;
+export type SearchOrganizationsLazyQueryHookResult = ReturnType<typeof useSearchOrganizationsLazyQuery>;
+export type SearchOrganizationsQueryResult = Apollo.QueryResult<SearchOrganizationsQuery, SearchOrganizationsQueryVariables>;
 export const SearchUsersDocument = gql`
     query SearchUsers($query: String!) {
   searchUsers(query: $query) {
@@ -1821,9 +1878,9 @@ export type OrgDetailPageEngagementsLazyQueryHookResult = ReturnType<typeof useO
 export type OrgDetailPageEngagementsQueryResult = Apollo.QueryResult<OrgDetailPageEngagementsQuery, OrgDetailPageEngagementsQueryVariables>;
 export const OrganizationsPageDocument = gql`
     query OrganizationsPage {
-  ...Organizations
+  ...OrganizationsPage_Organizations
 }
-    ${OrganizationsFragmentDoc}`;
+    ${OrganizationsPage_OrganizationsFragmentDoc}`;
 
 /**
  * __useOrganizationsPageQuery__
