@@ -1,10 +1,12 @@
 import { useMemo } from "react";
-import { gql } from "@apollo/client";
+import { ApolloError, gql, useMutation } from "@apollo/client";
 import { Column, Cell } from "react-table";
 import { CONTEXT_MENU_ID, Table } from "components/Table";
-import { UsersPageQuery } from "@generated/graphql";
+import { InviteUserMutation, UserRole, UsersPageQuery } from "@generated/graphql";
 import { AccountStatusBadge } from "components/AccountStatusBadge";
 import { getTextForRole } from "components/RoleText";
+import { triggerErrorToast, triggerSuccessToast } from "components/Toast";
+import { fromJust } from "@utils/types";
 import { ContextMenu } from "components/ContextMenu";
 
 UsersTable.fragments = {
@@ -16,17 +18,55 @@ UsersTable.fragments = {
         email
         role
         accountStatus
+        inviteSentAt
       }
     }
   `,
 };
+
+const INVITE_USER = gql`
+  mutation InviteUser($input: InviteUserInput!) {
+    inviteUser(input: $input) {
+      id
+    }
+  }
+`;
 
 type Props = {
   users: NonNullable<UsersPageQuery["users"]>;
 };
 
 export function UsersTable({ users }: Props) {
-  const { columns, data: tableData } = usePrepUserData(users);
+  const [inviteUser] = useMutation<InviteUserMutation>(
+    INVITE_USER,
+    {
+      onError: (error: ApolloError) => {
+        triggerErrorToast({
+          message: "Something went wrong.",
+          sub: error.message,
+        })
+      },
+      onCompleted: () => triggerSuccessToast({ message: "Invite sent" })
+    }
+  )
+
+  const contextMenu = useMemo(() => {
+    return {
+      onClickInviteUser(userData: UserTableData) {
+        inviteUser({
+          variables: {
+            input: {
+              email: fromJust(userData.email, "email"),
+              fullName: fromJust(userData.fullName, "fullName"),
+              role: fromJust(userData.role, "role"),
+            },
+          },
+        });
+      }
+    };
+  }, [inviteUser]);
+
+  const { columns, data: tableData } = usePrepUserData(users, contextMenu);
   return <Table columns={columns} data={tableData} />;
 }
 
@@ -34,11 +74,17 @@ type UserTableData = {
   id: string;
   fullName: string;
   email: string;
-  role: string;
+  role: UserRole;
   accountStatus: string;
+  inviteSentAt?: Date | undefined;
 };
 
-function usePrepUserData(users: NonNullable<UsersPageQuery["users"]>): {
+function usePrepUserData(
+  users: NonNullable<UsersPageQuery["users"]>,
+  contextMenu: {
+    onClickInviteUser: (userData: UserTableData) => void
+  }
+): {
   data: UserTableData[];
   columns: Column<UserTableData>[];
 } {
@@ -55,6 +101,9 @@ function usePrepUserData(users: NonNullable<UsersPageQuery["users"]>): {
       {
         Header: "Role",
         accessor: "role",
+        Cell: ({ row }: Cell<UserTableData>) => {
+          return getTextForRole(row.values.role)
+        }
       },
       {
         Header: "Status",
@@ -66,27 +115,49 @@ function usePrepUserData(users: NonNullable<UsersPageQuery["users"]>): {
         },
       },
       {
+        Header: "invite Sent At",
+        accessor: "inviteSentAt",
+        Cell: ({ row }) => {
+          return row.values.inviteSentAt
+            ? new Date(row.values.inviteSentAt).toLocaleString("en-US")
+            : ""
+        }
+      },
+      {
         Header: () => null,
         accessor: "id",
         id: CONTEXT_MENU_ID,
         Cell: ({ row }: Cell<UserTableData>) => {
-          return <ContextMenu />;
+          const userData: UserTableData = {
+            id: row.values.id,
+            email: row.values.email,
+            fullName: row.values.fullName,
+            role: row.values.role,
+            accountStatus: row.values.accountStatus,
+            inviteSentAt: row.values.inviteSentAt
+          }
+
+          const context = userData.inviteSentAt
+            ? <ContextMenu />
+            : <ContextMenu onClickInviteUser={() => contextMenu.onClickInviteUser(userData)} />;
+
+          return context
         },
       },
     ];
-  }, []);
+  }, [contextMenu]);
 
   const emails = users.map((u) => u.email).join();
 
   const data = useMemo(() => {
     return users.map((user) => {
-      const roleText = getTextForRole(user.role);
       return {
         id: user.id,
         fullName: user.fullName,
         email: user.email,
-        role: roleText === "Administrator" ? "Admin" : roleText,
+        role: user.role,
         accountStatus: user.accountStatus,
+        inviteSentAt: user.inviteSentAt || undefined
       };
     });
     // Used concatenated emails as a way to determine if users

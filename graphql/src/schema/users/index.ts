@@ -25,6 +25,7 @@ export const typeDefs = gql`
     fullName: String!
     role: UserRole!
     accountStatus: AccountStatus!
+    inviteSentAt: Date
   }
 
   input InviteUserInput {
