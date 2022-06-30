@@ -1,34 +1,32 @@
-import { useMemo, useState } from "react";
-import { Column, Cell } from "react-table";
-import { Table, CONTEXT_MENU_ID } from "components/Table";
 import { gql } from "@apollo/client";
-import { OrganizationsPageQuery } from "@generated/graphql";
+import { OrganizationsTable_OrganizationFragment } from "@generated/graphql";
+import { Routes } from "@utils/routes";
 import { ContextMenu } from "components/ContextMenu";
+import { Link } from "components/Link";
+import { CONTEXT_MENU_ID, Table } from "components/Table";
+import { useMemo, useState } from "react";
+import { Cell, Column } from "react-table";
 import { DeleteOrganizationModal } from "./DeleteOrganizationModal";
 import { EditOrgModal } from "./EditOrgModal";
-import { Link } from "components/Link";
-import { Routes } from "@utils/routes";
 
 OrganizationsTable.fragments = {
-  organizations: gql`
-    fragment OrganizationsTable on Query {
-      organizations {
+  organization: gql`
+    fragment OrganizationsTable_Organization on Organization {
+      id
+      name
+      district
+      subDistrict
+      location
+      description
+      engagements {
         id
-        name
-        district
-        subDistrict
-        location
-        description
-        engagements {
-          id
-        }
       }
     }
   `,
 };
 
 type Props = {
-  organizations: NonNullable<OrganizationsPageQuery["organizations"]>;
+  organizations: OrganizationsTable_OrganizationFragment[];
 };
 
 export function OrganizationsTable({ organizations }: Props) {
@@ -93,7 +91,7 @@ export type OrgTableData = {
 };
 
 function usePrepOrgData(
-  organizations: NonNullable<OrganizationsPageQuery["organizations"]>,
+  organizations: OrganizationsTable_OrganizationFragment[],
   contextMenu: {
     onClickEdit: (org: OrgTableData) => void;
     onClickDelete: (org: OrgTableData) => void;
