@@ -8,20 +8,14 @@ import React from "react";
 
 WelcomePanel.fragments = {
   user: gql`
-    fragment WelcomePanel_User on Query {
-      currentUser {
-        fullName
-        role
-      }
+    fragment WelcomePanel_User on User {
+      fullName
+      role
     }
   `,
 };
 
-export function WelcomePanel({
-  user,
-}: {
-  user: NonNullable<WelcomePanel_UserFragment["currentUser"]>;
-}) {
+export function WelcomePanel({ user }: { user: WelcomePanel_UserFragment }) {
   return (
     <section aria-labelledby="profile-overview-title">
       <Container>
