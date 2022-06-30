@@ -1,6 +1,6 @@
 import {
   QuerySearchEngagementsArgs,
-  QuerySearchUsersArgs,
+  QuerySearchUsersArgs
 } from "@generated/graphql";
 import { gql } from "apollo-server";
 import { Context } from "../../context";
@@ -20,9 +20,15 @@ export const typeDefs = gql`
     results: [Engagement!]!
   }
 
+  type CohortsSearchResults {
+    count: Int!
+    results: [Cohort!]!
+  }
+
   extend type Query {
     searchUsers(query: String!): UsersSearchResults!
     searchEngagements(query: String!): EngagementsSearchResults!
+    searchCohorts(query: String!): CohortsSearchResults!
   }
 `;
 
@@ -59,6 +65,19 @@ async function searchEngagements(
   };
 }
 
+async function searchCohorts(
+  _parent: undefined,
+  { query }: QuerySearchEngagementsArgs,
+  { authedUser, AuthorizationService, SearchService }: Context
+) {
+  AuthorizationService.assertIsAdmin(authedUser);
+  const results = await SearchService.searchCohorts(query);
+
+  return {
+    count: results.length,
+    results,
+  };
+}
 /**
  * Mutation Resolvers
  */
@@ -67,5 +86,6 @@ export const resolvers = {
   Query: {
     searchUsers,
     searchEngagements,
+    searchCohorts,
   },
 };

@@ -93,6 +93,12 @@ export type CohortStaffAssignment = {
   user: User;
 };
 
+export type CohortsSearchResults = {
+  __typename?: 'CohortsSearchResults';
+  count: Scalars['Int'];
+  results: Array<Cohort>;
+};
+
 export type CsvCohortStaffAssignment = {
   subject: AssignmentSubject;
   teacher: CsvCohortTeacher;
@@ -298,6 +304,7 @@ export type Query = {
   engagements: Array<Engagement>;
   organization?: Maybe<Organization>;
   organizations: Array<Organization>;
+  searchCohorts: CohortsSearchResults;
   searchEngagements: EngagementsSearchResults;
   searchUsers: UsersSearchResults;
   teacherCohorts: Array<Cohort>;
@@ -322,6 +329,11 @@ export type QueryEngagementArgs = {
 
 export type QueryOrganizationArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QuerySearchCohortsArgs = {
+  query: Scalars['String'];
 };
 
 
