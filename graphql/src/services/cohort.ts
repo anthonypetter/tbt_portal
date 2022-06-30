@@ -368,7 +368,10 @@ type TeacherCohortsFilter = {
   endDate: Prisma.DateTimeNullableFilter;
 };
 
-async function getTeacherCohorts(userId: number, filter: TeacherCohortsFilter) {
+async function getCohortsAssignedToTeacher(
+  userId: number,
+  filter: TeacherCohortsFilter
+) {
   return prisma.cohort.findMany({
     where: {
       AND: [
@@ -472,6 +475,6 @@ export const CohortService = {
   addCohort,
   saveCsvCohortsData,
   getStaffAssignments,
-  getTeacherCohorts,
   getCohortEventsForCurrentWeek,
+  getCohortsAssignedToTeacher,
 };

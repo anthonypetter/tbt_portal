@@ -301,6 +301,7 @@ export type Query = {
   searchEngagements: EngagementsSearchResults;
   searchUsers: UsersSearchResults;
   teacherCohorts: Array<Cohort>;
+  teacherEngagements: Array<Engagement>;
   users: Array<User>;
 };
 
@@ -467,6 +468,12 @@ export type FlatEngagementsTableEngagementFragment = { __typename?: 'Engagement'
 
 export type OrganizationEngagementsView_EngagementsViewFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null }>, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, organization: { __typename?: 'Organization', id: string } }> };
 
+export type MentorTeacherHome_HomeFragment = { __typename?: 'Query', teacherEngagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organization: { __typename?: 'Organization', id: string, name: string }, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', fullName: string } }>, cohorts: Array<{ __typename?: 'Cohort', staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject }> }> }>, currentUser?: { __typename?: 'User', fullName: string, role: UserRole } | null };
+
+export type TutorTeacherHome_HomeFragment = { __typename?: 'Query', currentUser?: { __typename?: 'User', fullName: string, role: UserRole } | null };
+
+export type WelcomePanel_UserFragment = { __typename?: 'Query', currentUser?: { __typename?: 'User', fullName: string, role: UserRole } | null };
+
 export type AddOrganizationMutationVariables = Exact<{
   input: AddOrganizationInput;
 }>;
@@ -546,6 +553,21 @@ export type FlatEngagementsPageQueryVariables = Exact<{ [key: string]: never; }>
 
 export type FlatEngagementsPageQuery = { __typename?: 'Query', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organization: { __typename?: 'Organization', id: string, name: string }, cohorts: Array<{ __typename?: 'Cohort', id: string }>, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
 
+export type HomePageAdminQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type HomePageAdminQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', fullName: string } | null };
+
+export type HomePageMentorQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type HomePageMentorQuery = { __typename?: 'Query', teacherEngagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organization: { __typename?: 'Organization', id: string, name: string }, staffAssignments: Array<{ __typename?: 'EngagementStaffAssignment', role: AssignmentRole, user: { __typename?: 'User', fullName: string } }>, cohorts: Array<{ __typename?: 'Cohort', staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject }> }> }>, currentUser?: { __typename?: 'User', fullName: string, role: UserRole } | null };
+
+export type HomePageTutorQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type HomePageTutorQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', fullName: string, role: UserRole } | null };
+
 export type MySchedulePageQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -588,6 +610,11 @@ export type UsersPageQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type UsersPageQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, fullName: string, email: string, role: UserRole, accountStatus: AccountStatus }> };
+
+export type GetCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', email: string, accountStatus: AccountStatus, role: UserRole, fullName: string } | null };
 
 export const CohortDetailsView_CohortFragmentDoc = gql`
     fragment CohortDetailsView_Cohort on Cohort {
@@ -890,6 +917,45 @@ export const FlatEngagementsPageFragmentDoc = gql`
   }
 }
     ${FlatEngagementsTableEngagementFragmentDoc}`;
+export const WelcomePanel_UserFragmentDoc = gql`
+    fragment WelcomePanel_User on Query {
+  currentUser {
+    fullName
+    role
+  }
+}
+    `;
+export const MentorTeacherHome_HomeFragmentDoc = gql`
+    fragment MentorTeacherHome_Home on Query {
+  ...WelcomePanel_User
+  teacherEngagements {
+    id
+    name
+    startDate
+    endDate
+    organization {
+      id
+      name
+    }
+    staffAssignments {
+      role
+      user {
+        fullName
+      }
+    }
+    cohorts {
+      staffAssignments {
+        subject
+      }
+    }
+  }
+}
+    ${WelcomePanel_UserFragmentDoc}`;
+export const TutorTeacherHome_HomeFragmentDoc = gql`
+    fragment TutorTeacherHome_Home on Query {
+  ...WelcomePanel_User
+}
+    ${WelcomePanel_UserFragmentDoc}`;
 export const NewOrgFragmentDoc = gql`
     fragment NewOrg on Organization {
   id
@@ -1655,6 +1721,104 @@ export function useFlatEngagementsPageLazyQuery(baseOptions?: Apollo.LazyQueryHo
 export type FlatEngagementsPageQueryHookResult = ReturnType<typeof useFlatEngagementsPageQuery>;
 export type FlatEngagementsPageLazyQueryHookResult = ReturnType<typeof useFlatEngagementsPageLazyQuery>;
 export type FlatEngagementsPageQueryResult = Apollo.QueryResult<FlatEngagementsPageQuery, FlatEngagementsPageQueryVariables>;
+export const HomePageAdminDocument = gql`
+    query HomePageAdmin {
+  currentUser {
+    fullName
+  }
+}
+    `;
+
+/**
+ * __useHomePageAdminQuery__
+ *
+ * To run a query within a React component, call `useHomePageAdminQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHomePageAdminQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHomePageAdminQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useHomePageAdminQuery(baseOptions?: Apollo.QueryHookOptions<HomePageAdminQuery, HomePageAdminQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<HomePageAdminQuery, HomePageAdminQueryVariables>(HomePageAdminDocument, options);
+      }
+export function useHomePageAdminLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<HomePageAdminQuery, HomePageAdminQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<HomePageAdminQuery, HomePageAdminQueryVariables>(HomePageAdminDocument, options);
+        }
+export type HomePageAdminQueryHookResult = ReturnType<typeof useHomePageAdminQuery>;
+export type HomePageAdminLazyQueryHookResult = ReturnType<typeof useHomePageAdminLazyQuery>;
+export type HomePageAdminQueryResult = Apollo.QueryResult<HomePageAdminQuery, HomePageAdminQueryVariables>;
+export const HomePageMentorDocument = gql`
+    query HomePageMentor {
+  ...MentorTeacherHome_Home
+}
+    ${MentorTeacherHome_HomeFragmentDoc}`;
+
+/**
+ * __useHomePageMentorQuery__
+ *
+ * To run a query within a React component, call `useHomePageMentorQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHomePageMentorQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHomePageMentorQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useHomePageMentorQuery(baseOptions?: Apollo.QueryHookOptions<HomePageMentorQuery, HomePageMentorQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<HomePageMentorQuery, HomePageMentorQueryVariables>(HomePageMentorDocument, options);
+      }
+export function useHomePageMentorLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<HomePageMentorQuery, HomePageMentorQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<HomePageMentorQuery, HomePageMentorQueryVariables>(HomePageMentorDocument, options);
+        }
+export type HomePageMentorQueryHookResult = ReturnType<typeof useHomePageMentorQuery>;
+export type HomePageMentorLazyQueryHookResult = ReturnType<typeof useHomePageMentorLazyQuery>;
+export type HomePageMentorQueryResult = Apollo.QueryResult<HomePageMentorQuery, HomePageMentorQueryVariables>;
+export const HomePageTutorDocument = gql`
+    query HomePageTutor {
+  ...TutorTeacherHome_Home
+}
+    ${TutorTeacherHome_HomeFragmentDoc}`;
+
+/**
+ * __useHomePageTutorQuery__
+ *
+ * To run a query within a React component, call `useHomePageTutorQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHomePageTutorQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHomePageTutorQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useHomePageTutorQuery(baseOptions?: Apollo.QueryHookOptions<HomePageTutorQuery, HomePageTutorQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<HomePageTutorQuery, HomePageTutorQueryVariables>(HomePageTutorDocument, options);
+      }
+export function useHomePageTutorLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<HomePageTutorQuery, HomePageTutorQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<HomePageTutorQuery, HomePageTutorQueryVariables>(HomePageTutorDocument, options);
+        }
+export type HomePageTutorQueryHookResult = ReturnType<typeof useHomePageTutorQuery>;
+export type HomePageTutorLazyQueryHookResult = ReturnType<typeof useHomePageTutorLazyQuery>;
+export type HomePageTutorQueryResult = Apollo.QueryResult<HomePageTutorQuery, HomePageTutorQueryVariables>;
 export const MySchedulePageDocument = gql`
     query MySchedulePage {
   ...CurrentUserQueryForMySchedulePage
@@ -1891,3 +2055,40 @@ export function useUsersPageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type UsersPageQueryHookResult = ReturnType<typeof useUsersPageQuery>;
 export type UsersPageLazyQueryHookResult = ReturnType<typeof useUsersPageLazyQuery>;
 export type UsersPageQueryResult = Apollo.QueryResult<UsersPageQuery, UsersPageQueryVariables>;
+export const GetCurrentUserDocument = gql`
+    query GetCurrentUser {
+  currentUser {
+    email
+    accountStatus
+    role
+    fullName
+  }
+}
+    `;
+
+/**
+ * __useGetCurrentUserQuery__
+ *
+ * To run a query within a React component, call `useGetCurrentUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCurrentUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCurrentUserQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetCurrentUserQuery(baseOptions?: Apollo.QueryHookOptions<GetCurrentUserQuery, GetCurrentUserQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCurrentUserQuery, GetCurrentUserQueryVariables>(GetCurrentUserDocument, options);
+      }
+export function useGetCurrentUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCurrentUserQuery, GetCurrentUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCurrentUserQuery, GetCurrentUserQueryVariables>(GetCurrentUserDocument, options);
+        }
+export type GetCurrentUserQueryHookResult = ReturnType<typeof useGetCurrentUserQuery>;
+export type GetCurrentUserLazyQueryHookResult = ReturnType<typeof useGetCurrentUserLazyQuery>;
+export type GetCurrentUserQueryResult = Apollo.QueryResult<GetCurrentUserQuery, GetCurrentUserQueryVariables>;
