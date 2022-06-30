@@ -1,23 +1,49 @@
 import { gql } from "@apollo/client";
-import { TutorTeacherHome_HomeFragment } from "@generated/graphql";
+import {
+  AssignmentRole,
+  TutorTeacherHome_HomeFragment,
+} from "@generated/graphql";
+import sortBy from "lodash/sortBy";
 import React from "react";
 import { SidePanel } from "./SidePanel";
+import { TeacherCohortsPanel } from "./TeacherCohortsPanel";
 import { WelcomePanel } from "./WelcomePanel";
 
 TutorTeacherHome.fragments = {
   tutorHome: gql`
     fragment TutorTeacherHome_Home on Query {
-      ...WelcomePanel_User
+      currentUser {
+        id
+        ...WelcomePanel_User
+      }
+      teacherEngagements {
+        startDate
+        staffAssignments {
+          user {
+            id
+          }
+          role
+        }
+        cohorts {
+          ...TeacherCohortsPanel_Cohort
+        }
+      }
+      teacherCohorts {
+        ...TeacherCohortsPanel_Cohort
+      }
     }
     ${WelcomePanel.fragments.user}
+    ${TeacherCohortsPanel.fragments.cohort}
   `,
 };
 
 type Props = {
   currentUser: NonNullable<TutorTeacherHome_HomeFragment["currentUser"]>;
+  teacherEngagements: TutorTeacherHome_HomeFragment["teacherEngagements"];
+  teacherCohorts: TutorTeacherHome_HomeFragment["teacherCohorts"];
 };
 
-export const STATIC_ANNOUNCEMENTS = [
+export const TEACHER_STATIC_ANNOUNCEMENTS = [
   {
     title: "New portal is now live!",
     href: "#",
@@ -31,7 +57,22 @@ export const STATIC_ANNOUNCEMENTS = [
   },
 ];
 
-export function TutorTeacherHome({ currentUser }: Props) {
+export function TutorTeacherHome({
+  currentUser,
+  teacherEngagements,
+  teacherCohorts,
+}: Props) {
+  const substitutingCohorts = sortBy(
+    teacherEngagements.filter((engagement) =>
+      engagement.staffAssignments.some(
+        (assignment) =>
+          assignment.user.id === currentUser.id &&
+          assignment.role === AssignmentRole.SubstituteTeacher
+      )
+    ),
+    (e) => e.startDate
+  ).flatMap((e) => e.cohorts);
+
   return (
     <div className="mt-8">
       <main className="pb-8">
@@ -39,12 +80,22 @@ export function TutorTeacherHome({ currentUser }: Props) {
           {/* Left column */}
           <div className="grid grid-cols-1 gap-8 lg:col-span-2">
             <WelcomePanel user={currentUser} />
+
+            <TeacherCohortsPanel
+              title="Teaching"
+              teacherCohorts={teacherCohorts}
+            />
+
+            <TeacherCohortsPanel
+              title="Substituting"
+              teacherCohorts={substitutingCohorts}
+            />
           </div>
 
           {/* Right column */}
           <div className="grid grid-cols-1 gap-4">
             <SidePanel title="Announcements">
-              {STATIC_ANNOUNCEMENTS.map((announcement, i) => (
+              {TEACHER_STATIC_ANNOUNCEMENTS.map((announcement, i) => (
                 <SidePanel.Item
                   key={`${announcement.title}-${i}`}
                   title={announcement.title}
