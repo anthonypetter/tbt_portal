@@ -41,6 +41,22 @@ export const SearchService = {
     });
   },
 
+  async searchOrganizations(query: string) {
+    if (query.length < MIN_QUERY_LENGTH) {
+      return [];
+    }
+
+    return prisma.organization.findMany({
+      take: SEARCH_TAKE_LIMIT,
+      where: {
+        OR: [
+          { name: { startsWith: query, mode: "insensitive" } },
+        ],
+      },
+      orderBy: { name: "asc" },
+    });
+  },
+
   async searchCohorts(query: string) {
     if (query.length < MIN_QUERY_LENGTH_COHORT) {
       return [];

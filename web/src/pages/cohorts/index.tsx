@@ -42,7 +42,7 @@ type Props = {
 };
 
 const Cohorts: NextPage<Props> = ({ cohorts }) => {
-  const { data } = useQuery<FlatCohortsPageQuery>(GET_FLAT_COHORTS, {
+  const { data, refetch } = useQuery<FlatCohortsPageQuery>(GET_FLAT_COHORTS, {
     fetchPolicy: "network-only", // Used for first execution
     onError: (error) => {
       console.error(error);
@@ -55,7 +55,10 @@ const Cohorts: NextPage<Props> = ({ cohorts }) => {
 
   return (
     <AuthedLayout>
-      <FlatCohortsPage cohorts={data?.cohorts ?? cohorts} />
+      <FlatCohortsPage
+        cohorts={data?.cohorts ?? cohorts}
+        refetch={refetch}
+      />
     </AuthedLayout>
   );
 };
