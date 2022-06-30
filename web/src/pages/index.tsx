@@ -64,6 +64,8 @@ const Home: NextPage<Props> = ({ homeData }) => {
         <AuthedLayout>
           <TutorTeacherHome
             currentUser={fromJust(homeData.data.currentUser, "currentUser")}
+            teacherEngagements={homeData.data.teacherEngagements}
+            teacherCohorts={homeData.data.teacherCohorts}
           />
         </AuthedLayout>
       );
