@@ -10,7 +10,7 @@ import type { GetServerSidePropsContext, NextPage } from "next";
 
 const GET_ORGANIZATIONS = gql`
   query OrganizationsPage {
-    ...Organizations
+    ...OrganizationsPage_Organizations
   }
   ${OrganizationsPage.fragments.organizations}
 `;
@@ -39,21 +39,27 @@ type Props = {
 };
 
 const Organizations: NextPage<Props> = ({ organizations }) => {
-  const { data } = useQuery<OrganizationsPageQuery>(GET_ORGANIZATIONS, {
-    fetchPolicy: "network-only", // Used for first execution
-    onError: (error) => {
-      console.error(error);
-      triggerErrorToast({
-        message: "Looks like something went wrong.",
-        sub: "We weren't able to fetch organizations.",
-      });
-    },
-  });
+  const { data, refetch } = useQuery<OrganizationsPageQuery>(
+    GET_ORGANIZATIONS,
+    {
+      fetchPolicy: "network-only", // Used for first execution
+      onError: (error) => {
+        console.error(error);
+        triggerErrorToast({
+          message: "Looks like something went wrong.",
+          sub: "We weren't able to fetch organizations.",
+        });
+      },
+    }
+  );
 
   // To avoid loading flash, we'll preload the table using server-side fetched orgs.
   return (
     <AuthedLayout>
-      <OrganizationsPage organizations={data?.organizations ?? organizations} />
+      <OrganizationsPage
+        organizations={data?.organizations ?? organizations}
+        refetch={() => refetch()}
+      />
     </AuthedLayout>
   );
 };

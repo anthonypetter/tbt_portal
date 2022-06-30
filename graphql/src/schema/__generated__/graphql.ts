@@ -289,6 +289,12 @@ export type Organization = {
   subDistrict?: Maybe<Scalars['String']>;
 };
 
+export type OrganizationsSearchResults = {
+  __typename?: 'OrganizationsSearchResults';
+  count: Scalars['Int'];
+  results: Array<Organization>;
+};
+
 export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']>;
@@ -301,6 +307,7 @@ export type Query = {
   organization?: Maybe<Organization>;
   organizations: Array<Organization>;
   searchEngagements: EngagementsSearchResults;
+  searchOrganizations: OrganizationsSearchResults;
   searchUsers: UsersSearchResults;
   teacherCohorts: Array<Cohort>;
   teacherEngagements: Array<Engagement>;
@@ -329,6 +336,11 @@ export type QueryOrganizationArgs = {
 
 
 export type QuerySearchEngagementsArgs = {
+  query: Scalars['String'];
+};
+
+
+export type QuerySearchOrganizationsArgs = {
   query: Scalars['String'];
 };
 
@@ -462,6 +474,7 @@ export type ResolversTypes = {
   NewCohortStaffAssignment: NewCohortStaffAssignment;
   NewEngagementStaffAssignment: NewEngagementStaffAssignment;
   Organization: ResolverTypeWrapper<Omit<Organization, 'engagements'> & { engagements: Array<ResolversTypes['Engagement']> }>;
+  OrganizationsSearchResults: ResolverTypeWrapper<Omit<OrganizationsSearchResults, 'results'> & { results: Array<ResolversTypes['Organization']> }>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Time: Time;
@@ -499,6 +512,7 @@ export type ResolversParentTypes = {
   NewCohortStaffAssignment: NewCohortStaffAssignment;
   NewEngagementStaffAssignment: NewEngagementStaffAssignment;
   Organization: Omit<Organization, 'engagements'> & { engagements: Array<ResolversParentTypes['Engagement']> };
+  OrganizationsSearchResults: Omit<OrganizationsSearchResults, 'results'> & { results: Array<ResolversParentTypes['Organization']> };
   Query: {};
   String: Scalars['String'];
   Time: Time;
@@ -599,6 +613,12 @@ export type OrganizationResolvers<ContextType = any, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type OrganizationsSearchResultsResolvers<ContextType = any, ParentType extends ResolversParentTypes['OrganizationsSearchResults'] = ResolversParentTypes['OrganizationsSearchResults']> = {
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  results?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   _empty?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cohort?: Resolver<ResolversTypes['Cohort'], ParentType, ContextType, RequireFields<QueryCohortArgs, 'id'>>;
@@ -610,6 +630,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
   searchEngagements?: Resolver<ResolversTypes['EngagementsSearchResults'], ParentType, ContextType, RequireFields<QuerySearchEngagementsArgs, 'query'>>;
+  searchOrganizations?: Resolver<ResolversTypes['OrganizationsSearchResults'], ParentType, ContextType, RequireFields<QuerySearchOrganizationsArgs, 'query'>>;
   searchUsers?: Resolver<ResolversTypes['UsersSearchResults'], ParentType, ContextType, RequireFields<QuerySearchUsersArgs, 'query'>>;
   teacherCohorts?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType>;
   teacherEngagements?: Resolver<Array<ResolversTypes['Engagement']>, ParentType, ContextType>;
@@ -642,6 +663,7 @@ export type Resolvers<ContextType = any> = {
   EngagementsSearchResults?: EngagementsSearchResultsResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;
+  OrganizationsSearchResults?: OrganizationsSearchResultsResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UsersSearchResults?: UsersSearchResultsResolvers<ContextType>;
