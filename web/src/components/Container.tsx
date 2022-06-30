@@ -15,7 +15,7 @@ export function Container({ children, className, padding = "md" }: Props) {
     <div
       className={clsx(
         "mt-6 lg:mt-0",
-        "bg-white shadow sm:rounded-lg",
+        "bg-white shadow rounded-lg",
         paddingStyle,
         className
       )}
