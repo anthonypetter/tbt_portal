@@ -2,7 +2,7 @@ import { UserRole } from "@generated/graphql";
 import { Dialog, Transition } from "@headlessui/react";
 import { CalendarIcon, HomeIcon, XIcon } from "@heroicons/react/outline";
 import { Routes } from "@utils/routes";
-import { fromJust } from "@utils/types";
+import { assertUnreachable, fromJust } from "@utils/types";
 import clsx from "clsx";
 import sortBy from "lodash/sortBy";
 import Image from "next/image";
@@ -29,18 +29,15 @@ type SidebarLink = {
 };
 
 function getNavigation(role: UserRole, currentPathname: string) {
-  const commonLinks: SidebarLink[] = [
+  const commonTeacherLinks: SidebarLink[] = [
     {
       name: "Home",
       href: Routes.home.href(),
       icon: HomeIcon,
       current: Routes.home.path() === currentPathname,
       order: 10,
-      disabled: true,
+      disabled: false,
     },
-  ];
-
-  const commonTeacherLinks: SidebarLink[] = [
     {
       name: "My Schedule",
       href: Routes.mySchedule.href(),
@@ -51,6 +48,8 @@ function getNavigation(role: UserRole, currentPathname: string) {
     },
   ];
 
+  const mentorTeacherLinks: SidebarLink[] = commonTeacherLinks;
+  const tutorTeacherLinks: SidebarLink[] = commonTeacherLinks;
   const adminOnlyLinks: SidebarLink[] = [
     {
       name: "Live View",
@@ -120,25 +119,19 @@ function getNavigation(role: UserRole, currentPathname: string) {
 
   switch (role) {
     case UserRole.Admin:
-      return sortBy([...commonLinks, ...adminOnlyLinks], (n) => n.order).filter(
+      return sortBy(adminOnlyLinks, (n) => n.order).filter(
         (link) => link.disabled === false
       );
 
     case UserRole.MentorTeacher:
-      return [...commonLinks, ...commonTeacherLinks].filter(
-        (link) => link.disabled === false
-      );
+      return mentorTeacherLinks.filter((link) => link.disabled === false);
 
     case UserRole.TutorTeacher:
-      return [...commonLinks, ...commonTeacherLinks].filter(
-        (link) => link.disabled === false
-      );
+      return tutorTeacherLinks.filter((link) => link.disabled === false);
 
     default:
-      break;
+      assertUnreachable(role, "role");
   }
-
-  return [];
 }
 
 type Props = {
