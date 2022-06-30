@@ -1,23 +1,21 @@
+import { Resolvers } from "@generated/graphql";
 import { gql } from "apollo-server";
-
-import { typeDefs as UserDefs, resolvers as UserResolvers } from "./users";
+import merge from "lodash/merge";
 import {
-  typeDefs as OrganizationDefs,
-  resolvers as OrganizationResolvers,
-} from "./organizations";
+  resolvers as CohortResolvers,
+  typeDefs as CohortDefs,
+} from "./cohorts";
 import {
-  typeDefs as EngagementDefs,
   resolvers as EngagementResolvers,
+  typeDefs as EngagementDefs,
 } from "./engagements";
 import {
-  typeDefs as CohortDefs,
-  resolvers as CohortResolvers,
-} from "./cohorts";
-import { typeDefs as SearchDefs, resolvers as SearchResolvers } from "./search";
+  resolvers as OrganizationResolvers,
+  typeDefs as OrganizationDefs,
+} from "./organizations";
 import { dateScalar } from "./scalars/date";
-import { Resolvers } from "./__generated__/graphql";
-
-import merge from "lodash/merge";
+import { resolvers as SearchResolvers, typeDefs as SearchDefs } from "./search";
+import { resolvers as UserResolvers, typeDefs as UserDefs } from "./users";
 
 export const typeDefs = gql`
   scalar Date
