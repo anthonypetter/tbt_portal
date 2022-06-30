@@ -1,23 +1,23 @@
-import { Fragment, useState } from "react";
+import { UserRole } from "@generated/graphql";
 import { Dialog, Transition } from "@headlessui/react";
 import { CalendarIcon, HomeIcon, XIcon } from "@heroicons/react/outline";
-import clsx from "clsx";
 import { Routes } from "@utils/routes";
-import { FaRegBuilding, FaGraduationCap } from "react-icons/fa";
-import { SiGoogleclassroom } from "react-icons/si";
-import { MdWorkspacesOutline } from "react-icons/md";
-import { FiUsers } from "react-icons/fi";
-import { BiVideoRecording } from "react-icons/bi";
-import { RiSignalTowerFill } from "react-icons/ri";
+import { fromJust } from "@utils/types";
+import clsx from "clsx";
+import sortBy from "lodash/sortBy";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { Fragment, useState } from "react";
+import { BiVideoRecording } from "react-icons/bi";
+import { FaGraduationCap, FaRegBuilding } from "react-icons/fa";
+import { FiUsers } from "react-icons/fi";
+import { MdWorkspacesOutline } from "react-icons/md";
+import { RiSignalTowerFill } from "react-icons/ri";
+import { SiGoogleclassroom } from "react-icons/si";
 import { useAuth } from "./auth/AuthProvider";
-import Image from "next/image";
-import { useTheme } from "./ThemeProvider";
-import { UserRole } from "@generated/graphql";
-import { fromJust } from "@utils/types";
-import sortBy from "lodash/sortBy";
 import { AuthHeader } from "./AuthHeader";
+import { useTheme } from "./ThemeProvider";
 
 type SidebarLink = {
   name: string;
@@ -90,7 +90,7 @@ function getNavigation(role: UserRole, currentPathname: string) {
       icon: FaGraduationCap,
       current: Routes.teachers.path() === currentPathname,
       order: 70,
-      disabled: false,
+      disabled: true,
     },
     {
       name: "Schedules",

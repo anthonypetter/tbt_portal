@@ -1,21 +1,19 @@
 import { ApolloQueryResult, gql, useQuery } from "@apollo/client";
-import {
-  CohortDetailsFragment,
-  CohortDetailsPageQuery,
-} from "@generated/graphql";
+import { CohortDetailsPageQuery } from "@generated/graphql";
 import { getSession } from "@lib/apollo-client";
 import { processResult } from "@utils/apollo";
 import { getServerSideAuth } from "@utils/auth/server-side-auth";
 import { parseCohortId } from "@utils/parsing";
 import { AuthedLayout } from "components/AuthedLayout";
 import { CohortDetailsPage } from "components/cohorts/CohortDetailsPage";
+import { Tab } from "components/cohorts/CohortDetailsPage/CohortDetailsTabs";
 import { triggerErrorToast } from "components/Toast";
 import { GetServerSidePropsContext, NextPage } from "next";
 
 const GET_COHORT = gql`
   query CohortDetailsPage($id: ID!) {
     cohort(id: $id) {
-      ...CohortDetails
+      ...CohortDetailsPageDetails_Cohort
     }
   }
   ${CohortDetailsPage.fragments.cohort}
@@ -29,7 +27,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   }
 
   const { cohortId } = parseCohortId(context.params);
-
   const { client } = getSession(auth.token);
 
   const result: ApolloQueryResult<CohortDetailsPageQuery> = await client.query({
@@ -46,7 +43,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 type Props = {
-  cohort: NonNullable<CohortDetailsFragment>;
+  cohort: NonNullable<CohortDetailsPageQuery["cohort"]>;
 };
 
 const CohortDetail: NextPage<Props> = ({ cohort }) => {
@@ -64,7 +61,12 @@ const CohortDetail: NextPage<Props> = ({ cohort }) => {
 
   return (
     <AuthedLayout>
-      <CohortDetailsPage cohort={data?.cohort ?? cohort} />
+      <CohortDetailsPage
+        tabCohort={{
+          tab: Tab.Details,
+          cohort: data?.cohort ?? cohort,
+        }}
+      />
     </AuthedLayout>
   );
 };

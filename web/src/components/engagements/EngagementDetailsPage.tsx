@@ -17,7 +17,7 @@ import { EngagementDetailsTabs, Tab } from "./EngagementDetailsTabs";
 
 const EngagementDetailsPageQueryName = "EngagementDetailsPage";
 
-https: EngagementDetailsPage.fragments = {
+EngagementDetailsPage.fragments = {
   cohortsView: gql`
     fragment EngagementDetailsPageCohorts on Engagement {
       id

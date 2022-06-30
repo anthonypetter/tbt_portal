@@ -1,4 +1,4 @@
-import { AssignmentSubject } from "../../schema/__generated__/graphql";
+import { AssignmentSubject } from "@generated/graphql";
 import { normalizeDateTimeToUTCDate, Weekday } from "../dateTime";
 import { calculateRecurringEvents } from "../recurrence";
 
