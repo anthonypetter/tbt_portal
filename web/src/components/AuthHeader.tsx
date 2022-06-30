@@ -11,20 +11,23 @@ import { useAuth } from "./auth/AuthProvider";
 import { RoleText } from "./RoleText";
 
 type Props = {
-  setSidebarOpen: (data: boolean) => void;
+  setSidebarOpen?: (data: boolean) => void;
 };
 
 export function AuthHeader({ setSidebarOpen }: Props) {
   return (
     <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow">
-      <button
-        type="button"
-        className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 md:hidden"
-        onClick={() => setSidebarOpen(true)}
-      >
-        <span className="sr-only">Open sidebar</span>
-        <MenuAlt2Icon className="h-6 w-6" aria-hidden="true" />
-      </button>
+      {setSidebarOpen && (
+        <button
+          type="button"
+          className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 md:hidden"
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          onClick={setSidebarOpen ? () => setSidebarOpen(true) : () => {}}
+        >
+          <span className="sr-only">Open sidebar</span>
+          <MenuAlt2Icon className="h-6 w-6" aria-hidden="true" />
+        </button>
+      )}
       <div className="flex-1 px-4 flex justify-between">
         <div className="flex-1 flex">
           <form className="w-full flex md:ml-0" action="#" method="GET">
