@@ -81,7 +81,11 @@ export function CohortDetailsSidebar({
                     </p>
                   </Link>
                   <Link
-                    href={Routes.cohortRoom.href(selectedCohort.id, "student")}
+                    href={Routes.cohortRoom.href(
+                      selectedCohort.id,
+                      "student",
+                      selectedCohort.meetingRoom
+                    )}
                   >
                     <p className="text-ellipsis text-blue-400 truncate">
                       Student Link
