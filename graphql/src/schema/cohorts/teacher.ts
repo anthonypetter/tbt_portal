@@ -1,6 +1,6 @@
 import { gql } from "apollo-server";
-import { Context } from "../../context";
 import { add } from "date-fns";
+import { Context } from "../../context";
 import { normalizeDateTimeToUTCDate } from "../../utils/dateTime";
 
 /**
@@ -10,6 +10,7 @@ import { normalizeDateTimeToUTCDate } from "../../utils/dateTime";
 export const typeDefs = gql`
   extend type Query {
     teacherCohorts: [Cohort!]!
+    teacherEngagements: [Engagement!]!
   }
 `;
 
@@ -41,12 +42,33 @@ async function teacherCohorts(
     endDate: { gte: paddedCurrentUTCDate },
   };
 
-  const cohorts = await CohortService.getTeacherCohorts(
+  const cohorts = await CohortService.getCohortsAssignedToTeacher(
     authedUser.id,
     endDateFilter
   );
 
   return cohorts;
+}
+
+async function teacherEngagements(
+  _parent: undefined,
+  _args: undefined,
+  { authedUser, EngagementService }: Context
+) {
+  const currentDate = new Date();
+  const todaysUTCDate = normalizeDateTimeToUTCDate(currentDate);
+  const paddedCurrentUTCDate = add(todaysUTCDate, { hours: -24 });
+
+  const endDateFilter = {
+    endDate: { gte: paddedCurrentUTCDate },
+  };
+
+  const engagements = await EngagementService.getEngagementsAssignedToTeacher(
+    authedUser.id,
+    endDateFilter
+  );
+
+  return engagements;
 }
 
 /**
@@ -56,5 +78,6 @@ async function teacherCohorts(
 export const resolvers = {
   Query: {
     teacherCohorts,
+    teacherEngagements,
   },
 };

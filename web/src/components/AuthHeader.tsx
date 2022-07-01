@@ -21,8 +21,7 @@ export function AuthHeader({ setSidebarOpen }: Props) {
         <button
           type="button"
           className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 md:hidden"
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          onClick={setSidebarOpen ? () => setSidebarOpen(true) : () => {}}
+          onClick={() => setSidebarOpen(true)}
         >
           <span className="sr-only">Open sidebar</span>
           <MenuAlt2Icon className="h-6 w-6" aria-hidden="true" />
@@ -39,6 +38,7 @@ export function AuthHeader({ setSidebarOpen }: Props) {
                 <SearchIcon className="h-5 w-5" aria-hidden="true" />
               </div>
               <input
+                disabled
                 id="search-field"
                 className="block w-full h-full pl-8 pr-3 py-2 border-transparent text-gray-900 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-0 focus:border-transparent sm:text-sm"
                 placeholder="Search"

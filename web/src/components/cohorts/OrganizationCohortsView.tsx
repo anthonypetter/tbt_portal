@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { OrgDetailPageCohortsQuery } from "@generated/graphql";
+import { OrganizationCohortsView_CohortsViewFragment } from "@generated/graphql";
 import { SearchIcon } from "@heroicons/react/outline";
 import clsx from "clsx";
 import { ErrorBoundary } from "components/ErrorBoundary";
@@ -11,8 +11,8 @@ import { CohortDetailsSidebar } from "./CohortDetailsSidebar";
 import { CohortsTable } from "./CohortsTable";
 
 OrganizationCohortsView.fragments = {
-  cohortsList: gql`
-    fragment CohortsViewListF on Organization {
+  engagements: gql`
+    fragment OrganizationCohortsView_CohortsView on Organization {
       engagements {
         id
         name
@@ -20,41 +20,25 @@ OrganizationCohortsView.fragments = {
         endDate
         organizationId
         cohorts {
-          id
-          createdAt
-          name
-          grade
-          meetingRoom
-          hostKey
-          exempt
-          startDate
-          endDate
-          engagementId
-          staffAssignments {
-            user {
-              id
-              fullName
-              email
-            }
-            subject
-          }
-          ...CohortForDetailsSidebar
+          ...CohortDetailsSidebar_Cohort
+          ...CohortsTable_Cohort
         }
       }
     }
     ${CohortDetailsSidebar.fragments.cohort}
+    ${CohortsTable.fragments.cohort}
   `,
 };
 
 type Props = {
-  organization: NonNullable<OrgDetailPageCohortsQuery["organization"]>;
+  engagements: OrganizationCohortsView_CohortsViewFragment["engagements"];
 };
 
-export function OrganizationCohortsView({ organization }: Props) {
+export function OrganizationCohortsView({ engagements }: Props) {
   const [selectedCohortId, setSelectedCohortId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
 
-  const cohorts = organization.engagements.flatMap((e) => e.cohorts);
+  const cohorts = engagements.flatMap((e) => e.cohorts);
 
   const filteredCohorts = searchTerm
     ? filter(cohorts, (c) =>
@@ -82,7 +66,6 @@ export function OrganizationCohortsView({ organization }: Props) {
               </div>
 
               <CohortsTable
-                organizationId={organization.id}
                 cohorts={filteredCohorts}
                 onRowClick={(id) => setSelectedCohortId(id)}
                 selectedCohort={selectedCohort}

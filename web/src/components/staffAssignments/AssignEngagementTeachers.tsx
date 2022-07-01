@@ -1,15 +1,14 @@
 import { AssignmentRole } from "@generated/graphql";
 import { FieldError } from "components/FieldError";
+import React, { useState } from "react";
+import { EmptyStaffingState } from "./EmptyStaffingState";
+import { SearchTeachersInput, TeacherSelection } from "./SearchTeachersInput";
+import { isEngagementStaffTeacher, StaffAssignment } from "./StaffAssignment";
 import {
   Assignment,
   EngagementAssignment,
   TeacherAssignmentType,
 } from "./types";
-import { SearchTeachersInput, TeacherSelection } from "./SearchTeachersInput";
-import React, { useState } from "react";
-import { QueryEngagements } from "../engagements/OrganizationEngagementsView";
-import { EmptyStaffingState } from "./EmptyStaffingState";
-import { isEngagementStaffTeacher, StaffAssignment } from "./StaffAssignment";
 
 type Props = {
   staff: EngagementStaffTeacher[];
@@ -104,14 +103,3 @@ function isEngagementAssingment(
 export type EngagementStaffTeacher = TeacherSelection & {
   role: AssignmentRole;
 };
-
-export function toEngagementStaffTeacher(
-  staffAssignment: QueryEngagements[number]["staffAssignments"][number]
-): EngagementStaffTeacher {
-  return {
-    userId: staffAssignment.user.id,
-    fullName: staffAssignment.user.fullName,
-    email: staffAssignment.user.email,
-    role: staffAssignment.role,
-  };
-}

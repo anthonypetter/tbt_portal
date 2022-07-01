@@ -20,7 +20,6 @@ import { Spinner } from "../Spinner";
 import {
   AssignEngagementTeachers,
   EngagementStaffTeacher,
-  toEngagementStaffTeacher,
 } from "../staffAssignments/AssignEngagementTeachers";
 
 const EDIT_ENGAGEMENT = gql`
@@ -233,4 +232,15 @@ export function EditEngagementModalBody({
       </div>
     </>
   );
+}
+
+export function toEngagementStaffTeacher(
+  staffAssignment: EngagementForEditEngagementModalFragment["staffAssignments"][number]
+): EngagementStaffTeacher {
+  return {
+    userId: staffAssignment.user.id,
+    fullName: staffAssignment.user.fullName,
+    email: staffAssignment.user.email,
+    role: staffAssignment.role,
+  };
 }
