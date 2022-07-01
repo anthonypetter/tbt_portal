@@ -1,13 +1,19 @@
-import { useMemo } from "react";
 import { ApolloError, gql, useMutation } from "@apollo/client";
-import { Column, Cell } from "react-table";
-import { CONTEXT_MENU_ID, Table } from "components/Table";
-import { InviteUserMutation, UserRole, UsersPageQuery } from "@generated/graphql";
-import { AccountStatusBadge } from "components/AccountStatusBadge";
-import { getTextForRole } from "components/RoleText";
-import { triggerErrorToast, triggerSuccessToast } from "components/Toast";
+import {
+  InviteUserMutation,
+  UserRole,
+  UsersPageQuery,
+} from "@generated/graphql";
 import { fromJust } from "@utils/types";
+import { AccountStatusBadge } from "components/AccountStatusBadge";
 import { ContextMenu } from "components/ContextMenu";
+import { getTextForRole } from "components/RoleText";
+import { CONTEXT_MENU_ID, Table } from "components/Table";
+import { triggerErrorToast, triggerSuccessToast } from "components/Toast";
+import { useMemo } from "react";
+import { Cell, Column } from "react-table";
+
+const USERS_PAGE_QUERY_NAME = "UsersPage";
 
 UsersTable.fragments = {
   users: gql`
@@ -37,18 +43,19 @@ type Props = {
 };
 
 export function UsersTable({ users }: Props) {
-  const [inviteUser] = useMutation<InviteUserMutation>(
-    INVITE_USER,
-    {
-      onError: (error: ApolloError) => {
-        triggerErrorToast({
-          message: "Something went wrong.",
-          sub: error.message,
-        })
-      },
-      onCompleted: () => triggerSuccessToast({ message: "Invite sent" })
-    }
-  )
+  const [inviteUser] = useMutation<InviteUserMutation>(INVITE_USER, {
+    onError: (error: ApolloError) => {
+      triggerErrorToast({
+        message: "Something went wrong.",
+        sub: error.message,
+      });
+    },
+    onCompleted: () => triggerSuccessToast({ message: "Invite sent" }),
+    refetchQueries: [USERS_PAGE_QUERY_NAME],
+    onQueryUpdated(observableQuery) {
+      observableQuery.refetch();
+    },
+  });
 
   const contextMenu = useMemo(() => {
     return {
@@ -62,7 +69,7 @@ export function UsersTable({ users }: Props) {
             },
           },
         });
-      }
+      },
     };
   }, [inviteUser]);
 
@@ -82,7 +89,7 @@ type UserTableData = {
 function usePrepUserData(
   users: NonNullable<UsersPageQuery["users"]>,
   contextMenu: {
-    onClickInviteUser: (userData: UserTableData) => void
+    onClickInviteUser: (userData: UserTableData) => void;
   }
 ): {
   data: UserTableData[];
@@ -102,8 +109,8 @@ function usePrepUserData(
         Header: "Role",
         accessor: "role",
         Cell: ({ row }: Cell<UserTableData>) => {
-          return getTextForRole(row.values.role)
-        }
+          return getTextForRole(row.values.role);
+        },
       },
       {
         Header: "Status",
@@ -120,8 +127,8 @@ function usePrepUserData(
         Cell: ({ row }) => {
           return row.values.inviteSentAt
             ? new Date(row.values.inviteSentAt).toLocaleString("en-US")
-            : ""
-        }
+            : "";
+        },
       },
       {
         Header: () => null,
@@ -134,20 +141,24 @@ function usePrepUserData(
             fullName: row.values.fullName,
             role: row.values.role,
             accountStatus: row.values.accountStatus,
-            inviteSentAt: row.values.inviteSentAt
-          }
+            inviteSentAt: row.values.inviteSentAt,
+          };
 
-          const context = userData.inviteSentAt
-            ? <ContextMenu />
-            : <ContextMenu onClickInviteUser={() => contextMenu.onClickInviteUser(userData)} />;
+          const context = userData.inviteSentAt ? (
+            <ContextMenu />
+          ) : (
+            <ContextMenu
+              onClickInviteUser={() => contextMenu.onClickInviteUser(userData)}
+            />
+          );
 
-          return context
+          return context;
         },
       },
     ];
   }, [contextMenu]);
 
-  const emails = users.map((u) => u.email).join();
+  const stringifiedUsers = JSON.stringify(users);
 
   const data = useMemo(() => {
     return users.map((user) => {
@@ -157,13 +168,11 @@ function usePrepUserData(
         email: user.email,
         role: user.role,
         accountStatus: user.accountStatus,
-        inviteSentAt: user.inviteSentAt || undefined
+        inviteSentAt: user.inviteSentAt || undefined,
       };
     });
-    // Used concatenated emails as a way to determine if users
-    // dependency has changed. (instead of stringifying an array of objects)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [emails]);
+  }, [stringifiedUsers]);
 
   return { data, columns };
 }
