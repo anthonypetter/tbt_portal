@@ -440,7 +440,7 @@ export type SearchCohortsQueryVariables = Exact<{
 }>;
 
 
-export type SearchCohortsQuery = { __typename?: 'Query', searchCohorts: { __typename?: 'CohortsSearchResults', count: number, results: Array<{ __typename?: 'Cohort', name: string, grade?: string | null, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> } };
+export type SearchCohortsQuery = { __typename?: 'Query', searchCohorts: { __typename?: 'CohortsSearchResults', count: number, results: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } }, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> } };
 
 export type CohortsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, events: Array<{ __typename?: 'CohortEvent', startFloatingDateTime: any, timeZone: string, durationMinutes: number, subject: AssignmentSubject }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> }> };
 
@@ -1210,12 +1210,23 @@ export const SearchCohortsDocument = gql`
   searchCohorts(query: $query) {
     count
     results {
+      id
       name
       grade
       engagement {
+        id
         name
         organization {
+          id
           name
+        }
+      }
+      staffAssignments {
+        subject
+        user {
+          id
+          fullName
+          email
         }
       }
     }

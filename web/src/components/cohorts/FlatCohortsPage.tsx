@@ -27,12 +27,23 @@ const SEARCH_COHORTS = gql`
     searchCohorts(query: $query) {
       count
       results {
-        name
-        grade
+        id,
+        name,
+        grade,
         engagement {
-          name
+          id,
+          name,
           organization {
+            id,
             name
+          }
+        },
+        staffAssignments {
+          subject,
+          user {
+            id,
+            fullName,
+            email
           }
         }
       }
