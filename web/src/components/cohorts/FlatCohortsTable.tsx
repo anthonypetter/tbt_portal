@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { CohortsTable_CohortFragment } from "@generated/graphql";
+import { FlatCohortsTable_CohortFragment } from "@generated/graphql";
 import { Routes } from "@utils/routes";
 import { DeleteCohortModal } from "components/cohorts/DeleteCohortModal";
 import { EditCohortModal } from "components/cohorts/EditCohortModal";
@@ -18,24 +18,24 @@ const FlatCohortsPageQueryName = "FlatCohortsPage";
  * represent the exact cohort needed by this component.
  */
 
-AllCohortsTable.fragments = {
+FlatCohortsTable.fragments = {
   cohort: gql`
-    fragment CohortsTable_Cohort on Cohort {
+    fragment FlatCohortsTable_Cohort on Cohort {
+      id
+      name
+      grade
+      startDate
+      endDate
+      engagement {
         id
         name
-        grade
-        startDate
-        endDate
-        engagement {
+        organization {
           id
           name
-          organization {
-            id
-            name
-          }
         }
-        ...EditCohortModal_Cohort
-        ...DeleteCohortModal_Cohort
+      }
+      ...EditCohortModal_Cohort
+      ...DeleteCohortModal_Cohort
     }
     ${EditCohortModal.fragments.cohort}
     ${DeleteCohortModal.fragments.cohort}
@@ -43,10 +43,10 @@ AllCohortsTable.fragments = {
 };
 
 type Props = {
-  cohorts: CohortsTable_CohortFragment[];
+  cohorts: FlatCohortsTable_CohortFragment[];
 };
 
-export function AllCohortsTable({ cohorts }: Props) {
+export function FlatCohortsTable({ cohorts }: Props) {
   const [cohortIdToEdit, setCohortIdToEdit] = useState<string | null>(null);
   const [cohortIdToDelete, setCohortIdToDelete] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
@@ -110,7 +110,7 @@ export type CohortTableData = {
 };
 
 function usePrepCohortData(
-  cohorts: CohortsTable_CohortFragment[],
+  cohorts: FlatCohortsTable_CohortFragment[],
   contextMenu: {
     onClickEdit: (cohort: CohortTableData) => void;
     onClickDelete: (cohort: CohortTableData) => void;

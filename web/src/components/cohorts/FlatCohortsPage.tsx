@@ -1,5 +1,8 @@
 import { gql, useLazyQuery } from "@apollo/client";
-import { FlatCohortsPage_CohortsFragment, SearchCohortsQuery } from "@generated/graphql";
+import {
+  FlatCohortsPage_CohortsFragment,
+  SearchCohortsQuery,
+} from "@generated/graphql";
 import { SearchIcon } from "@heroicons/react/solid";
 import { breadcrumbs } from "@utils/breadcrumbs";
 import { Routes } from "@utils/routes";
@@ -9,7 +12,7 @@ import { Spinner } from "components/Spinner";
 import { triggerErrorToast } from "components/Toast";
 import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
-import { AllCohortsTable } from "./AllCohortsTable";
+import { FlatCohortsTable } from "./FlatCohortsTable";
 
 const MIN_QUERY_LENGTH = 1;
 
@@ -17,10 +20,10 @@ FlatCohortsPage.fragments = {
   cohorts: gql`
     fragment FlatCohortsPage_Cohorts on Query {
       cohorts {
-        ...CohortsTable_Cohort
+        ...FlatCohortsTable_Cohort
       }
     }
-    ${AllCohortsTable.fragments.cohort}
+    ${FlatCohortsTable.fragments.cohort}
   `,
 };
 
@@ -29,24 +32,28 @@ const SEARCH_COHORTS = gql`
     searchCohorts(query: $query) {
       count
       results {
-        ...CohortsTable_Cohort
+        ...FlatCohortsTable_Cohort
       }
     }
   }
-  ${AllCohortsTable.fragments.cohort}
+  ${FlatCohortsTable.fragments.cohort}
 `;
 
 type Props = {
   cohorts: NonNullable<FlatCohortsPage_CohortsFragment["cohorts"]>;
-  refetch: () => void
+  refetch: () => void;
 };
 
-export type QueryAllCohorts = NonNullable<FlatCohortsPage_CohortsFragment["cohorts"]>[number];
+export type QueryAllCohorts = NonNullable<
+  FlatCohortsPage_CohortsFragment["cohorts"]
+>[number];
 
 export function FlatCohortsPage({ cohorts, refetch }: Props) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResultsMode, setSearchResultsMode] = useState(false);
-  const [searchResults, setSearchResults] = useState<SearchCohortsQuery['searchCohorts']['results']>([]);
+  const [searchResults, setSearchResults] = useState<
+    SearchCohortsQuery["searchCohorts"]["results"]
+  >([]);
 
   const { loading } = useCohortSearch(searchQuery, {
     onCompleted: (results) => {
@@ -94,7 +101,9 @@ export function FlatCohortsPage({ cohorts, refetch }: Props) {
       </div>
 
       <div className="mb-4 lg:mb-0 mt-8">
-        <AllCohortsTable cohorts={searchResultsMode ? searchResults : cohorts} />
+        <FlatCohortsTable
+          cohorts={searchResultsMode ? searchResults : cohorts}
+        />
       </div>
     </>
   );
@@ -103,7 +112,9 @@ export function FlatCohortsPage({ cohorts, refetch }: Props) {
 function useCohortSearch(
   query: string,
   options: {
-    onCompleted: (results: SearchCohortsQuery['searchCohorts']['results']) => void;
+    onCompleted: (
+      results: SearchCohortsQuery["searchCohorts"]["results"]
+    ) => void;
   }
 ) {
   const [debouncedQuery] = useDebounce(query, 300);
