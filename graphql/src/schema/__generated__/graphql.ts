@@ -95,6 +95,12 @@ export type CohortStaffAssignment = {
   user: User;
 };
 
+export type CohortsSearchResults = {
+  __typename?: 'CohortsSearchResults';
+  count: Scalars['Int'];
+  results: Array<Cohort>;
+};
+
 export type CsvCohortStaffAssignment = {
   subject: AssignmentSubject;
   teacher: CsvCohortTeacher;
@@ -306,6 +312,7 @@ export type Query = {
   engagements: Array<Engagement>;
   organization?: Maybe<Organization>;
   organizations: Array<Organization>;
+  searchCohorts: CohortsSearchResults;
   searchEngagements: EngagementsSearchResults;
   searchOrganizations: OrganizationsSearchResults;
   searchUsers: UsersSearchResults;
@@ -332,6 +339,11 @@ export type QueryEngagementArgs = {
 
 export type QueryOrganizationArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QuerySearchCohortsArgs = {
+  query: Scalars['String'];
 };
 
 
@@ -455,6 +467,7 @@ export type ResolversTypes = {
   Cohort: ResolverTypeWrapper<CohortWithBaseRelationsModel>;
   CohortEvent: ResolverTypeWrapper<CohortEvent>;
   CohortStaffAssignment: ResolverTypeWrapper<CohortStaffAssignment>;
+  CohortsSearchResults: ResolverTypeWrapper<Omit<CohortsSearchResults, 'results'> & { results: Array<ResolversTypes['Cohort']> }>;
   CsvCohortStaffAssignment: CsvCohortStaffAssignment;
   CsvCohortTeacher: CsvCohortTeacher;
   CsvProcessedCohort: CsvProcessedCohort;
@@ -493,6 +506,7 @@ export type ResolversParentTypes = {
   Cohort: CohortWithBaseRelationsModel;
   CohortEvent: CohortEvent;
   CohortStaffAssignment: CohortStaffAssignment;
+  CohortsSearchResults: Omit<CohortsSearchResults, 'results'> & { results: Array<ResolversParentTypes['Cohort']> };
   CsvCohortStaffAssignment: CsvCohortStaffAssignment;
   CsvCohortTeacher: CsvCohortTeacher;
   CsvProcessedCohort: CsvProcessedCohort;
@@ -550,6 +564,12 @@ export type CohortEventResolvers<ContextType = any, ParentType extends Resolvers
 export type CohortStaffAssignmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['CohortStaffAssignment'] = ResolversParentTypes['CohortStaffAssignment']> = {
   subject?: Resolver<ResolversTypes['AssignmentSubject'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CohortsSearchResultsResolvers<ContextType = any, ParentType extends ResolversParentTypes['CohortsSearchResults'] = ResolversParentTypes['CohortsSearchResults']> = {
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  results?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -630,6 +650,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   engagements?: Resolver<Array<ResolversTypes['Engagement']>, ParentType, ContextType>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
+  searchCohorts?: Resolver<ResolversTypes['CohortsSearchResults'], ParentType, ContextType, RequireFields<QuerySearchCohortsArgs, 'query'>>;
   searchEngagements?: Resolver<ResolversTypes['EngagementsSearchResults'], ParentType, ContextType, RequireFields<QuerySearchEngagementsArgs, 'query'>>;
   searchOrganizations?: Resolver<ResolversTypes['OrganizationsSearchResults'], ParentType, ContextType, RequireFields<QuerySearchOrganizationsArgs, 'query'>>;
   searchUsers?: Resolver<ResolversTypes['UsersSearchResults'], ParentType, ContextType, RequireFields<QuerySearchUsersArgs, 'query'>>;
@@ -658,6 +679,7 @@ export type Resolvers<ContextType = any> = {
   Cohort?: CohortResolvers<ContextType>;
   CohortEvent?: CohortEventResolvers<ContextType>;
   CohortStaffAssignment?: CohortStaffAssignmentResolvers<ContextType>;
+  CohortsSearchResults?: CohortsSearchResultsResolvers<ContextType>;
   CsvSaveCountsResult?: CsvSaveCountsResultResolvers<ContextType>;
   Date?: GraphQLScalarType;
   Engagement?: EngagementResolvers<ContextType>;
