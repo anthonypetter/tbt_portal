@@ -16,9 +16,11 @@ const MIN_QUERY_LENGTH = 1;
 FlatCohortsPage.fragments = {
   cohorts: gql`
     fragment FlatCohortsPage_Cohorts on Query {
-      ...AllCohortsTable_Cohorts
+      cohorts {
+        ...CohortsTable_Cohort
+      }
     }
-    ${AllCohortsTable.fragments.cohorts}
+    ${AllCohortsTable.fragments.cohort}
   `,
 };
 
@@ -27,28 +29,11 @@ const SEARCH_COHORTS = gql`
     searchCohorts(query: $query) {
       count
       results {
-        id,
-        name,
-        grade,
-        engagement {
-          id,
-          name,
-          organization {
-            id,
-            name
-          }
-        },
-        staffAssignments {
-          subject,
-          user {
-            id,
-            fullName,
-            email
-          }
-        }
+        ...CohortsTable_Cohort
       }
     }
   }
+  ${AllCohortsTable.fragments.cohort}
 `;
 
 type Props = {

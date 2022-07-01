@@ -69,17 +69,9 @@ export const SearchService = {
           { name: { startsWith: query, mode: "insensitive" } },
           {
             engagement: {
-              organization: {
-                name: { startsWith: query, mode: "insensitive" }
-              }
-            }
-          },
-          {
-            engagement: {
               name: { startsWith: query, mode: "insensitive" }
             }
           },
-          { grade: { startsWith: query, mode: "insensitive" } },
         ],
       },
       orderBy: { name: "asc" },

@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { AllCohortsTable_CohortsFragment } from "@generated/graphql";
+import { CohortsTable_CohortFragment } from "@generated/graphql";
 import { Routes } from "@utils/routes";
 import { DeleteCohortModal } from "components/cohorts/DeleteCohortModal";
 import { EditCohortModal } from "components/cohorts/EditCohortModal";
@@ -18,10 +18,35 @@ const FlatCohortsPageQueryName = "FlatCohortsPage";
  * represent the exact cohort needed by this component.
  */
 
+// AllCohortsTable.fragments = {
+//   cohorts: gql`
+//     fragment AllCohortsTable_Cohorts on Query {
+//       cohorts {
+//         id
+//         name
+//         grade
+//         startDate
+//         endDate
+//         engagement {
+//           id
+//           name
+//           organization {
+//             id
+//             name
+//           }
+//         }
+//         ...EditCohortModal_Cohort
+//         ...DeleteCohortModal_Cohort
+//       }
+//     }
+//     ${EditCohortModal.fragments.cohort}
+//     ${DeleteCohortModal.fragments.cohort}
+//   `,
+// };
+
 AllCohortsTable.fragments = {
-  cohorts: gql`
-    fragment AllCohortsTable_Cohorts on Query {
-      cohorts {
+  cohort: gql`
+    fragment CohortsTable_Cohort on Cohort {
         id
         name
         grade
@@ -37,7 +62,6 @@ AllCohortsTable.fragments = {
         }
         ...EditCohortModal_Cohort
         ...DeleteCohortModal_Cohort
-      }
     }
     ${EditCohortModal.fragments.cohort}
     ${DeleteCohortModal.fragments.cohort}
@@ -45,7 +69,7 @@ AllCohortsTable.fragments = {
 };
 
 type Props = {
-  cohorts: AllCohortsTable_CohortsFragment["cohorts"];
+  cohorts: CohortsTable_CohortFragment[];
 };
 
 export function AllCohortsTable({ cohorts }: Props) {
@@ -112,7 +136,7 @@ export type CohortTableData = {
 };
 
 function usePrepCohortData(
-  cohorts: AllCohortsTable_CohortsFragment["cohorts"],
+  cohorts: CohortsTable_CohortFragment[],
   contextMenu: {
     onClickEdit: (cohort: CohortTableData) => void;
     onClickDelete: (cohort: CohortTableData) => void;
