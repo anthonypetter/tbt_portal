@@ -3,7 +3,8 @@ import { CohortDetailsRoomFragment } from "@generated/graphql";
 import { getSession } from "@lib/apollo-client";
 import { processResult } from "@utils/apollo";
 import { getServerSideAuth } from "@utils/auth/server-side-auth";
-import { parseCohortId } from "@utils/parsing";
+import { parseCohortId, parseMeetingUrl } from "@utils/parsing";
+import { Routes } from "@utils/routes";
 import { CohortRoomPage } from "components/cohorts/CohortRoomPage";
 import { GetServerSidePropsContext, NextPage } from "next";
 
@@ -18,9 +19,15 @@ const GET_COHORT = gql`
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const auth = await getServerSideAuth(context);
+  const { meetingUrl } = parseMeetingUrl(context.query);
+  console.log("the meeting url is", meetingUrl);
 
   if (!auth.isAuthenticated) {
-    return { redirect: auth.redirect };
+    return {
+      redirect: {
+        destination: Routes.studentRoomUnAuthenticated.href(meetingUrl),
+      },
+    };
   }
 
   const { cohortId } = parseCohortId(context.params);

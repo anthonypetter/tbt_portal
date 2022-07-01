@@ -145,7 +145,13 @@ function Details({ cohort }: { cohort: CohortDetailsView_CohortFragment }) {
             <DescriptionTerm>Student Link</DescriptionTerm>
             <DescriptionDetails>
               {cohort.meetingRoom ? (
-                <Link href={Routes.cohortRoom.href(cohort.id, "student")}>
+                <Link
+                  href={Routes.cohortRoom.href(
+                    cohort.id,
+                    "student",
+                    cohort.meetingRoom
+                  )}
+                >
                   <span className="text-ellipsis truncate">Student Link</span>
                 </Link>
               ) : (
