@@ -399,7 +399,7 @@ export type AddCohortMutation = { __typename?: 'Mutation', addCohort: { __typena
 
 export type AddNewCohortModal_EngagementFragment = { __typename?: 'Engagement', id: string, startDate?: any | null, endDate?: any | null };
 
-export type AllCohortsTable_CohortsFragment = { __typename?: 'Query', cohorts: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, hostKey?: string | null, meetingRoom?: string | null, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } }, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> };
+export type CohortsTable_CohortFragment = { __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, hostKey?: string | null, meetingRoom?: string | null, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } }, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> };
 
 export type CohortDetailsTabs_CohortFragment = { __typename?: 'Cohort', id: string, name: string, startDate?: any | null, endDate?: any | null, createdAt: any, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }>, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } } };
 
@@ -440,7 +440,7 @@ export type SearchCohortsQueryVariables = Exact<{
 }>;
 
 
-export type SearchCohortsQuery = { __typename?: 'Query', searchCohorts: { __typename?: 'CohortsSearchResults', count: number, results: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } }, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> } };
+export type SearchCohortsQuery = { __typename?: 'Query', searchCohorts: { __typename?: 'CohortsSearchResults', count: number, results: Array<{ __typename?: 'Cohort', id: string, name: string, grade?: string | null, startDate?: any | null, endDate?: any | null, hostKey?: string | null, meetingRoom?: string | null, engagement: { __typename?: 'Engagement', id: string, name: string, organization: { __typename?: 'Organization', id: string, name: string } }, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string } }> }> } };
 
 export type CohortsViewListFFragment = { __typename?: 'Organization', engagements: Array<{ __typename?: 'Engagement', id: string, name: string, startDate?: any | null, endDate?: any | null, organizationId: string, cohorts: Array<{ __typename?: 'Cohort', id: string, createdAt: any, name: string, grade?: string | null, meetingRoom?: string | null, hostKey?: string | null, exempt?: string | null, startDate?: any | null, endDate?: any | null, engagementId: string, meetingId?: string | null, staffAssignments: Array<{ __typename?: 'CohortStaffAssignment', subject: AssignmentSubject, user: { __typename?: 'User', id: string, fullName: string, email: string, role: UserRole } }>, events: Array<{ __typename?: 'CohortEvent', startFloatingDateTime: any, timeZone: string, durationMinutes: number, subject: AssignmentSubject }>, engagement: { __typename?: 'Engagement', name: string, organization: { __typename?: 'Organization', name: string } } }> }> };
 
@@ -712,33 +712,33 @@ export const DeleteCohortModal_CohortFragmentDoc = gql`
   }
 }
     `;
-export const AllCohortsTable_CohortsFragmentDoc = gql`
-    fragment AllCohortsTable_Cohorts on Query {
-  cohorts {
+export const CohortsTable_CohortFragmentDoc = gql`
+    fragment CohortsTable_Cohort on Cohort {
+  id
+  name
+  grade
+  startDate
+  endDate
+  engagement {
     id
     name
-    grade
-    startDate
-    endDate
-    engagement {
+    organization {
       id
       name
-      organization {
-        id
-        name
-      }
     }
-    ...EditCohortModal_Cohort
-    ...DeleteCohortModal_Cohort
   }
+  ...EditCohortModal_Cohort
+  ...DeleteCohortModal_Cohort
 }
     ${EditCohortModal_CohortFragmentDoc}
 ${DeleteCohortModal_CohortFragmentDoc}`;
 export const FlatCohortsPage_CohortsFragmentDoc = gql`
     fragment FlatCohortsPage_Cohorts on Query {
-  ...AllCohortsTable_Cohorts
+  cohorts {
+    ...CohortsTable_Cohort
+  }
 }
-    ${AllCohortsTable_CohortsFragmentDoc}`;
+    ${CohortsTable_CohortFragmentDoc}`;
 export const CohortForTableFragmentDoc = gql`
     fragment CohortForTable on Cohort {
   id
@@ -1210,29 +1210,11 @@ export const SearchCohortsDocument = gql`
   searchCohorts(query: $query) {
     count
     results {
-      id
-      name
-      grade
-      engagement {
-        id
-        name
-        organization {
-          id
-          name
-        }
-      }
-      staffAssignments {
-        subject
-        user {
-          id
-          fullName
-          email
-        }
-      }
+      ...CohortsTable_Cohort
     }
   }
 }
-    `;
+    ${CohortsTable_CohortFragmentDoc}`;
 
 /**
  * __useSearchCohortsQuery__
