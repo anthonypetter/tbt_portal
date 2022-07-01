@@ -52,9 +52,16 @@ export const Routes = {
   },
 
   cohortRoom: {
-    href: (cohortId: string, roomType = "host") =>
-      `/cohorts/${cohortId}/room/${roomType}`,
+    href: (cohortId: string, roomType = "host", meetingUrl?: string) =>
+      `/cohorts/${cohortId}/room/${roomType}${
+        meetingUrl ? "?meetingUrl=" + meetingUrl : ""
+      }`,
     path: () => "/cohorts/[cohortId]/room/[roomType]",
+  },
+
+  studentRoomUnAuthenticated: {
+    href: (meetingUrl: string) => `/student-room?meetingUrl=${meetingUrl}`,
+    path: () => `/student-room`,
   },
 
   cohortDetail: {
@@ -85,5 +92,5 @@ export const Routes = {
 };
 
 export function getUnauthenticatedRoutes() {
-  return [Routes.login];
+  return [Routes.login, Routes.studentRoomUnAuthenticated];
 }

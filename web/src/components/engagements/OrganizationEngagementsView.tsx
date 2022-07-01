@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { OrgDetailPageEngagementsQuery } from "@generated/graphql";
+import { OrganizationEngagementsView_EngagementsViewFragment } from "@generated/graphql";
 import { PlusIcon, SearchIcon } from "@heroicons/react/outline";
 import { AssignmentRoleBadge } from "components/AssignmentRoleBadge";
 import { Button } from "components/Button";
@@ -14,43 +14,25 @@ import { AddEngagementModal } from "./AddNewEngagementModal";
 import { EngagementsTable } from "./EngagementsTable";
 
 OrganizationEngagementsView.fragments = {
-  engagementsList: gql`
-    fragment EngagementsViewListF on Organization {
+  engagements: gql`
+    fragment OrganizationEngagementsView_EngagementsView on Organization {
       engagements {
-        id
-        name
-        startDate
-        endDate
-        organizationId
-        cohorts {
-          id
-          name
-          grade
-          startDate
-          endDate
-        }
-        staffAssignments {
-          user {
-            id
-            fullName
-            email
-          }
-          role
-        }
+        ...EngagementsTable_Engagement
       }
     }
+    ${EngagementsTable.fragments.engagement}
   `,
 };
 
-export type QueryEngagements = NonNullable<
-  OrgDetailPageEngagementsQuery["organization"]
->["engagements"];
-
 type Props = {
-  organization: NonNullable<OrgDetailPageEngagementsQuery["organization"]>;
+  organizationId: string;
+  engagements: OrganizationEngagementsView_EngagementsViewFragment["engagements"];
 };
 
-export function OrganizationEngagementsView({ organization }: Props) {
+export function OrganizationEngagementsView({
+  organizationId,
+  engagements,
+}: Props) {
   const [selectedEngagementId, setSelectedEngagementId] = useState<
     string | null
   >(null);
@@ -58,10 +40,10 @@ export function OrganizationEngagementsView({ organization }: Props) {
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
 
   const filteredEngagements = searchTerm
-    ? filter(organization.engagements, (e) =>
+    ? filter(engagements, (e) =>
         e.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
-    : organization.engagements;
+    : engagements;
 
   const selectedEngagement =
     filteredEngagements.find((e) => e.id === selectedEngagementId) ?? null;
@@ -101,7 +83,7 @@ export function OrganizationEngagementsView({ organization }: Props) {
           />
 
           <AddEngagementModal
-            organizationId={organization.id}
+            organizationId={organizationId}
             show={showAddModal}
             onCancel={() => setShowAddModal(false)}
             onSuccess={() => setShowAddModal(false)}
@@ -118,7 +100,9 @@ export function OrganizationEngagementsView({ organization }: Props) {
 }
 
 type DetailsSidebarProps = {
-  selectedEngagement: QueryEngagements[number] | null;
+  selectedEngagement:
+    | OrganizationEngagementsView_EngagementsViewFragment["engagements"][number]
+    | null;
   onClose: () => void;
 };
 

@@ -1,3 +1,5 @@
+import { gql } from "@apollo/client";
+import { EngagementsTable_EngagementFragment } from "@generated/graphql";
 import { Routes } from "@utils/routes";
 import { ContextMenu } from "components/ContextMenu";
 import { Link } from "components/Link";
@@ -7,14 +9,43 @@ import { useMemo, useState } from "react";
 import { Cell, Column } from "react-table";
 import { DeleteEngagementModal } from "./DeleteEngagementModal";
 import { EditEngagementModal } from "./EditEngagementModal";
-import { QueryEngagements } from "./OrganizationEngagementsView";
 
 const OrgDetailPageEngagementsQueryName = "OrgDetailPageEngagements";
 
+EngagementsTable.fragments = {
+  engagement: gql`
+    fragment EngagementsTable_Engagement on Engagement {
+      id
+      name
+      startDate
+      endDate
+      organizationId
+      cohorts {
+        id
+        name
+        grade
+        startDate
+        endDate
+      }
+      staffAssignments {
+        user {
+          id
+          fullName
+          email
+        }
+        role
+      }
+      organization {
+        id
+      }
+    }
+  `,
+};
+
 type Props = {
-  engagements: QueryEngagements;
+  engagements: EngagementsTable_EngagementFragment[];
   onRowClick: (engagementId: string) => void;
-  selectedEngagement: QueryEngagements[number] | null;
+  selectedEngagement: EngagementsTable_EngagementFragment | null;
 };
 
 export function EngagementsTable({
@@ -94,7 +125,7 @@ export type EngagementTableData = {
 };
 
 function usePrepEngagementData(
-  engagements: QueryEngagements,
+  engagements: EngagementsTable_EngagementFragment[],
   contextMenu: {
     onClickEdit: (engagement: EngagementTableData) => void;
     onClickDelete: (engagement: EngagementTableData) => void;
