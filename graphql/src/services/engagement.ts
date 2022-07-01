@@ -1,6 +1,5 @@
+import { Engagement, Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma-client";
-import { Engagement } from "@prisma/client";
-import { Prisma } from "@prisma/client";
 import {
   ChangeSet,
   EngagementStaffAssignmentInput,
@@ -183,6 +182,28 @@ async function getStaffAssignments(engagementId: number) {
   });
 }
 
+/**
+ * Gets engagements being mentored by a particular teacher (userId)
+ */
+
+type MentorEngagementsFilter = {
+  endDate: Prisma.DateTimeNullableFilter;
+};
+
+async function getEngagementsAssignedToTeacher(
+  userId: number,
+  filter: MentorEngagementsFilter
+) {
+  return prisma.engagement.findMany({
+    where: {
+      AND: [
+        { staffAssignments: { some: { userId } } },
+        { endDate: filter.endDate },
+      ],
+    },
+  });
+}
+
 export const EngagementService = {
   getEngagement,
   getEngagements,
@@ -191,4 +212,5 @@ export const EngagementService = {
   editEngagement,
   getAllEngagements,
   getStaffAssignments,
+  getEngagementsAssignedToTeacher,
 };

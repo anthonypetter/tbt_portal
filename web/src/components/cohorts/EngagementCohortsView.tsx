@@ -17,8 +17,8 @@ EngagementCohortsView.fragments = {
   cohortsList: gql`
     fragment EngagementCohortsView on Engagement {
       cohorts {
-        ...CohortForTable
-        ...CohortForDetailsSidebar
+        ...CohortsTable_Cohort
+        ...CohortDetailsSidebar_Cohort
       }
       ...AddNewCohortModal_Engagement
     }
@@ -76,7 +76,6 @@ export function EngagementCohortsView({ engagement }: Props) {
           </div>
 
           <CohortsTable
-            organizationId={engagement.organization.id}
             cohorts={filteredCohorts}
             onRowClick={(id) => setSelectedCohortId(id)}
             selectedCohort={selectedCohort}

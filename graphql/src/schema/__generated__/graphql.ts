@@ -317,6 +317,7 @@ export type Query = {
   searchOrganizations: OrganizationsSearchResults;
   searchUsers: UsersSearchResults;
   teacherCohorts: Array<Cohort>;
+  teacherEngagements: Array<Engagement>;
   users: Array<User>;
 };
 
@@ -654,6 +655,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   searchOrganizations?: Resolver<ResolversTypes['OrganizationsSearchResults'], ParentType, ContextType, RequireFields<QuerySearchOrganizationsArgs, 'query'>>;
   searchUsers?: Resolver<ResolversTypes['UsersSearchResults'], ParentType, ContextType, RequireFields<QuerySearchUsersArgs, 'query'>>;
   teacherCohorts?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType>;
+  teacherEngagements?: Resolver<Array<ResolversTypes['Engagement']>, ParentType, ContextType>;
   users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
 };
 

@@ -1,4 +1,5 @@
 import {
+  AccountStatus,
   AssignmentRole,
   AssignmentSubject,
   EventType,
@@ -6,6 +7,7 @@ import {
   Prisma,
   PrismaClient,
   User,
+  UserRole,
 } from "@prisma/client";
 import { add } from "date-fns";
 import { ByWeekday, RRule } from "rrule";
@@ -46,8 +48,8 @@ async function upsertUsers(env: string): Promise<User[]> {
       fullName: "Victor Merino",
       cognitoSub: "aec9ea06-dee8-42da-9396-c82456858d1b",
       createdAt: new Date(),
-      role: "ADMIN",
-      accountStatus: "ACTIVE",
+      role: UserRole.ADMIN,
+      accountStatus: AccountStatus.ACTIVE,
       inviteSentAt: new Date(),
     },
     {
@@ -55,8 +57,8 @@ async function upsertUsers(env: string): Promise<User[]> {
       fullName: "Albert Einsten",
       cognitoSub: "a5449f83-b175-42d2-bc0d-69ffbb039815",
       createdAt: new Date(),
-      role: "MENTOR_TEACHER",
-      accountStatus: "ACTIVE",
+      role: UserRole.MENTOR_TEACHER,
+      accountStatus: AccountStatus.ACTIVE,
       inviteSentAt: new Date(),
     },
     {
@@ -64,8 +66,8 @@ async function upsertUsers(env: string): Promise<User[]> {
       fullName: "Neil deGrasse Tyson",
       cognitoSub: "bfb7afbd-b5e4-4c8f-bb0f-9eba28d40882",
       createdAt: new Date(),
-      role: "TUTOR_TEACHER",
-      accountStatus: "ACTIVE",
+      role: UserRole.TUTOR_TEACHER,
+      accountStatus: AccountStatus.ACTIVE,
       inviteSentAt: new Date(),
     },
     {
@@ -73,8 +75,8 @@ async function upsertUsers(env: string): Promise<User[]> {
       fullName: "Brian Greene",
       cognitoSub: "254598de-6867-4175-95f4-dcb03832ae3f",
       createdAt: new Date(),
-      role: "TUTOR_TEACHER",
-      accountStatus: "ACTIVE",
+      role: UserRole.TUTOR_TEACHER,
+      accountStatus: AccountStatus.ACTIVE,
       inviteSentAt: new Date(),
     },
     {
@@ -82,8 +84,8 @@ async function upsertUsers(env: string): Promise<User[]> {
       fullName: "Scott Kuecker",
       cognitoSub: "24bd72ed-8872-4a14-bca4-ea6b5e218d51",
       createdAt: new Date(),
-      role: "ADMIN",
-      accountStatus: "ACTIVE",
+      role: UserRole.ADMIN,
+      accountStatus: AccountStatus.ACTIVE,
       inviteSentAt: new Date(),
     },
     {
@@ -91,8 +93,26 @@ async function upsertUsers(env: string): Promise<User[]> {
       fullName: "Kyle Geib",
       cognitoSub: "e33903e4-81b4-459d-a715-2bd69ea9381b",
       createdAt: new Date(),
-      role: "ADMIN",
-      accountStatus: "ACTIVE",
+      role: UserRole.ADMIN,
+      accountStatus: AccountStatus.ACTIVE,
+      inviteSentAt: new Date(),
+    },
+    {
+      email: "victor+mentor@tutored.live",
+      fullName: "Isaac Newton",
+      cognitoSub: "91270f87-1c38-4d9e-a8f7-1258af2c933f",
+      createdAt: new Date(),
+      role: UserRole.MENTOR_TEACHER,
+      accountStatus: AccountStatus.ACTIVE,
+      inviteSentAt: new Date(),
+    },
+    {
+      email: "victor+teacher@tutored.live",
+      fullName: "Leonard Susskind",
+      cognitoSub: "d6a9ed98-54c2-4eb1-81f8-3b26d4737ed6",
+      createdAt: new Date(),
+      role: UserRole.TUTOR_TEACHER,
+      accountStatus: AccountStatus.ACTIVE,
       inviteSentAt: new Date(),
     },
   ];
@@ -280,17 +300,7 @@ async function createOrgs(users: User[]) {
 }
 
 async function createOrg(users: User[], org: typeof ORGANIZATIONS[number]) {
-  const mentorTeacher = fromJust(
-    users.find((u) => u.email === "victor+mt@tutored.live")
-  );
-  const substituteTeacher = fromJust(
-    users.find((u) => u.email === "victor+st@tutored.live")
-  );
-  const tutorTeacher = fromJust(
-    users.find((u) => u.email === "victor+tt@tutored.live")
-  );
-
-  const newOrg = await prisma.organization.create({
+  await prisma.organization.create({
     data: {
       name: org.name,
       location: org.state,
@@ -305,50 +315,6 @@ async function createOrg(users: User[], org: typeof ORGANIZATIONS[number]) {
       engagements: { include: { cohorts: true } },
     },
   });
-
-  // Staff Engagement & Cohorts
-  const engagement = newOrg.engagements[0];
-
-  await Promise.all([
-    prisma.engagementStaffAssignment.create({
-      data: {
-        engagement: { connect: { id: engagement.id } },
-        user: { connect: { id: mentorTeacher.id } },
-        role: AssignmentRole.MENTOR_TEACHER,
-      },
-    }),
-    prisma.engagementStaffAssignment.create({
-      data: {
-        engagement: { connect: { id: engagement.id } },
-        user: { connect: { id: substituteTeacher.id } },
-        role: AssignmentRole.SUBSTITUTE_TEACHER,
-      },
-    }),
-  ]);
-
-  await Promise.all([
-    prisma.cohortStaffAssignment.create({
-      data: {
-        cohort: { connect: { id: engagement.cohorts[0].id } },
-        user: { connect: { id: tutorTeacher.id } },
-        subject: AssignmentSubject.MATH,
-      },
-    }),
-    prisma.cohortStaffAssignment.create({
-      data: {
-        cohort: { connect: { id: engagement.cohorts[1].id } },
-        user: { connect: { id: substituteTeacher.id } },
-        subject: AssignmentSubject.ELA,
-      },
-    }),
-    prisma.cohortStaffAssignment.create({
-      data: {
-        cohort: { connect: { id: engagement.cohorts[2].id } },
-        user: { connect: { id: tutorTeacher.id } },
-        subject: AssignmentSubject.GENERAL,
-      },
-    }),
-  ]);
 }
 
 function createSchoolEngagements(engAbbr: string) {
