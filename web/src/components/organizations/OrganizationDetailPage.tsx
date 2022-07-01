@@ -1,55 +1,39 @@
 import { gql } from "@apollo/client";
 import {
-  OrgDetailPageCohortsQuery,
-  OrgDetailPageEngagementsQuery,
+  OrganizationDetailPage_CohortsFragment,
+  OrganizationDetailPage_EngagementsFragment,
 } from "@generated/graphql";
 import { breadcrumbs } from "@utils/breadcrumbs";
 import { Routes } from "@utils/routes";
-import { OrganizationCohortsView } from "components/cohorts/OrganizationCohortsView";
 import { Container } from "components/Container";
 import { PageHeader } from "components/PageHeader";
-import { OrganizationEngagementsView } from "../engagements/OrganizationEngagementsView";
 import { OrganizationTabs, Tab } from "./OrganizationTabs";
 
 OrganizationDetailPage.fragments = {
   engagementsView: gql`
-    fragment EngagementsViewF on Organization {
-      id
-      name
-      district
-      subDistrict
-      location
-      description
-      ...EngagementsViewListF
+    fragment OrganizationDetailPage_Engagements on Organization {
+      ...OrganizationTabs_Engagements
     }
-    ${OrganizationEngagementsView.fragments.engagementsList}
+    ${OrganizationTabs.fragments.engagementsTab}
   `,
   cohortsView: gql`
-    fragment CohortsViewF on Organization {
-      id
-      name
-      district
-      subDistrict
-      location
-      description
-      ...CohortsViewListF
+    fragment OrganizationDetailPage_Cohorts on Organization {
+      ...OrganizationTabs_Cohorts
     }
-    ${OrganizationCohortsView.fragments.cohortsList}
+    ${OrganizationTabs.fragments.cohortsTab}
   `,
 };
 
-export type TabOrganization =
-  | {
-      tab: Tab.Engagements;
-      organization: NonNullable<OrgDetailPageEngagementsQuery["organization"]>;
-    }
-  | {
-      tab: Tab.Cohorts;
-      organization: NonNullable<OrgDetailPageCohortsQuery["organization"]>;
-    };
-
 type Props = {
-  tabOrg: TabOrganization;
+  tabOrg:
+    | {
+        tab: Tab.Engagements;
+        organization: OrganizationDetailPage_EngagementsFragment;
+      }
+    | {
+        tab: Tab.Cohorts;
+        organization: OrganizationDetailPage_CohortsFragment;
+      };
 };
 
 export function OrganizationDetailPage({ tabOrg }: Props) {

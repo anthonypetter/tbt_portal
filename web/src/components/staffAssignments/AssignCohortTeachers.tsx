@@ -1,4 +1,4 @@
-import { AssignmentSubject, CohortForTableFragment } from "@generated/graphql";
+import { AssignmentSubject } from "@generated/graphql";
 import { FieldError } from "components/FieldError";
 import React, { useState } from "react";
 import { EmptyStaffingState } from "./EmptyStaffingState";
@@ -93,17 +93,6 @@ export function AssignCohortTeachers({ staff, onAdd, onRemove }: Props) {
 export type CohortStaffTeacher = TeacherSelection & {
   subject: AssignmentSubject;
 };
-
-export function toCohortStaffTeacher(
-  staffAssignment: CohortForTableFragment["staffAssignments"][number]
-): CohortStaffTeacher {
-  return {
-    userId: staffAssignment.user.id,
-    fullName: staffAssignment.user.fullName,
-    email: staffAssignment.user.email,
-    subject: staffAssignment.subject,
-  };
-}
 
 function isCohortAssignment(
   assignment: Assignment

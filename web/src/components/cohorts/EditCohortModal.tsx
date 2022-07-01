@@ -20,7 +20,6 @@ import { Spinner } from "../Spinner";
 import {
   AssignCohortTeachers,
   CohortStaffTeacher,
-  toCohortStaffTeacher,
 } from "../staffAssignments/AssignCohortTeachers";
 
 const EDIT_COHORT = gql`
@@ -273,4 +272,15 @@ export function EditCohortModalBody({
       </div>
     </>
   );
+}
+
+function toCohortStaffTeacher(
+  staffAssignment: EditCohortModal_CohortFragment["staffAssignments"][number]
+): CohortStaffTeacher {
+  return {
+    userId: staffAssignment.user.id,
+    fullName: staffAssignment.user.fullName,
+    email: staffAssignment.user.email,
+    subject: staffAssignment.subject,
+  };
 }

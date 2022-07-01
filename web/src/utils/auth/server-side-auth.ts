@@ -1,3 +1,6 @@
+import { ApolloQueryResult, gql } from "@apollo/client";
+import { GetCurrentUserQuery } from "@generated/graphql";
+import { getSession } from "@lib/apollo-client";
 import { withSSRContext } from "aws-amplify";
 import type { GetServerSidePropsContext, NextApiRequest } from "next";
 import { Routes } from "../routes";
@@ -55,4 +58,28 @@ export async function getApiAuth(
       isAuthenticated: false,
     };
   }
+}
+
+export const GET_CURRENT_USER = gql`
+  query GetCurrentUser {
+    currentUser {
+      email
+      accountStatus
+      role
+      fullName
+    }
+  }
+`;
+
+export async function fetchCurrentUser(
+  accessToken: string
+): Promise<GetCurrentUserQuery["currentUser"]> {
+  const { client } = getSession(accessToken);
+
+  const result: ApolloQueryResult<GetCurrentUserQuery> = await client.query({
+    query: GET_CURRENT_USER,
+    fetchPolicy: "no-cache",
+  });
+
+  return result.data.currentUser ?? null;
 }
