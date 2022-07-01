@@ -1,4 +1,5 @@
 import {
+  QuerySearchCohortsArgs,
   QuerySearchEngagementsArgs,
   QuerySearchOrganizationsArgs,
   QuerySearchUsersArgs
@@ -26,10 +27,16 @@ export const typeDefs = gql`
     results: [Organization!]!
   }
 
+  type CohortsSearchResults {
+    count: Int!
+    results: [Cohort!]!
+  }
+
   extend type Query {
     searchUsers(query: String!): UsersSearchResults!
     searchEngagements(query: String!): EngagementsSearchResults!
     searchOrganizations(query: String!): OrganizationsSearchResults!
+    searchCohorts(query: String!): CohortsSearchResults!
   }
 `;
 
@@ -81,6 +88,19 @@ async function searchOrganizations(
   };
 }
 
+async function searchCohorts(
+  _parent: undefined,
+  { query }: QuerySearchCohortsArgs,
+  { authedUser, AuthorizationService, SearchService }: Context
+) {
+  AuthorizationService.assertIsAdmin(authedUser);
+  const results = await SearchService.searchCohorts(query);
+
+  return {
+    count: results.length,
+    results,
+  };
+}
 /**
  * Mutation Resolvers
  */
@@ -90,5 +110,6 @@ export const resolvers = {
     searchUsers,
     searchEngagements,
     searchOrganizations,
+    searchCohorts,
   },
 };
