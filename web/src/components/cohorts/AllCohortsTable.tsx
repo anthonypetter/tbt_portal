@@ -18,32 +18,6 @@ const FlatCohortsPageQueryName = "FlatCohortsPage";
  * represent the exact cohort needed by this component.
  */
 
-// AllCohortsTable.fragments = {
-//   cohorts: gql`
-//     fragment AllCohortsTable_Cohorts on Query {
-//       cohorts {
-//         id
-//         name
-//         grade
-//         startDate
-//         endDate
-//         engagement {
-//           id
-//           name
-//           organization {
-//             id
-//             name
-//           }
-//         }
-//         ...EditCohortModal_Cohort
-//         ...DeleteCohortModal_Cohort
-//       }
-//     }
-//     ${EditCohortModal.fragments.cohort}
-//     ${DeleteCohortModal.fragments.cohort}
-//   `,
-// };
-
 AllCohortsTable.fragments = {
   cohort: gql`
     fragment CohortsTable_Cohort on Cohort {
