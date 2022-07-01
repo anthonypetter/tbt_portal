@@ -44,3 +44,16 @@ export function parseCohortId(mParams: GetServerSidePropsContext["params"]): {
     cohortId: params.cohortId,
   };
 }
+
+export function parseMeetingUrl(mParams: GetServerSidePropsContext["query"]): {
+  meetingUrl: string;
+} {
+  const params = fromJust(mParams);
+  if (typeof params.meetingUrl !== "string") {
+    throw new Error("Unable to parse meetingUrl from url");
+  }
+
+  return {
+    meetingUrl: params.meetingUrl,
+  };
+}
