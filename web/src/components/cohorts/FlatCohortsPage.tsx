@@ -45,10 +45,12 @@ type Props = {
   refetch: () => void
 };
 
+export type QueryAllCohorts = NonNullable<FlatCohortsPage_CohortsFragment["cohorts"]>[number];
+
 export function FlatCohortsPage({ cohorts, refetch }: Props) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResultsMode, setSearchResultsMode] = useState(false);
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchCohortsQuery['searchCohorts']['results']>([]);
 
   const { loading } = useCohortSearch(searchQuery, {
     onCompleted: (results) => {
@@ -105,7 +107,7 @@ export function FlatCohortsPage({ cohorts, refetch }: Props) {
 function useCohortSearch(
   query: string,
   options: {
-    onCompleted: (results: any[]) => void;
+    onCompleted: (results: SearchCohortsQuery['searchCohorts']['results']) => void;
   }
 ) {
   const [debouncedQuery] = useDebounce(query, 300);
@@ -131,7 +133,3 @@ function useCohortSearch(
 
   return { loading, error, results: data?.searchCohorts.results };
 }
-
-export type QueryAllCohorts = NonNullable<
-  FlatCohortsPage_CohortsFragment["cohorts"]
->[number];
