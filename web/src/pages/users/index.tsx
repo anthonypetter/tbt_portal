@@ -1,13 +1,12 @@
-import { useState } from "react";
-import type { NextPage, GetServerSidePropsContext } from "next";
-import { getServerSideAuth } from "@utils/auth/server-side-auth";
-import { AuthedLayout } from "components/AuthedLayout";
-import { UsersPage } from "components/users/UsersPage";
-import { gql, ApolloQueryResult } from "@apollo/client";
+import { ApolloQueryResult, gql, useQuery } from "@apollo/client";
+import { UsersPageQuery } from "@generated/graphql";
 import { getSession } from "@lib/apollo-client";
 import { processResult } from "@utils/apollo";
-import { UsersPageQuery, useUsersPageQuery } from "@generated/graphql";
+import { getServerSideAuth } from "@utils/auth/server-side-auth";
+import { AuthedLayout } from "components/AuthedLayout";
 import { triggerErrorToast } from "components/Toast";
+import { UsersPage } from "components/users/UsersPage";
+import type { GetServerSidePropsContext, NextPage } from "next";
 
 const GET_USERS = gql`
   query UsersPage {
@@ -42,20 +41,11 @@ type Props = {
   users: NonNullable<UsersPageQuery["users"]>;
 };
 
-const Users: NextPage<Props> = (props: Props) => {
-  const [users, setUsers] = useState(props.users);
-
-  const { refetch } = useUsersPageQuery({
+const Users: NextPage<Props> = ({ users }: Props) => {
+  const { data, refetch } = useQuery<UsersPageQuery>(GET_USERS, {
     fetchPolicy: "no-cache",
-    skip: true,
-    onCompleted: (data) => {
-      if (data.users) {
-        setUsers(data.users);
-      }
-    },
     onError: (error) => {
       console.error(error);
-
       triggerErrorToast({
         message: "Looks like something went wrong.",
         sub: "We weren't able to refresh the users. We're on it.",
@@ -65,7 +55,7 @@ const Users: NextPage<Props> = (props: Props) => {
 
   return (
     <AuthedLayout>
-      <UsersPage users={users} refetchUsers={refetch} />
+      <UsersPage users={data?.users ?? users} refetchUsers={refetch} />
     </AuthedLayout>
   );
 };
