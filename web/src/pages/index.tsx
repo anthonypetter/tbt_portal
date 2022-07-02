@@ -12,6 +12,7 @@ import {
   getServerSideAuth,
 } from "@utils/auth/server-side-auth";
 import { NotFoundError } from "@utils/errors";
+import { Routes } from "@utils/routes";
 import { assertUnreachable, fromJust } from "@utils/types";
 import { AuthedLayout } from "components/AuthedLayout";
 import { MentorTeacherHome } from "components/home/MentorTeacherHome";
@@ -29,6 +30,16 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   if (!currentUser) {
     throw new NotFoundError();
+  }
+
+  // Temporary redirect from home to organizations if you're an admin.
+  if (currentUser.role === UserRole.Admin) {
+    return {
+      redirect: {
+        destination: Routes.organizations.href(),
+        permanent: false,
+      },
+    };
   }
 
   const homeData = await fetchAccordingToRole(currentUser.role, auth.token);
