@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { EngagementDetailsPageCohortsFragment } from "@generated/graphql";
+import { EngagementCohortsViewFragment } from "@generated/graphql";
 import { PlusIcon, SearchIcon } from "@heroicons/react/outline";
 import { Button } from "components/Button";
 import { ErrorBoundary } from "components/ErrorBoundary";
@@ -29,7 +29,7 @@ EngagementCohortsView.fragments = {
 };
 
 type Props = {
-  engagement: EngagementDetailsPageCohortsFragment;
+  engagement: EngagementCohortsViewFragment;
 };
 
 export function EngagementCohortsView({ engagement }: Props) {

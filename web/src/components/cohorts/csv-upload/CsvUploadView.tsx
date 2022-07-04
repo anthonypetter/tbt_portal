@@ -1,4 +1,5 @@
-import { EngagementDetailsPageCsvUploadFragment } from "@generated/graphql";
+import { gql } from "@apollo/client";
+import { CsvUploadView_EngagementFragment } from "@generated/graphql";
 import { ProcessedCohort } from "@utils/csv/parseCsv";
 import { Button } from "components/Button";
 import { ErrorBoundary } from "components/ErrorBoundary";
@@ -10,8 +11,26 @@ import { StepOneUploadCsv } from "./StepOneUploadCsv";
 import { StepThreeReview } from "./StepThreeReview";
 import { StepTwoValidateCsv } from "./StepTwoValidateCsv";
 
+CsvUploadView.fragments = {
+  engagement: gql`
+    fragment CsvUploadView_Engagement on Engagement {
+      id
+      name
+      startDate
+      endDate
+      organization {
+        id
+        name
+      }
+      cohorts {
+        id
+      }
+    }
+  `,
+};
+
 type Props = {
-  engagement: EngagementDetailsPageCsvUploadFragment;
+  engagement: CsvUploadView_EngagementFragment;
 };
 
 export const COHORTS_CSV_FILE_NAME = "csvCohorts";
