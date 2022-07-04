@@ -1,9 +1,11 @@
 import { gql } from "@apollo/client";
 import { EngagementDetailsView_EngagementFragment } from "@generated/graphql";
+import { Routes } from "@utils/routes";
 import { AssignmentRoleBadge } from "components/AssignmentRoleBadge";
 import { Details } from "components/Details";
 import { ErrorBoundary } from "components/ErrorBoundary";
 import { ErrorBox } from "components/ErrorBox";
+import { Link } from "components/Link";
 import { NormalizedDateText } from "components/NormalizedDateText";
 
 EngagementDetailsView.fragments = {
@@ -43,12 +45,16 @@ export function EngagementDetailsView({ engagement }: Props) {
             <Details.Detail>{engagement.id}</Details.Detail>
           </Details.Line>
           <Details.Line>
-            <Details.Term>Name</Details.Term>
+            <Details.Term>Engagement Name</Details.Term>
             <Details.Detail>{engagement.name}</Details.Detail>
           </Details.Line>
           <Details.Line>
             <Details.Term>Organization</Details.Term>
-            <Details.Detail>{engagement.organization.name}</Details.Detail>
+            <Details.Detail>
+              <Link href={Routes.org.details.href(engagement.organization.id)}>
+                {engagement.organization.name}
+              </Link>
+            </Details.Detail>
           </Details.Line>
           <Details.Line>
             <Details.Term>Created</Details.Term>
