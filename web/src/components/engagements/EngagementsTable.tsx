@@ -142,7 +142,7 @@ function usePrepEngagementData(
         Cell: ({ row }: Cell<EngagementTableData>) => {
           return (
             <Link
-              href={Routes.engagement.cohorts.href(
+              href={Routes.engagement.details.href(
                 row.original.organizationId,
                 row.original.id
               )}
