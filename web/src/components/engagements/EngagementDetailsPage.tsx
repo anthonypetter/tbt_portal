@@ -2,12 +2,12 @@ import { gql } from "@apollo/client";
 import {
   EngagementDetailsPageCohortsFragment,
   EngagementDetailsPageCsvUploadFragment,
+  EngagementDetailsPage_DetailsFragment,
 } from "@generated/graphql";
 import { PencilIcon } from "@heroicons/react/solid";
 import { breadcrumbs } from "@utils/breadcrumbs";
 import { Routes } from "@utils/routes";
 import { Button } from "components/Button";
-import { EngagementCohortsView } from "components/cohorts/EngagementCohortsView";
 import { Container } from "components/Container";
 import { NormalizedDateText } from "components/NormalizedDateText";
 import { PageHeader } from "components/PageHeader";
@@ -17,62 +17,62 @@ import { EngagementDetailsTabs, Tab } from "./EngagementDetailsTabs";
 
 const EngagementDetailsPageQueryName = "EngagementDetailsPage";
 
-EngagementDetailsPage.fragments = {
-  cohortsView: gql`
-    fragment EngagementDetailsPageCohorts on Engagement {
+const THIS_COMPONENT = gql`
+  fragment EngagementDetailsPage_Common on Engagement {
+    id
+    name
+    startDate
+    endDate
+    organization {
       id
       name
-      startDate
-      endDate
-      staffAssignments {
-        user {
-          id
-          fullName
-          email
-        }
-        role
-      }
-      organization {
-        name
-        id
-      }
-      ...EngagementCohortsView
-      ...EngagementForEditEngagementModal
     }
-    ${EngagementCohortsView.fragments.cohortsList}
-    ${EditEngagementModal.fragments.engagement}
+    ...EngagementForEditEngagementModal
+  }
+  ${EditEngagementModal.fragments.engagement}
+`;
+
+EngagementDetailsPage.fragments = {
+  detailsView: gql`
+    fragment EngagementDetailsPage_Details on Engagement {
+      ...EngagementDetailsPage_Common
+      ...EngagementDetailsTabs_Details
+    }
+    ${THIS_COMPONENT}
+    ${EngagementDetailsTabs.fragments.detailsTab}
+  `,
+  cohortsView: gql`
+    fragment EngagementDetailsPageCohorts on Engagement {
+      ...EngagementDetailsPage_Common
+      ...EngagementDetailsTabs_Cohorts
+    }
+    ${THIS_COMPONENT}
+    ${EngagementDetailsTabs.fragments.cohortsTab}
   `,
   csvUploadView: gql`
     fragment EngagementDetailsPageCsvUpload on Engagement {
-      id
-      name
-      startDate
-      endDate
-      organization {
-        id
-        name
-      }
-      cohorts {
-        id
-      }
-      ...EngagementForEditEngagementModal
+      ...EngagementDetailsPage_Common
+      ...EngagementDetailsTabs_CsvUpload
     }
-    ${EditEngagementModal.fragments.engagement}
+    ${THIS_COMPONENT}
+    ${EngagementDetailsTabs.fragments.csvUploadTab}
   `,
 };
 
-export type TabEngagement =
-  | {
-      tab: Tab.Cohorts;
-      engagement: EngagementDetailsPageCohortsFragment;
-    }
-  | {
-      tab: Tab.UploadCsv;
-      engagement: EngagementDetailsPageCsvUploadFragment;
-    };
-
 type Props = {
-  tabEng: TabEngagement;
+  tabEng:
+    | {
+        tab: Tab.Details;
+        engagement: EngagementDetailsPage_DetailsFragment;
+      }
+    | {
+        tab: Tab.Cohorts;
+        engagement: EngagementDetailsPageCohortsFragment;
+      }
+    | {
+        tab: Tab.UploadCsv;
+        engagement: EngagementDetailsPageCsvUploadFragment;
+      };
 };
 
 export function EngagementDetailsPage({ tabEng }: Props) {
