@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
 import { CohortDetailsView_CohortFragment } from "@generated/graphql";
+import { CalendarIcon } from "@heroicons/react/outline";
 import { ClipboardCopyIcon } from "@heroicons/react/solid";
 import { Routes } from "@utils/routes";
 import { formatGrade } from "@utils/strings";
@@ -7,6 +8,8 @@ import { Details } from "components/Details";
 import { ErrorBoundary } from "components/ErrorBoundary";
 import { ErrorBox } from "components/ErrorBox";
 import { Link } from "components/Link";
+import { useState } from "react";
+import { CohortsScheduleCalendarModal } from "../scheduleCalendar/CohortsScheduleCalendarModal";
 
 CohortDetailsView.fragments = {
   cohort: gql`
@@ -28,7 +31,9 @@ CohortDetailsView.fragments = {
           name
         }
       }
+      ...CohortForScheduleCalendarModal
     }
+    ${CohortsScheduleCalendarModal.fragments.cohort}
   `,
 };
 
@@ -37,6 +42,8 @@ type Props = {
 };
 
 export function CohortDetailsView({ cohort }: Props) {
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+
   return (
     <ErrorBoundary fallbackRender={() => <ErrorBox className="mt-4" />}>
       <div className="flex-1 my-4">
@@ -149,7 +156,24 @@ export function CohortDetailsView({ cohort }: Props) {
               )}
             </Details.Detail>
           </Details.Line>
+          <Details.Line>
+            <Details.Term>Schedule</Details.Term>
+            <Details.Detail>
+              <button
+                className="flex items-center text-sm font-medium"
+                onClick={() => setShowScheduleModal(true)}
+              >
+                <CalendarIcon className="mr-3 w-4 h-4" aria-hidden="true" />
+                Show
+              </button>
+            </Details.Detail>
+          </Details.Line>
         </Details>
+        <CohortsScheduleCalendarModal
+          show={showScheduleModal}
+          closeModal={() => setShowScheduleModal(false)}
+          cohorts={[cohort]}
+        />
       </div>
     </ErrorBoundary>
   );
