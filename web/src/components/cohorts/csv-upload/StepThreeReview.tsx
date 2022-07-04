@@ -1,6 +1,6 @@
 import {
   AssignmentSubject,
-  EngagementDetailsPageCsvUploadFragment,
+  CsvUploadView_EngagementFragment,
 } from "@generated/graphql";
 import {
   ProcessedCohort,
@@ -15,7 +15,7 @@ import { NormalizedDateText } from "components/NormalizedDateText";
 import { ReactNode } from "react";
 
 type Props = {
-  engagement: EngagementDetailsPageCsvUploadFragment;
+  engagement: CsvUploadView_EngagementFragment;
   processedCsv: ProcessedCohort[] | null;
   onApprove: () => void;
 };
