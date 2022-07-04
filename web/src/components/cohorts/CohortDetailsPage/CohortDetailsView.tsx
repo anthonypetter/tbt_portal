@@ -3,10 +3,10 @@ import { CohortDetailsView_CohortFragment } from "@generated/graphql";
 import { ClipboardCopyIcon } from "@heroicons/react/solid";
 import { Routes } from "@utils/routes";
 import { formatGrade } from "@utils/strings";
+import { Details } from "components/Details";
 import { ErrorBoundary } from "components/ErrorBoundary";
 import { ErrorBox } from "components/ErrorBox";
 import { Link } from "components/Link";
-import { ReactNode } from "react";
 
 CohortDetailsView.fragments = {
   cohort: gql`
@@ -40,61 +40,51 @@ export function CohortDetailsView({ cohort }: Props) {
   return (
     <ErrorBoundary fallbackRender={() => <ErrorBox className="mt-4" />}>
       <div className="flex-1 my-4">
-        <Details cohort={cohort} />
-      </div>
-    </ErrorBoundary>
-  );
-}
-
-function Details({ cohort }: { cohort: CohortDetailsView_CohortFragment }) {
-  return (
-    <div className="overflow-hidden">
-      <DetailLine>
-        <DescriptionTerm>Organization</DescriptionTerm>
-        <DescriptionDetails>
-          <Link
-            href={Routes.org.engagements.href(
-              cohort.engagement.organization.id
-            )}
-          >
-            {cohort.engagement.organization.name}
-          </Link>
-        </DescriptionDetails>
-      </DetailLine>
-      <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
-        <dl className="sm:divide-y sm:divide-gray-200">
-          <DetailLine>
-            <DescriptionTerm>Engagement</DescriptionTerm>
-            <DescriptionDetails>
+        <Details>
+          <Details.Line>
+            <Details.Term>Organization</Details.Term>
+            <Details.Detail>
               <Link
-                href={Routes.engagement.cohorts.href(
+                href={Routes.org.details.href(
+                  cohort.engagement.organization.id
+                )}
+              >
+                {cohort.engagement.organization.name}
+              </Link>
+            </Details.Detail>
+          </Details.Line>
+          <Details.Line>
+            <Details.Term>Engagement</Details.Term>
+            <Details.Detail>
+              <Link
+                href={Routes.engagement.details.href(
                   cohort.engagement.organization.id,
                   cohort.engagement.id
                 )}
               >
                 {cohort.engagement.name}
               </Link>
-            </DescriptionDetails>
-          </DetailLine>
-          <DetailLine>
-            <DescriptionTerm>Cohort ID</DescriptionTerm>
-            <DescriptionDetails>{cohort.id}</DescriptionDetails>
-          </DetailLine>
-          <DetailLine>
-            <DescriptionTerm>Created</DescriptionTerm>
-            <DescriptionDetails>
+            </Details.Detail>
+          </Details.Line>
+          <Details.Line>
+            <Details.Term>Cohort ID</Details.Term>
+            <Details.Detail>{cohort.id}</Details.Detail>
+          </Details.Line>
+          <Details.Line>
+            <Details.Term>Created</Details.Term>
+            <Details.Detail>
               {new Date(cohort.createdAt).toLocaleString()}
-            </DescriptionDetails>
-          </DetailLine>
-          <DetailLine>
-            <DescriptionTerm>Grade</DescriptionTerm>
-            <DescriptionDetails>
+            </Details.Detail>
+          </Details.Line>
+          <Details.Line>
+            <Details.Term>Grade</Details.Term>
+            <Details.Detail>
               {cohort.grade ? formatGrade(cohort.grade) : ""}
-            </DescriptionDetails>
-          </DetailLine>
-          <DetailLine>
-            <DescriptionTerm>Host key</DescriptionTerm>
-            <DescriptionDetails>
+            </Details.Detail>
+          </Details.Line>
+          <Details.Line>
+            <Details.Term>Host key</Details.Term>
+            <Details.Detail>
               {cohort.hostKey ? (
                 <div className="flex cursor-pointer transition duration-150 ease-in-out">
                   <p>{cohort.hostKey?.slice(0, 30)}...</p>
@@ -113,11 +103,11 @@ function Details({ cohort }: { cohort: CohortDetailsView_CohortFragment }) {
               ) : (
                 "Host key not available"
               )}
-            </DescriptionDetails>
-          </DetailLine>
-          <DetailLine>
-            <DescriptionTerm>Backdoor Link</DescriptionTerm>
-            <DescriptionDetails>
+            </Details.Detail>
+          </Details.Line>
+          <Details.Line>
+            <Details.Term>Backdoor Link</Details.Term>
+            <Details.Detail>
               {cohort.meetingRoom ? (
                 <Link href={cohort.meetingRoom}>
                   <span className="text-ellipsis truncate">Backdoor Link</span>
@@ -125,12 +115,12 @@ function Details({ cohort }: { cohort: CohortDetailsView_CohortFragment }) {
               ) : (
                 "Room has not been created"
               )}
-            </DescriptionDetails>
-          </DetailLine>
+            </Details.Detail>
+          </Details.Line>
 
-          <DetailLine>
-            <DescriptionTerm>Host Link</DescriptionTerm>
-            <DescriptionDetails>
+          <Details.Line>
+            <Details.Term>Host Link</Details.Term>
+            <Details.Detail>
               {cohort.meetingRoom ? (
                 <Link href={Routes.cohortRoom.href(cohort.id, "host")}>
                   <span className="text-ellipsis truncate">Host Link</span>
@@ -138,12 +128,12 @@ function Details({ cohort }: { cohort: CohortDetailsView_CohortFragment }) {
               ) : (
                 "Room has not been created"
               )}
-            </DescriptionDetails>
-          </DetailLine>
+            </Details.Detail>
+          </Details.Line>
 
-          <DetailLine>
-            <DescriptionTerm>Student Link</DescriptionTerm>
-            <DescriptionDetails>
+          <Details.Line>
+            <Details.Term>Student Link</Details.Term>
+            <Details.Detail>
               {cohort.meetingRoom ? (
                 <Link
                   href={Routes.cohortRoom.href(
@@ -157,30 +147,10 @@ function Details({ cohort }: { cohort: CohortDetailsView_CohortFragment }) {
               ) : (
                 "Room has not been created"
               )}
-            </DescriptionDetails>
-          </DetailLine>
-        </dl>
+            </Details.Detail>
+          </Details.Line>
+        </Details>
       </div>
-    </div>
-  );
-}
-
-function DetailLine({ children }: { children: ReactNode }) {
-  return (
-    <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-      {children}
-    </div>
-  );
-}
-
-function DescriptionTerm({ children }: { children: string }) {
-  return <dt className="text-sm font-medium text-gray-500">{children}</dt>;
-}
-
-function DescriptionDetails({ children }: { children: ReactNode }) {
-  return (
-    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-      {children}
-    </dd>
+    </ErrorBoundary>
   );
 }
