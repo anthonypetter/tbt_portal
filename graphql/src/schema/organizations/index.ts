@@ -16,6 +16,7 @@ import { OrganizationResolver } from "./OrganizationResolver";
 export const typeDefs = gql`
   type Organization {
     id: ID!
+    createdAt: Date!
     name: String!
     location: String
     description: String

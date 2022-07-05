@@ -20,6 +20,10 @@ export const Routes = {
     path: () => "/organizations",
   },
   org: {
+    details: {
+      href: (orgId: string) => `/organizations/${orgId}/details`,
+      path: () => "/organizations/[organizationId]/details",
+    },
     engagements: {
       href: (orgId: string) => `/organizations/${orgId}/engagements`,
       path: () => "/organizations/[organizationId]/engagements",
@@ -30,6 +34,12 @@ export const Routes = {
     },
   },
   engagement: {
+    details: {
+      href: (orgId: string, engagementId: string) =>
+        `/organizations/${orgId}/engagements/${engagementId}/details`,
+      path: () =>
+        "/organizations/[organizationId]/engagements/[engagementId]/details",
+    },
     cohorts: {
       href: (orgId: string, engagementId: string) =>
         `/organizations/${orgId}/engagements/${engagementId}/cohorts`,

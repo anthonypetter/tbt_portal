@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 import {
   OrganizationTabs_CohortsFragment,
+  OrganizationTabs_DetailsFragment,
   OrganizationTabs_EngagementsFragment,
 } from "@generated/graphql";
 import { Routes } from "@utils/routes";
@@ -8,8 +9,23 @@ import { assertUnreachable } from "@utils/types";
 import { OrganizationCohortsView } from "components/cohorts/OrganizationCohortsView";
 import { OrganizationEngagementsView } from "components/engagements/OrganizationEngagementsView";
 import { LinkTabs } from "components/LinkTabs";
+import { OrganizationDetailsView } from "./OrganizationDetailsView";
 
 OrganizationTabs.fragments = {
+  detailsTab: gql`
+    fragment OrganizationTabs_Details on Organization {
+      id
+      name
+      engagements {
+        id
+        cohorts {
+          id
+        }
+      }
+      ...OrganizationDetailsView_Organization
+    }
+    ${OrganizationDetailsView.fragments.organization}
+  `,
   engagementsTab: gql`
     fragment OrganizationTabs_Engagements on Organization {
       id
@@ -38,6 +54,10 @@ OrganizationTabs.fragments = {
 
 export type TabOrganization =
   | {
+      tab: Tab.Details;
+      organization: OrganizationTabs_DetailsFragment;
+    }
+  | {
       tab: Tab.Engagements;
       organization: OrganizationTabs_EngagementsFragment;
     }
@@ -47,6 +67,7 @@ export type TabOrganization =
     };
 
 export enum Tab {
+  Details,
   Engagements,
   Cohorts,
 }
@@ -60,6 +81,11 @@ export function OrganizationTabs({ tabOrg }: Props) {
   const cohortCount = organization.engagements.flatMap((e) => e.cohorts).length;
 
   const tabsConfig = [
+    {
+      name: getDisplayName(Tab.Details),
+      href: Routes.org.details.href(organization.id),
+      current: tab === Tab.Details,
+    },
     {
       name: getDisplayName(Tab.Engagements),
       href: Routes.org.engagements.href(organization.id),
@@ -87,6 +113,9 @@ type TabViewProps = {
 
 function TabView({ tabOrg }: TabViewProps) {
   switch (tabOrg.tab) {
+    case Tab.Details:
+      return <OrganizationDetailsView organization={tabOrg.organization} />;
+
     case Tab.Engagements:
       return (
         <OrganizationEngagementsView
@@ -109,6 +138,9 @@ function TabView({ tabOrg }: TabViewProps) {
 
 export function getDisplayName(tab: Tab) {
   switch (tab) {
+    case Tab.Details:
+      return "Details";
+
     case Tab.Cohorts:
       return "Cohorts";
 
