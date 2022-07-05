@@ -286,6 +286,7 @@ export type NewEngagementStaffAssignment = {
 
 export type Organization = {
   __typename?: 'Organization';
+  createdAt: Scalars['Date'];
   description?: Maybe<Scalars['String']>;
   district?: Maybe<Scalars['String']>;
   engagements: Array<Engagement>;
@@ -624,6 +625,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type OrganizationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Organization'] = ResolversParentTypes['Organization']> = {
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   district?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   engagements?: Resolver<Array<ResolversTypes['Engagement']>, ParentType, ContextType>;

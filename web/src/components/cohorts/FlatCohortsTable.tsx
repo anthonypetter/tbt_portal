@@ -138,9 +138,7 @@ function usePrepCohortData(
         Cell: ({ row }: Cell<CohortTableData>) => {
           return (
             <Link
-              href={Routes.org.engagements.href(
-                `${row.original.organizationId}`
-              )}
+              href={Routes.org.details.href(`${row.original.organizationId}`)}
             >
               {row.original.organizationName}
             </Link>
@@ -153,7 +151,7 @@ function usePrepCohortData(
         Cell: ({ row }: Cell<CohortTableData>) => {
           return (
             <Link
-              href={Routes.engagement.cohorts.href(
+              href={Routes.engagement.details.href(
                 `${row.original.organizationId}`,
                 `${row.original.engagementId}`
               )}

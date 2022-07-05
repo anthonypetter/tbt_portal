@@ -1,6 +1,5 @@
 import { AssignmentRole } from "@generated/graphql";
 import { assertUnreachable } from "@utils/types";
-import React from "react";
 import { Badge } from "./Badge";
 
 type Props = {

@@ -1,4 +1,4 @@
-import { EngagementDetailsPageCsvUploadFragment } from "@generated/graphql";
+import { CsvUploadView_EngagementFragment } from "@generated/graphql";
 import { ProcessedCohort } from "@utils/csv/parseCsv";
 import { Button } from "components/Button";
 import { ErrorBox } from "components/ErrorBox";
@@ -13,7 +13,7 @@ type Props = {
   file: File | null;
   onPassValidation: (processedCsv: ProcessedCohort[]) => void;
   filePreviouslyPassedValidation: boolean;
-  engagement: EngagementDetailsPageCsvUploadFragment;
+  engagement: CsvUploadView_EngagementFragment;
 };
 
 export function StepTwoValidateCsv({
@@ -61,7 +61,7 @@ type ValidateFileProps = {
   file: File;
   onPassValidation: (processedCsv: ProcessedCohort[]) => void;
   filePreviouslyPassedValidation: boolean;
-  engagement: EngagementDetailsPageCsvUploadFragment;
+  engagement: CsvUploadView_EngagementFragment;
 };
 
 function ValidateFile({
