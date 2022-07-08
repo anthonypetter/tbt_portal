@@ -72,8 +72,8 @@ async function getAllEngagements() {
 type AddEngagementInput = {
   name: string;
   organizationId: number;
-  startDate?: Date;
-  endDate?: Date;
+  startDate: Date;
+  endDate: Date;
   staff: EngagementStaffAssignmentInput[];
 };
 
@@ -122,8 +122,8 @@ async function deleteEngagement(id: number): Promise<Engagement> {
 type EditInput = {
   id: number;
   name?: string;
-  startDate?: Date;
-  endDate?: Date;
+  startDate: Date;
+  endDate: Date;
   staffChangeSet?: ChangeSet;
 };
 
@@ -187,7 +187,7 @@ async function getStaffAssignments(engagementId: number) {
  */
 
 type MentorEngagementsFilter = {
-  endDate: Prisma.DateTimeNullableFilter;
+  endDate: Prisma.DateTimeFilter;
 };
 
 async function getEngagementsAssignedToTeacher(

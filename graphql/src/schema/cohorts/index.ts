@@ -62,8 +62,8 @@ export const typeDefs = gql`
     hostKey: String
     meetingId: String
     exempt: String
-    startDate: Date
-    endDate: Date
+    startDate: Date!
+    endDate: Date!
 
     engagementId: ID!
     engagement: Engagement!
@@ -79,8 +79,8 @@ export const typeDefs = gql`
   input EditCohortInput {
     id: ID!
     name: String
-    startDate: Date
-    endDate: Date
+    startDate: Date!
+    endDate: Date!
     grade: String
     hostKey: String
     meetingRoom: String
@@ -90,8 +90,8 @@ export const typeDefs = gql`
   input AddCohortInput {
     engagementId: ID!
     name: String!
-    startDate: Date
-    endDate: Date
+    startDate: Date!
+    endDate: Date!
     grade: String
     hostKey: String
     meetingRoom: String

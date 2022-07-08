@@ -87,8 +87,8 @@ async function getCohortsForOrg(orgId: number) {
 type EditInput = {
   id: number;
   name?: string;
-  startDate?: Date | null;
-  endDate?: Date | null;
+  startDate: Date;
+  endDate: Date;
   grade?: string | null;
   hostKey?: string | null;
   meetingRoom?: string | null;
@@ -162,8 +162,8 @@ async function deleteCohort(id: number) {
 type AddCohortInput = {
   name: string;
   engagementId: number;
-  startDate?: Date;
-  endDate?: Date;
+  startDate: Date;
+  endDate: Date;
   grade?: string | null;
   hostKey?: string | null;
   meetingRoom?: string | null;
@@ -365,7 +365,7 @@ async function getStaffAssignments(cohortId: number) {
  */
 
 type TeacherCohortsFilter = {
-  endDate: Prisma.DateTimeNullableFilter;
+  endDate: Prisma.DateTimeFilter;
 };
 
 async function getCohortsAssignedToTeacher(

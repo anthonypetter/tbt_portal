@@ -34,8 +34,8 @@ export const typeDefs = gql`
     id: ID!
     createdAt: Date!
     name: String!
-    startDate: Date
-    endDate: Date
+    startDate: Date!
+    endDate: Date!
     organizationId: ID!
     cohorts: [Cohort!]!
     staffAssignments: [EngagementStaffAssignment!]!
@@ -50,16 +50,16 @@ export const typeDefs = gql`
   input EditEngagementInput {
     id: ID!
     name: String
-    startDate: Date
-    endDate: Date
+    startDate: Date!
+    endDate: Date!
     newStaffAssignments: [NewEngagementStaffAssignment!]
   }
 
   input AddEngagementInput {
     organizationId: ID!
     name: String!
-    startDate: Date
-    endDate: Date
+    startDate: Date!
+    endDate: Date!
     newStaffAssignments: [NewEngagementStaffAssignment!]!
   }
 

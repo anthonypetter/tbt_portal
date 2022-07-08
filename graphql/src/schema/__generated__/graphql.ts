@@ -25,7 +25,7 @@ export enum AccountStatus {
 }
 
 export type AddCohortInput = {
-  endDate?: InputMaybe<Scalars['Date']>;
+  endDate: Scalars['Date'];
   engagementId: Scalars['ID'];
   grade?: InputMaybe<Scalars['String']>;
   hostKey?: InputMaybe<Scalars['String']>;
@@ -33,15 +33,15 @@ export type AddCohortInput = {
   meetingRoom?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   newStaffAssignments: Array<NewCohortStaffAssignment>;
-  startDate?: InputMaybe<Scalars['Date']>;
+  startDate: Scalars['Date'];
 };
 
 export type AddEngagementInput = {
-  endDate?: InputMaybe<Scalars['Date']>;
+  endDate: Scalars['Date'];
   name: Scalars['String'];
   newStaffAssignments: Array<NewEngagementStaffAssignment>;
   organizationId: Scalars['ID'];
-  startDate?: InputMaybe<Scalars['Date']>;
+  startDate: Scalars['Date'];
 };
 
 export type AddOrganizationInput = {
@@ -66,7 +66,7 @@ export enum AssignmentSubject {
 export type Cohort = {
   __typename?: 'Cohort';
   createdAt: Scalars['Date'];
-  endDate?: Maybe<Scalars['Date']>;
+  endDate: Scalars['Date'];
   engagement: Engagement;
   engagementId: Scalars['ID'];
   events: Array<CohortEvent>;
@@ -78,7 +78,7 @@ export type Cohort = {
   meetingRoom?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   staffAssignments: Array<CohortStaffAssignment>;
-  startDate?: Maybe<Scalars['Date']>;
+  startDate: Scalars['Date'];
 };
 
 export type CohortEvent = {
@@ -146,22 +146,22 @@ export type CsvSubjectSchedule = {
 };
 
 export type EditCohortInput = {
-  endDate?: InputMaybe<Scalars['Date']>;
+  endDate: Scalars['Date'];
   grade?: InputMaybe<Scalars['String']>;
   hostKey?: InputMaybe<Scalars['String']>;
   id: Scalars['ID'];
   meetingRoom?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
   newStaffAssignments?: InputMaybe<Array<NewCohortStaffAssignment>>;
-  startDate?: InputMaybe<Scalars['Date']>;
+  startDate: Scalars['Date'];
 };
 
 export type EditEngagementInput = {
-  endDate?: InputMaybe<Scalars['Date']>;
+  endDate: Scalars['Date'];
   id: Scalars['ID'];
   name?: InputMaybe<Scalars['String']>;
   newStaffAssignments?: InputMaybe<Array<NewEngagementStaffAssignment>>;
-  startDate?: InputMaybe<Scalars['Date']>;
+  startDate: Scalars['Date'];
 };
 
 export type EditOrganizationInput = {
@@ -176,13 +176,13 @@ export type Engagement = {
   __typename?: 'Engagement';
   cohorts: Array<Cohort>;
   createdAt: Scalars['Date'];
-  endDate?: Maybe<Scalars['Date']>;
+  endDate: Scalars['Date'];
   id: Scalars['ID'];
   name: Scalars['String'];
   organization: Organization;
   organizationId: Scalars['ID'];
   staffAssignments: Array<EngagementStaffAssignment>;
-  startDate?: Maybe<Scalars['Date']>;
+  startDate: Scalars['Date'];
 };
 
 export type EngagementStaffAssignment = {
@@ -538,7 +538,7 @@ export type ResolversParentTypes = {
 
 export type CohortResolvers<ContextType = any, ParentType extends ResolversParentTypes['Cohort'] = ResolversParentTypes['Cohort']> = {
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  endDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  endDate?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   engagement?: Resolver<ResolversTypes['Engagement'], ParentType, ContextType>;
   engagementId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['CohortEvent']>, ParentType, ContextType>;
@@ -550,7 +550,7 @@ export type CohortResolvers<ContextType = any, ParentType extends ResolversParen
   meetingRoom?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   staffAssignments?: Resolver<Array<ResolversTypes['CohortStaffAssignment']>, ParentType, ContextType>;
-  startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  startDate?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -587,13 +587,13 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export type EngagementResolvers<ContextType = any, ParentType extends ResolversParentTypes['Engagement'] = ResolversParentTypes['Engagement']> = {
   cohorts?: Resolver<Array<ResolversTypes['Cohort']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  endDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  endDate?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType>;
   organizationId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   staffAssignments?: Resolver<Array<ResolversTypes['EngagementStaffAssignment']>, ParentType, ContextType>;
-  startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  startDate?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

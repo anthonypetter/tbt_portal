@@ -49,11 +49,11 @@ model Organization {
 }
 
 model Engagement {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
   name      String
-  startDate DateTime? @db.Date
-  endDate   DateTime? @db.Date
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
 
   //relation fields
   staffAssignments EngagementStaffAssignment[]
@@ -88,16 +88,16 @@ model EngagementStaffAssignment {
 }
 
 model Cohort {
-  id          Int       @id @default(autoincrement())
-  createdAt   DateTime  @default(now())
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
   name        String
   grade       String?
   meetingRoom String?
   hostKey     String?
   meetingId   String?
-  exempt      Boolean   @default(false)
-  startDate   DateTime? @db.Date
-  endDate     DateTime? @db.Date
+  exempt      Boolean  @default(false)
+  startDate   DateTime @db.Date
+  endDate     DateTime @db.Date
 
   // relation fields
   engagementId     Int
