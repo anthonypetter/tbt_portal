@@ -158,7 +158,7 @@ export function AddEngagementModalBody({
           <Modal.Button
             type="confirm"
             onClick={onAddEngagement}
-            disabled={!name}
+            disabled={!name || !startDate || !endDate}
           >
             {loading ? <Spinner /> : "Save"}
           </Modal.Button>
